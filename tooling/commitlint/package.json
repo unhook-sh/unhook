@@ -1,0 +1,26 @@
+{
+  "name": "@acme/commitlint-config",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./commitlint.config.js"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "commitlint": "commitlint"
+  },
+  "dependencies": {
+    "@commitlint/cli": "19.3.0",
+    "@commitlint/config-conventional": "19.2.2"
+  },
+  "devDependencies": {
+    "@acme/eslint-config": "workspace:*",
+    "@acme/lint-staged-config": "workspace:*",
+    "@acme/prettier-config": "workspace:*",
+    "eslint": "9.7.0",
+    "prettier": "3.3.3"
+  },
+  "prettier": "@acme/prettier-config"
+}

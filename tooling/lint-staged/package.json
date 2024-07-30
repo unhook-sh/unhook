@@ -1,0 +1,20 @@
+{
+  "name": "@acme/lint-staged-config",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./lint-staged.config.js"
+  },
+  "scripts": {
+    "lint-staged": "lint-staged"
+  },
+  "dependencies": {
+    "lint-staged": "15.2.7"
+  },
+  "devDependencies": {
+    "eslint": "9.7.0",
+    "prettier": "3.3.3",
+    "tsc-files": "1.1.4"
+  }
+}

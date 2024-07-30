@@ -5,6 +5,8 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
 import { createId } from "@acme/id";
 
@@ -24,6 +26,17 @@ export const User = pgTable("user", {
 
 export type UserInsertSchema = typeof User.$inferInsert;
 export type UserSelectSchema = typeof User.$inferSelect;
+
+export const CreateUserSchema = createInsertSchema(User, {
+  email: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  online: z.boolean(),
+}).omit({
+  createdAt: true,
+  id: true,
+  updatedAt: true,
+});
 
 export const ShortUrl = pgTable("short_url", {
   code: text("code").notNull().unique(),

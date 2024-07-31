@@ -22,8 +22,8 @@
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "rc",
     "eslint-plugin-sort-keys-fix": "1.1.2",
-    "eslint-plugin-turbo": "2.0.9",
-    "eslint-plugin-unicorn": "54.0.0",
+    "eslint-plugin-turbo": "2.0.10",
+    "eslint-plugin-unicorn": "55.0.0",
     "eslint-plugin-unused-imports": "4.0.1",
     "typescript-eslint": "rc-v8"
   },
@@ -31,7 +31,7 @@
     "@acme/lint-staged-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "eslint": "9.7.0",
+    "eslint": "9.8.0",
     "prettier": "3.3.3",
     "typescript": "5.5.4"
   },

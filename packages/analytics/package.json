@@ -1,7 +1,7 @@
 {
-  "name": "@acme/api",
-  "version": "0.1.0",
+  "name": "@acme/analytics",
   "private": true,
+  "version": "0.1.0",
   "type": "module",
   "exports": {
     ".": {
@@ -18,14 +18,6 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "dependencies": {
-    "@acme/db": "workspace:*",
-    "@acme/validators": "workspace:*",
-    "@trpc/server": "11.0.0-rc.364",
-    "superjson": "2.2.1",
-    "zod": "3.23.8",
-    "zod-to-json-schema": "3.23.2"
-  },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
     "@acme/lint-staged-config": "workspace:*",
@@ -35,5 +27,11 @@
     "prettier": "3.3.3",
     "typescript": "5.5.4"
   },
-  "prettier": "@acme/prettier-config"
+  "prettier": "@acme/prettier-config",
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "posthog-js": "1.152.0",
+    "posthog-node": "4.0.1"
+  }
 }

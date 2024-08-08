@@ -1,4 +1,5 @@
-import { createEnv } from "@t3-oss/env-core";
+import { createEnv } from "@t3-oss/env-nextjs";
+import { vercel } from "@t3-oss/env-nextjs/presets";
 import { z } from "zod";
 
 export const env = createEnv({
@@ -10,11 +11,18 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
   },
-  clientPrefix: "",
+
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
-  runtimeEnv: process.env,
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NODE_ENV: process.env.NODE_ENV,
+    // POSTGRES_URL: process.env.POSTGRES_URL ?? "test",
+  },
+
+  extends: [vercel()],
 
   /**
    * Specify your server-side environment variables schema here.

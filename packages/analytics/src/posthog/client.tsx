@@ -10,7 +10,7 @@ if (typeof window !== "undefined") {
   posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: env.NEXT_PUBLIC_POSTHOG_HOST,
     loaded: (posthog) => {
-      if (env.NODE_ENV === "development") posthog.debug();
+      if (env.NODE_ENV === "development") posthog.debug(false);
     },
     person_profiles: "identified_only",
   });

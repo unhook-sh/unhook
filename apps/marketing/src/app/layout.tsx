@@ -2,28 +2,32 @@ import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
+import { PostHogProvider } from "@acme/analytics/posthog/client";
 import { cn } from "@acme/ui";
 import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
 import "~/app/globals.css";
 
+import { SiteBanner } from "~/components/site-banner";
+import { SiteFooter } from "~/components/site-footer";
+import { SiteHeader } from "~/components/site-header";
 import { env } from "~/env";
 
 export const metadata: Metadata = {
-  description: "OnScript is an AI script-reading tool",
+  description: "CoFounder AI",
   metadataBase: new URL(
     env.VERCEL_ENV === "production"
       ? "https://acme.vercel.app"
       : "http://localhost:3000",
   ),
   openGraph: {
-    description: "OnScript is an AI script-reading tool",
-    siteName: "OnScript",
-    title: "OnScript",
+    description: "CoFounder AI the founders fundraising platform",
+    siteName: "CoFounder AI",
+    title: "CoFounder AI",
     url: "https://acme.vercel.app",
   },
-  title: "OnScript",
+  title: "CoFounder AI",
   twitter: {
     card: "summary_large_image",
     creator: "@seawatts",
@@ -43,15 +47,25 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "tet-foreground relative min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background font-sans text-foreground antialiased",
           GeistSans.variable,
           GeistMono.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {props.children}
-          <Toaster />
-        </ThemeProvider>
+        <PostHogProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SiteBanner />
+            <SiteHeader />
+            {props.children}
+            <SiteFooter />
+            <Toaster />
+          </ThemeProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

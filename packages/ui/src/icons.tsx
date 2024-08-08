@@ -2,12 +2,19 @@ import type { VariantProps } from "class-variance-authority";
 import type { IconNode, LucideProps } from "lucide-react";
 import type { TwcComponentProps } from "react-twc";
 import React from "react";
+import {
+  SiLinkedin,
+  SiOpenai,
+  SiOpenaiHex,
+  SiX,
+} from "@icons-pack/react-simple-icons";
 import { cva } from "class-variance-authority";
 import {
   AlertCircle,
   AlertTriangle,
   ArrowBigUp,
   ArrowLeft,
+  ArrowRight,
   ArrowUp,
   BadgeCheck,
   Ban,
@@ -15,6 +22,7 @@ import {
   Bookmark,
   BookmarkPlus,
   Calendar,
+  ChartNoAxesColumn,
   Check,
   CheckCheck,
   CheckCircle2,
@@ -32,6 +40,7 @@ import {
   Copy,
   CornerDownLeft,
   Delete,
+  DollarSign,
   Dot,
   Download,
   ExternalLink,
@@ -74,6 +83,7 @@ import {
   ThumbsUp,
   Triangle,
   Upload,
+  User,
   UsersRound,
   X,
 } from "lucide-react";
@@ -102,13 +112,18 @@ export const iconVariants = cva("shrink-0", {
       muted: "text-muted-foreground",
       primary: "text-primary",
       "primary-darker": "text-primary-darker",
+      secondary: "text-secondary",
       warning: "text-warning",
     },
   },
 });
+
 export type IconProps = TwcComponentProps<"svg"> &
   LucideProps &
   VariantProps<typeof iconVariants>;
+
+export type SiIconProps = TwcComponentProps<"svg"> &
+  VariantProps<typeof iconVariants> & { withColor?: boolean };
 
 export const Icons = {
   AlertCircle: twx(AlertCircle).transientProps(["size", "variant"])<IconProps>(
@@ -134,6 +149,9 @@ export const Icons = {
   ArrowLeft: twx(ArrowLeft).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  ArrowRight: twx(ArrowRight).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   ArrowUp: twx(ArrowUp).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -156,6 +174,10 @@ export const Icons = {
   Calendar: twx(Calendar).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  ChartNoAxesColumn: twx(ChartNoAxesColumn).transientProps([
+    "size",
+    "variant",
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
   Check: twx(Check).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -190,6 +212,9 @@ export const Icons = {
   Circle: twx(Circle).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  User: twx(User).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   CircleDot: twx(CircleDot).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -220,6 +245,9 @@ export const Icons = {
     </svg>
   ),
   Delete: twx(Delete).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  DollarSign: twx(DollarSign).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Dot: twx(Dot).transientProps(["size", "variant"])<IconProps>(
@@ -268,6 +296,12 @@ export const Icons = {
       <path d="M1 1h22v22H1z" fill="none" />
     </svg>
   ),
+  GoogleDocs: (props: SiIconProps) => (
+    <SiOpenai
+      className={iconVariants({ size: props.size })}
+      color={props.withColor ? SiOpenaiHex : undefined}
+    />
+  ),
   Heart: twx(Heart).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -277,15 +311,8 @@ export const Icons = {
   Info: twx(Info).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  LinkedIn: ({ size, ...props }: IconProps) => (
-    <svg
-      className={iconVariants({ size })}
-      {...props}
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-    </svg>
+  LinkedIn: twx(SiLinkedin).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
   ),
   ListFilter: twx(ListFilter).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
@@ -386,15 +413,8 @@ export const Icons = {
   Triangle: twx(Triangle).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  TwitterX: ({ size, ...props }: IconProps) => (
-    <svg
-      className={iconVariants({ size })}
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 300 300"
-    >
-      <path d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34M36.01 19.54H76.66l187.13 262.13h-40.66" />
-    </svg>
+  TwitterX: twx(SiX).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Upload: twx(Upload).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),

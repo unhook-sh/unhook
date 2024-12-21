@@ -1,4 +1,4 @@
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 export default function RetroGrid({ className }: { className?: string }) {
   return (

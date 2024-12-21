@@ -2,7 +2,7 @@
 
 import React, { forwardRef } from "react";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 type TColorProp = string | string[];
 

@@ -1,15 +1,16 @@
 "use client";
 
-import { RefObject, useEffect, useId, useState } from "react";
+import type { RefObject } from "react";
+import { useEffect, useId, useState } from "react";
 import { motion } from "framer-motion";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 export interface AnimatedBeamProps {
   className?: string;
-  containerRef: RefObject<HTMLElement>; // Container ref
-  fromRef: RefObject<HTMLElement>;
-  toRef: RefObject<HTMLElement>;
+  containerRef: RefObject<HTMLElement | null>; // Container ref
+  fromRef: RefObject<HTMLElement | null>;
+  toRef: RefObject<HTMLElement | null>;
   curvature?: number;
   reverse?: boolean;
   pathColor?: string;
@@ -46,7 +47,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
 }) => {
   const id = useId();
   const [pathD, setPathD] = useState("");
-  const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
+  const [svgDimensions, setSvgDimensions] = useState({ height: 0, width: 0 });
 
   // Calculate the gradient coordinates based on the reverse prop
   const gradientCoordinates = reverse
@@ -72,7 +73,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
 
         const svgWidth = containerRect.width;
         const svgHeight = containerRect.height;
-        setSvgDimensions({ width: svgWidth, height: svgHeight });
+        setSvgDimensions({ height: svgHeight, width: svgWidth });
 
         const startX =
           rectA.left - containerRect.left + rectA.width / 2 + startXOffset;
@@ -94,7 +95,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
     // Initialize ResizeObserver
     const resizeObserver = new ResizeObserver((entries) => {
       // For all entries, recalculate the path
-      for (let entry of entries) {
+      for (const entry of entries) {
         updatePath();
       }
     });

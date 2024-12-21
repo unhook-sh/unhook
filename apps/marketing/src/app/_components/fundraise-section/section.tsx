@@ -16,7 +16,6 @@ import {
 } from "recharts";
 
 import type { ChartConfig } from "@acme/ui/chart";
-import { cn } from "@acme/ui";
 import {
   Card,
   CardContent,
@@ -31,6 +30,7 @@ import {
   ChartTooltipContent,
 } from "@acme/ui/chart";
 import { Icons } from "@acme/ui/icons";
+import { cn } from "@acme/ui/lib/utils";
 import { ShinyButton } from "@acme/ui/magicui/shiny-button";
 import { Text } from "@acme/ui/typography";
 
@@ -229,12 +229,12 @@ export function FundraiseSection() {
                                 className="fill-foreground text-4xl font-bold"
                               >
                                 {financialNumberFormatter.format(
-                                  chartData2[0].visitors,
+                                  chartData2[0]?.visitors ?? 0,
                                 )}
                               </tspan>
                               <tspan
                                 x={viewBox.cx}
-                                y={(viewBox.cy || 0) + 24}
+                                y={(viewBox.cy ?? 0) + 24}
                                 className="fill-muted-foreground"
                               >
                                 Raised

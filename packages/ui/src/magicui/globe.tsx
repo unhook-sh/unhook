@@ -6,7 +6,7 @@ import createGlobe from "cobe";
 import { useTheme } from "next-themes";
 import { useSpring } from "react-spring";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 const GLOBE_CONFIG: COBEOptions = {
   baseColor: [1, 1, 1],

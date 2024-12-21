@@ -12,15 +12,15 @@
     "commitlint": "commitlint"
   },
   "dependencies": {
-    "@commitlint/cli": "19.3.0",
-    "@commitlint/config-conventional": "19.2.2"
+    "@commitlint/cli": "19.6.1",
+    "@commitlint/config-conventional": "19.6.0"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
     "@acme/lint-staged-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
-    "eslint": "9.8.0",
-    "prettier": "3.3.3"
+    "eslint": "9.17.0",
+    "prettier": "3.4.2"
   },
   "prettier": "@acme/prettier-config"
 }

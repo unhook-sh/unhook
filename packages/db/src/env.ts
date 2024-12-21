@@ -8,7 +8,7 @@ export const env = createEnv({
   emptyStringAsUndefined: true,
   runtimeEnv: process.env,
   server: {
-    POSTGRES_URL: z.string(),
+    DATABASE_URL: z.string(),
   },
   shared: {
     NODE_ENV: z

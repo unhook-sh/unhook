@@ -5,7 +5,7 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import { useInView } from "framer-motion";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 import { CompetitorWatch } from "./competitor-watch";
 import { DataTableDemo } from "./investor-crm";

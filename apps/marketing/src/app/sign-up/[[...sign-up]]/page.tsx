@@ -4,7 +4,6 @@ import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
 import { ClerkProvider } from "@clerk/nextjs";
 
-import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
 import {
   Card,
@@ -17,6 +16,7 @@ import {
 import { Icons } from "@acme/ui/icons";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
+import { cn } from "@acme/ui/lib/utils";
 
 export default function SignUpPage() {
   return (

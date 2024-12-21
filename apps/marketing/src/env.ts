@@ -22,7 +22,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    // POSTGRES_URL: process.env.POSTGRES_URL ?? "test",
+    // DATABASE_URL: process.env.DATABASE_URL ?? "test",
   },
 
   extends: [vercel()],
@@ -33,7 +33,7 @@ export const env = createEnv({
    */
   server: {
     CLERK_SECRET_KEY: z.string(),
-    POSTGRES_URL: z.string().url(),
+    DATABASE_URL: z.string().url(),
     WEBHOOK_SECRET: z.string(),
   },
 

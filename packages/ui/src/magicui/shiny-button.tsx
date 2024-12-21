@@ -4,7 +4,7 @@ import type { AnimationProps } from "framer-motion";
 import React from "react";
 import { motion } from "framer-motion";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 const animationProps = {
   animate: { "--x": "-100%", scale: 1 },

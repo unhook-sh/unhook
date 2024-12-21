@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useInView, useMotionValue, useSpring } from "framer-motion";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 export function NumberTicker({
   value,
@@ -22,7 +22,7 @@ export function NumberTicker({
     damping: 60,
     stiffness: 100,
   });
-  const isInView = useInView(ref, { once: true, margin: "0px" });
+  const isInView = useInView(ref, { margin: "0px", once: true });
 
   useEffect(() => {
     isInView &&
@@ -36,7 +36,7 @@ export function NumberTicker({
       springValue.on("change", (latest) => {
         if (ref.current) {
           ref.current.textContent = Intl.NumberFormat("en-US").format(
-            latest.toFixed(0),
+            Number(latest.toFixed(0)),
           );
         }
       }),

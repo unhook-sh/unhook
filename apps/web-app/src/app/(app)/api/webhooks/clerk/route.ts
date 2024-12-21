@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { Webhook } from "svix";
 
 import { db } from "@acme/db/client";
-import { User } from "@acme/db/schema";
+import { Users } from "@acme/db/schema";
 
 import { env } from "~/env";
 
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   }
 
   // Get the headers
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   // console.log("Webhook body:", body);
 
   if (event.type === "user.created") {
-    await db.insert(User).values({
+    await db.insert(Users).values({
       avatarUrl: event.data.image_url,
       email:
         event.data.email_addresses.find(

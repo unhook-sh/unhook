@@ -6,8 +6,8 @@ import {
 } from "@radix-ui/react-icons";
 
 import type { ButtonProps } from "@acme/ui/button";
-import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
+import { cn } from "@acme/ui/lib/utils";
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
@@ -70,7 +70,7 @@ const PaginationPrevious = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="Go to previous page"
-    size="md"
+    size="default"
     className={cn("gap-1 pl-2.5", className)}
     {...props}
   >
@@ -86,7 +86,7 @@ const PaginationNext = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="Go to next page"
-    size="md"
+    size="default"
     className={cn("gap-1 pr-2.5", className)}
     {...props}
   >

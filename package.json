@@ -31,11 +31,11 @@
   "devDependencies": {
     "@acme/commitlint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
-    "@turbo/gen": "2.0.10",
-    "husky": "9.1.4",
-    "prettier": "3.3.3",
-    "turbo": "2.0.10",
-    "typescript": "5.5.4"
+    "@turbo/gen": "2.3.3",
+    "husky": "9.1.7",
+    "prettier": "3.4.2",
+    "turbo": "2.3.3",
+    "typescript": "5.7.2"
   },
   "prettier": "@acme/prettier-config",
   "commitlint": {

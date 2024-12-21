@@ -3,8 +3,8 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 
-import { cn, twx } from "@acme/ui";
 import { Icons } from "@acme/ui/icons";
+import { cn, twx } from "@acme/ui/lib/utils";
 import { AnimatedBeam } from "@acme/ui/magicui/animated-beam";
 import { DotPattern } from "@acme/ui/magicui/dot-pattern";
 import { ShineBorder } from "@acme/ui/magicui/shine-border";

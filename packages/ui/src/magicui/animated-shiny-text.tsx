@@ -1,6 +1,6 @@
 import type { CSSProperties, FC, ReactNode } from "react";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 interface AnimatedShinyTextProps {
   children: ReactNode;

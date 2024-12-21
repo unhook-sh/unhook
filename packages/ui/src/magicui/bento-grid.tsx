@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 
 import { Button } from "../button";
 

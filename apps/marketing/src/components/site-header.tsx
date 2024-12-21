@@ -6,9 +6,9 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlignJustify, XIcon } from "lucide-react";
 
-import { cn } from "@acme/ui";
 import { Badge } from "@acme/ui/badge";
 import { Button } from "@acme/ui/button";
+import { cn } from "@acme/ui/lib/utils";
 import { ThemeToggle } from "@acme/ui/theme";
 
 import { SiteHeaderNavigationMenu } from "./site-header-nav-menu";
@@ -125,7 +125,7 @@ export function SiteHeader() {
             <Button asChild variant={"ghost"} className="hidden md:block">
               <Link href="/signin">Log in</Link>
             </Button>
-            <Button asChild variant={"primary"}>
+            <Button asChild>
               <Link href="/signup">Sign up</Link>
             </Button>
             <div className="hidden md:block">

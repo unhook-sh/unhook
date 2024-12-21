@@ -2,8 +2,8 @@
 
 import { BellIcon, FileTextIcon, InputIcon } from "@radix-ui/react-icons";
 
-import { cn } from "@acme/ui";
 import { Icons } from "@acme/ui/icons";
+import { cn } from "@acme/ui/lib/utils";
 import { AnimatedList } from "@acme/ui/magicui/animated-list";
 import { BentoCard, BentoGrid } from "@acme/ui/magicui/bento-grid";
 import { Marquee } from "@acme/ui/magicui/marquee";

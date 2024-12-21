@@ -1,43 +1,37 @@
-"use server";
-
-import type { CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 import { env } from "~/env";
 
-export const createClient = () => {
-  const cookieStore = cookies();
+export const createClient = (request: NextRequest) => {
+  // Create an unmodified response
+  let supabaseResponse = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-  return createServerClient(
+  const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        remove(name: string, options: CookieOptions) {
-          try {
-             
-            cookieStore.set({ name, value: "", ...options });
-          } catch {
-            // The `delete` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-             
-            cookieStore.set({ name, value, ...options });
-          } catch {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
+        setAll(cookiesToSet) {
+          for (const { name, value, options } of cookiesToSet)
+            request.cookies.set(name, value);
+          supabaseResponse = NextResponse.next({
+            request,
+          });
+          for (const { name, value, options } of cookiesToSet)
+            supabaseResponse.cookies.set(name, value, options);
         },
       },
     },
   );
+
+  return supabaseResponse;
 };

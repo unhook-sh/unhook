@@ -3,7 +3,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
 import { PostHogProvider } from "@acme/analytics/posthog/client";
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 

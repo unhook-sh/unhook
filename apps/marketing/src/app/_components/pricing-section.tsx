@@ -4,10 +4,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader } from "lucide-react";
 
-import { cn } from "@acme/ui";
 import { Badge } from "@acme/ui/badge";
 import { Button } from "@acme/ui/button";
 import { Icons } from "@acme/ui/icons";
+import { cn } from "@acme/ui/lib/utils";
 import { NeonGradientCard } from "@acme/ui/magicui/neon-gradient-card";
 import { Switch } from "@acme/ui/switch";
 
@@ -238,7 +238,7 @@ function PriceCardContent(props: {
           "group relative w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter",
           "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-2",
         )}
-        variant={props.price.isMostPopular ? "primary" : "secondary"}
+        variant={props.price.isMostPopular ? "default" : "secondary"}
         disabled={props.isLoading}
         onClick={() => void props.onSubscribeClick(props.price.id)}
       >

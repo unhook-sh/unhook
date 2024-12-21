@@ -19,7 +19,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NODE_ENV: process.env.NODE_ENV,
-    // POSTGRES_URL: process.env.POSTGRES_URL ?? "test",
+    // DATABASE_URL: process.env.DATABASE_URL ?? "test",
   },
 
   extends: [vercel()],

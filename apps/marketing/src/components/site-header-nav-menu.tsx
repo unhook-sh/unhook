@@ -4,7 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { cn } from "@acme/ui";
+import { cn } from "@acme/ui/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,

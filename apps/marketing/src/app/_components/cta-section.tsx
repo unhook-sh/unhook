@@ -13,8 +13,8 @@ import {
   Shield,
 } from "lucide-react";
 
-import { cn } from "@acme/ui";
 import { buttonVariants } from "@acme/ui/button";
+import { cn } from "@acme/ui/lib/utils";
 import { Marquee } from "@acme/ui/magicui/marquee";
 
 const tiles = [
@@ -73,7 +73,7 @@ const shuffleArray = (array: any[]) => {
   return array;
 };
 
-const Card = (card: { icon: JSX.Element; bg: JSX.Element }) => {
+const Card = (card: { icon: React.ReactNode; bg: React.ReactNode }) => {
   const id = useId();
   const controls = useAnimation();
   const ref = useRef(null);
@@ -115,7 +115,7 @@ export function CallToActionSection() {
   const [randomTiles4, setRandomTiles4] = useState<typeof tiles>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof globalThis !== "undefined") {
       // Ensures this runs client-side
       setRandomTiles1(shuffleArray([...tiles]));
       setRandomTiles2(shuffleArray([...tiles]));
@@ -176,7 +176,7 @@ export function CallToActionSection() {
               className={cn(
                 buttonVariants({
                   size: "lg",
-                  variant: "primary",
+                  variant: "default",
                 }),
                 "group mt-4 rounded-[2rem] px-6",
               )}

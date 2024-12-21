@@ -1,10 +1,10 @@
 import { exit } from "node:process";
 
 import { db } from "./client";
-import { User } from "./schema";
+import { Users } from "./schema";
 
 await db
-  .insert(User)
+  .insert(Users)
   .values({
     avatarUrl: "",
     email: "chris.watts.t@gmail.com",
@@ -12,7 +12,7 @@ await db
     id: "user_2i5HNDos78bZY6QHCmI5wjIjlkx",
     lastName: "Watts",
   })
-  .returning({ id: User.id })
+  .returning({ id: Users.id })
   .onConflictDoNothing();
 
 exit(0);

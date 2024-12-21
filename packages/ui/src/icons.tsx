@@ -88,7 +88,7 @@ import {
   X,
 } from "lucide-react";
 
-import { cn, twx } from "@acme/ui";
+import { cn, twx } from "@acme/ui/lib/utils";
 
 export type Icon = IconNode;
 
@@ -212,9 +212,6 @@ export const Icons = {
   Circle: twx(Circle).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  User: twx(User).transientProps(["size", "variant"])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
   CircleDot: twx(CircleDot).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -309,6 +306,9 @@ export const Icons = {
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Info: twx(Info).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  User: twx(User).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   LinkedIn: twx(SiLinkedin).transientProps(["size", "variant"])<IconProps>(

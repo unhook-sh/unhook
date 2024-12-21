@@ -80,7 +80,7 @@
     }
   },
   "globalEnv": [
-    "POSTGRES_URL",
+    "DATABASE_URL",
     "PORT"
   ],
   "globalPassThroughEnv": [

@@ -1,30 +1,33 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
 import { PostHogProvider } from "@acme/analytics/posthog/client";
 import { cn } from "@acme/ui/lib/utils";
+import { SidebarProvider } from "@acme/ui/sidebar";
 import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
 import "~/app/(app)/globals.css";
 
+import { AppSidebar } from "~/components/app-sidebar";
 import { env } from "~/env";
 
 export const metadata: Metadata = {
-  description: "OnScript is an AI script-reading tool",
+  description: "ShelterBuddy is a tool for shelters to manage their animals",
   metadataBase: new URL(
     env.VERCEL_ENV === "production"
-      ? "https://acme.vercel.app"
+      ? "https://shelterbuddy.vercel.app"
       : "http://localhost:3000",
   ),
   openGraph: {
-    description: "OnScript is an AI script-reading tool",
-    siteName: "OnScript",
-    title: "OnScript",
-    url: "https://acme.vercel.app",
+    description: "ShelterBuddy is a tool for shelters to manage their animals",
+    siteName: "ShelterBuddy",
+    title: "ShelterBuddy",
+    url: "https://shelterbuddy.vercel.app",
   },
-  title: "OnScript",
+  title: "ShelterBuddy",
   twitter: {
     card: "summary_large_image",
     creator: "@seawatts",
@@ -39,7 +42,10 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default async function RootLayout(props: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -51,7 +57,10 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       >
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            {props.children}
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <AppSidebar />
+              <main className="flex-1">{props.children}</main>
+            </SidebarProvider>
             <Toaster />
           </ThemeProvider>
         </PostHogProvider>

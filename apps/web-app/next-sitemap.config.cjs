@@ -14,5 +14,5 @@ module.exports = {
       return withoutHost;
     },
   },
-  siteUrl: process.env.SITE_URL || "https://app.co-founder.ai",
+  siteUrl: process.env.SITE_URL || "https://acme.com",
 };

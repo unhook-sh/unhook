@@ -14,5 +14,5 @@ module.exports = {
       return withoutHost;
     },
   },
-  siteUrl: process.env.VERCEL_URL,
+  siteUrl: process.env.VERCEL_URL ?? "https://acme.com",
 };

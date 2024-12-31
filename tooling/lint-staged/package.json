@@ -10,7 +10,7 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
-    "lint-staged": "15.2.11"
+    "lint-staged": "15.3.0"
   },
   "devDependencies": {
     "eslint": "9.17.0",

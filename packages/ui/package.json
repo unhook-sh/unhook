@@ -1,23 +1,4 @@
 {
-  "name": "@acme/ui",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "exports": {
-    "./globals.css": "./src/styles/globals.css",
-    "./lib/*": "./src/lib/*.tsx",
-    "./*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.tsx",
-    "./magicui/*": "./src/magicui/*.tsx"
-  },
-  "license": "MIT",
-  "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "ui-add": "pnpm dlx shadcn@latest add && prettier src --write --list-different"
-  },
   "dependencies": {
     "@hookform/resolvers": "3.9.1",
     "@icons-pack/react-simple-icons": "10.2.0",
@@ -35,6 +16,7 @@
     "@radix-ui/react-popover": "1.1.4",
     "@radix-ui/react-progress": "^1.1.1",
     "@radix-ui/react-radio-group": "1.2.2",
+    "@radix-ui/react-scroll-area": "1.2.2",
     "@radix-ui/react-select": "2.1.4",
     "@radix-ui/react-separator": "1.1.1",
     "@radix-ui/react-slider": "^1.2.2",
@@ -77,6 +59,15 @@
     "typescript": "5.7.2",
     "zod": "3.24.1"
   },
+  "exports": {
+    "./*": "./src/components/*.tsx",
+    "./globals.css": "./src/styles/globals.css",
+    "./hooks/*": "./src/hooks/*.tsx",
+    "./lib/*": "./src/lib/*.tsx",
+    "./magicui/*": "./src/magicui/*.tsx"
+  },
+  "license": "MIT",
+  "name": "@acme/ui",
   "overrides": {
     "react-day-picker": "8.10.1"
   },
@@ -84,5 +75,15 @@
     "react": "18.3.1",
     "zod": "3.23.8"
   },
-  "prettier": "@acme/prettier-config"
+  "prettier": "@acme/prettier-config",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "ui-add": "pnpm dlx shadcn@latest add && prettier src --write --list-different"
+  },
+  "type": "module",
+  "version": "0.1.0"
 }

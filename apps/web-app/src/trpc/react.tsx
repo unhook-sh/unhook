@@ -8,7 +8,7 @@ import SuperJSON from "superjson";
 
 import type { AppRouter } from "@acme/api";
 
-import { env } from "~/env";
+import { env } from "~/env.client";
 
 const createQueryClient = () =>
   new QueryClient({

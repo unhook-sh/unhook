@@ -3,6 +3,7 @@ import type { IconNode, LucideProps } from "lucide-react";
 import type { TwcComponentProps } from "react-twc";
 import React from "react";
 import {
+  SiDiscord,
   SiLinkedin,
   SiOpenai,
   SiOpenaiHex,
@@ -201,6 +202,9 @@ export const Icons = {
   ChevronUp: twx(ChevronUp).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  Discord: twx(SiDiscord).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   ChevronsLeft: twx(ChevronsLeft).transientProps([
     "size",
     "variant",
@@ -308,9 +312,6 @@ export const Icons = {
   Info: twx(Info).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  User: twx(User).transientProps(["size", "variant"])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
   LinkedIn: twx(SiLinkedin).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -372,6 +373,9 @@ export const Icons = {
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Plus: twx(Plus).transientProps(["size", "variant"])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  User: twx(User).transientProps(["size", "variant"])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Search: twx(Search).transientProps(["size", "variant"])<IconProps>(

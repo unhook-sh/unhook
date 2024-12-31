@@ -5,19 +5,20 @@ import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
 
-import { Button } from "@acme/ui/button";
 import { useIsMobile } from "@acme/ui/hooks/use-mobile";
-import { Input } from "@acme/ui/input";
 import { cn } from "@acme/ui/lib/utils";
-import { Separator } from "@acme/ui/separator";
-import { Sheet, SheetContent } from "@acme/ui/sheet";
-import { Skeleton } from "@acme/ui/skeleton";
+
+import { Button } from "./button";
+import { Input } from "./input";
+import { Separator } from "./separator";
+import { Sheet, SheetContent } from "./sheet";
+import { Skeleton } from "./skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@acme/ui/tooltip";
+} from "./tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

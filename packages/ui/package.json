@@ -4,10 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "exports": {
-    "./*": [
-      "./src/*.tsx",
-      "./src/*.ts"
-    ]
+    "./globals.css": "./src/styles/globals.css",
+    "./lib/*": "./src/lib/*.tsx",
+    "./*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.tsx",
+    "./magicui/*": "./src/magicui/*.tsx"
   },
   "license": "MIT",
   "scripts": {

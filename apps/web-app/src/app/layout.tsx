@@ -9,7 +9,7 @@ import { SidebarProvider } from "@acme/ui/sidebar";
 import { ThemeProvider } from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
-import "~/app/(app)/globals.css";
+import "@acme/ui/globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 

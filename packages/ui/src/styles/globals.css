@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer base {
+  /* Default theme */
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -33,8 +34,15 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 45 90% 65%;
+    --chart-4: 271 70% 69%;
+    --chart-5: 0 65% 65%;
   }
 
+  /* Dark mode */
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -64,5 +72,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }

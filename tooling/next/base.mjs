@@ -11,7 +11,12 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
     typedRoutes: true,
+    // dynamicIO: true,
+    serverActions: {
+      bodySizeLimit: "20mb",
+    },
   },
+  serverExternalPackages: ["@boundaryml/baml"],
   images: {
     remotePatterns: [
       { hostname: "images.unsplash.com" },
@@ -22,6 +27,7 @@ const nextConfig = {
       { hostname: "media.licdn.com" },
       { hostname: "img.clerk.com" },
       { hostname: "image.tmdb.org" },
+      { hostname: "picsum.photos" },
     ],
   },
   logging: {
@@ -31,6 +37,20 @@ const nextConfig = {
   },
   poweredByHeader: false,
   typescript: { ignoreBuildErrors: true },
+  webpack: (config, { dev, isServer, webpack, nextRuntime }) => {
+    config.module.rules.push({
+      test: /\.node$/,
+      use: [
+        {
+          loader: "nextjs-node-loader",
+          options: {
+            outputPath: config.output.path,
+          },
+        },
+      ],
+    });
+    return config;
+  },
 };
 
 export default withBundleAnalyzer({

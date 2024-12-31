@@ -4,23 +4,9 @@ import { z } from "zod";
 
 export const env = createEnv({
   /**
-   * Specify your client-side environment variables schema here.
-   * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
-   */
-  client: {
-    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
-    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
-  },
-
-  /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
-  experimental__runtimeEnv: {
-    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
-    NODE_ENV: process.env.NODE_ENV,
-    // DATABASE_URL: process.env.DATABASE_URL ?? "test",
-  },
+  experimental__runtimeEnv: process.env,
 
   extends: [vercel()],
 
@@ -29,14 +15,18 @@ export const env = createEnv({
    * This way you can ensure the app isn't built with invalid env vars.
    */
   server: {
-    POSTHOG_KEY: z.string(),
-  },
-
-  shared: {
+    CLERK_SECRET_KEY: z.string(),
+    CLERK_WEBHOOK_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
+    OPENAI_API_KEY: z.string(),
+    POSTGRES_URL: z.string().url(),
+    POSTHOG_KEY: z.string(),
+    SUPABASE_ANON_KEY: z.string(),
+    SUPABASE_URL: z.string().url(),
   },
+
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === "lint",
 });

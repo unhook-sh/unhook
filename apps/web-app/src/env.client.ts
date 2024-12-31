@@ -13,28 +13,17 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: z.string(),
   },
 
+  extends: [vercel()],
+
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
-  experimental__runtimeEnv: {
+  runtimeEnv: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    // DATABASE_URL: process.env.DATABASE_URL ?? "test",
-  },
-
-  extends: [vercel()],
-
-  /**
-   * Specify your server-side environment variables schema here.
-   * This way you can ensure the app isn't built with invalid env vars.
-   */
-  server: {
-    CLERK_SECRET_KEY: z.string(),
-    DATABASE_URL: z.string().url(),
-    WEBHOOK_SECRET: z.string(),
   },
 
   shared: {

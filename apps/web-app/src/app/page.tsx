@@ -7,7 +7,9 @@ export default function Page() {
         <H1>
           <span className="text-primary">On</span>Script
         </H1>
-        <div className="flex w-full max-w-2xl flex-col gap-4 overflow-y-scroll"></div>
+        <div className="flex w-full max-w-2xl flex-col gap-4 overflow-y-scroll">
+          <p>Hello</p>
+        </div>
       </div>
     </main>
   );

@@ -1,7 +1,9 @@
 import { PostHog } from "posthog-node";
 
-import { env } from "../env";
+import { env } from "../env.server";
 
-export const client = new PostHog(env.POSTHOG_KEY, {
-  host: "https://us.i.posthog.com",
+export const posthog = new PostHog(env.POSTHOG_KEY, {
+  flushAt: 1,
+  flushInterval: 0,
+  host: env.POSTHOG_HOST,
 });

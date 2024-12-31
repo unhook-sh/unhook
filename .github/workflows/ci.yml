@@ -55,3 +55,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sentry Release
+        uses: getsentry/action-release@v1.7.0

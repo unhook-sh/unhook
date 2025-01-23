@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <main className="mx-auto flex flex-1 flex-col gap-64 overflow-hidden">
       <div className="relative mx-auto mt-32 max-w-[80rem] px-6 text-center md:px-8">
-        <h1 className="text-balance bg-gradient-to-br from-black from-30% to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent [--animation-delay:200ms] motion-safe:translate-y-[-1rem] motion-safe:animate-fade-in motion-safe:opacity-0 dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl">
+        <h1 className="text-balance bg-linear-to-br from-black from-30% to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent [--animation-delay:200ms] motion-safe:translate-y-[-1rem] motion-safe:animate-fade-in motion-safe:opacity-0 dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl">
           Terms Of Service
         </h1>
         <SphereMask />

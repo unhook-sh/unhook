@@ -104,7 +104,7 @@ export function FundraiseSection() {
   return (
     <section
       id="features"
-      className="mx-auto flex max-w-screen-xl flex-col justify-center gap-8 px-4 md:px-8"
+      className="mx-auto flex max-w-(--breakpoint-xl) flex-col justify-center gap-8 px-4 md:px-8"
     >
       <div className="mx-auto max-w-5xl text-center">
         <h2 className="text-5xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">

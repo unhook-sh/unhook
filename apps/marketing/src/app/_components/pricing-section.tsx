@@ -101,7 +101,7 @@ export function PricingSection() {
   return (
     <section
       id="pricing"
-      className="mx-auto flex max-w-screen-xl flex-col gap-8 px-4 md:px-8"
+      className="mx-auto flex max-w-(--breakpoint-xl) flex-col gap-8 px-4 md:px-8"
     >
       <div className="mx-auto max-w-5xl text-center">
         <h2 className="text-5xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">
@@ -252,7 +252,7 @@ function PriceCardContent(props: {
         )}
       </Button>
 
-      <hr className="m-0 h-px w-full border-none bg-gradient-to-r from-neutral-200/0 via-neutral-500/30 to-neutral-200/0" />
+      <hr className="m-0 h-px w-full border-none bg-linear-to-r from-neutral-200/0 via-neutral-500/30 to-neutral-200/0" />
       {props.price.features && props.price.features.length > 0 && (
         <ul className="flex flex-col gap-2 font-normal">
           {props.price.features.map((feature: any, index: any) => (

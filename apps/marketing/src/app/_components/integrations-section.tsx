@@ -24,7 +24,7 @@ export function IntegrationsSection({ className }: { className?: string }) {
   return (
     <section
       id="integrations"
-      className="mx-auto flex max-w-screen-xl flex-col gap-8 px-4 md:px-8 lg:min-w-[1000px]"
+      className="mx-auto flex max-w-(--breakpoint-xl) flex-col gap-8 px-4 md:px-8 lg:min-w-[1000px]"
     >
       <div className="mx-auto max-w-5xl text-center">
         <h2 className="text-5xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">

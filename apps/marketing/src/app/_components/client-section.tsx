@@ -4,7 +4,7 @@ export function ClientSection() {
       id="clients"
       className="mx-auto max-w-[80rem] px-6 text-center md:px-8"
     >
-      <div className="mx-auto max-w-screen-xl px-4 md:px-8">
+      <div className="mx-auto max-w-(--breakpoint-xl) px-4 md:px-8">
         <h2 className="text-center text-sm font-semibold text-gray-600">
           TRUSTED BY FOUNDERS FROM AROUND THE WORLD
         </h2>

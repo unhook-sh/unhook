@@ -57,11 +57,6 @@ const footerNavs = [
 
 const footerSocials = [
   {
-    href: "https://www.linkedin.com/company/cofounder-ai",
-    icon: <Icons.LinkedIn className="h-4 w-4" />,
-    name: "LinkedIn",
-  },
-  {
     href: "https://x.com/TheCoFounderAI",
     icon: <Icons.TwitterX size="sm" />,
     name: "Twitter",
@@ -71,19 +66,19 @@ const footerSocials = [
 export function SiteFooter() {
   return (
     <footer>
-      <div className="mx-auto w-full max-w-screen-xl xl:pb-2">
+      <div className="mx-auto w-full max-w-(--breakpoint-xl) xl:pb-2">
         <div className="gap-4 p-4 px-8 py-16 sm:pb-16 md:flex md:justify-between">
           <div className="mb-12 flex flex-col gap-4">
             <Link className="text-md flex items-center gap-2" href="/">
               <Image
-                className="hidden h-auto w-2/3 dark:block md:w-1/5"
+                className="hidden h-auto w-2/3 md:w-1/5 dark:block"
                 src="/logo-dark.png"
                 alt="CoFounder AI"
                 width={1786}
                 height={376}
               />
               <Image
-                className="block h-auto w-2/3 dark:hidden md:w-1/5"
+                className="block h-auto w-2/3 md:w-1/5 dark:hidden"
                 src="/logo-light.png"
                 alt="CoFounder AI"
                 width={1786}
@@ -96,7 +91,7 @@ export function SiteFooter() {
           <div className="flex flex-1 gap-8 sm:gap-20">
             {footerNavs.map((nav) => (
               <div key={nav.label}>
-                <h2 className="mb-6 text-sm font-medium uppercase tracking-tighter text-gray-900 dark:text-white">
+                <h2 className="mb-6 text-sm font-medium tracking-tighter text-gray-900 uppercase dark:text-white">
                   {nav.label}
                 </h2>
                 <ul className="grid gap-2">
@@ -129,7 +124,7 @@ export function SiteFooter() {
               </Link>
             ))}
           </div>
-          <span className="text-sm text-gray-500 dark:text-gray-400 sm:text-center">
+          <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
             Copyright © {new Date().getFullYear()}{" "}
             <Link href="/" className="cursor-pointer">
               CoFounder, Inc

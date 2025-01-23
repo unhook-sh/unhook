@@ -182,7 +182,7 @@ export function FAQSection() {
           we get.
         </p>
       </div>
-      <div className="mx-auto my-12 flex max-w-screen-sm flex-col gap-12">
+      <div className="mx-auto my-12 flex max-w-(--breakpoint-sm) flex-col gap-12">
         {faqs.map((faq, index) => (
           <section key={index} id={"faq-" + faq.section}>
             <h2 className="mb-4 text-left text-base font-semibold tracking-tight text-foreground/60">
@@ -197,7 +197,7 @@ export function FAQSection() {
                 <AccordionItem
                   key={index}
                   value={faq.question}
-                  className="w-full max-w-screen-sm"
+                  className="w-full max-w-(--breakpoint-sm)"
                 >
                   <AccordionTrigger className="text-left">
                     {faq.question}

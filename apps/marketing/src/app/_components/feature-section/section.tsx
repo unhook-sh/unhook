@@ -43,7 +43,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
     <Accordion.Header className="flex">
       <Accordion.Trigger
         className={cn(
-          "group flex h-full flex-1 cursor-pointer items-center justify-between px-5 text-left text-[15px] leading-none outline-none",
+          "group flex h-full flex-1 cursor-pointer items-center justify-between px-5 text-left text-[15px] leading-none outline-hidden",
           className,
         )}
         {...props}

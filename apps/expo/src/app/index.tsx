@@ -13,7 +13,7 @@ function UserCard(props: {
 }) {
   return (
     <View className="flex flex-row rounded-lg bg-muted p-4">
-      <View className="flex-grow">
+      <View className="grow">
         <Link
           asChild
           href={{

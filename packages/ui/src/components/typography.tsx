@@ -151,7 +151,7 @@ export const List = twx.ul`my-6 ml-6 list-disc [&>li]:mt-2`;
 export const ListItem = twx.li`text-pretty leading-6`;
 export const Code = twx.code`relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold`;
 export const Lead = twx.p`text-pretty text-xl text-muted-foreground`;
-export const Kbd = twx.kbd`bg-dark text-dark-foreground pointer-events-none hidden size-5 select-none items-center justify-center rounded border font-mono text-xs font-semibold tracking-widest shadow lg:inline-flex`;
+export const Kbd = twx.kbd`bg-dark text-dark-foreground pointer-events-none hidden size-5 select-none items-center justify-center rounded border font-mono text-xs font-semibold tracking-widest shadow-2xs lg:inline-flex`;
 export const Abbr = twx.abbr`no-underline`;
 
 export const Prose = twx.span.transientProps(["size", "variant", "textFlow"])<

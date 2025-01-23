@@ -208,7 +208,7 @@ const features = [
             >
               <div className="flex flex-row items-center gap-2">
                 <div className="flex flex-col">
-                  <figcaption className="overflow-ellipsis text-sm font-medium dark:text-white">
+                  <figcaption className="text-ellipsis text-sm font-medium dark:text-white">
                     {f.name}
                   </figcaption>
                 </div>
@@ -294,7 +294,7 @@ export function BentoFeaturesSection() {
   return (
     <section
       id="bento-features"
-      className="mx-auto flex max-w-screen-xl flex-col gap-8 px-4 md:px-8"
+      className="mx-auto flex max-w-(--breakpoint-xl) flex-col gap-8 px-4 md:px-8"
     >
       <div className="mx-auto max-w-5xl text-center">
         <h2 className="text-5xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">

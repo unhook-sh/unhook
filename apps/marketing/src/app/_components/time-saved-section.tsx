@@ -14,7 +14,7 @@ export function TimeSavedSection() {
     <section
       ref={ref}
       id="time-saved"
-      className="mx-auto flex max-w-screen-lg flex-col gap-24 px-4 md:px-8"
+      className="mx-auto flex max-w-(--breakpoint-lg) flex-col gap-24 px-4 md:px-8"
     >
       <div className="mx-auto max-w-5xl text-center">
         <h2 className="text-5xl font-bold tracking-tight text-black dark:text-white sm:text-6xl">

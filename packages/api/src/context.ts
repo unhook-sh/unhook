@@ -1,14 +1,10 @@
-import { headers } from "next/headers";
+import type { NextRequest } from "next/server";
 import { getAuth } from "@clerk/nextjs/server";
-import * as trpcNext from "@trpc/server/adapters/next";
 
 import { db } from "@acme/db/client";
 
-export const createTRPCContext = async (
-  opts: trpcNext.CreateNextContextOptions,
-  h: typeof headers,
-) => {
-  return { auth: getAuth(opts.req), db };
+export const createTRPCContext = (request: NextRequest) => {
+  return { auth: getAuth(request), db };
 };
 
-export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
+export type Context = ReturnType<typeof createTRPCContext>;

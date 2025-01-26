@@ -4,8 +4,8 @@ import type { PropsWithChildren } from "react";
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 
-import type { PresenceStore } from "~/stores/presence";
-import { createPresenceStore } from "~/stores/presence";
+import type { PresenceStore } from "./store";
+import { createPresenceStore } from "./store";
 
 export type PresenceStoreApi = ReturnType<typeof createPresenceStore>;
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { AnalyticsProviders } from "@acme/analytics/providers";
 import { cn } from "@acme/ui/lib/utils";
@@ -15,6 +16,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 import { AppSidebar } from "~/components/app-sidebar";
 import { env } from "~/env.server";
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   description: "ShelterBuddy is a tool for shelters to manage their animals",
@@ -52,22 +54,30 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "relative min-h-screen bg-background font-sans text-foreground antialiased",
+          "bg-background text-foreground relative min-h-screen font-sans antialiased",
           GeistSans.variable,
           GeistMono.variable,
         )}
       >
-        <ClerkProvider>
-          <AnalyticsProviders identifyUser>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-              <SidebarProvider defaultOpen={defaultOpen}>
-                <AppSidebar />
-                <main className="flex-1">{props.children}</main>
-              </SidebarProvider>
-              <Toaster />
-            </ThemeProvider>
-          </AnalyticsProviders>
-        </ClerkProvider>
+        <NuqsAdapter>
+          <TRPCReactProvider>
+            <ClerkProvider>
+              <AnalyticsProviders identifyUser>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="dark"
+                  enableSystem
+                >
+                  <SidebarProvider defaultOpen={defaultOpen}>
+                    <AppSidebar />
+                    <main className="flex-1">{props.children}</main>
+                  </SidebarProvider>
+                  <Toaster />
+                </ThemeProvider>
+              </AnalyticsProviders>
+            </ClerkProvider>
+          </TRPCReactProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

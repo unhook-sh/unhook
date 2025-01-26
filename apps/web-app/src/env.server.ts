@@ -23,8 +23,6 @@ export const env = createEnv({
     OPENAI_API_KEY: z.string(),
     POSTGRES_URL: z.string().url(),
     POSTHOG_KEY: z.string(),
-    SUPABASE_ANON_KEY: z.string(),
-    SUPABASE_URL: z.string().url(),
   },
 
   skipValidation:

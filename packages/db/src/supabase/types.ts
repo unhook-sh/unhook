@@ -1,6 +1,6 @@
 import type { InferSelectModel } from "drizzle-orm";
 
-import type { OrgMembers, Orgs, ShortUrl, Users } from "./schema";
+import type { OrgMembers, Orgs, ShortUrl, Users } from "../schema";
 
 export interface Tables {
   orgMembers: InferSelectModel<typeof OrgMembers>;

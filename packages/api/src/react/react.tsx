@@ -7,9 +7,8 @@ import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import SuperJSON from "superjson";
 
-import type { AppRouter } from "@acme/api";
-
-import { env } from "~/env.client";
+import type { AppRouter } from "../root";
+import { env } from "../env.client";
 import { createQueryClient } from "./query-client";
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
@@ -59,10 +58,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 }
 
 const getBaseUrl = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (typeof globalThis !== "undefined" && globalThis.location)
     return globalThis.location.origin;
   if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
-  // eslint-disable-next-line no-restricted-properties
+
   return `http://localhost:${process.env.PORT ?? 3000}`;
 };

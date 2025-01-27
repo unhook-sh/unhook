@@ -6,9 +6,8 @@ import type {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from "@supabase/supabase-js";
 
-import type { TableName, Tables } from "@acme/db";
-
-import { createClient } from "~/supabase/client";
+import type { TableName, Tables } from "./types";
+import { createClient } from "./client";
 
 type SubscriptionStatus = "connecting" | "connected" | "disconnected" | "error";
 

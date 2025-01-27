@@ -14,9 +14,10 @@ import "@acme/ui/globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 
+import { TRPCReactProvider } from "@acme/api/client";
+
 import { AppSidebar } from "~/components/app-sidebar";
 import { env } from "~/env.server";
-import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   description: "ShelterBuddy is a tool for shelters to manage their animals",

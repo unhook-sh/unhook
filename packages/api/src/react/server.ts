@@ -4,8 +4,8 @@ import { NextRequest } from "next/server";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 
-import { appRouter, createTRPCContext } from "@acme/api";
-
+import { createTRPCContext } from "../context";
+import { appRouter } from "../root";
 import { createQueryClient } from "./query-client";
 
 /**

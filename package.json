@@ -1,32 +1,8 @@
 {
-  "name": "acme",
-  "private": true,
-  "engines": {
-    "node": ">=20.12.0"
-  },
-  "packageManager": "pnpm@9.3.0",
-  "scripts": {
-    "build": "turbo run build",
-    "clean": "git clean -xdf node_modules",
-    "clean:ws": "turbo run clean",
-    "db:gen-migration": "turbo -F @acme/db gen-migration",
-    "db:migrate": "turbo -F @acme/db migrate",
-    "db:seed": "turbo -F @acme/db seed",
-    "db:push": "turbo -F @acme/db push",
-    "db:studio": "turbo -F @acme/db studio",
-    "test": "pnpm with-env vitest",
-    "dev": "turbo watch dev",
-    "dev:next": "turbo watch dev -F @acme/nextjs...",
-    "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
-    "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
-    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
-    "lint:ws": "pnpm dlx sherif@latest",
-    "postinstall": "pnpm lint:ws",
-    "typecheck": "turbo run typecheck",
-    "ui-add": "turbo run ui-add",
-    "prepare": "husky",
-    "with-env": "dotenv -e ./.env --"
+  "commitlint": {
+    "extends": [
+      "@acme/commitlint-config"
+    ]
   },
   "devDependencies": {
     "@acme/commitlint-config": "workspace:*",
@@ -35,12 +11,37 @@
     "husky": "9.1.7",
     "prettier": "3.4.2",
     "turbo": "2.3.4",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "vitest": "3.0.4"
   },
+  "engines": {
+    "node": ">=20.12.0"
+  },
+  "name": "acme",
+  "packageManager": "pnpm@9.3.0",
   "prettier": "@acme/prettier-config",
-  "commitlint": {
-    "extends": [
-      "@acme/commitlint-config"
-    ]
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "git clean -xdf node_modules",
+    "clean:ws": "turbo run clean",
+    "db:gen-migration": "turbo -F @acme/db gen-migration",
+    "db:migrate": "turbo -F @acme/db migrate",
+    "db:push": "turbo -F @acme/db push",
+    "db:seed": "turbo -F @acme/db seed",
+    "db:studio": "turbo -F @acme/db studio",
+    "dev": "turbo watch dev",
+    "dev:next": "turbo watch dev -F @acme/nextjs...",
+    "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
+    "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
+    "prepare": "husky",
+    "test": "pnpm with-env vitest",
+    "typecheck": "turbo run typecheck",
+    "ui-add": "turbo run ui-add",
+    "with-env": "dotenv -e ./.env --"
   }
 }

@@ -1,17 +1,6 @@
 {
-  "name": "@acme/postcss-config",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "exports": {
-    "./base": "./base.cjs"
-  },
-  "license": "MIT",
-  "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "typecheck": "tsc --noEmit"
-  },
   "dependencies": {
+    "@tailwindcss/postcss": "4.0.3",
     "autoprefixer": "10.4.20",
     "cssnano": "7.0.6",
     "postcss": "8.5.1",
@@ -22,5 +11,17 @@
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
     "typescript": "5.7.3"
-  }
+  },
+  "exports": {
+    "./base": "./base.cjs"
+  },
+  "license": "MIT",
+  "name": "@acme/postcss-config",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "typecheck": "tsc --noEmit"
+  },
+  "type": "module",
+  "version": "0.1.0"
 }

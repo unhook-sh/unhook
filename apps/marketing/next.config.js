@@ -1,10 +1,10 @@
-import { fileURLToPath } from 'node:url'
-import createJiti from 'jiti'
+// import { fileURLToPath } from 'node:url'
+// import createJiti from 'jiti'
 
 import baseConfig from '@acme/next-config/base'
 
 // Import env files to validate at build time. Use jiti so we can load .ts files in here.
-createJiti(fileURLToPath(import.meta.url))('./src/env')
+// createJiti(fileURLToPath(import.meta.url))('./src/env')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

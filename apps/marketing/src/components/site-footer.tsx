@@ -1,8 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { Badge } from "@acme/ui/badge";
-import { Icons } from "@acme/ui/icons";
+import { Badge } from '@acme/ui/badge'
+import { Icons } from '@acme/ui/icons'
 
 const footerNavs = [
   {
@@ -12,15 +12,15 @@ const footerNavs = [
       //   name: "Email Collection",
       // },
       {
-        href: "#pricing",
-        name: "Pricing",
+        href: '#pricing',
+        name: 'Pricing',
       },
       {
-        href: "#faq",
-        name: "FAQ",
+        href: '#faq',
+        name: 'FAQ',
       },
     ],
-    label: "Product",
+    label: 'Product',
   },
   {
     items: [
@@ -29,39 +29,39 @@ const footerNavs = [
       //   name: "Discord",
       // },
       {
-        href: "https://x.com/TheCoFounderAI",
-        name: "Twitter",
+        href: 'https://x.com/TheCoFounderAI',
+        name: 'Twitter',
       },
       {
-        href: "mailto:hello@co-founder.ai",
-        name: "Email",
+        href: 'mailto:hello@co-founder.ai',
+        name: 'Email',
       },
     ],
-    label: "Community",
+    label: 'Community',
   },
   {
     items: [
       {
-        href: "/terms-of-service",
-        name: "Terms",
+        href: '/terms-of-service',
+        name: 'Terms',
       },
 
       {
-        href: "/privacy-policy",
-        name: "Privacy",
+        href: '/privacy-policy',
+        name: 'Privacy',
       },
     ],
-    label: "Legal",
+    label: 'Legal',
   },
-];
+]
 
 const footerSocials = [
   {
-    href: "https://x.com/TheCoFounderAI",
+    href: 'https://x.com/TheCoFounderAI',
     icon: <Icons.TwitterX size="sm" />,
-    name: "Twitter",
+    name: 'Twitter',
   },
-];
+]
 
 export function SiteFooter() {
   return (
@@ -84,7 +84,7 @@ export function SiteFooter() {
                 width={1786}
                 height={376}
               />
-              <Badge variant={"outline"}>Beta</Badge>
+              <Badge variant={'outline'}>Beta</Badge>
             </Link>
             <p className="max-w-xs">The Fundraising Platform for Founders</p>
           </div>
@@ -125,7 +125,7 @@ export function SiteFooter() {
             ))}
           </div>
           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            Copyright © {new Date().getFullYear()}{" "}
+            Copyright © {new Date().getFullYear()}{' '}
             <Link href="/" className="cursor-pointer">
               CoFounder, Inc
             </Link>
@@ -135,5 +135,5 @@ export function SiteFooter() {
       </div>
       {/*   <SiteBanner /> */}
     </footer>
-  );
+  )
 }

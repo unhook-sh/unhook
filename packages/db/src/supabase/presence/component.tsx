@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from '@clerk/nextjs'
+import { useEffect } from 'react'
 
-import { createClient } from "../client";
-import { usePresenceStore } from "./store-provider";
+import { createClient } from '../client'
+import { usePresenceStore } from './store-provider'
 
 export function Presence(props: { id: string }) {
-  const setOnlineUsers = usePresenceStore((store) => store.setOnlineUsers);
-  const { user } = useUser();
+  const setOnlineUsers = usePresenceStore((store) => store.setOnlineUsers)
+  const { user } = useUser()
 
-  const supabase = createClient();
+  const supabase = createClient()
 
   useEffect(() => {
-    if (!user || !props.id) return;
+    if (!user || !props.id) return
 
     const readingChannel = supabase
       .channel(`presence:${props.id}`, {
@@ -23,28 +23,26 @@ export function Presence(props: { id: string }) {
           },
         },
       })
-      .on("presence", { event: "sync" }, () => {
-        const onlineUsers = new Set(
-          Object.keys(readingChannel.presenceState()),
-        );
+      .on('presence', { event: 'sync' }, () => {
+        const onlineUsers = new Set(Object.keys(readingChannel.presenceState()))
 
-        setOnlineUsers(onlineUsers);
+        setOnlineUsers(onlineUsers)
       })
       .subscribe((status) => {
         if (
-          status === "SUBSCRIBED" &&
+          status === 'SUBSCRIBED' &&
           !readingChannel.presenceState()[user.id]
         ) {
           void readingChannel.track({
             onlineAt: new Date().toISOString(),
             userId: user.id,
-          });
+          })
         }
-      });
+      })
 
     return () => {
-      void supabase.removeChannel(readingChannel);
-    };
-  }, [user, props.id, setOnlineUsers, supabase]);
-  return <></>;
+      void supabase.removeChannel(readingChannel)
+    }
+  }, [user, props.id, setOnlineUsers, supabase])
+  return <></>
 }

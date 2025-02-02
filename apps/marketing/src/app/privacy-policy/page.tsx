@@ -1,6 +1,6 @@
-import { SphereMask } from "@acme/ui/magicui/sphere-mask";
+import { SphereMask } from '@acme/ui/magicui/sphere-mask'
 
-import { CallToActionSection } from "../_components/cta-section";
+import { CallToActionSection } from '../_components/cta-section'
 
 export default function Page() {
   return (
@@ -88,7 +88,7 @@ export default function Page() {
             <strong>
               Personal Data We Receive Automatically From Your Use of the
               Service:
-            </strong>{" "}
+            </strong>{' '}
             When you visit, use and interact with the Service, we may receive
             certain information about your visit, use or interactions. For
             example, we may monitor the number of people that visit the Service,
@@ -180,10 +180,14 @@ export default function Page() {
             cookies. Most advertising networks offer you a way to opt out of
             targeted advertising. If you would like to find out more
             information, please visit the Network Advertising Initiative’s
-            online resources at{" "}
-            <a href="http://www.networkadvertising.org" target="_blank">
+            online resources at{' '}
+            <a
+              href="http://www.networkadvertising.org"
+              target="_blank"
+              rel="noreferrer"
+            >
               http://www.networkadvertising.org
-            </a>{" "}
+            </a>{' '}
             and follow the opt-out instructions there.
           </p>
           <p>
@@ -417,5 +421,5 @@ export default function Page() {
       </div>
       <CallToActionSection />
     </main>
-  );
+  )
 }

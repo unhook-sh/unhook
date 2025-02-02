@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@acme/ui/accordion";
+} from '@acme/ui/accordion'
 
 const faqs = [
   {
@@ -20,7 +20,7 @@ const faqs = [
             tracking, and AI-driven market research.
           </span>
         ),
-        question: "What is CoFounder AI?",
+        question: 'What is CoFounder AI?',
       },
       {
         answer: (
@@ -31,10 +31,10 @@ const faqs = [
             up your fundraising process in no time.
           </span>
         ),
-        question: "How can I get started with CoFounder AI?",
+        question: 'How can I get started with CoFounder AI?',
       },
     ],
-    section: "General",
+    section: 'General',
   },
   {
     qa: [
@@ -46,7 +46,7 @@ const faqs = [
             relevant criteria.
           </span>
         ),
-        question: "How does the Investor matchmaking feature work?",
+        question: 'How does the Investor matchmaking feature work?',
       },
       {
         answer: (
@@ -56,10 +56,10 @@ const faqs = [
             you refine your pitch to better attract investors.
           </span>
         ),
-        question: "What is AI pitch deck analysis?",
+        question: 'What is AI pitch deck analysis?',
       },
     ],
-    section: "Features",
+    section: 'Features',
   },
   {
     qa: [
@@ -71,7 +71,7 @@ const faqs = [
             You can control access and track who views your documents.
           </span>
         ),
-        question: "What are Data rooms in CoFounder AI?",
+        question: 'What are Data rooms in CoFounder AI?',
       },
       {
         answer: (
@@ -82,10 +82,10 @@ const faqs = [
             transparency.
           </span>
         ),
-        question: "Can I send automatic updates to investors?",
+        question: 'Can I send automatic updates to investors?',
       },
     ],
-    section: "Capabilities",
+    section: 'Capabilities',
   },
 
   {
@@ -98,10 +98,10 @@ const faqs = [
             organized and make informed decisions.
           </span>
         ),
-        question: "Can I track my investments with CoFounder AI?",
+        question: 'Can I track my investments with CoFounder AI?',
       },
     ],
-    section: "Investor Tracking",
+    section: 'Investor Tracking',
   },
   {
     qa: [
@@ -113,10 +113,10 @@ const faqs = [
             strategic decisions and stay ahead in your industry.
           </span>
         ),
-        question: "What is AI-driven market research?",
+        question: 'What is AI-driven market research?',
       },
     ],
-    section: "Market and Competitor Research",
+    section: 'Market and Competitor Research',
   },
   {
     qa: [
@@ -128,7 +128,7 @@ const faqs = [
             support, you can upgrade to our premium plans.
           </span>
         ),
-        question: "Does CoFounder AI offer a free plan?",
+        question: 'Does CoFounder AI offer a free plan?',
       },
       {
         answer: (
@@ -139,7 +139,7 @@ const faqs = [
             your needs.
           </span>
         ),
-        question: "How much does CoFounder AI cost?",
+        question: 'How much does CoFounder AI cost?',
       },
       {
         answer: (
@@ -149,10 +149,10 @@ const faqs = [
             storage for data rooms, and priority support.
           </span>
         ),
-        question: "What are the benefits of upgrading to a premium plan?",
+        question: 'What are the benefits of upgrading to a premium plan?',
       },
     ],
-    section: "Pricing",
+    section: 'Pricing',
   },
   {
     qa: [
@@ -164,12 +164,12 @@ const faqs = [
             to us directly for any specific inquiries.
           </span>
         ),
-        question: "What kind of support does CoFounder AI offer?",
+        question: 'What kind of support does CoFounder AI offer?',
       },
     ],
-    section: "Support",
+    section: 'Support',
   },
-];
+]
 export function FAQSection() {
   return (
     <section id="faq" className="container mx-auto px-4 md:px-8">
@@ -183,8 +183,8 @@ export function FAQSection() {
         </p>
       </div>
       <div className="mx-auto my-12 flex max-w-(--breakpoint-sm) flex-col gap-12">
-        {faqs.map((faq, index) => (
-          <section key={index} id={"faq-" + faq.section}>
+        {faqs.map((faq) => (
+          <section key={faq.section} id={`faq-${faq.section}`}>
             <h2 className="mb-4 text-left text-base font-semibold tracking-tight text-foreground/60">
               {faq.section}
             </h2>
@@ -193,9 +193,9 @@ export function FAQSection() {
               collapsible
               className="flex w-full flex-col items-center justify-center"
             >
-              {faq.qa.map((faq, index) => (
+              {faq.qa.map((faq) => (
                 <AccordionItem
-                  key={index}
+                  key={faq.question}
                   value={faq.question}
                   className="w-full max-w-(--breakpoint-sm)"
                 >
@@ -210,11 +210,11 @@ export function FAQSection() {
         ))}
       </div>
       <h4 className="mb-12 text-center text-sm font-medium tracking-tight text-foreground/80">
-        Still have questions? Email us at{" "}
+        Still have questions? Email us at{' '}
         <a href="mailto:support@co-founder.ai" className="underline">
           support@co-founder.ai
         </a>
       </h4>
     </section>
-  );
+  )
 }

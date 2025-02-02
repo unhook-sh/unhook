@@ -4,29 +4,27 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "clean": "git clean -xdf .expo .turbo node_modules",
+    "clean": "git clean -xdf .expo .turbo node_modules dist",
     "dev": "expo start",
     "dev:android": "expo start --android",
     "dev:ios": "expo start --ios",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@acme/api": "workspace:*",
     "@bacons/text-decoder": "0.0.0",
     "@expo/metro-config": "0.19.9",
-    "@shopify/flash-list": "1.7.2",
-    "@tanstack/react-query": "5.64.2",
+    "@shopify/flash-list": "1.7.3",
+    "@tanstack/react-query": "5.66.0",
     "@trpc/client": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
-    "expo": "52.0.27",
-    "expo-constants": "17.0.4",
-    "expo-dev-client": "5.0.10",
-    "expo-linking": "7.0.4",
+    "expo": "52.0.28",
+    "expo-constants": "17.0.5",
+    "expo-dev-client": "5.0.11",
+    "expo-linking": "7.0.5",
     "expo-router": "4.0.17",
     "expo-splash-screen": "0.29.21",
     "expo-status-bar": "2.0.1",
@@ -38,12 +36,10 @@
     "react-native-gesture-handler": "2.22.1",
     "react-native-reanimated": "3.16.7",
     "react-native-safe-area-context": "5.1.0",
-    "react-native-screens": "4.5.0",
+    "react-native-screens": "4.6.0",
     "superjson": "2.2.2"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@babel/core": "7.26.7",
@@ -51,10 +47,7 @@
     "@babel/runtime": "7.26.7",
     "@types/babel__core": "7.20.5",
     "@types/react": "19.0.8",
-    "eslint": "9.19.0",
-    "prettier": "3.4.2",
-    "tailwindcss": "4.0.0",
+    "tailwindcss": "4.0.3",
     "typescript": "5.7.3"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

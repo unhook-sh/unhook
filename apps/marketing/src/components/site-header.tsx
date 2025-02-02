@@ -1,35 +1,35 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
-import { AlignJustify, XIcon } from "lucide-react";
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlignJustify, XIcon } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
-import { Badge } from "@acme/ui/badge";
-import { Button } from "@acme/ui/button";
-import { cn } from "@acme/ui/lib/utils";
-import { ThemeToggle } from "@acme/ui/theme";
+import { Badge } from '@acme/ui/badge'
+import { Button } from '@acme/ui/button'
+import { cn } from '@acme/ui/lib/utils'
+import { ThemeToggle } from '@acme/ui/theme'
 
-import { SiteHeaderNavigationMenu } from "./site-header-nav-menu";
+import { SiteHeaderNavigationMenu } from './site-header-nav-menu'
 
 const menuItem = [
   {
-    href: "/features",
+    href: '/features',
     id: 1,
-    label: "Features",
+    label: 'Features',
   },
   {
-    href: "#",
+    href: '#',
     id: 2,
-    label: "Pricing",
+    label: 'Pricing',
   },
   {
-    href: "#",
+    href: '#',
     id: 4,
-    label: "Contact Us",
+    label: 'Contact Us',
   },
-];
+]
 
 export function SiteHeader() {
   const mobilenavbarVariant = {
@@ -38,7 +38,7 @@ export function SiteHeader() {
       scale: 1,
       transition: {
         duration: 0.2,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
     exit: {
@@ -46,29 +46,29 @@ export function SiteHeader() {
       transition: {
         delay: 0.2,
         duration: 0.2,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
     initial: {
       opacity: 0,
       scale: 1,
     },
-  };
+  }
 
   const mobileLinkVariable = {
     initial: {
       opacity: 0,
-      y: "-20px",
+      y: '-20px',
     },
     open: {
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
       y: 0,
     },
-  };
+  }
 
   const containerVariants = {
     open: {
@@ -76,25 +76,25 @@ export function SiteHeader() {
         staggerChildren: 0.06,
       },
     },
-  };
+  }
 
-  const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false);
-
-  useEffect(() => {
-    const html = document.querySelector("html");
-    if (html) html.classList.toggle("overflow-hidden", hamburgerMenuIsOpen);
-  }, [hamburgerMenuIsOpen]);
+  const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false)
 
   useEffect(() => {
-    const closeHamburgerNavigation = () => setHamburgerMenuIsOpen(false);
-    window.addEventListener("orientationchange", closeHamburgerNavigation);
-    window.addEventListener("resize", closeHamburgerNavigation);
+    const html = document.querySelector('html')
+    if (html) html.classList.toggle('overflow-hidden', hamburgerMenuIsOpen)
+  }, [hamburgerMenuIsOpen])
+
+  useEffect(() => {
+    const closeHamburgerNavigation = () => setHamburgerMenuIsOpen(false)
+    window.addEventListener('orientationchange', closeHamburgerNavigation)
+    window.addEventListener('resize', closeHamburgerNavigation)
 
     return () => {
-      window.removeEventListener("orientationchange", closeHamburgerNavigation);
-      window.removeEventListener("resize", closeHamburgerNavigation);
-    };
-  }, [setHamburgerMenuIsOpen]);
+      window.removeEventListener('orientationchange', closeHamburgerNavigation)
+      window.removeEventListener('resize', closeHamburgerNavigation)
+    }
+  }, [])
 
   return (
     <>
@@ -115,14 +115,14 @@ export function SiteHeader() {
               width={1786}
               height={376}
             />
-            <Badge variant={"outline"}>Beta</Badge>
+            <Badge variant={'outline'}>Beta</Badge>
           </Link>
 
           <div className="ml-auto flex h-full items-center gap-4">
             <div className="hidden md:block">
               <SiteHeaderNavigationMenu />
             </div>
-            <Button asChild variant={"ghost"} className="hidden md:block">
+            <Button asChild variant={'ghost'} className="hidden md:block">
               <Link href="/signin">Log in</Link>
             </Button>
             <Button asChild>
@@ -133,6 +133,7 @@ export function SiteHeader() {
             </div>
           </div>
           <button
+            type="button"
             className="ml-6 md:hidden"
             onClick={() => setHamburgerMenuIsOpen((open) => !open)}
           >
@@ -146,11 +147,11 @@ export function SiteHeader() {
           initial="initial"
           exit="exit"
           variants={mobilenavbarVariant}
-          animate={hamburgerMenuIsOpen ? "animate" : "exit"}
+          animate={hamburgerMenuIsOpen ? 'animate' : 'exit'}
           className={cn(
-            `fixed left-0 top-0 z-50 flex h-screen w-full flex-col justify-between overflow-auto bg-background/70 backdrop-blur-[12px]`,
+            'fixed left-0 top-0 z-50 flex h-screen w-full flex-col justify-between overflow-auto bg-background/70 backdrop-blur-[12px]',
             {
-              "pointer-events-none": !hamburgerMenuIsOpen,
+              'pointer-events-none': !hamburgerMenuIsOpen,
             },
           )}
         >
@@ -170,10 +171,11 @@ export function SiteHeader() {
                 width={1786}
                 height={376}
               />
-              <Badge variant={"outline"}>Beta</Badge>
+              <Badge variant={'outline'}>Beta</Badge>
             </Link>
 
             <button
+              type="button"
               className="ml-6 md:hidden"
               onClick={() => setHamburgerMenuIsOpen((open) => !open)}
             >
@@ -182,10 +184,12 @@ export function SiteHeader() {
             </button>
           </div>
           <motion.ul
-            className={`flex flex-col uppercase ease-in md:flex-row md:items-center md:normal-case`}
+            className={
+              'flex flex-col uppercase ease-in md:flex-row md:items-center md:normal-case'
+            }
             variants={containerVariants}
             initial="initial"
-            animate={hamburgerMenuIsOpen ? "open" : "exit"}
+            animate={hamburgerMenuIsOpen ? 'open' : 'exit'}
           >
             {menuItem.map((item) => (
               <motion.li
@@ -195,7 +199,7 @@ export function SiteHeader() {
               >
                 <Link
                   className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
-                    hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
+                    hamburgerMenuIsOpen ? '[&_a]:translate-y-0' : ''
                   }`}
                   href={item.href}
                 >
@@ -210,5 +214,5 @@ export function SiteHeader() {
         </motion.nav>
       </AnimatePresence>
     </>
-  );
+  )
 }

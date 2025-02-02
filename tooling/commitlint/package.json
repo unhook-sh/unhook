@@ -8,19 +8,10 @@
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
     "commitlint": "commitlint"
   },
   "dependencies": {
-    "@commitlint/cli": "19.6.1",
-    "@commitlint/config-conventional": "19.6.0"
-  },
-  "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/lint-staged-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
-    "eslint": "9.19.0",
-    "prettier": "3.4.2"
-  },
-  "prettier": "@acme/prettier-config"
+    "@commitlint/cli": "19.7.1",
+    "@commitlint/config-conventional": "19.7.1"
+  }
 }

@@ -1,50 +1,39 @@
 {
   "dependencies": {
-    "@clerk/chrome-extension": "2.2.1",
-    "@clerk/nextjs": "6.10.2",
-    "@sentry/nextjs": "8.51.0",
+    "@clerk/chrome-extension": "2.2.5",
+    "@clerk/nextjs": "6.10.6",
+    "@sentry/nextjs": "8.53.0",
     "@t3-oss/env-core": "0.12.0",
     "@t3-oss/env-nextjs": "0.12.0",
     "@vercel/analytics": "1.4.1",
     "@vercel/speed-insights": "1.1.0",
     "nextjs-google-analytics": "2.3.7",
-    "posthog-js": "1.210.2",
+    "posthog-js": "1.215.1",
     "posthog-node": "4.4.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "zod": "3.24.1"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/lint-staged-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/aws-lambda": "8.10.147",
-    "@types/chrome": "0.0.299",
+    "@types/chrome": "0.0.300",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
-    "eslint": "9.19.0",
     "next": "15.1.6",
-    "prettier": "3.4.2",
     "typescript": "5.7.3"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./*": [
-      "./src/*.tsx",
-      "./src/*.ts"
-    ]
+    "./*": ["./src/*.tsx", "./src/*.ts"]
   },
   "license": "MIT",
   "name": "@acme/analytics",
-  "prettier": "@acme/prettier-config",
   "private": true,
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc --watch",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

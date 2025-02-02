@@ -12,21 +12,21 @@ export function ClientSection() {
           <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-16 [&_path]:fill-white">
             <li>
               <img
-                src={`https://cdn.magicui.design/companies/Google.svg`}
+                src={'https://cdn.magicui.design/companies/Google.svg'}
                 className="h-8 w-28 px-2 dark:brightness-0 dark:invert"
                 alt="Google"
               />
             </li>
             <li>
               <img
-                src={`https://cdn.magicui.design/companies/Microsoft.svg`}
+                src={'https://cdn.magicui.design/companies/Microsoft.svg'}
                 className="h-8 w-28 px-2 dark:brightness-0 dark:invert"
                 alt="Microsoft"
               />
             </li>
             <li>
               <img
-                src={`https://cdn.magicui.design/companies/GitHub.svg`}
+                src={'https://cdn.magicui.design/companies/GitHub.svg'}
                 className="h-8 w-28 px-2 dark:brightness-0 dark:invert"
                 alt="GitHub"
               />
@@ -34,14 +34,14 @@ export function ClientSection() {
 
             <li>
               <img
-                src={`https://cdn.magicui.design/companies/Uber.svg`}
+                src={'https://cdn.magicui.design/companies/Uber.svg'}
                 className="h-8 w-28 px-2 dark:brightness-0 dark:invert"
                 alt="Uber"
               />
             </li>
             <li>
               <img
-                src={`https://cdn.magicui.design/companies/Notion.svg`}
+                src={'https://cdn.magicui.design/companies/Notion.svg'}
                 className="h-8 w-28 px-2 dark:brightness-0 dark:invert"
                 alt="Notion"
               />
@@ -50,5 +50,5 @@ export function ClientSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

@@ -1,58 +1,58 @@
-"use client";
+'use client'
 
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts'
 
-import type { ChartConfig } from "@acme/ui/chart";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@acme/ui/card";
+} from '@acme/ui/card'
+import type { ChartConfig } from '@acme/ui/chart'
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@acme/ui/chart";
+} from '@acme/ui/chart'
 
 const chartData = [
   {
     competitorA: 50,
     competitorB: 20,
-    criteria: "Market Presence",
+    criteria: 'Market Presence',
     startup: 80,
   },
-  { competitorA: 25, competitorB: 50, criteria: "Innovation", startup: 85 },
+  { competitorA: 25, competitorB: 50, criteria: 'Innovation', startup: 85 },
   {
     competitorA: 25,
     competitorB: 50,
-    criteria: "Customer Satisfaction",
+    criteria: 'Customer Satisfaction',
     startup: 90,
   },
-  { competitorA: 65, competitorB: 70, criteria: "Pricing", startup: 75 },
+  { competitorA: 65, competitorB: 70, criteria: 'Pricing', startup: 75 },
   {
     competitorA: 20,
     competitorB: 45,
-    criteria: "Product Quality",
+    criteria: 'Product Quality',
     startup: 95,
   },
-];
+]
 
 const chartConfig = {
   competitorA: {
-    color: "hsl(var(--chart-2))",
-    label: "Competitor A",
+    color: 'hsl(var(--chart-2))',
+    label: 'Competitor A',
   },
   competitorB: {
-    color: "hsl(var(--chart-3))",
-    label: "Competitor B",
+    color: 'hsl(var(--chart-3))',
+    label: 'Competitor B',
   },
   startup: {
-    color: "hsl(var(--chart-1))",
-    label: "Startup",
+    color: 'hsl(var(--chart-1))',
+    label: 'Startup',
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 export function CompetitorWatch() {
   return (
@@ -104,5 +104,5 @@ export function CompetitorWatch() {
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

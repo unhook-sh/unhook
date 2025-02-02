@@ -2,7 +2,7 @@
   "dependencies": {
     "@acme/db": "workspace:*",
     "@acme/validators": "workspace:*",
-    "@tanstack/react-query": "5.64.2",
+    "@tanstack/react-query": "5.66.0",
     "@trpc/client": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
@@ -14,14 +14,9 @@
     "zod-to-json-schema": "3.24.1"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/lint-staged-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
-    "eslint": "9.19.0",
-    "prettier": "3.4.2",
     "typescript": "5.7.3"
   },
   "exports": {
@@ -40,14 +35,11 @@
   },
   "license": "MIT",
   "name": "@acme/api",
-  "prettier": "@acme/prettier-config",
   "private": true,
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc --watch",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

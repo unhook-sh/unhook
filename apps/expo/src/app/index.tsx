@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, Stack } from "expo-router";
-import { FlashList } from "@shopify/flash-list";
+import { FlashList } from '@shopify/flash-list'
+import { Link, Stack } from 'expo-router'
+import { useState } from 'react'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-import type { RouterOutputs } from "~/utils/api";
-import { api } from "~/utils/api";
+import type { RouterOutputs } from '~/utils/api'
+import { api } from '~/utils/api'
 
 function UserCard(props: {
-  user: RouterOutputs["user"]["all"][number];
-  onDelete: () => void;
+  user: RouterOutputs['user']['all'][number]
+  onDelete: () => void
 }) {
   return (
     <View className="flex flex-row rounded-lg bg-muted p-4">
@@ -18,7 +18,7 @@ function UserCard(props: {
           asChild
           href={{
             params: { id: props.user.id },
-            pathname: "/user/[id]",
+            pathname: '/user/[id]',
           }}
         >
           <Pressable className="">
@@ -33,20 +33,20 @@ function UserCard(props: {
         <Text className="font-bold uppercase text-primary">Delete</Text>
       </Pressable>
     </View>
-  );
+  )
 }
 
 function CreateUser() {
-  const utils = api.useUtils();
+  const utils = api.useUtils()
 
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState('')
 
   const { mutate, error } = api.user.create.useMutation({
     async onSuccess() {
-      setFirstName("");
-      await utils.user.all.invalidate();
+      setFirstName('')
+      await utils.user.all.invalidate()
     },
-  });
+  })
 
   return (
     <View className="mt-4 flex gap-2">
@@ -66,33 +66,36 @@ function CreateUser() {
         onPress={() => {
           mutate({
             firstName,
-          } as any);
+            email: 'test@test.com',
+            lastName: 'test',
+            online: true,
+          })
         }}
       >
         <Text className="text-foreground">Create</Text>
       </Pressable>
-      {error?.data?.code === "UNAUTHORIZED" && (
+      {error?.data?.code === 'UNAUTHORIZED' && (
         <Text className="mt-2 text-destructive">
           You need to be logged in to create a post
         </Text>
       )}
     </View>
-  );
+  )
 }
 
 export default function Index() {
-  const utils = api.useUtils();
+  const utils = api.useUtils()
 
-  const userQuery = api.user.all.useQuery();
+  const userQuery = api.user.all.useQuery()
 
   const deleteUserMutation = api.user.delete.useMutation({
     onSettled: () => utils.user.all.invalidate().then(),
-  });
+  })
 
   return (
     <SafeAreaView className="bg-background">
       {/* Changes page title visible on the header */}
-      <Stack.Screen options={{ title: "Home Page" }} />
+      <Stack.Screen options={{ title: 'Home Page' }} />
       <View className="h-full w-full bg-background p-4">
         <Text className="pb-2 text-center text-5xl font-bold text-foreground">
           Create <Text className="text-primary">T3</Text> Turbo
@@ -126,5 +129,5 @@ export default function Index() {
         <CreateUser />
       </View>
     </SafeAreaView>
-  );
+  )
 }

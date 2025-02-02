@@ -1,27 +1,27 @@
-"use client";
+'use client'
 
-import type { PropsWithChildren } from "react";
-import dynamic from "next/dynamic";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { GoogleAnalytics } from "nextjs-google-analytics";
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import dynamic from 'next/dynamic'
+import { GoogleAnalytics } from 'nextjs-google-analytics'
+import type { PropsWithChildren } from 'react'
 
-import { env } from "./env.client";
-import { WebVitals } from "./nextjs/web-vitals";
+import { env } from './env.client'
+import { WebVitals } from './nextjs/web-vitals'
 import {
   PostHogIdentifyUser,
   PostHogProvider,
   PosthogWebVitals,
-} from "./posthog/client";
+} from './posthog/client'
 
-const isProduction = env.NEXT_PUBLIC_APP_ENV === "production";
+const isProduction = env.NEXT_PUBLIC_APP_ENV === 'production'
 
 const PostHogPageView = dynamic(
-  () => import("./posthog/client").then((module_) => module_.PostHogPageView),
+  () => import('./posthog/client').then((module_) => module_.PostHogPageView),
   {
     ssr: false,
   },
-);
+)
 
 export function AnalyticsProviders(
   props: PropsWithChildren & { identifyUser?: boolean },
@@ -42,5 +42,5 @@ export function AnalyticsProviders(
       )}
       {!isProduction && props.children}
     </>
-  );
+  )
 }

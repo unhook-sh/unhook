@@ -2,9 +2,9 @@
 // https://tailwindcss.com/docs/using-with-preprocessors
 module.exports = {
   plugins: {
-    "postcss-focus-visible": {
-      replaceWith: "[data-focus-visible-added]",
+    'postcss-focus-visible': {
+      replaceWith: '[data-focus-visible-added]',
     },
-    "@tailwindcss/postcss": {},
+    '@tailwindcss/postcss': {},
   },
-};
+}

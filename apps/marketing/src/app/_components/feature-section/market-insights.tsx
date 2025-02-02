@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   CartesianGrid,
@@ -8,7 +8,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts'
 
 import {
   Card,
@@ -17,22 +17,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@acme/ui/card";
+} from '@acme/ui/card'
 
 const marketTrendsData = [
-  { month: "January", value: 400 },
-  { month: "February", value: 300 },
-  { month: "March", value: 500 },
-  { month: "April", value: 200 },
-  { month: "May", value: 300 },
-  { month: "June", value: 400 },
-];
+  { month: 'January', value: 400 },
+  { month: 'February', value: 300 },
+  { month: 'March', value: 500 },
+  { month: 'April', value: 200 },
+  { month: 'May', value: 300 },
+  { month: 'June', value: 400 },
+]
 
 const kpisData = {
-  growthRate: "5.2%",
-  marketShare: "15%",
-  customerSatisfaction: "85%",
-};
+  growthRate: '5.2%',
+  marketShare: '15%',
+  customerSatisfaction: '85%',
+}
 
 export function MarketInsights() {
   return (
@@ -84,5 +84,5 @@ export function MarketInsights() {
         </div>
       </CardFooter>
     </Card>
-  );
+  )
 }

@@ -1,14 +1,14 @@
-import type React from "react";
-import { useCallback } from "react";
-import { add, format } from "date-fns";
+import { add, format } from 'date-fns'
+import type React from 'react'
+import { useCallback } from 'react'
 
-import { Button } from "./button";
-import { DatePicker } from "./date-picker";
+import { Button } from './button'
+import { DatePicker } from './date-picker'
 
 interface DatePickerInputProps {
-  date?: Date;
-  onChange: (date?: Date) => void;
-  quickFillDates?: (Date | string)[];
+  date?: Date
+  onChange: (date?: Date) => void
+  quickFillDates?: (Date | string)[]
 }
 
 export const DatePickerInput: React.FC<DatePickerInputProps> = ({
@@ -17,43 +17,43 @@ export const DatePickerInput: React.FC<DatePickerInputProps> = ({
   quickFillDates,
 }) => {
   const parseRelativeDate = useCallback((relativeDate: string | Date): Date => {
-    if (relativeDate instanceof Date) return relativeDate;
+    if (relativeDate instanceof Date) return relativeDate
 
-    const now = new Date();
-    const [amount, unit, ago] = relativeDate.split(" ");
-    const numericAmount = Number.parseInt(amount ?? "0", 10);
-    const isPast = ago === "ago";
+    const now = new Date()
+    const [amount, unit, ago] = relativeDate.split(' ')
+    const numericAmount = Number.parseInt(amount ?? '0', 10)
+    const isPast = ago === 'ago'
 
     switch (unit) {
-      case "day":
-      case "days": {
-        return add(now, { days: isPast ? -numericAmount : numericAmount });
+      case 'day':
+      case 'days': {
+        return add(now, { days: isPast ? -numericAmount : numericAmount })
       }
-      case "week":
-      case "weeks": {
-        return add(now, { weeks: isPast ? -numericAmount : numericAmount });
+      case 'week':
+      case 'weeks': {
+        return add(now, { weeks: isPast ? -numericAmount : numericAmount })
       }
-      case "months":
-      case "month": {
-        return add(now, { months: isPast ? -numericAmount : numericAmount });
+      case 'months':
+      case 'month': {
+        return add(now, { months: isPast ? -numericAmount : numericAmount })
       }
-      case "year":
-      case "years": {
-        return add(now, { years: isPast ? -numericAmount : numericAmount });
+      case 'year':
+      case 'years': {
+        return add(now, { years: isPast ? -numericAmount : numericAmount })
       }
       default: {
-        return now;
+        return now
       }
     }
-  }, []);
+  }, [])
 
   const handleQuickFill = useCallback(
     (fillDate: Date | string) => {
-      const parsedDate = parseRelativeDate(fillDate);
-      onChange(parsedDate);
+      const parsedDate = parseRelativeDate(fillDate)
+      onChange(parsedDate)
     },
     [onChange, parseRelativeDate],
-  );
+  )
 
   return (
     <div className="w-full">
@@ -68,13 +68,13 @@ export const DatePickerInput: React.FC<DatePickerInputProps> = ({
               onClick={() => handleQuickFill(fillDate)}
               type="button"
             >
-              {typeof fillDate === "string"
+              {typeof fillDate === 'string'
                 ? fillDate
-                : format(fillDate, "MMM d, yyyy")}
+                : format(fillDate, 'MMM d, yyyy')}
             </Button>
           ))}
         </div>
       )}
     </div>
-  );
-};
+  )
+}

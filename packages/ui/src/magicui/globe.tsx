@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import type { COBEOptions } from "cobe";
-import { useCallback, useEffect, useRef } from "react";
-import createGlobe from "cobe";
-import { useTheme } from "next-themes";
-import { useSpring } from "react-spring";
+import type { COBEOptions } from 'cobe'
+import createGlobe from 'cobe'
+import { useTheme } from 'next-themes'
+import { useCallback, useEffect, useRef } from 'react'
+import { useSpring } from 'react-spring'
 
-import { cn } from "@acme/ui/lib/utils";
+import { cn } from '@acme/ui/lib/utils'
 
 const GLOBE_CONFIG: COBEOptions = {
   baseColor: [1, 1, 1],
@@ -39,21 +39,21 @@ const GLOBE_CONFIG: COBEOptions = {
   phi: 0,
   theta: 0.3,
   width: 800,
-};
+}
 
 export function Globe({
   className,
   config = GLOBE_CONFIG,
 }: {
-  className?: string;
-  config?: COBEOptions;
+  className?: string
+  config?: COBEOptions
 }) {
-  let phi = 0;
-  let width = 0;
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointerInteracting = useRef(null);
-  const pointerInteractionMovement = useRef(0);
-  const theme = useTheme();
+  let phi = 0
+  let width = 0
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const pointerInteracting = useRef<number | null>(null)
+  const pointerInteractionMovement = useRef(0)
+  const theme = useTheme()
   const [{ r }, api] = useSpring(() => ({
     config: {
       friction: 40,
@@ -62,64 +62,72 @@ export function Globe({
       tension: 280,
     },
     r: 0,
-  }));
+  }))
 
-  const updatePointerInteraction = (value: any) => {
-    pointerInteracting.current = value;
-    canvasRef.current!.style.cursor = value ? "grabbing" : "grab";
-  };
-
-  const updateMovement = (clientX: any) => {
-    if (pointerInteracting.current !== null) {
-      const delta = clientX - pointerInteracting.current;
-      pointerInteractionMovement.current = delta;
-      api.start({ r: delta / 200 });
+  const updatePointerInteraction = (value: number | null) => {
+    pointerInteracting.current = value
+    if (canvasRef.current) {
+      canvasRef.current.style.cursor = value ? 'grabbing' : 'grab'
     }
-  };
+  }
+
+  const updateMovement = (clientX: number) => {
+    if (pointerInteracting.current !== null) {
+      const delta = clientX - pointerInteracting.current
+      pointerInteractionMovement.current = delta
+      api.start({ r: delta / 200 })
+    }
+  }
 
   const onRender = useCallback(
-    (state: Record<string, any>) => {
-      if (!pointerInteracting.current) phi += 0.005;
-      state.phi = phi + r.get();
-      state.width = width * 2;
-      state.height = width * 2;
+    (state: Record<string, number>) => {
+      if (!pointerInteracting.current) phi += 0.005
+      state.phi = phi + r.get()
+      state.width = width * 2
+      state.height = width * 2
     },
-    [pointerInteracting, phi, r],
-  );
+    [phi, r, width],
+  )
 
-  const onResize = () => {
+  const onResize = useCallback(() => {
     if (canvasRef.current) {
-      width = canvasRef.current.offsetWidth;
+      width = canvasRef.current.offsetWidth
     }
-  };
+  }, [width])
 
   useEffect(() => {
-    window.addEventListener("resize", onResize);
-    onResize();
+    window.addEventListener('resize', onResize)
+    onResize()
 
-    const globe = createGlobe(canvasRef.current!, {
+    if (!canvasRef.current) return
+
+    const globe = createGlobe(canvasRef.current, {
       ...config,
-      dark: theme.theme === "dark" ? 1 : 0,
+      dark: theme.theme === 'dark' ? 1 : 0,
       height: width * 2,
       onRender,
       opacity: 0.5,
       width: width * 2,
-    });
+    })
 
-    setTimeout(() => (canvasRef.current!.style.opacity = "1"));
-    return () => globe.destroy();
-  }, [theme.theme]);
+    setTimeout(() => {
+      if (canvasRef.current) {
+        canvasRef.current.style.opacity = '1'
+      }
+    })
+    return () => globe.destroy()
+  }, [theme.theme, width, config, onRender, onResize])
 
   return (
     <div
       className={cn(
-        "inset-0 mx-auto aspect-1/1 w-full max-w-[600px]",
+        'inset-0 mx-auto aspect-1/1 w-full max-w-[600px]',
         className,
       )}
     >
       <canvas
         className={cn(
-          "h-full w-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]",
+          'h-full w-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]',
         )}
         ref={canvasRef}
         onPointerDown={(e) =>
@@ -135,5 +143,5 @@ export function Globe({
         }
       />
     </div>
-  );
+  )
 }

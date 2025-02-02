@@ -1,61 +1,61 @@
-import type { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { GeistMono } from 'geist/font/mono'
+import { GeistSans } from 'geist/font/sans'
+import type { Metadata, Viewport } from 'next'
+import { cookies } from 'next/headers'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
-import { AnalyticsProviders } from "@acme/analytics/providers";
-import { cn } from "@acme/ui/lib/utils";
-import { SidebarProvider } from "@acme/ui/sidebar";
-import { ThemeProvider } from "@acme/ui/theme";
-import { Toaster } from "@acme/ui/toast";
+import { AnalyticsProviders } from '@acme/analytics/providers'
+import { cn } from '@acme/ui/lib/utils'
+import { SidebarProvider } from '@acme/ui/sidebar'
+import { ThemeProvider } from '@acme/ui/theme'
+import { Toaster } from '@acme/ui/toast'
 
-import "@acme/ui/globals.css";
+import '@acme/ui/globals.css'
 
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider } from '@clerk/nextjs'
 
-import { TRPCReactProvider } from "@acme/api/client";
+import { TRPCReactProvider } from '@acme/api/client'
 
-import { AppSidebar } from "~/components/app-sidebar";
-import { env } from "~/env.server";
+import { AppSidebar } from '~/components/app-sidebar'
+import { env } from '~/env.server'
 
 export const metadata: Metadata = {
-  description: "ShelterBuddy is a tool for shelters to manage their animals",
+  description: 'ShelterBuddy is a tool for shelters to manage their animals',
   metadataBase: new URL(
-    env.VERCEL_ENV === "production"
-      ? "https://shelterbuddy.vercel.app"
-      : "http://localhost:3000",
+    env.VERCEL_ENV === 'production'
+      ? 'https://shelterbuddy.vercel.app'
+      : 'http://localhost:3000',
   ),
   openGraph: {
-    description: "ShelterBuddy is a tool for shelters to manage their animals",
-    siteName: "ShelterBuddy",
-    title: "ShelterBuddy",
-    url: "https://shelterbuddy.vercel.app",
+    description: 'ShelterBuddy is a tool for shelters to manage their animals',
+    siteName: 'ShelterBuddy',
+    title: 'ShelterBuddy',
+    url: 'https://shelterbuddy.vercel.app',
   },
-  title: "ShelterBuddy",
+  title: 'ShelterBuddy',
   twitter: {
-    card: "summary_large_image",
-    creator: "@seawatts",
-    site: "@seawatts",
+    card: 'summary_large_image',
+    creator: '@seawatts',
+    site: '@seawatts',
   },
-};
+}
 
 export const viewport: Viewport = {
   themeColor: [
-    { color: "white", media: "(prefers-color-scheme: light)" },
-    { color: "black", media: "(prefers-color-scheme: dark)" },
+    { color: 'white', media: '(prefers-color-scheme: light)' },
+    { color: 'black', media: '(prefers-color-scheme: dark)' },
   ],
-};
+}
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
+  const cookieStore = await cookies()
+  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true'
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "bg-background text-foreground relative min-h-screen font-sans antialiased",
+          'bg-background text-foreground relative min-h-screen font-sans antialiased',
           GeistSans.variable,
           GeistMono.variable,
         )}
@@ -81,5 +81,5 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         </NuqsAdapter>
       </body>
     </html>
-  );
+  )
 }

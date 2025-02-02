@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import * as Clerk from "@clerk/elements/common";
-import * as SignUp from "@clerk/elements/sign-up";
-import { ClerkProvider } from "@clerk/nextjs";
+import * as Clerk from '@clerk/elements/common'
+import * as SignUp from '@clerk/elements/sign-up'
+import { ClerkProvider } from '@clerk/nextjs'
 
-import { Button } from "@acme/ui/button";
+import { Button } from '@acme/ui/button'
 import {
   Card,
   CardContent,
@@ -12,11 +12,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@acme/ui/card";
-import { Icons } from "@acme/ui/icons";
-import { Input } from "@acme/ui/input";
-import { Label } from "@acme/ui/label";
-import { cn } from "@acme/ui/lib/utils";
+} from '@acme/ui/card'
+import { Icons } from '@acme/ui/icons'
+import { Input } from '@acme/ui/input'
+import { Label } from '@acme/ui/label'
+import { cn } from '@acme/ui/lib/utils'
 
 export default function SignUpPage() {
   return (
@@ -111,8 +111,8 @@ export default function SignUpPage() {
                                   return isLoading ? (
                                     <Icons.Spinner size="sm" />
                                   ) : (
-                                    "Continue"
-                                  );
+                                    'Continue'
+                                  )
                                 }}
                               </Clerk.Loading>
                             </Button>
@@ -152,8 +152,8 @@ export default function SignUpPage() {
                                   return isLoading ? (
                                     <Icons.Spinner size="sm" />
                                   ) : (
-                                    "Continue"
-                                  );
+                                    'Continue'
+                                  )
                                 }}
                               </Clerk.Loading>
                             </Button>
@@ -188,22 +188,22 @@ export default function SignUpPage() {
                                       <div
                                         data-status={status}
                                         className={cn(
-                                          "relative flex size-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+                                          'relative flex size-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md',
                                           {
-                                            "z-10 ring-2 ring-ring ring-offset-background":
-                                              status === "cursor" ||
-                                              status === "selected",
+                                            'z-10 ring-2 ring-ring ring-offset-background':
+                                              status === 'cursor' ||
+                                              status === 'selected',
                                           },
                                         )}
                                       >
                                         {value}
-                                        {status === "cursor" && (
+                                        {status === 'cursor' && (
                                           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                                             <div className="animate-caret-blink h-4 w-px bg-foreground duration-1000" />
                                           </div>
                                         )}
                                       </div>
-                                    );
+                                    )
                                   }}
                                 />
                               </div>
@@ -238,8 +238,8 @@ export default function SignUpPage() {
                                     return isLoading ? (
                                       <Icons.Spinner size="sm" />
                                     ) : (
-                                      "Continue"
-                                    );
+                                      'Continue'
+                                    )
                                   }}
                                 </Clerk.Loading>
                               </Button>
@@ -256,5 +256,5 @@ export default function SignUpPage() {
         </div>
       </ClerkProvider>
     </div>
-  );
+  )
 }

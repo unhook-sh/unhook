@@ -1,13 +1,13 @@
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import type React from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-import type { InputProps } from "./input";
-import { Button } from "./button";
-import { Input } from "./input";
+import { Button } from './button'
+import type { InputProps } from './input'
+import { Input } from './input'
 
-interface NumberInputProps extends Omit<InputProps, "onChange"> {
-  onChange?: (value: number) => void;
-  quickFillValues?: number[];
+interface NumberInputProps extends Omit<InputProps, 'onChange'> {
+  onChange?: (value: number) => void
+  quickFillValues?: number[]
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
@@ -15,35 +15,35 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   quickFillValues,
   ...props
 }) => {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>('')
 
   const handleChange = useCallback(
     (newValue: string | number) => {
-      const rawValue = newValue.toString().replaceAll(/[^\d.]/g, "");
-      setValue(rawValue);
+      const rawValue = newValue.toString().replaceAll(/[^\d.]/g, '')
+      setValue(rawValue)
       if (onChange) {
-        onChange(Number.parseFloat(rawValue) || 0);
+        onChange(Number.parseFloat(rawValue) || 0)
       }
     },
     [onChange],
-  );
+  )
 
   useEffect(() => {
     if (props.value !== undefined) {
-      handleChange(props.value.toString());
+      handleChange(props.value.toString())
     }
-  }, [props.value, handleChange]);
+  }, [props.value, handleChange])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange(event.target.value);
-  };
+    handleChange(event.target.value)
+  }
 
   const handleQuickFill = (fillValue: number) => {
-    setValue(fillValue.toString());
+    setValue(fillValue.toString())
     if (onChange) {
-      onChange(fillValue);
+      onChange(fillValue)
     }
-  };
+  }
 
   return (
     <div className="w-full">
@@ -70,5 +70,5 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}

@@ -1,6 +1,6 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { vercel } from "@t3-oss/env-nextjs/presets-zod";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs'
+import { vercel } from '@t3-oss/env-nextjs/presets-zod'
+import { z } from 'zod'
 
 export const env = createEnv({
   /**
@@ -18,13 +18,13 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string(),
     CLERK_WEBHOOK_SECRET: z.string(),
     NODE_ENV: z
-      .enum(["development", "production", "test"])
-      .default("development"),
+      .enum(['development', 'production', 'test'])
+      .default('development'),
     OPENAI_API_KEY: z.string(),
     POSTGRES_URL: z.string().url(),
     POSTHOG_KEY: z.string(),
   },
 
   skipValidation:
-    !!process.env.CI || process.env.npm_lifecycle_event === "lint",
-});
+    !!process.env.CI || process.env.npm_lifecycle_event === 'lint',
+})

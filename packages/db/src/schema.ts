@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations } from 'drizzle-orm'
 import {
   boolean,
   pgEnum,
@@ -7,42 +7,42 @@ import {
   timestamp,
   unique,
   varchar,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
+} from 'drizzle-orm/pg-core'
+import { createInsertSchema } from 'drizzle-zod'
+import { z } from 'zod'
 
-import { createId } from "@acme/id";
+import { createId } from '@acme/id'
 
-export const userRoleEnum = pgEnum("userRole", ["admin", "superAdmin", "user"]);
+export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user'])
 
-export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
+export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum
 
-export const Users = pgTable("user", {
-  avatarUrl: text("avatarUrl"),
-  clerkId: text("clerkId").unique(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  email: text("email").notNull().unique(),
-  firstName: text("firstName"),
-  id: varchar("id", { length: 128 }).notNull().primaryKey(),
-  lastLoggedInAt: timestamp("lastLoggedInAt", {
-    mode: "date",
+export const Users = pgTable('user', {
+  avatarUrl: text('avatarUrl'),
+  clerkId: text('clerkId').unique(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  email: text('email').notNull().unique(),
+  firstName: text('firstName'),
+  id: varchar('id', { length: 128 }).notNull().primaryKey(),
+  lastLoggedInAt: timestamp('lastLoggedInAt', {
+    mode: 'date',
     withTimezone: true,
   }),
-  lastName: text("lastName"),
-  online: boolean("online").default(false).notNull(),
-  updatedAt: timestamp("updatedAt", {
-    mode: "date",
+  lastName: text('lastName'),
+  online: boolean('online').default(false).notNull(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
-});
+})
 
 export const UsersRelations = relations(Users, ({ many }) => ({
   orgMembers: many(OrgMembers, {
-    relationName: "user",
+    relationName: 'user',
   }),
-}));
+}))
 
-export type UserType = typeof Users.$inferSelect;
+export type UserType = typeof Users.$inferSelect
 
 export const CreateUserSchema = createInsertSchema(Users, {
   email: z.string(),
@@ -53,38 +53,38 @@ export const CreateUserSchema = createInsertSchema(Users, {
   createdAt: true,
   id: true,
   updatedAt: true,
-});
+})
 
-export const Orgs = pgTable("orgs", {
+export const Orgs = pgTable('orgs', {
   // batch: varchar("batch", { length: 50 }),
-  clerkOrgId: text("clerkOrgId"),
-  createdAt: timestamp("createdAt", {
-    mode: "date",
+  clerkOrgId: text('clerkOrgId'),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
     withTimezone: true,
   }).defaultNow(),
-  createdByUserId: varchar("createdByUserId")
+  createdByUserId: varchar('createdByUserId')
     .references(() => Users.id, {
-      onDelete: "cascade",
+      onDelete: 'cascade',
     })
     .notNull(),
-  id: varchar("id", { length: 128 })
-    .$defaultFn(() => createId({ prefix: "org" }))
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'org' }))
     .notNull()
     .primaryKey(),
-  updatedAt: timestamp("updatedAt", {
-    mode: "date",
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
-});
+})
 
-export type OrgType = typeof Orgs.$inferSelect;
+export type OrgType = typeof Orgs.$inferSelect
 
 export const updateOrgSchema = createInsertSchema(Orgs, {}).omit({
   createdAt: true,
   createdByUserId: true,
   id: true,
   updatedAt: true,
-});
+})
 
 export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
   createdByUser: one(Users, {
@@ -92,56 +92,56 @@ export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
     references: [Users.id],
   }),
   orgMembers: many(OrgMembers),
-}));
+}))
 
 // Company Members Table
 export const OrgMembers = pgTable(
-  "orgMembers",
+  'orgMembers',
   {
-    createdAt: timestamp("createdAt", {
-      mode: "date",
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
       withTimezone: true,
     }).defaultNow(),
-    createdByUserId: varchar("createdByUserId")
+    createdByUserId: varchar('createdByUserId')
       .references(() => Users.id, {
-        onDelete: "cascade",
+        onDelete: 'cascade',
       })
       .notNull(),
-    id: varchar("id", { length: 128 })
-      .$defaultFn(() => createId({ prefix: "member" }))
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'member' }))
       .notNull()
       .primaryKey(),
-    orgId: varchar("orgId")
+    orgId: varchar('orgId')
       .references(() => Orgs.id, {
-        onDelete: "cascade",
+        onDelete: 'cascade',
       })
       .notNull(),
-    role: userRoleEnum("role").default("user").notNull(),
-    updatedAt: timestamp("updatedAt", {
-      mode: "date",
+    role: userRoleEnum('role').default('user').notNull(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
       withTimezone: true,
     }).$onUpdateFn(() => new Date()),
-    userId: varchar("userId")
+    userId: varchar('userId')
       .references(() => Users.id, {
-        onDelete: "cascade",
+        onDelete: 'cascade',
       })
       .notNull(),
   },
   (table) => ({
     orgUserUnique: unique().on(table.orgId, table.userId),
   }),
-);
+)
 
 export type OrgMembersType = typeof OrgMembers.$inferSelect & {
-  user?: UserType;
-  org?: OrgType;
-};
+  user?: UserType
+  org?: OrgType
+}
 
 export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
   createdByUser: one(Users, {
     fields: [OrgMembers.createdByUserId],
     references: [Users.id],
-    relationName: "createdByUser",
+    relationName: 'createdByUser',
   }),
   org: one(Orgs, {
     fields: [OrgMembers.orgId],
@@ -150,20 +150,20 @@ export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
   user: one(Users, {
     fields: [OrgMembers.userId],
     references: [Users.id],
-    relationName: "user",
+    relationName: 'user',
   }),
-}));
+}))
 
-export const ShortUrl = pgTable("short_url", {
-  code: text("code").notNull().unique(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  id: varchar("id", { length: 128 })
-    .$defaultFn(() => createId({ prefix: "url" }))
+export const ShortUrl = pgTable('short_url', {
+  code: text('code').notNull().unique(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'url' }))
     .notNull()
     .primaryKey(),
-  redirectUrl: text("redirectUrl").notNull(),
-  updatedAt: timestamp("updatedAt", {
-    mode: "date",
+  redirectUrl: text('redirectUrl').notNull(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
-});
+})

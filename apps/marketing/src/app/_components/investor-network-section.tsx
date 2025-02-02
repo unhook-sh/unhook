@@ -1,20 +1,18 @@
-"use client";
+'use client'
+import Image from 'next/image'
 
-import React from "react";
-import Image from "next/image";
-
-import { Globe } from "@acme/ui/magicui/globe";
+import { Globe } from '@acme/ui/magicui/globe'
 
 const investors = [
-  "first-round",
-  "andreessen-horowitz",
-  "sequoia-capital",
-  "benchmark",
-  "bessemer",
-  "y-combinator",
-  "greylock-partners",
-  "accel",
-];
+  'first-round',
+  'andreessen-horowitz',
+  'sequoia-capital',
+  'benchmark',
+  'bessemer',
+  'y-combinator',
+  'greylock-partners',
+  'accel',
+]
 
 export function InvestorNetworkSection() {
   return (
@@ -34,9 +32,9 @@ export function InvestorNetworkSection() {
           </h3>
           <div className="relative mt-6">
             <div className="grid grid-cols-2 place-items-center gap-2 md:gap-4 lg:grid-cols-4 xl:gap-x-6 2xl:grid-cols-8">
-              {investors.map((investor, index) => (
+              {investors.map((investor) => (
                 <Image
-                  key={index}
+                  key={`${investor}`}
                   src={`/investor-logos/${investor}.svg`}
                   alt={investor}
                   width={160}
@@ -45,12 +43,12 @@ export function InvestorNetworkSection() {
                 />
               ))}
             </div>
-            <div className="pointer-events-none absolute inset-y-0 left-0 h-full w-1/3 bg-linear-to-r from-white dark:from-black"></div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 h-full w-1/3 bg-linear-to-l from-white dark:from-black"></div>
+            <div className="pointer-events-none absolute inset-y-0 left-0 h-full w-1/3 bg-linear-to-r from-white dark:from-black" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 h-full w-1/3 bg-linear-to-l from-white dark:from-black" />
           </div>
         </div>
       </div>
       <Globe />
     </section>
-  );
+  )
 }

@@ -8,11 +8,11 @@ module.exports = {
     transformRobotsTxt: async (_, robotsTxt) => {
       const withoutHost = robotsTxt.replace(
         `# Host\nHost: ${process.env.VERCEL_URL}\n\n`,
-        "",
-      );
+        '',
+      )
 
-      return withoutHost;
+      return withoutHost
     },
   },
-  siteUrl: process.env.VERCEL_URL ?? "https://acme.com",
-};
+  siteUrl: process.env.VERCEL_URL ?? 'https://acme.com',
+}

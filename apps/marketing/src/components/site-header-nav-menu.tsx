@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image'
+import Link from 'next/link'
+import * as React from 'react'
 
-import { cn } from "@acme/ui/lib/utils";
+import { cn } from '@acme/ui/lib/utils'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,33 +13,33 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@acme/ui/navigation-menu";
+} from '@acme/ui/navigation-menu'
 
 const components: { title: string; href: string; description: string }[] = [
   {
     description:
-      "Instantly access thousands of active investors seeking new opportunities.",
-    href: "/docs/features/access-to-active-investors",
-    title: "Access to Active Investors",
+      'Instantly access thousands of active investors seeking new opportunities.',
+    href: '/docs/features/access-to-active-investors',
+    title: 'Access to Active Investors',
   },
   {
     description:
-      "Automate your investor engagement with our intelligent tools.",
-    href: "/docs/features/automated-investor-engagement",
-    title: "Automated Investor Engagement",
+      'Automate your investor engagement with our intelligent tools.',
+    href: '/docs/features/automated-investor-engagement',
+    title: 'Automated Investor Engagement',
   },
   {
     description:
-      "Gain deep market insights powered by AI to make informed decisions.",
-    href: "/docs/features/ai-driven-market-insights",
-    title: "AI-Driven Market Insights",
+      'Gain deep market insights powered by AI to make informed decisions.',
+    href: '/docs/features/ai-driven-market-insights',
+    title: 'AI-Driven Market Insights',
   },
   {
-    description: "Analyze your competitors with advanced AI-powered tools.",
-    href: "/docs/features/ai-powered-competitor-analysis",
-    title: "AI-Powered Competitor Analysis",
+    description: 'Analyze your competitors with advanced AI-powered tools.',
+    href: '/docs/features/ai-powered-competitor-analysis',
+    title: 'AI-Powered Competitor Analysis',
   },
-];
+]
 
 export function SiteHeaderNavigationMenu() {
   return (
@@ -110,12 +110,12 @@ export function SiteHeaderNavigationMenu() {
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
-  );
+  )
 }
 
 const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
+  React.ElementRef<'a'>,
+  React.ComponentPropsWithoutRef<'a'>
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>
@@ -123,7 +123,7 @@ const ListItem = React.forwardRef<
         <a
           ref={ref}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
             className,
           )}
           {...props}
@@ -135,6 +135,6 @@ const ListItem = React.forwardRef<
         </a>
       </NavigationMenuLink>
     </li>
-  );
-});
-ListItem.displayName = "ListItem";
+  )
+})
+ListItem.displayName = 'ListItem'

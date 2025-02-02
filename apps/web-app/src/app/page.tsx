@@ -1,4 +1,4 @@
-import { H1 } from "@acme/ui/typography";
+import { H1 } from '@acme/ui/typography'
 
 export default function Page() {
   return (
@@ -12,5 +12,5 @@ export default function Page() {
         </div>
       </div>
     </main>
-  );
+  )
 }

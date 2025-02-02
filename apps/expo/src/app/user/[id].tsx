@@ -1,14 +1,14 @@
-import { SafeAreaView, Text, View } from "react-native";
-import { Stack, useGlobalSearchParams } from "expo-router";
+import { Stack, useGlobalSearchParams } from 'expo-router'
+import { SafeAreaView, Text, View } from 'react-native'
 
-import { api } from "~/utils/api";
+import { api } from '~/utils/api'
 
 export default function User() {
-  const { id } = useGlobalSearchParams();
-  if (!id || typeof id !== "string") throw new Error("unreachable");
-  const { data } = api.user.byId.useQuery({ id });
+  const { id } = useGlobalSearchParams()
+  if (!id || typeof id !== 'string') throw new Error('unreachable')
+  const { data } = api.user.byId.useQuery({ id })
 
-  if (!data) return null;
+  if (!data) return null
 
   return (
     <SafeAreaView className="bg-background">
@@ -17,5 +17,5 @@ export default function User() {
         <Text className="py-2 text-3xl font-bold text-primary">{data.id}</Text>
       </View>
     </SafeAreaView>
-  );
+  )
 }

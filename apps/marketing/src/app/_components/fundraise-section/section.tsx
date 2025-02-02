@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useRef } from "react";
-import { useInView } from "framer-motion";
-import { TrendingUp } from "lucide-react";
+import { useInView } from 'framer-motion'
+import { TrendingUp } from 'lucide-react'
+import { useRef } from 'react'
 import {
   Area,
   AreaChart,
@@ -13,9 +13,8 @@ import {
   RadialBar,
   RadialBarChart,
   XAxis,
-} from "recharts";
+} from 'recharts'
 
-import type { ChartConfig } from "@acme/ui/chart";
 import {
   Card,
   CardContent,
@@ -23,62 +22,63 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@acme/ui/card";
+} from '@acme/ui/card'
+import type { ChartConfig } from '@acme/ui/chart'
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@acme/ui/chart";
-import { Icons } from "@acme/ui/icons";
-import { cn } from "@acme/ui/lib/utils";
-import { ShinyButton } from "@acme/ui/magicui/shiny-button";
-import { Text } from "@acme/ui/typography";
+} from '@acme/ui/chart'
+import { Icons } from '@acme/ui/icons'
+import { cn } from '@acme/ui/lib/utils'
+import { ShinyButton } from '@acme/ui/magicui/shiny-button'
+import { Text } from '@acme/ui/typography'
 
 const chartData = [
-  { month: "January", raised: 80, target: 186 },
-  { month: "February", raised: 200, target: 305 },
-  { month: "March", raised: 120, target: 237 },
-  { month: "April", raised: 190, target: 73 },
-  { month: "May", raised: 130, target: 209 },
-  { month: "June", raised: 140, target: 214 },
-];
+  { month: 'January', raised: 80, target: 186 },
+  { month: 'February', raised: 200, target: 305 },
+  { month: 'March', raised: 120, target: 237 },
+  { month: 'April', raised: 190, target: 73 },
+  { month: 'May', raised: 130, target: 209 },
+  { month: 'June', raised: 140, target: 214 },
+]
 
 const chartConfig = {
   raised: {
-    color: "hsl(var(--chart-2))",
-    label: "Raised",
+    color: 'hsl(var(--chart-2))',
+    label: 'Raised',
   },
   target: {
-    color: "hsl(var(--chart-1))",
-    label: "Target",
+    color: 'hsl(var(--chart-1))',
+    label: 'Target',
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 const chartData2 = [
-  { browser: "safari", fill: "var(--color-safari)", visitors: 1_500_000 },
-];
+  { browser: 'safari', fill: 'var(--color-safari)', visitors: 1_500_000 },
+]
 
 const chartConfig2 = {
   safari: {
-    color: "hsl(var(--chart-2))",
-    label: "Safari",
+    color: 'hsl(var(--chart-2))',
+    label: 'Safari',
   },
   visitors: {
-    label: "Visitors",
+    label: 'Visitors',
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 export function FundraiseSection() {
-  const financialNumberFormatter = new Intl.NumberFormat("en-US", {
-    compactDisplay: "short",
-    currency: "USD",
+  const financialNumberFormatter = new Intl.NumberFormat('en-US', {
+    compactDisplay: 'short',
+    currency: 'USD',
     maximumFractionDigits: 0,
-    notation: "compact",
-    style: "currency",
-  });
+    notation: 'compact',
+    style: 'currency',
+  })
 
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true })
 
   // useEffect(() => {
   //   if (inView) {
@@ -171,7 +171,7 @@ export function FundraiseSection() {
             <div className="flex w-full items-start gap-2 text-sm">
               <div className="grid gap-2">
                 <div className="flex items-center gap-2 font-medium leading-none">
-                  Trending up by 5.2% this month{" "}
+                  Trending up by 5.2% this month{' '}
                   <TrendingUp className="h-4 w-4" />
                 </div>
                 <div className="flex items-center gap-2 leading-none text-muted-foreground">
@@ -215,7 +215,7 @@ export function FundraiseSection() {
                   >
                     <Label
                       content={({ viewBox }) => {
-                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                           return (
                             <text
                               x={viewBox.cx}
@@ -240,7 +240,7 @@ export function FundraiseSection() {
                                 Raised
                               </tspan>
                             </text>
-                          );
+                          )
                         }
                       }}
                     />
@@ -268,30 +268,30 @@ export function FundraiseSection() {
           <CardContent className="mt-4 flex-1">
             <ul className="flex flex-col gap-4">
               <li
-                className={cn("flex gap-2 border p-4 opacity-0", {
-                  "animate-fade-in transition-all [--animation-delay:100ms] [--duration:2s]":
+                className={cn('flex gap-2 border p-4 opacity-0', {
+                  'animate-fade-in transition-all [--animation-delay:100ms] [--duration:2s]':
                     inView,
                 })}
               >
-                <Icons.AlertTriangle variant={"destructive"} />
+                <Icons.AlertTriangle variant={'destructive'} />
                 <Text>Waiting for funds from 2 investors.</Text>
               </li>
               <li
-                className={cn("flex gap-2 border p-4 opacity-0", {
-                  "animate-fade-in transition-all [--animation-delay:300ms] [--duration:2s]":
+                className={cn('flex gap-2 border p-4 opacity-0', {
+                  'animate-fade-in transition-all [--animation-delay:300ms] [--duration:2s]':
                     inView,
                 })}
               >
-                <Icons.AlertTriangle variant={"destructive"} />
+                <Icons.AlertTriangle variant={'destructive'} />
                 <Text>1 required signature.</Text>
               </li>
               <li
-                className={cn("flex gap-2 border p-4 opacity-0", {
-                  "animate-fade-in transition-all [--animation-delay:600ms] [--duration:2s]":
+                className={cn('flex gap-2 border p-4 opacity-0', {
+                  'animate-fade-in transition-all [--animation-delay:600ms] [--duration:2s]':
                     inView,
                 })}
               >
-                <Icons.AlertTriangle variant={"destructive"} />
+                <Icons.AlertTriangle variant={'destructive'} />
                 <Text>SAFE Document out of date.</Text>
               </li>
             </ul>
@@ -302,5 +302,5 @@ export function FundraiseSection() {
         </Card>
       </div>
     </section>
-  );
+  )
 }

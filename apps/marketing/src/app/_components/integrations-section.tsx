@@ -1,25 +1,25 @@
-"use client";
+'use client'
 
-import React, { useRef } from "react";
-import Image from "next/image";
+import Image from 'next/image'
+import { useRef } from 'react'
 
-import { Icons } from "@acme/ui/icons";
-import { cn, twx } from "@acme/ui/lib/utils";
-import { AnimatedBeam } from "@acme/ui/magicui/animated-beam";
-import { DotPattern } from "@acme/ui/magicui/dot-pattern";
-import { ShineBorder } from "@acme/ui/magicui/shine-border";
+import { Icons } from '@acme/ui/icons'
+import { cn, twx } from '@acme/ui/lib/utils'
+import { AnimatedBeam } from '@acme/ui/magicui/animated-beam'
+import { DotPattern } from '@acme/ui/magicui/dot-pattern'
+import { ShineBorder } from '@acme/ui/magicui/shine-border'
 
-const Circle = twx.div`z-10 flex size-12 items-center justify-center rounded-full border-2 bg-secondary p-3 shadow-md`;
+const Circle = twx.div`z-10 flex size-12 items-center justify-center rounded-full border-2 bg-secondary p-3 shadow-md`
 
 export function IntegrationsSection({ className }: { className?: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const div1Ref = useRef<HTMLDivElement>(null);
-  const div2Ref = useRef<HTMLDivElement>(null);
-  const div3Ref = useRef<HTMLDivElement>(null);
-  const div4Ref = useRef<HTMLDivElement>(null);
-  const div5Ref = useRef<HTMLDivElement>(null);
-  const div6Ref = useRef<HTMLDivElement>(null);
-  const div7Ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const div1Ref = useRef<HTMLDivElement>(null)
+  const div2Ref = useRef<HTMLDivElement>(null)
+  const div3Ref = useRef<HTMLDivElement>(null)
+  const div4Ref = useRef<HTMLDivElement>(null)
+  const div5Ref = useRef<HTMLDivElement>(null)
+  const div6Ref = useRef<HTMLDivElement>(null)
+  const div7Ref = useRef<HTMLDivElement>(null)
 
   return (
     <section
@@ -37,10 +37,10 @@ export function IntegrationsSection({ className }: { className?: string }) {
       </div>
       <ShineBorder
         className={cn(
-          "relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background p-1 md:p-10 md:shadow-xl",
+          'relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background p-1 md:p-10 md:shadow-xl',
           className,
         )}
-        color={["#75a99c", "#84a6d3", "#9e7aff"]}
+        color={['#75a99c', '#84a6d3', '#9e7aff']}
         ref={containerRef}
       >
         <DotPattern
@@ -50,7 +50,7 @@ export function IntegrationsSection({ className }: { className?: string }) {
           cy={1}
           cr={1}
           className={cn(
-            "[mask-image:radial-gradient(400px_circle_at_center,white,transparent)]",
+            '[mask-image:radial-gradient(400px_circle_at_center,white,transparent)]',
           )}
         />
         <div className="flex size-full max-w-lg flex-row items-stretch justify-between gap-10">
@@ -104,8 +104,8 @@ export function IntegrationsSection({ className }: { className?: string }) {
             >
               <div className="p-1">
                 <Icons.AlertTriangle
-                  variant={"primary"}
-                  className={"stroke-white"}
+                  variant={'primary'}
+                  className={'stroke-white'}
                 />
               </div>
               2 Missing Slides
@@ -115,7 +115,7 @@ export function IntegrationsSection({ className }: { className?: string }) {
               className="flex w-48 justify-start gap-2 border-blue-400 bg-blue-900/90 text-white dark:brightness-75"
             >
               <div className="p-2">
-                <Icons.Eye variant={"primary"} className={"stroke-white"} />
+                <Icons.Eye variant={'primary'} className={'stroke-white'} />
               </div>
               5 Competitors
             </Circle>
@@ -161,5 +161,5 @@ export function IntegrationsSection({ className }: { className?: string }) {
         />
       </ShineBorder>
     </section>
-  );
+  )
 }

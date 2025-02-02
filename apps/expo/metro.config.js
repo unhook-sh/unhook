@@ -1,18 +1,17 @@
+import path from 'node:path'
 // Learn more: https://docs.expo.dev/guides/monorepos/
-const { getDefaultConfig } = require("expo/metro-config");
-const { FileStore } = require("metro-cache");
-const { withNativeWind } = require("nativewind/metro");
+import { getDefaultConfig } from 'expo/metro-config'
+import { FileStore } from 'metro-cache'
+import { withNativeWind } from 'nativewind/metro'
 
-const path = require("path");
-
-module.exports = withTurborepoManagedCache(
+export default withTurborepoManagedCache(
   withMonorepoPaths(
     withNativeWind(getDefaultConfig(__dirname), {
-      input: "./src/styles.css",
-      configPath: "./tailwind.config.ts",
+      input: './src/styles.css',
+      configPath: './tailwind.config.ts',
     }),
   ),
-);
+)
 
 /**
  * Add the monorepo paths to the Metro config.
@@ -23,19 +22,19 @@ module.exports = withTurborepoManagedCache(
  * @returns {import('expo/metro-config').MetroConfig}
  */
 function withMonorepoPaths(config) {
-  const projectRoot = __dirname;
-  const workspaceRoot = path.resolve(projectRoot, "../..");
+  const projectRoot = __dirname
+  const workspaceRoot = path.resolve(projectRoot, '../..')
 
   // #1 - Watch all files in the monorepo
-  config.watchFolders = [workspaceRoot];
+  config.watchFolders = [workspaceRoot]
 
   // #2 - Resolve modules within the project's `node_modules` first, then all monorepo modules
   config.resolver.nodeModulesPaths = [
-    path.resolve(projectRoot, "node_modules"),
-    path.resolve(workspaceRoot, "node_modules"),
-  ];
+    path.resolve(projectRoot, 'node_modules'),
+    path.resolve(workspaceRoot, 'node_modules'),
+  ]
 
-  return config;
+  return config
 }
 
 /**
@@ -49,7 +48,7 @@ function withMonorepoPaths(config) {
  */
 function withTurborepoManagedCache(config) {
   config.cacheStores = [
-    new FileStore({ root: path.join(__dirname, "node_modules/.cache/metro") }),
-  ];
-  return config;
+    new FileStore({ root: path.join(__dirname, 'node_modules/.cache/metro') }),
+  ]
+  return config
 }

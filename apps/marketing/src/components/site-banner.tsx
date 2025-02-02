@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export function SiteBanner() {
   return (
@@ -18,5 +18,5 @@ export function SiteBanner() {
       </div>
       <hr className="absolute bottom-0 m-0 h-px w-full bg-neutral-200/30" />
     </div>
-  );
+  )
 }

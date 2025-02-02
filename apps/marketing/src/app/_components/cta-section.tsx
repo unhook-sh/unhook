@@ -1,8 +1,6 @@
-"use client";
+'use client'
 
-import { useEffect, useId, useRef, useState } from "react";
-import Link from "next/link";
-import { motion, useAnimation, useInView } from "framer-motion";
+import { motion, useAnimation, useInView } from 'framer-motion'
 import {
   BarChart,
   ChevronRight,
@@ -11,82 +9,84 @@ import {
   HeartHandshake,
   Rss,
   Shield,
-} from "lucide-react";
+} from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useId, useRef, useState } from 'react'
+import type { ReactElement } from 'react'
 
-import { buttonVariants } from "@acme/ui/button";
-import { cn } from "@acme/ui/lib/utils";
-import { Marquee } from "@acme/ui/magicui/marquee";
+import { buttonVariants } from '@acme/ui/button'
+import { cn } from '@acme/ui/lib/utils'
+import { Marquee } from '@acme/ui/magicui/marquee'
 
-const tiles = [
+interface Tile {
+  id: string
+  bg: ReactElement
+  icon: ReactElement
+}
+
+const tiles: Tile[] = [
   {
+    id: 'hearthandshake',
     bg: (
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-orange-600 via-rose-600 to-violet-600 opacity-70 blur-[20px] filter"></div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-orange-600 via-rose-600 to-violet-600 opacity-70 blur-[20px] filter" />
     ),
     icon: <HeartHandshake className="size-full" />,
   },
   {
+    id: 'globe',
     bg: (
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500 opacity-70 blur-[20px] filter"></div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500 opacity-70 blur-[20px] filter" />
     ),
     icon: <Globe className="size-full" />,
   },
   {
+    id: 'file',
     bg: (
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-green-500 via-teal-500 to-emerald-600 opacity-70 blur-[20px] filter"></div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-green-500 via-teal-500 to-emerald-600 opacity-70 blur-[20px] filter" />
     ),
     icon: <File className="size-full" />,
   },
   {
+    id: 'shield',
     bg: (
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-yellow-400 via-orange-500 to-yellow-600 opacity-70 blur-[20px] filter"></div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-yellow-400 via-orange-500 to-yellow-600 opacity-70 blur-[20px] filter" />
     ),
     icon: <Shield className="size-full" />,
   },
   {
+    id: 'rss',
     bg: (
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-orange-600 via-rose-600 to-violet-600 opacity-70 blur-[20px] filter"></div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-orange-600 via-rose-600 to-violet-600 opacity-70 blur-[20px] filter" />
     ),
     icon: <Rss className="size-full" />,
   },
   {
+    id: 'barchart',
     bg: (
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-gray-600 via-gray-500 to-gray-400 opacity-70 blur-[20px] filter"></div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-linear-to-r from-gray-600 via-gray-500 to-gray-400 opacity-70 blur-[20px] filter" />
     ),
     icon: <BarChart className="size-full" />,
   },
-];
+]
 
-const shuffleArray = (array: any[]) => {
-  let currentIndex = array.length,
-    randomIndex;
-  // While there remain elements to shuffle.
-  while (currentIndex !== 0) {
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
-  }
-  return array;
-};
+const shuffleArray = (array: Tile[]): Tile[] => {
+  return [...array].sort(() => Math.random() - 0.5)
+}
 
 const Card = (card: { icon: React.ReactNode; bg: React.ReactNode }) => {
-  const id = useId();
-  const controls = useAnimation();
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
+  const id = useId()
+  const controls = useAnimation()
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true })
 
   useEffect(() => {
     if (inView) {
       controls.start({
         opacity: 1,
-        transition: { delay: Math.random() * 2, duration: 1, ease: "easeOut" },
-      });
+        transition: { delay: Math.random() * 2, duration: 1, ease: 'easeOut' },
+      })
     }
-  }, [controls, inView]);
+  }, [controls, inView])
 
   return (
     <motion.div
@@ -95,34 +95,34 @@ const Card = (card: { icon: React.ReactNode; bg: React.ReactNode }) => {
       initial={{ opacity: 0 }}
       animate={controls}
       className={cn(
-        "relative size-20 cursor-pointer overflow-hidden rounded-2xl border p-4",
+        'relative size-20 cursor-pointer overflow-hidden rounded-2xl border p-4',
         // light styles
-        "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
+        'bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]',
         // dark styles
-        "transform-gpu dark:bg-transparent dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
+        'transform-gpu dark:bg-transparent dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]',
       )}
     >
       {card.icon}
       {card.bg}
     </motion.div>
-  );
-};
+  )
+}
 
 export function CallToActionSection() {
-  const [randomTiles1, setRandomTiles1] = useState<typeof tiles>([]);
-  const [randomTiles2, setRandomTiles2] = useState<typeof tiles>([]);
-  const [randomTiles3, setRandomTiles3] = useState<typeof tiles>([]);
-  const [randomTiles4, setRandomTiles4] = useState<typeof tiles>([]);
+  const [randomTiles1, setRandomTiles1] = useState<Tile[]>([])
+  const [randomTiles2, setRandomTiles2] = useState<Tile[]>([])
+  const [randomTiles3, setRandomTiles3] = useState<Tile[]>([])
+  const [randomTiles4, setRandomTiles4] = useState<Tile[]>([])
 
   useEffect(() => {
-    if (typeof globalThis !== "undefined") {
+    if (typeof globalThis !== 'undefined') {
       // Ensures this runs client-side
-      setRandomTiles1(shuffleArray([...tiles]));
-      setRandomTiles2(shuffleArray([...tiles]));
-      setRandomTiles3(shuffleArray([...tiles]));
-      setRandomTiles4(shuffleArray([...tiles]));
+      setRandomTiles1(shuffleArray([...tiles]))
+      setRandomTiles2(shuffleArray([...tiles]))
+      setRandomTiles3(shuffleArray([...tiles]))
+      setRandomTiles4(shuffleArray([...tiles]))
     }
-  }, []);
+  }, [])
 
   return (
     <section
@@ -131,33 +131,33 @@ export function CallToActionSection() {
     >
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
         <Marquee reverse className="-delay-[200ms] [--duration:10s]" repeat={5}>
-          {randomTiles1.map((review, index) => (
-            <Card key={index} {...review} />
+          {randomTiles1.map((tile) => (
+            <Card key={`${tile.id}-1`} {...tile} />
           ))}
         </Marquee>
         <Marquee reverse className="[--duration:25s]" repeat={5}>
-          {randomTiles2.map((review, index) => (
-            <Card key={index} {...review} />
+          {randomTiles2.map((tile) => (
+            <Card key={`${tile.id}-2`} {...tile} />
           ))}
         </Marquee>
         <Marquee reverse className="-delay-[200ms] [--duration:20s]" repeat={5}>
-          {randomTiles1.map((review, index) => (
-            <Card key={index} {...review} />
+          {randomTiles1.map((tile) => (
+            <Card key={`${tile.id}-3`} {...tile} />
           ))}
         </Marquee>
         <Marquee reverse className="[--duration:30s]" repeat={5}>
-          {randomTiles2.map((review, index) => (
-            <Card key={index} {...review} />
+          {randomTiles2.map((tile) => (
+            <Card key={`${tile.id}-4`} {...tile} />
           ))}
         </Marquee>
         <Marquee reverse className="-delay-[200ms] [--duration:20s]" repeat={5}>
-          {randomTiles3.map((review, index) => (
-            <Card key={index} {...review} />
+          {randomTiles3.map((tile) => (
+            <Card key={`${tile.id}-5`} {...tile} />
           ))}
         </Marquee>
         <Marquee reverse className="[--duration:30s]" repeat={5}>
-          {randomTiles4.map((review, index) => (
-            <Card key={index} {...review} />
+          {randomTiles4.map((tile) => (
+            <Card key={`${tile.id}-6`} {...tile} />
           ))}
         </Marquee>
         <div className="absolute z-10">
@@ -175,10 +175,10 @@ export function CallToActionSection() {
               href="#"
               className={cn(
                 buttonVariants({
-                  size: "lg",
-                  variant: "default",
+                  size: 'lg',
+                  variant: 'default',
                 }),
-                "group mt-4 rounded-[2rem] px-6",
+                'group mt-4 rounded-[2rem] px-6',
               )}
             >
               Finish Your Raise Now
@@ -190,5 +190,5 @@ export function CallToActionSection() {
         <div className="absolute inset-x-0 bottom-0 h-full bg-linear-to-b from-transparent to-background to-70% dark:to-background" />
       </div>
     </section>
-  );
+  )
 }

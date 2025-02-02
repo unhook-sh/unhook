@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Activity, Calendar, Mail } from "lucide-react";
+import { Activity, Calendar, Mail } from 'lucide-react'
 
 import {
   Card,
@@ -9,30 +9,30 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@acme/ui/card";
+} from '@acme/ui/card'
 
 const engagementData = [
   {
-    activity: "Email Sent",
+    activity: 'Email Sent',
     count: 120,
     icon: <Mail className="h-6 w-6 text-blue-500" />,
   },
   {
-    activity: "Meetings Scheduled",
+    activity: 'Meetings Scheduled',
     count: 15,
     icon: <Calendar className="h-6 w-6 text-green-500" />,
   },
   {
-    activity: "Follow-ups",
+    activity: 'Follow-ups',
     count: 30,
     icon: <Activity className="h-6 w-6 text-yellow-500" />,
   },
-];
+]
 
 const metricsData = {
-  openRate: "75%",
-  responseRate: "60%",
-};
+  openRate: '75%',
+  responseRate: '60%',
+}
 
 export function InvestorEngagement() {
   return (
@@ -45,9 +45,9 @@ export function InvestorEngagement() {
       </CardHeader>
       <CardContent className="pb-0">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {engagementData.map((item, index) => (
+          {engagementData.map((item) => (
             <div
-              key={index}
+              key={item.activity}
               className="flex items-center gap-4 rounded-lg bg-gray-800 p-4"
             >
               {item.icon}
@@ -70,5 +70,5 @@ export function InvestorEngagement() {
         </div>
       </CardFooter>
     </Card>
-  );
+  )
 }

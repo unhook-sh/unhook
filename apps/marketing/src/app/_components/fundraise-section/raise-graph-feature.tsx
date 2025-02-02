@@ -1,30 +1,30 @@
-"use client";
+'use client'
 
-import { cubicBezier, motion } from "framer-motion";
+import { cubicBezier, motion } from 'framer-motion'
 
 export function RaiseGraphFeature() {
   const variant1 = {
     initial: {
-      filter: "saturate(0.3)",
+      filter: 'saturate(0.3)',
       opacity: 0.5,
       transition: {
         delay: 0.05,
         duration: 0.3,
         ease: cubicBezier(0.22, 1, 0.36, 1),
       },
-      viewBox: "0 -950 366 1408",
+      viewBox: '0 -950 366 1408',
     },
     whileHover: {
-      filter: "saturate(1)",
+      filter: 'saturate(1)',
       opacity: 1,
       transition: {
         delay: 0.05,
         duration: 0.3,
         ease: cubicBezier(0.22, 1, 0.36, 1),
       },
-      viewBox: "0 -60 366 310",
+      viewBox: '0 -60 366 310',
     },
-  };
+  }
   const variant2 = {
     initial: {
       transition: {
@@ -42,7 +42,7 @@ export function RaiseGraphFeature() {
       },
       y: 0,
     },
-  };
+  }
 
   const containerVariants = {
     initial: {},
@@ -51,7 +51,7 @@ export function RaiseGraphFeature() {
         staggerChildren: 0.1,
       },
     },
-  };
+  }
 
   return (
     <div className="relative h-full w-full max-w-[24rem] transform-gpu rounded-lg border bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:bg-black dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] md:max-h-[500px]">
@@ -76,7 +76,12 @@ export function RaiseGraphFeature() {
               preserveAspectRatio="none"
               className="absolute inset-0 h-full w-full"
               viewBox="0 -950 366 1408"
+              aria-label="Growth chart showing 245% increase"
+              role="img"
             >
+              <title className="sr-only">
+                Growth chart showing 245% increase
+              </title>
               <path
                 fill="url(#a)"
                 d="M0 193c109.5 0 260.5-52.5 366-192.5v907H0V193Z"
@@ -105,5 +110,5 @@ export function RaiseGraphFeature() {
         </div>
       </motion.div>
     </div>
-  );
+  )
 }

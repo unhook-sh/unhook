@@ -1,6 +1,6 @@
-import { SphereMask } from "@acme/ui/magicui/sphere-mask";
+import { SphereMask } from '@acme/ui/magicui/sphere-mask'
 
-import { CallToActionSection } from "../_components/cta-section";
+import { CallToActionSection } from '../_components/cta-section'
 
 export default function Page() {
   return (
@@ -815,5 +815,5 @@ export default function Page() {
       </div>
       <CallToActionSection />
     </main>
-  );
+  )
 }

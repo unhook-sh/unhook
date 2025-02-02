@@ -9,8 +9,6 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -19,16 +17,10 @@
     "postcss": "8.5.1",
     "postcss-focus-visible": "10.0.1",
     "postcss-import": "16.1.0",
-    "tailwindcss": "4.0.0"
+    "tailwindcss": "4.0.3"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/lint-staged-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "eslint": "9.19.0",
-    "prettier": "3.4.2",
     "typescript": "5.7.3"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

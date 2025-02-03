@@ -14,7 +14,7 @@ export const PresenceStoreContext = createContext<PresenceStoreApi | undefined>(
 )
 
 export interface PresenceStoreProviderProps {
-  onlineUsers: Set<string>
+  onlineUsers?: Set<string>
 }
 
 export const PresenceStoreProvider = ({
@@ -22,7 +22,7 @@ export const PresenceStoreProvider = ({
   onlineUsers,
 }: PropsWithChildren<PresenceStoreProviderProps>) => {
   const storeRef = useMemo<PresenceStoreApi>(() => {
-    return createPresenceStore({ onlineUsers })
+    return createPresenceStore({ onlineUsers: onlineUsers ?? new Set() })
   }, [onlineUsers])
 
   useEffect(() => {

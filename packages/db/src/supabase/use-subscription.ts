@@ -1,3 +1,4 @@
+'use client'
 import type {
   REALTIME_SUBSCRIBE_STATES,
   RealtimePostgresChangesFilter,

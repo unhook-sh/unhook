@@ -3,17 +3,22 @@
   "ui": "tui",
   "tasks": {
     "topo": {
-      "dependsOn": ["^topo"]
+      "dependsOn": [
+        "^topo"
+      ]
     },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
         "next-env.d.ts",
         ".expo/**",
         ".output/**",
-        ".vercel/output/**"
+        ".vercel/output/**",
+        "dist/**"
       ]
     },
     "dev": {
@@ -21,11 +26,19 @@
       "cache": false
     },
     "format": {
-      "dependsOn": ["^topo", "^build"]
+      "dependsOn": [
+        "^topo",
+        "^build"
+      ]
     },
     "typecheck": {
-      "dependsOn": ["^topo", "^build"],
-      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+      "dependsOn": [
+        "^topo",
+        "^build"
+      ],
+      "outputs": [
+        "node_modules/.cache/tsbuildinfo.json"
+      ]
     },
     "clean": {
       "cache": false
@@ -58,7 +71,25 @@
       "interactive": true
     }
   },
-  "globalEnv": ["DATABASE_URL", "PORT"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "PORT",
+    "CLERK_SECRET_KEY",
+    "POSTGRES_URL",
+    "POSTGRES_PRISMA_URL",
+    "POSTGRES_URL_NON_POOLING",
+    "POSTGRES_USER",
+    "POSTGRES_HOST",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_DATABASE",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_JWT_SECRET",
+    "CLERK_WEBHOOK_SECRET",
+    "OPENAI_API_KEY",
+    "POSTHOG_KEY"
+  ],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",

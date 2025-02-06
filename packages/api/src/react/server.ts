@@ -1,9 +1,11 @@
-import { createServerSideHelpers } from '@trpc/react-query/server'
+import 'server-only'
+
 import { headers } from 'next/headers'
 import { NextRequest } from 'next/server'
+
+import { createServerSideHelpers } from '@trpc/react-query/server'
 import { cache } from 'react'
 import superjson from 'superjson'
-
 import { createTRPCContext } from '../context'
 import { appRouter } from '../root'
 import { createQueryClient } from './query-client'
@@ -23,9 +25,13 @@ const createContext = cache(async () => {
   return createTRPCContext(request)
 })
 
-export const api = createServerSideHelpers({
-  ctx: await createContext(),
-  queryClient: createQueryClient(),
-  router: appRouter,
-  transformer: superjson,
-})
+export const getQueryClient = cache(createQueryClient)
+
+export const getApi = cache(async () =>
+  createServerSideHelpers({
+    ctx: await createContext(),
+    queryClient: getQueryClient(),
+    router: appRouter,
+    transformer: superjson,
+  }),
+)

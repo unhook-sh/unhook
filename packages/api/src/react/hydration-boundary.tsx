@@ -1,14 +1,15 @@
-import type { QueryClient } from '@tanstack/react-query'
+import 'server-only'
+
 import {
   HydrationBoundary as ReactQueryHydrationBoundary,
   dehydrate,
 } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
+import { getApi } from './server'
 
-export function HydrationBoundary(
-  props: PropsWithChildren<{ queryClient: QueryClient }>,
-) {
-  const dehydratedState = dehydrate(props.queryClient)
+export async function HydrationBoundary(props: PropsWithChildren) {
+  const api = await getApi()
+  const dehydratedState = dehydrate(api.queryClient)
 
   return (
     <ReactQueryHydrationBoundary state={dehydratedState}>

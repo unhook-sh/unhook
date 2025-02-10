@@ -1,0 +1,188 @@
+---
+description: Apply these rules when implementing, explaining, or discussing Rust code for the home automation platform, with focus on teaching concepts and best practices while writing code.
+globs: *.rs,Cargo.toml,*.yaml,*.json
+---
+# Rust Home Automation Platform Development Rules
+
+## Development Philosophy
+- Start small, iterate with confidence
+- Let the type system guide development
+- Prioritize readability and maintainability
+- Learn from each implementation
+- Document decisions and learnings
+- Consider future maintainers
+- When updating existing code, make sure to not remove or change core logic unless asked.
+
+## Development Process
+1. Research & Design:
+   - Understand requirements and explore existing solutions
+   - Review crate documentation and Rust patterns
+   - Define types and traits first
+   - Create proof-of-concept for complex features
+   - Get feedback before major implementations
+
+2. Implementation:
+   - Start with small, working pieces
+   - Let compiler guide development
+   - Document as you go
+   - Regular code review
+
+3. Quality:
+   - Tests: unit, integration, documentation
+   - Security review
+   - Performance profiling
+   - Documentation review
+
+
+## Learning After Implementation
+After each implementation, explain:
+1. Core Concepts Used:
+   - What Rust features were used
+   - Why these features were chosen
+   - How they work together
+   - Common patterns and their purpose
+
+2. Key Learning Points:
+   - Ownership and borrowing decisions
+   - Type system usage
+   - Error handling approaches
+   - Async patterns used
+   - Memory management choices
+
+3. Code Walkthrough:
+   - Step-by-step explanation
+   - Alternative approaches considered
+   - Performance implications
+   - Safety considerations
+
+4. Real-world Context:
+   - How this relates to Rust best practices
+   - Common pitfalls to avoid
+   - Industry patterns used
+   - Further learning resources
+
+Background Context:
+- Expertise: Distinguished software engineer specializing in AI, web development, and cloud infrastructure
+- Primary Language: TypeScript
+- Front-End: React, Next.js, TailwindCSS
+- Back-End: Node.js, AWS services, Serverless architecture
+- Infrastructure: AWS CDK, SST
+- Testing: Vitest
+- Database: DynamoDB, ElectroDB
+- AI Integration: OpenAI GPT-4 API
+
+## Project Structure
+- Core functionality in `packages/backend/src`:
+  - `protocol/`: Communication protocols (WiFi, BLE)
+  - `device/`: Device management and state
+  - `discovery/`: Device discovery
+  - `config/`: Configuration
+  - `mqtt/`: MQTT implementation
+  - `error.rs`: Error types
+  - `types.rs`: Shared types
+- Config files in `packages/backend/config`
+- Each module needs README with purpose, types, examples
+
+## Core Dependencies & Patterns
+1. Runtime & Async:
+   - `tokio` 1.36.0 (full features) for async runtime
+   - `tokio-stream` for async streams
+   - Proper resource cleanup
+   - Error handling in async contexts
+
+2. Error Handling:
+   - `thiserror` + `miette` for error handling
+   - Custom error types per module
+   - Use `Result<T, E>` consistently
+   - Meaningful error messages
+
+3. Data & Configuration:
+   - `serde` 1.0.197 for serialization
+   - YAML with JSON schema validation
+   - Environment variables for secrets
+   - Hot reload support
+
+4. Protocols & Communication:
+   - MQTT: `rumqttc` for IoT messaging
+   - HTTP: `reqwest` for web APIs
+   - Bluetooth: `btleplug` for BLE
+   - Discovery: `mdns-sd`, `ssdp-client`, `zeroconf`
+
+5. Logging & Monitoring:
+   - `tracing` + `tracing-subscriber` for structured logging
+   - ERROR: Immediate attention needed
+   - WARN: Non-critical issues
+   - INFO: State changes
+   - DEBUG: Operation details
+   - TRACE: Debugging info
+
+## Mentorship Learning Requirements
+After each implementation, document:
+
+1. Core Concepts:
+   - Rust features used and why
+   - How features work together
+   - Common patterns demonstrated
+   - Memory and ownership model
+
+2. Key Decisions:
+   - Type system choices
+   - Error handling strategy
+   - Async patterns used
+   - Safety considerations
+   - Performance implications
+
+3. Alternative Approaches:
+   - Other libraries considered
+   - Trade-offs evaluated
+   - When alternatives might be better
+   - Migration possibilities
+
+4. Learning Resources:
+   - Relevant Rust documentation
+   - Example patterns
+   - Common pitfalls
+   - Best practices
+
+5. Alternative Approaches:
+   - Different libraries we could have used
+   - Trade-offs of each approach
+   - Why we chose our solution
+   - When to use alternatives:
+     - Performance requirements
+     - Simpler use cases
+     - Different constraints
+     - Platform-specific needs
+   - Learning resources for alternatives
+
+6. Implementation Evolution:
+   - How the code might need to change
+   - When to consider switching approaches
+   - Migration strategies
+   - Future considerations
+
+## Common Rust Patterns
+- `Option<T>`: Nullable values
+- `Result<T, E>`: Error handling
+- `async/await`: Async code
+- Traits: Common interfaces
+- Smart pointers: Memory management
+- Type-driven development
+
+## Security Considerations
+- Input validation
+- Secure protocols
+- Auth/authorization
+- Sensitive data handling
+- HTTPS for web requests
+- Regular dependency updates
+- Security audit process
+
+## Testing Requirements
+- Unit tests per module
+- Integration tests for protocols
+- Mock external dependencies
+- Test async code with `tokio-test`
+- Property-based testing where appropriate
+- Documentation tests for examples
+- Performance benchmarks for critical paths

@@ -7,20 +7,15 @@ import { ThemeProvider } from '@acme/ui/custom/theme'
 import { cn } from '@acme/ui/lib/utils'
 import { Toaster } from '@acme/ui/sonner'
 
-import '~/app/globals.css'
+import '@acme/ui/globals.css'
 
 import { SiteBanner } from '~/components/site-banner'
 import { SiteFooter } from '~/components/site-footer'
 import { SiteHeader } from '~/components/site-header'
-import { env } from '~/env'
 
 export const metadata: Metadata = {
   description: 'CoFounder AI',
-  metadataBase: new URL(
-    env.VERCEL_ENV === 'production'
-      ? 'https://acme.vercel.app'
-      : 'http://localhost:3000',
-  ),
+  metadataBase: new URL('https://acme.vercel.app'),
   openGraph: {
     description: 'CoFounder AI the founders fundraising platform',
     siteName: 'CoFounder AI',

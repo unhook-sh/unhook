@@ -37,7 +37,14 @@ export function WordFadeIn({
       )}
     >
       {_words.map((word, i) => (
-        <motion.span key={word} variants={variants} custom={i}>
+        <motion.span
+          key={`word-${
+            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            i
+          }`}
+          variants={variants}
+          custom={i}
+        >
           {word}{' '}
         </motion.span>
       ))}

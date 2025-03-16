@@ -1,6 +1,6 @@
 'use client'
 
-import { type Variants, motion } from 'framer-motion'
+import { type Variants, motion } from 'motion/react'
 
 import { cn } from '@acme/ui/lib/utils'
 

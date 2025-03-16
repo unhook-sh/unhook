@@ -1,6 +1,6 @@
 'use client'
 
-import { cubicBezier, motion } from 'framer-motion'
+import { cubicBezier, motion } from 'motion/react'
 
 export function RaiseGraphFeature() {
   const variant1 = {

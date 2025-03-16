@@ -11,9 +11,11 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowBigUp,
+  ArrowDownToLine,
   ArrowLeft,
   ArrowRight,
   ArrowUp,
+  ArrowUpFromLine,
   BadgeCheck,
   Ban,
   BarChart2,
@@ -44,6 +46,8 @@ import {
   ExternalLink,
   Eye,
   Flame,
+  FlaskConical,
+  FunctionSquare,
   GalleryVerticalEnd,
   Heart,
   Home,
@@ -132,6 +136,23 @@ export const Icons = {
     'size',
     'variant',
   ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  ArrowUpFromLine: twx(ArrowUpFromLine).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  ArrowDownToLine: twx(ArrowDownToLine).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  FunctionSquare: twx(FunctionSquare).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  FlaskConical: twx(FlaskConical).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+
   AngelList: ({ size, ...props }: IconProps) => (
     <svg
       className={iconVariants({ size })}

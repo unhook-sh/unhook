@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 
 import { Button } from '@acme/ui/button'
-import { H2, P } from '@acme/ui/typography'
+import { H2, P } from '@acme/ui/custom/typography'
 
 export default function ErrorPage({
   error,

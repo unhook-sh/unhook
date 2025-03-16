@@ -1,6 +1,5 @@
 'use client'
 
-import { motion, useAnimation, useInView } from 'framer-motion'
 import {
   BarChart,
   ChevronRight,
@@ -10,6 +9,7 @@ import {
   Rss,
   Shield,
 } from 'lucide-react'
+import { motion, useAnimation, useInView } from 'motion/react'
 import Link from 'next/link'
 import { useEffect, useId, useRef, useState } from 'react'
 import type { ReactElement } from 'react'

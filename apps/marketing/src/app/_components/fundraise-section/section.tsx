@@ -1,7 +1,7 @@
 'use client'
 
-import { useInView } from 'framer-motion'
 import { TrendingUp } from 'lucide-react'
+import { useInView } from 'motion/react'
 import { useRef } from 'react'
 import {
   Area,
@@ -29,10 +29,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@acme/ui/chart'
-import { Icons } from '@acme/ui/icons'
+import { Icons } from '@acme/ui/custom/icons'
+import { Text } from '@acme/ui/custom/typography'
 import { cn } from '@acme/ui/lib/utils'
 import { ShinyButton } from '@acme/ui/magicui/shiny-button'
-import { Text } from '@acme/ui/typography'
 
 const chartData = [
   { month: 'January', raised: 80, target: 186 },

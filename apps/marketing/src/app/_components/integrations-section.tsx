@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useRef } from 'react'
 
-import { Icons } from '@acme/ui/icons'
+import { Icons } from '@acme/ui/custom/icons'
 import { cn, twx } from '@acme/ui/lib/utils'
 import { AnimatedBeam } from '@acme/ui/magicui/animated-beam'
 import { DotPattern } from '@acme/ui/magicui/dot-pattern'

@@ -11,13 +11,7 @@ import baseConfig from '@acme/next-config/base'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   ...baseConfig,
-  transpilePackages: [
-    ...(baseConfig.transpilePackages ?? []),
-    '@acme/api',
-    '@acme/db',
-    '@acme/ui',
-    '@acme/validators',
-  ],
+  transpilePackages: ['@acme/api', '@acme/db', '@acme/ui', '@acme/validators'],
 }
 
 export default nextConfig
@@ -47,7 +41,6 @@ withSentryConfig(nextConfig, {
   // tunnelRoute: "/monitoring",
 
   // Hides source maps from generated client bundles
-  hideSourceMaps: true,
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,

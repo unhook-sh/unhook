@@ -1,15 +1,15 @@
-import type React from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import type { ButtonProps } from './button'
-import { Button } from './button'
-import type { InputProps } from './input'
-import { Input } from './input'
+import type { VariantProps } from 'class-variance-authority';
+import { Button, type buttonVariants } from '../components/button';
+import { Input } from '../components/input';
 
-interface TextInputProps extends Omit<InputProps, 'onChange'> {
-  onChange?: (value: string) => void
-  quickFillValues?: string[]
-  variant?: ButtonProps['variant']
+interface TextInputProps
+  extends Omit<React.ComponentProps<typeof Input>, 'onChange'> {
+  onChange?: (value: string) => void;
+  quickFillValues?: string[];
+  variant?: VariantProps<typeof buttonVariants>['variant'];
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -18,34 +18,34 @@ export const TextInput: React.FC<TextInputProps> = ({
   variant,
   ...props
 }) => {
-  const [value, setValue] = useState<string>('')
+  const [value, setValue] = useState<string>('');
 
   const handleChange = useCallback(
     (newValue: string) => {
-      setValue(newValue)
+      setValue(newValue);
       if (onChange) {
-        onChange(newValue)
+        onChange(newValue);
       }
     },
     [onChange],
-  )
+  );
 
   useEffect(() => {
     if (props.value !== undefined) {
-      handleChange(props.value.toString())
+      handleChange(props.value.toString());
     }
-  }, [props.value, handleChange])
+  }, [props.value, handleChange]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange(event.target.value)
-  }
+    handleChange(event.target.value);
+  };
 
   const handleQuickFill = (fillValue: string) => {
-    setValue(fillValue)
+    setValue(fillValue);
     if (onChange) {
-      onChange(fillValue)
+      onChange(fillValue);
     }
-  }
+  };
 
   return (
     <div className="w-full">
@@ -72,5 +72,5 @@ export const TextInput: React.FC<TextInputProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};

@@ -1,7 +1,7 @@
 'use client'
 
-import type { AnimationProps } from 'framer-motion'
-import { motion } from 'framer-motion'
+import type { AnimationProps } from 'motion/react'
+import { motion } from 'motion/react'
 import type React from 'react'
 
 import { cn } from '@acme/ui/lib/utils'

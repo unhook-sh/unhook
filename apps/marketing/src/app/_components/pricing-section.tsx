@@ -1,12 +1,12 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { Loader } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useState } from 'react'
 
 import { Badge } from '@acme/ui/badge'
 import { Button } from '@acme/ui/button'
-import { Icons } from '@acme/ui/icons'
+import { Icons } from '@acme/ui/custom/icons'
 import { cn } from '@acme/ui/lib/utils'
 import { NeonGradientCard } from '@acme/ui/magicui/neon-gradient-card'
 import { Switch } from '@acme/ui/switch'

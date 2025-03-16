@@ -20,13 +20,13 @@ import {
 } from 'lucide-react'
 import { useParams, usePathname } from 'next/navigation'
 
+import { Icons } from '@acme/ui/custom/icons'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@acme/ui/dropdown-menu'
-import { Icons } from '@acme/ui/icons'
 import {
   Sidebar,
   SidebarContent,
@@ -127,7 +127,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  BoundaryML
+                  acme
                   <ChevronDown className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

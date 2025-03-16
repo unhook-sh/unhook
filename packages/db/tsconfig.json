@@ -1,9 +1,7 @@
 {
-  "extends": "@acme/tsconfig/internal-package.json",
+  "extends": "@acme/tsconfig/react-library.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "ES2022"],
     "outDir": "dist",
-    "jsx": "preserve",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "include": ["src"],

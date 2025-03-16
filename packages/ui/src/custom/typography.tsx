@@ -4,7 +4,7 @@ import type { TwcComponentProps } from 'react-twc'
 
 import { cn, twx } from '@acme/ui/lib/utils'
 
-import { Skeleton } from './skeleton'
+import { Skeleton } from '../components/skeleton'
 
 export const typographyVariants = cva(undefined, {
   variants: {
@@ -57,7 +57,7 @@ export const textVariants = cva(undefined, {
   variants: {
     size: {
       default: 'text-base',
-      lg: 'text-lg font-semibold',
+      lg: 'font-semibold text-lg',
       script: 'text-[15px]',
       sm: 'text-sm',
       xl: 'text-xl',
@@ -105,7 +105,7 @@ export const H1 = twx.h1.transientProps(['variant'])<
 >(({ variant }) =>
   cn(
     typographyVariants({ variant }),
-    'text-balance text-4xl font-semibold tracking-tight',
+    'text-balance font-semibold text-4xl tracking-tight',
   ),
 )
 
@@ -114,7 +114,7 @@ export const H2 = twx.h2.transientProps(['variant'])<
 >(({ variant }) =>
   cn(
     typographyVariants({ variant }),
-    'text-balance text-3xl font-semibold tracking-tight first:mt-0',
+    'text-balance font-semibold text-3xl tracking-tight first:mt-0',
   ),
 )
 
@@ -123,7 +123,7 @@ export const H3 = twx.h3.transientProps(['variant'])<
 >(({ variant }) =>
   cn(
     typographyVariants({ variant }),
-    'text-balance text-2xl font-semibold tracking-tight',
+    'text-balance font-semibold text-2xl tracking-tight',
   ),
 )
 export const H4 = twx.h4.transientProps(['variant'])<
@@ -131,7 +131,7 @@ export const H4 = twx.h4.transientProps(['variant'])<
 >(({ variant }) =>
   cn(
     typographyVariants({ variant }),
-    'text-balance text-2xl font-semibold leading-8',
+    'text-balance font-semibold text-2xl leading-8',
   ),
 )
 export const P = twx.p.transientProps([

@@ -5,10 +5,10 @@ import { cookies } from 'next/headers'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { AnalyticsProviders } from '@acme/analytics/providers'
+import { ThemeProvider } from '@acme/ui/custom/theme'
 import { cn } from '@acme/ui/lib/utils'
 import { SidebarProvider } from '@acme/ui/sidebar'
-import { ThemeProvider } from '@acme/ui/theme'
-import { Toaster } from '@acme/ui/toast'
+import { Toaster } from '@acme/ui/sonner'
 
 import '@acme/ui/globals.css'
 

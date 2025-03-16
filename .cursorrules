@@ -38,7 +38,7 @@ UI and Styling
 - Use gap-1 over space-1 classes for spacing or gap-x-1 over space-x-1. It can be gap-\*
 - Make sure to use use packages/ui/src/styles/globals.css for css variables and colors. example: text-primary-foreground and bg-primary
 - Use size-4 instead of h-4 w-4 when adding height or width to elements. It can be size-\*
-- When using any sort of html tags for text, use the @acme/ui/typography component. This exports components like H1, H2, H3, P, Text etc. They have variants for different colors and sizes.
+- When using any sort of html tags for text, use the @acme/ui/custom/typography component. This exports components like H1, H2, H3, P, Text etc. They have variants for different colors and sizes.
 
 Performance Optimization
 
@@ -59,9 +59,9 @@ Key Conventions
 - For any database queries, use the supabase client from packages/db/src/schema.ts imported as @acme/db/schema and @acme/db/client.
 - Use 'zsa' for server actions.
 - Use tRPC only when server actions are not available, such as in the ./apps/chrome-extension package. The tRPC API is defined in the packages/api folder.
-- Use <Icons.Spinner/> (import @acme/ui/icons) for loading icons.
+- Use <Icons.Spinner/> (import @acme/ui/custom/icons) for loading icons.
 - Do not include the className height or width on Icons unless it's using margin.
-- Use packages/ui/src/icons.tsx (import @acme/ui/icons) for any icons. If icons are not available in the ui package, use the lucide icons (https://lucide.dev/) or @icons-pack/react-simple-icons and create a new icon component in packages/ui/src/icons.tsx
+- Use packages/ui/src/icons.tsx (import @acme/ui/custom/icons) for any icons. If icons are not available in the ui package, use the lucide icons (https://lucide.dev/) or @icons-pack/react-simple-icons and create a new icon component in packages/ui/src/icons.tsx
 - For When using <Icons.\* />, make sure to use the size and variant props.
 
   ```tsx

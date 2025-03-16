@@ -1,15 +1,15 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
 import { AlignJustify, XIcon } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import { Badge } from '@acme/ui/badge'
 import { Button } from '@acme/ui/button'
+import { ThemeToggle } from '@acme/ui/custom/theme'
 import { cn } from '@acme/ui/lib/utils'
-import { ThemeToggle } from '@acme/ui/theme'
 
 import { SiteHeaderNavigationMenu } from './site-header-nav-menu'
 

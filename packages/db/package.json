@@ -1,19 +1,19 @@
 {
   "dependencies": {
     "@acme/id": "workspace:*",
-    "@clerk/nextjs": "6.10.6",
-    "@supabase/ssr": "0.5.2",
-    "@supabase/supabase-js": "2.48.1",
+    "@clerk/nextjs": "6.12.5",
+    "@supabase/ssr": "0.6.1",
+    "@supabase/supabase-js": "2.49.1",
     "@t3-oss/env-core": "0.12.0",
     "@vercel/postgres": "0.10.0",
-    "drizzle-orm": "0.39.1",
+    "drizzle-orm": "0.40.0",
     "drizzle-seed": "0.3.1",
     "drizzle-zod": "0.7.0",
     "lodash-es": "4.17.21",
-    "next": "15.1.6",
+    "next": "15.2.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "zod": "3.24.1",
+    "zod": "3.24.2",
     "zustand": "5.0.3"
   },
   "devDependencies": {
@@ -21,13 +21,13 @@
     "@t3-oss/env-core": "0.12.0",
     "@t3-oss/env-nextjs": "0.12.0",
     "@types/lodash-es": "4.17.12",
-    "@types/react": "19.0.8",
-    "@types/react-dom": "19.0.3",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
     "dotenv-cli": "8.0.0",
-    "drizzle-kit": "0.30.4",
-    "supabase": "2.9.6",
-    "tsx": "4.19.2",
-    "typescript": "5.7.3"
+    "drizzle-kit": "0.30.5",
+    "supabase": "2.19.7",
+    "tsx": "4.19.3",
+    "typescript": "5.8.2"
   },
   "exports": {
     ".": {

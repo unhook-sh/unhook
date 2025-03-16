@@ -1,6 +1,6 @@
 'use client'
 
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import Image from 'next/image'
 import type { PropsWithChildren } from 'react'
 import { useRef } from 'react'

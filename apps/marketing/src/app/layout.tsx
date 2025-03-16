@@ -3,9 +3,9 @@ import { GeistSans } from 'geist/font/sans'
 import type { Metadata, Viewport } from 'next'
 
 import { PostHogProvider } from '@acme/analytics/posthog/client'
+import { ThemeProvider } from '@acme/ui/custom/theme'
 import { cn } from '@acme/ui/lib/utils'
-import { ThemeProvider } from '@acme/ui/theme'
-import { Toaster } from '@acme/ui/toast'
+import { Toaster } from '@acme/ui/sonner'
 
 import '~/app/globals.css'
 

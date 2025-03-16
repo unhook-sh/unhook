@@ -1,7 +1,7 @@
 'use client'
 
 import * as Accordion from '@radix-ui/react-accordion'
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import type { ReactNode } from 'react'
 import type React from 'react'
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'

@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@acme/ui/card'
-import { Icons } from '@acme/ui/icons'
+import { Icons } from '@acme/ui/custom/icons'
 import { Input } from '@acme/ui/input'
 import { Label } from '@acme/ui/label'
 import { cn } from '@acme/ui/lib/utils'

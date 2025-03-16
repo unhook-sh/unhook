@@ -1,11 +1,9 @@
 import { cn } from '@acme/ui/lib/utils'
 
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
+      data-slot="skeleton"
       className={cn('animate-pulse rounded-md bg-primary/10', className)}
       {...props}
     />

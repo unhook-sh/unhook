@@ -1,22 +1,23 @@
 {
-  "name": "@acme/next-config",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
+  "dependencies": {
+    "@boundaryml/baml-nextjs-plugin": "0.1.0",
+    "@next/bundle-analyzer": "15.2.2",
+    "next": "15.2.2"
+  },
+  "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
+    "typescript": "5.8.2"
+  },
   "exports": {
     "./base": "./base.mjs"
   },
   "license": "MIT",
+  "name": "@acme/next-config",
+  "private": true,
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@next/bundle-analyzer": "15.1.6",
-    "next": "15.1.6"
-  },
-  "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
-    "typescript": "5.7.3"
-  }
+  "type": "module",
+  "version": "0.1.0"
 }

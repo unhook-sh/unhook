@@ -1,6 +1,6 @@
+import { withBaml } from '@boundaryml/baml-nextjs-plugin'
 // @ts-check
 import withBundleAnalyzer from '@next/bundle-analyzer'
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // compiler: {
@@ -16,7 +16,6 @@ const nextConfig = {
       bodySizeLimit: '20mb',
     },
   },
-  serverExternalPackages: ['@boundaryml/baml'],
   images: {
     remotePatterns: [
       { hostname: 'images.unsplash.com' },
@@ -37,22 +36,13 @@ const nextConfig = {
   },
   poweredByHeader: false,
   typescript: { ignoreBuildErrors: true },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.node$/,
-      use: [
-        {
-          loader: 'nextjs-node-loader',
-          options: {
-            outputPath: config.output.path,
-          },
-        },
-      ],
-    })
-    return config
-  },
 }
 
-export default withBundleAnalyzer({
-  enabled: process.env.NEXT_ANALYZE === 'true',
-})(nextConfig)
+const withPlugins = [
+  withBaml,
+  process.env.WITH_BUNDLE_ANALYZER === 'true'
+    ? withBundleAnalyzer({ enabled: true })
+    : null,
+].filter((plugin) => plugin !== null)
+
+export default withPlugins.reduce((acc, plugin) => plugin(acc), nextConfig)

@@ -1,4 +1,4 @@
-import { Icons } from '@acme/ui/icons'
+import { Icons } from '@acme/ui/custom/icons'
 import { Particles } from '@acme/ui/magicui/particles'
 import { SphereMask } from '@acme/ui/magicui/sphere-mask'
 

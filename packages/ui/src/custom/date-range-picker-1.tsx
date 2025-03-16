@@ -8,10 +8,10 @@ import type { DateRange } from 'react-day-picker'
 
 import { cn } from '@acme/ui/lib/utils'
 
-import type { ButtonProps } from './button'
-import { Button } from './button'
-import { Calendar } from './calendar'
-import { Popover, PopoverContent, PopoverTrigger } from './popover'
+import type { VariantProps } from 'class-variance-authority'
+import { Button, type buttonVariants } from '../components/button'
+import { Calendar } from '../components/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '../components/popover'
 
 interface DateRangePickerProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
@@ -43,14 +43,14 @@ interface DateRangePickerProps
    * @default "outline"
    * @type "default" | "outline" | "secondary" | "ghost"
    */
-  triggerVariant?: Exclude<ButtonProps['variant'], 'destructive' | 'link'>
+  triggerVariant?: VariantProps<typeof buttonVariants>['variant']
 
   /**
    * The size of the calendar trigger button.
    * @default "default"
    * @type "default" | "sm" | "lg"
    */
-  triggerSize?: Exclude<ButtonProps['size'], 'icon'>
+  triggerSize?: VariantProps<typeof buttonVariants>['size']
 
   /**
    * The class name of the calendar trigger button.

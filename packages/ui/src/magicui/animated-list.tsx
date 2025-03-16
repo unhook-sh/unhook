@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'motion/react'
 import React, { type ReactElement, useEffect, useMemo, useState } from 'react'
 
 export interface AnimatedListProps {

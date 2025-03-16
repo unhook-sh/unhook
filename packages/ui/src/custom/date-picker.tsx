@@ -1,22 +1,20 @@
 'use client'
-
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { forwardRef } from 'react'
 
 import { cn } from '@acme/ui/lib/utils'
 
-import { Button } from './button'
-import { Calendar } from './calendar'
-import { Popover, PopoverContent, PopoverTrigger } from './popover'
+import { Button } from '../components/button'
+import { Calendar } from '../components/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '../components/popover'
 
-export const DatePicker = forwardRef<
-  HTMLDivElement,
-  {
-    date?: Date
-    setDate: (date?: Date) => void
-  }
->(function DatePickerCmp({ date, setDate }, ref) {
+export const DatePicker = function DatePickerCmp({
+  date,
+  setDate,
+}: {
+  date?: Date
+  setDate: (date?: Date) => void
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -31,7 +29,7 @@ export const DatePicker = forwardRef<
           {date ? format(date, 'PPP') : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" ref={ref}>
+      <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
           selected={date}
@@ -41,4 +39,4 @@ export const DatePicker = forwardRef<
       </PopoverContent>
     </Popover>
   )
-})
+}

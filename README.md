@@ -256,6 +256,9 @@ Deploying your Expo application works slightly differently compared to Next.js o
 
 9. Done! Now that you have created your production build, submitted it to the stores, and installed EAS Update, you are ready for anything!
 
+![Alt](https://repobeats.axiom.co/api/embed/74a4b271e2a24c2cb08c897cfc1dfe155e0e1c1e.svg 'Repobeats analytics image')
+
+
 ## References
 
 The stack originates from [create-t3-app](https://github.com/t3-oss/create-t3-app).

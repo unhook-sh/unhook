@@ -12,7 +12,7 @@
     "lefthook": "1.11.3",
     "turbo": "2.4.4",
     "typescript": "5.8.2",
-    "vitest": "3.0.8"
+    "vitest": "3.0.9"
   },
   "engines": {
     "node": ">=20.12.0"

@@ -2,8 +2,8 @@
   "dependencies": {
     "@boundaryml/baml-nextjs-plugin": "0.1.0",
     "@million/lint": "1.0.14",
-    "@next/bundle-analyzer": "15.2.2",
-    "next": "15.2.2"
+    "@next/bundle-analyzer": "15.2.3",
+    "next": "15.2.3"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",

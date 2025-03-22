@@ -1,3 +1,4 @@
+import { ReactScan } from '@acme/ui/custom/react-scan'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata, Viewport } from 'next'
@@ -60,6 +61,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           GeistMono.variable,
         )}
       >
+        <ReactScan />
         <NuqsAdapter>
           <TRPCReactProvider>
             <ClerkProvider>

@@ -2,7 +2,7 @@
 import type { REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { createClient } from './client'
+import { useClient } from './client'
 
 type BroadcastStatus = 'connected' | 'connecting' | 'disconnected' | 'error'
 
@@ -71,10 +71,11 @@ export function useBroadcast<T extends BroadcastMessage>({
     [channelName, topic],
   )
 
+  const supabase = useClient()
+
   useEffect(() => {
     void handleStatusChange('connecting')
 
-    const supabase = createClient()
     const channel = supabase.channel(channelNameMemo, {
       config: {
         broadcast: {
@@ -113,11 +114,10 @@ export function useBroadcast<T extends BroadcastMessage>({
       void supabase.removeChannel(channel)
       void handleStatusChange('disconnected')
     }
-  }, [event, self, ack, handleStatusChange, channelNameMemo, timeout])
+  }, [event, self, ack, handleStatusChange, channelNameMemo, timeout, supabase])
 
   const send = useCallback(
     async (message: T['payload']) => {
-      const supabase = createClient()
       const channel = supabase.channel(channelNameMemo)
 
       try {
@@ -135,7 +135,7 @@ export function useBroadcast<T extends BroadcastMessage>({
         void supabase.removeChannel(channel)
       }
     },
-    [channelNameMemo, event],
+    [channelNameMemo, event, supabase],
   )
 
   return {

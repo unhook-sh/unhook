@@ -154,20 +154,6 @@ export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
   }),
 }))
 
-export const ShortUrl = pgTable('short_url', {
-  code: text('code').notNull().unique(),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'url' }))
-    .notNull()
-    .primaryKey(),
-  redirectUrl: text('redirectUrl').notNull(),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).$onUpdateFn(() => new Date()),
-})
-
 export const Tunnels = pgTable('tunnels', {
   id: varchar('id', { length: 128 })
     .$defaultFn(() => createId({ prefix: 'tunnel' }))

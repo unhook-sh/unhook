@@ -7,7 +7,7 @@ import type {
 import { REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { createClient } from './client'
+import { useClient } from './client'
 import type { TableName, Tables } from './types'
 
 type SubscriptionStatus = 'connecting' | 'connected' | 'disconnected' | 'error'
@@ -139,11 +139,11 @@ export function useSubscription<T extends TableName>({
     () => channelName ?? `${String(table)}-changes`,
     [channelName, table],
   )
+  const supabase = useClient()
 
   useEffect(() => {
     void handleStatusChange('connecting')
 
-    const supabase = createClient()
     const channel = supabase
       .channel(channelNameMemo)
       .on<Tables[T]>(
@@ -184,7 +184,15 @@ export function useSubscription<T extends TableName>({
       void supabase.removeChannel(channel)
       void handleStatusChange('disconnected')
     }
-  }, [table, filter, timeout, handleStatusChange, channelNameMemo, event])
+  }, [
+    table,
+    filter,
+    timeout,
+    handleStatusChange,
+    channelNameMemo,
+    event,
+    supabase,
+  ])
 
   return {
     status,

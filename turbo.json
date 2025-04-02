@@ -3,14 +3,10 @@
   "ui": "tui",
   "tasks": {
     "topo": {
-      "dependsOn": [
-        "^topo"
-      ]
+      "dependsOn": ["^topo"]
     },
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -26,19 +22,11 @@
       "cache": false
     },
     "format": {
-      "dependsOn": [
-        "^topo",
-        "^build"
-      ]
+      "dependsOn": ["^topo", "^build"]
     },
     "typecheck": {
-      "dependsOn": [
-        "^topo",
-        "^build"
-      ],
-      "outputs": [
-        "node_modules/.cache/tsbuildinfo.json"
-      ]
+      "dependsOn": ["^topo", "^build"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "clean": {
       "cache": false
@@ -87,8 +75,15 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_JWT_SECRET",
     "CLERK_WEBHOOK_SECRET",
+    "CLERK_ISSUER_URL",
     "OPENAI_API_KEY",
-    "POSTHOG_KEY"
+    "POSTHOG_KEY",
+    "POSTHOG_HOST",
+    "KV_URL",
+    "KV_REST_API_READ_ONLY_TOKEN",
+    "REDIS_URL",
+    "KV_REST_API_TOKEN",
+    "KV_REST_API_URL"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

@@ -1,6 +1,3 @@
-import { withBaml } from '@boundaryml/baml-nextjs-plugin'
-import MillionLint from '@million/lint'
-
 // @ts-check
 import withBundleAnalyzer from '@next/bundle-analyzer'
 /** @type {import('next').NextConfig} */
@@ -41,10 +38,6 @@ const nextConfig = {
 }
 
 const withPlugins = [
-  MillionLint.next({
-    rsc: true,
-  }),
-  withBaml,
   process.env.WITH_BUNDLE_ANALYZER === 'true'
     ? withBundleAnalyzer({ enabled: true })
     : null,

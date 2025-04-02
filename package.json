@@ -1,18 +1,20 @@
 {
   "commitlint": {
-    "extends": ["@acme/commitlint-config"]
+    "extends": [
+      "@acme/commitlint-config"
+    ]
   },
   "devDependencies": {
     "@acme/commitlint-config": "workspace:*",
     "@biomejs/biome": "1.9.4",
     "@changesets/cli": "2.28.1",
     "@turbo/gen": "2.4.4",
-    "checkly": "5.0.1",
-    "knip": "5.46.0",
-    "lefthook": "1.11.3",
+    "checkly": "5.2.0",
+    "knip": "5.46.5",
+    "lefthook": "1.11.6",
     "turbo": "2.4.4",
     "typescript": "5.8.2",
-    "vitest": "3.0.9"
+    "vitest": "3.1.1"
   },
   "engines": {
     "node": ">=20.12.0"

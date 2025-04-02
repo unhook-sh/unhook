@@ -167,3 +167,50 @@ export const ShortUrl = pgTable('short_url', {
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
 })
+
+export const Tunnels = pgTable('tunnels', {
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'tunnel' }))
+    .notNull()
+    .primaryKey(),
+  clientId: text('clientId').notNull(),
+  apiKey: text('apiKey').notNull(),
+  localAddr: text('localAddr').notNull(),
+  serverAddr: text('serverAddr').notNull(),
+  lastSeenAt: timestamp('lastSeenAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).notNull(),
+  status: text('status').notNull().default('disconnected'),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).defaultNow(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+  userId: varchar('userId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+})
+
+export type TunnelType = typeof Tunnels.$inferSelect
+
+export const TunnelsRelations = relations(Tunnels, ({ one }) => ({
+  user: one(Users, {
+    fields: [Tunnels.userId],
+    references: [Users.id],
+  }),
+  org: one(Orgs, {
+    fields: [Tunnels.orgId],
+    references: [Orgs.id],
+  }),
+}))

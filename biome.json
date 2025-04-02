@@ -53,7 +53,7 @@
     "formatter": {
       "quoteStyle": "single",
       "trailingCommas": "all",
-      "semicolons": "asNeeded"
+      "semicolons": "always"
     },
     "globals": ["React"]
   }

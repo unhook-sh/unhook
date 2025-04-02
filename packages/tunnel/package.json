@@ -1,0 +1,33 @@
+{
+  "bin": {
+    "tunnel": "./bin/acme-tunnel"
+  },
+  "dependencies": {
+    "dedent-js": "1.0.1",
+    "picocolors": "1.1.1",
+    "yargs": "17.7.2"
+  },
+  "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
+    "@types/yargs": "17.0.33",
+    "typescript": "5.8.2"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "name": "@acme/tunnel",
+  "scripts": {
+    "build": "bun build ./src/index.ts --compile --outfile ./bin/wdim",
+    "dev": "bun build ./src/index.ts --compile --outfile ./bin/wdim --watch",
+    "prepublishOnly": "pnpm build",
+    "start": "bun ./src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "type": "module"
+}

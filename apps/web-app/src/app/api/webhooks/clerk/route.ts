@@ -9,8 +9,6 @@ import { Users } from '@acme/db/schema'
 
 import { env } from '~/env.server'
 
-export const runtime = 'edge'
-
 export async function POST(request: Request) {
   const posthog = new PostHog(env.POSTHOG_KEY, {
     flushAt: 1,

@@ -20,7 +20,6 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(['development', 'production', 'test'])
       .default('development'),
-    OPENAI_API_KEY: z.string(),
     POSTGRES_URL: z.string().url(),
     POSTHOG_KEY: z.string(),
   },

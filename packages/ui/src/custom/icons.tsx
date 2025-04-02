@@ -31,6 +31,7 @@ import {
   ChevronRight,
   ChevronUp,
   ChevronsLeft,
+  ChevronsLeftRightEllipsis,
   ChevronsRight,
   Circle,
   CircleDot,
@@ -83,6 +84,7 @@ import {
   Text,
   ThumbsDown,
   ThumbsUp,
+  Trash,
   Triangle,
   Upload,
   User,
@@ -129,6 +131,13 @@ export type SiIconProps = TwcComponentProps<'svg'> &
   VariantProps<typeof iconVariants> & { withColor?: boolean }
 
 export const Icons = {
+  ChevronsLeftRightEllipsis: twx(ChevronsLeftRightEllipsis).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  Trash: twx(Trash).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   AlertCircle: twx(AlertCircle).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),

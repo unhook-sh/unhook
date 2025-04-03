@@ -6,7 +6,7 @@ import { and, eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
 // Mark as edge runtime to support streaming
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 interface TunnelRequest {
   id: string;
@@ -20,16 +20,17 @@ interface TunnelRequest {
   clientIp: string;
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ endpoint: string }> },
-) {
+export async function POST(req: NextRequest) {
   const apiKey =
     req.headers.get('x-api-key') ?? req.nextUrl.searchParams.get('key');
   if (!apiKey) {
     return new NextResponse('API key required', { status: 401 });
   }
-  const { endpoint } = await params;
+  const endpoint =
+    req.headers.get('x-endpoint') ?? req.nextUrl.searchParams.get('endpoint');
+  if (!endpoint) {
+    return new NextResponse('Endpoint required', { status: 401 });
+  }
 
   // Get tunnel configuration
   const tunnel = await db.query.Tunnels.findFirst({

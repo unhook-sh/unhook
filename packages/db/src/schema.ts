@@ -197,7 +197,7 @@ export type TunnelConfig = {
 
 export const Tunnels = pgTable('tunnels', {
   id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'tunnel' }))
+    .$defaultFn(() => createId({ prefix: 't' }))
     .notNull()
     .primaryKey(),
   clientId: text('clientId').notNull(),
@@ -343,7 +343,7 @@ export const RequestsRelations = relations(Requests, ({ one }) => ({
 
 export const Connections = pgTable('connections', {
   id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'tc' }))
+    .$defaultFn(() => createId({ prefix: 'c' }))
     .notNull()
     .primaryKey(),
   tunnelId: varchar('tunnelId', { length: 128 })

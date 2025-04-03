@@ -3,10 +3,10 @@ import {
   SiOpenai,
   SiOpenaiHex,
   SiX,
-} from '@icons-pack/react-simple-icons'
-import type { VariantProps } from 'class-variance-authority'
-import { cva } from 'class-variance-authority'
-import type { IconNode, LucideProps } from 'lucide-react'
+} from '@icons-pack/react-simple-icons';
+import type { VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
+import type { IconNode, LucideProps } from 'lucide-react';
 import {
   AlertCircle,
   AlertTriangle,
@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUp,
+  ArrowUpDown,
   ArrowUpFromLine,
   BadgeCheck,
   Ban,
@@ -37,6 +38,7 @@ import {
   CircleDot,
   CirclePlus,
   CircleStop,
+  Clock,
   Command,
   Copy,
   CornerDownLeft,
@@ -53,6 +55,7 @@ import {
   Heart,
   Home,
   Info,
+  LayoutGrid,
   ListFilter,
   ListOrdered,
   ListPlus,
@@ -90,12 +93,12 @@ import {
   User,
   UsersRound,
   X,
-} from 'lucide-react'
-import type { TwcComponentProps } from 'react-twc'
+} from 'lucide-react';
+import type { TwcComponentProps } from 'react-twc';
 
-import { cn, twx } from '@acme/ui/lib/utils'
+import { cn, twx } from '@acme/ui/lib/utils';
 
-export type Icon = IconNode
+export type Icon = IconNode;
 
 export const iconVariants = cva('shrink-0', {
   defaultVariants: {
@@ -121,16 +124,25 @@ export const iconVariants = cva('shrink-0', {
       warning: 'text-warning',
     },
   },
-})
+});
 
 export type IconProps = TwcComponentProps<'svg'> &
   LucideProps &
-  VariantProps<typeof iconVariants>
+  VariantProps<typeof iconVariants>;
 
 export type SiIconProps = TwcComponentProps<'svg'> &
-  VariantProps<typeof iconVariants> & { withColor?: boolean }
+  VariantProps<typeof iconVariants> & { withColor?: boolean };
 
 export const Icons = {
+  LayoutGrid: twx(LayoutGrid).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Clock: twx(Clock).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  ArrowUpDown: twx(ArrowUpDown).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   ChevronsLeftRightEllipsis: twx(ChevronsLeftRightEllipsis).transientProps([
     'size',
     'variant',
@@ -457,4 +469,4 @@ export const Icons = {
   X: twx(X).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-}
+};

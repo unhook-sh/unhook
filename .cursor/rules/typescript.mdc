@@ -1,6 +1,7 @@
 ---
 description: Apply these rules when implementing, explaining, or discussing Typescript, React, Next.js code.
 globs: *.ts,*.tsx
+alwaysApply: false
 ---
 You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI and Tailwind.
 
@@ -65,7 +66,7 @@ Key Conventions
 - Use tRPC only when server actions are not available, such as in the ./apps/chrome-extension package. The tRPC API is defined in the packages/api folder.
 - Use <Icons.Spinner/> (import @acme/ui/custom/icons) for loading icons.
 - Do not include the className height or width on Icons unless it's using margin.
-- Use packages/ui/src/icons.tsx (import @acme/ui/custom/icons) for any icons. If icons are not available in the ui package, use the lucide icons (https://lucide.dev/) or @icons-pack/react-simple-icons and create a new icon component in packages/ui/src/icons.tsx
+- Use packages/ui/src/icons.tsx (import @acme/ui/custom/icons) for any icons. If icons are not available in the icons.tsx file, use the lucide icons (https://lucide.dev/) or @icons-pack/react-simple-icons and create a new icon component in packages/ui/src/icons.tsx
 - For When using <Icons.\* />, make sure to use the size and variant props.
 
   ```tsx

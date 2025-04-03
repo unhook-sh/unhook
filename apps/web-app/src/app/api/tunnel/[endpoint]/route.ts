@@ -2,7 +2,7 @@ import { db } from '@acme/db/client';
 import { Requests, Tunnels } from '@acme/db/schema';
 import { createId } from '@acme/id';
 import { filterHeaders } from '@acme/tunnel';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
 // Mark as edge runtime to support streaming
@@ -33,7 +33,7 @@ export async function POST(
 
   // Get tunnel configuration
   const tunnel = await db.query.Tunnels.findFirst({
-    where: eq(Tunnels.apiKey, apiKey),
+    where: and(eq(Tunnels.apiKey, apiKey), eq(Tunnels.status, 'active')),
   });
 
   if (!tunnel) {

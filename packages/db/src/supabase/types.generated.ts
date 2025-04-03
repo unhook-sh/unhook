@@ -167,7 +167,7 @@ export type Database = {
         Row: {
           apiKey: string
           completedAt: string | null
-          connectionId: string
+          connectionId: string | null
           createdAt: string
           id: string
           orgId: string
@@ -181,7 +181,7 @@ export type Database = {
         Insert: {
           apiKey: string
           completedAt?: string | null
-          connectionId: string
+          connectionId?: string | null
           createdAt?: string
           id: string
           orgId: string
@@ -195,7 +195,7 @@ export type Database = {
         Update: {
           apiKey?: string
           completedAt?: string | null
-          connectionId?: string
+          connectionId?: string | null
           createdAt?: string
           id?: string
           orgId?: string
@@ -242,14 +242,15 @@ export type Database = {
           apiKey: string
           clientCount: number
           clientId: string
+          config: Json
           createdAt: string | null
           id: string
           lastConnectionAt: string | null
-          lastRequestAt: string
+          lastRequestAt: string | null
           orgId: string
           port: number
           requestCount: number
-          status: string
+          status: Database["public"]["Enums"]["tunnelStatus"]
           updatedAt: string | null
           userId: string
         }
@@ -257,14 +258,15 @@ export type Database = {
           apiKey: string
           clientCount?: number
           clientId: string
+          config?: Json
           createdAt?: string | null
           id: string
           lastConnectionAt?: string | null
-          lastRequestAt: string
+          lastRequestAt?: string | null
           orgId: string
           port: number
           requestCount?: number
-          status?: string
+          status?: Database["public"]["Enums"]["tunnelStatus"]
           updatedAt?: string | null
           userId: string
         }
@@ -272,14 +274,15 @@ export type Database = {
           apiKey?: string
           clientCount?: number
           clientId?: string
+          config?: Json
           createdAt?: string | null
           id?: string
           lastConnectionAt?: string | null
-          lastRequestAt?: string
+          lastRequestAt?: string | null
           orgId?: string
           port?: number
           requestCount?: number
-          status?: string
+          status?: Database["public"]["Enums"]["tunnelStatus"]
           updatedAt?: string | null
           userId?: string
         }
@@ -347,6 +350,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      tunnelStatus: "active" | "inactive"
       userRole: "admin" | "superAdmin" | "user"
     }
     CompositeTypes: {

@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { AlignJustify, XIcon } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { AlignJustify, XIcon } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-import { Badge } from '@acme/ui/badge'
-import { Button } from '@acme/ui/button'
-import { ThemeToggle } from '@acme/ui/custom/theme'
-import { cn } from '@acme/ui/lib/utils'
+import { Badge } from '@acme/ui/badge';
+import { Button } from '@acme/ui/button';
+import { ThemeToggle } from '@acme/ui/custom/theme';
+import { cn } from '@acme/ui/lib/utils';
 
-import { SiteHeaderNavigationMenu } from './site-header-nav-menu'
+import { SiteHeaderNavigationMenu } from './site-header-nav-menu';
 
 const menuItem = [
   {
@@ -29,7 +29,7 @@ const menuItem = [
     id: 4,
     label: 'Contact Us',
   },
-]
+];
 
 export function SiteHeader() {
   const mobilenavbarVariant = {
@@ -53,7 +53,7 @@ export function SiteHeader() {
       opacity: 0,
       scale: 1,
     },
-  }
+  };
 
   const mobileLinkVariable = {
     initial: {
@@ -68,7 +68,7 @@ export function SiteHeader() {
       },
       y: 0,
     },
-  }
+  };
 
   const containerVariants = {
     open: {
@@ -76,25 +76,25 @@ export function SiteHeader() {
         staggerChildren: 0.06,
       },
     },
-  }
+  };
 
-  const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false)
-
-  useEffect(() => {
-    const html = document.querySelector('html')
-    if (html) html.classList.toggle('overflow-hidden', hamburgerMenuIsOpen)
-  }, [hamburgerMenuIsOpen])
+  const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false);
 
   useEffect(() => {
-    const closeHamburgerNavigation = () => setHamburgerMenuIsOpen(false)
-    window.addEventListener('orientationchange', closeHamburgerNavigation)
-    window.addEventListener('resize', closeHamburgerNavigation)
+    const html = document.querySelector('html');
+    if (html) html.classList.toggle('overflow-hidden', hamburgerMenuIsOpen);
+  }, [hamburgerMenuIsOpen]);
+
+  useEffect(() => {
+    const closeHamburgerNavigation = () => setHamburgerMenuIsOpen(false);
+    window.addEventListener('orientationchange', closeHamburgerNavigation);
+    window.addEventListener('resize', closeHamburgerNavigation);
 
     return () => {
-      window.removeEventListener('orientationchange', closeHamburgerNavigation)
-      window.removeEventListener('resize', closeHamburgerNavigation)
-    }
-  }, [])
+      window.removeEventListener('orientationchange', closeHamburgerNavigation);
+      window.removeEventListener('resize', closeHamburgerNavigation);
+    };
+  }, []);
 
   return (
     <>
@@ -123,10 +123,10 @@ export function SiteHeader() {
               <SiteHeaderNavigationMenu />
             </div>
             <Button asChild variant={'ghost'} className="hidden md:block">
-              <Link href="/signin">Log in</Link>
+              <Link href={'/signin' as any}>Log in</Link>
             </Button>
             <Button asChild>
-              <Link href="/signup">Sign up</Link>
+              <Link href={'/signup' as any}>Sign up</Link>
             </Button>
             <div className="hidden md:block">
               <ThemeToggle />
@@ -201,7 +201,7 @@ export function SiteHeader() {
                   className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
                     hamburgerMenuIsOpen ? '[&_a]:translate-y-0' : ''
                   }`}
-                  href={item.href}
+                  href={item.href as any}
                 >
                   {item.label}
                 </Link>
@@ -214,5 +214,5 @@ export function SiteHeader() {
         </motion.nav>
       </AnimatePresence>
     </>
-  )
+  );
 }

@@ -1,48 +1,59 @@
-import { seed } from 'drizzle-seed'
+import { seed } from 'drizzle-seed';
 
-import { createId } from '@acme/id'
-
-import { db } from './client'
-import { Orgs, Users } from './schema'
+import { db } from './client';
+import { Orgs, OrgMembers, Tunnels, Users, WebhookRequests } from './schema';
 
 // Reset all tables
 
-await db.delete(Users)
-await db.delete(Orgs)
+await db.delete(Users);
+await db.delete(Orgs);
+await db.delete(Tunnels);
+await db.delete(WebhookRequests);
 
 await seed(db, {
   Orgs,
+  OrgMembers,
   Users,
+  Tunnels,
+  WebhookRequests,
 }).refine((funcs) => ({
-  Maps: {
+  OrgMembers: {
     columns: {
-      description: funcs.loremIpsum(),
-      height: funcs.int({ maxValue: 1000, minValue: 1000 }),
-      id: funcs.default({ defaultValue: createId({ prefix: 'map_' }) }),
-      name: funcs.city(),
-      width: funcs.int({ maxValue: 1000, minValue: 1000 }),
+      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      userId: funcs.default({
+        defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+      }),
     },
     count: 1,
   },
   Orgs: {
     columns: {
-      id: funcs.default({ defaultValue: 'org_2s0lvufAzQgpcvjJisOoTVbcfeP' }),
+      id: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
     },
     count: 1,
   },
   Users: {
     columns: {
       clerkId: funcs.default({
-        defaultValue: 'user_2s0lvufAzQgpcvjJisOoTVbcfeP',
+        defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
       }),
       email: funcs.email(),
       firstName: funcs.firstName(),
-      id: funcs.default({ defaultValue: 'user_2s0lvufAzQgpcvjJisOoTVbcfeP' }),
+      id: funcs.default({ defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT' }),
       lastName: funcs.lastName(),
       online: funcs.boolean(),
     },
     count: 1,
   },
-}))
+  Tunnels: {
+    columns: {
+      apiKey: funcs.default({ defaultValue: 'pk_123' }),
+      clientId: funcs.default({ defaultValue: 'cl_123' }),
+      port: funcs.int({ maxValue: 65535, minValue: 1024 }),
+      status: funcs.default({ defaultValue: 'active' }),
+    },
+    count: 1,
+  },
+}));
 
-process.exit(0)
+process.exit(0);

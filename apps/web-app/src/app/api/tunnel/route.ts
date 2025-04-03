@@ -1,191 +1,83 @@
-import { kv } from '@vercel/kv'
-import { type NextRequest, NextResponse } from 'next/server'
+import { db } from '@acme/db/client';
+import { WebhookRequests } from '@acme/db/schema';
+import { type NextRequest, NextResponse } from 'next/server';
 
-// Mark as edge runtime to support HTTP/2
-export const runtime = 'edge'
+// Mark as edge runtime to support streaming
+export const runtime = 'edge';
 
 interface TunnelRequest {
-  method: string
-  url: string
-  headers: Record<string, string>
-  body?: string
-}
-
-interface TunnelResponse {
-  status: number
-  headers: Record<string, string>
-  body?: string
-}
-
-// Cleanup stale clients every 5 minutes
-const CLEANUP_INTERVAL = 5 * 60 * 1000
-const CLIENT_TIMEOUT = 30 * 1000
-
-async function cleanupStaleClients() {
-  const now = Date.now()
-  const clients = await kv.hgetall<Record<string, string>>('tunnel:clients')
-  if (!clients) return
-
-  for (const [clientKey, lastSeenStr] of Object.entries(clients)) {
-    const lastSeen = Number.parseInt(lastSeenStr as string, 10)
-    if (now - lastSeen > CLIENT_TIMEOUT) {
-      await kv.hdel('tunnel:clients', clientKey)
-    }
-  }
-}
-
-// Run cleanup periodically
-setInterval(cleanupStaleClients, CLEANUP_INTERVAL)
-
-export async function GET(req: NextRequest) {
-  const apiKey = req.headers.get('x-api-key')
-  if (!apiKey) {
-    return new NextResponse('API key required', { status: 401 })
-  }
-
-  const isValidKey = await kv.sismember('tunnel:api_keys', apiKey)
-  if (!isValidKey) {
-    return new NextResponse('Invalid API key', { status: 401 })
-  }
-
-  const clientId = req.headers.get('x-client-id')
-  if (!clientId) {
-    return new NextResponse('Client ID required', { status: 400 })
-  }
-
-  const clientKey = `${apiKey}:${clientId}`
-
-  // Set up HTTP/2 stream
-  const transformer = new TransformStream()
-  const writer = transformer.writable.getWriter()
-  const encoder = new TextEncoder()
-
-  // Register client
-  await kv.hset('tunnel:clients', { [clientKey]: Date.now().toString() })
-
-  // Send initial connection message
-  await writer.write(
-    encoder.encode(`${JSON.stringify({ type: 'connected' })}\n`),
-  )
-
-  // Poll for new requests
-  const pollInterval = setInterval(async () => {
-    try {
-      // Update last seen timestamp
-      await kv.hset('tunnel:clients', { [clientKey]: Date.now().toString() })
-
-      // Check for new requests
-      const request = await kv.lpop(`tunnel:requests:${clientKey}`)
-      if (request) {
-        await writer.write(
-          encoder.encode(
-            `${JSON.stringify({ type: 'request', data: request })}\n`,
-          ),
-        )
-      }
-    } catch (error) {
-      console.error('Error polling for requests:', error)
-      clearInterval(pollInterval)
-      writer.close()
-    }
-  }, 1000)
-
-  // Cleanup when connection closes
-  req.signal.addEventListener('abort', () => {
-    clearInterval(pollInterval)
-    writer.close()
-    kv.hdel('tunnel:clients', clientKey).catch(console.error)
-  })
-
-  return new NextResponse(transformer.readable, {
-    headers: {
-      'Content-Type': 'application/x-ndjson',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
-      'X-Accel-Buffering': 'no', // Disable Nginx buffering
-    },
-  })
+  id: string;
+  method: string;
+  url: string;
+  headers: Record<string, string>;
+  body?: string; // base64 encoded
+  timestamp: number;
 }
 
 export async function POST(req: NextRequest) {
-  const apiKey = req.headers.get('x-api-key')
+  const apiKey =
+    req.headers.get('x-api-key') ?? req.nextUrl.searchParams.get('apiKey');
   if (!apiKey) {
-    return new NextResponse('API key required', { status: 401 })
+    return new NextResponse('API key required', { status: 401 });
   }
 
-  const isValidKey = await kv.sismember('tunnel:api_keys', apiKey)
-  if (!isValidKey) {
-    return new NextResponse('Invalid API key', { status: 401 })
+  // Store the webhook request in Supabase
+  try {
+    const request: TunnelRequest = {
+      id: crypto.randomUUID(),
+      method: req.method,
+      url: req.url,
+      headers: Object.fromEntries(req.headers.entries()),
+      body: req.body
+        ? Buffer.from(await req.arrayBuffer()).toString('base64')
+        : undefined,
+      timestamp: Date.now(),
+    };
+
+    await db.insert(WebhookRequests).values({
+      id: request.id,
+      tunnelId: apiKey,
+      connectionId: 'conn_2vCR1xwHHTLxE5m20AYewlc5y2j',
+      apiKey: apiKey,
+      userId: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+      orgId: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j',
+      request: request,
+      status: 'pending',
+      createdAt: new Date(),
+    });
+
+    return new NextResponse('Webhook received', { status: 202 });
+  } catch (error) {
+    console.error('Error storing webhook request:', error);
+    return new NextResponse('Internal server error', { status: 500 });
   }
+}
 
-  const action = req.headers.get('x-tunnel-action')
-  if (!action) {
-    return new NextResponse('Action required', { status: 400 })
-  }
+// For creating new API keys
+export async function PUT(req: NextRequest) {
+  const newApiKey = crypto.randomUUID();
 
-  switch (action) {
-    case 'create-api-key': {
-      const newApiKey = crypto.randomUUID()
-      await kv.sadd('tunnel:api_keys', newApiKey)
-      return NextResponse.json({ apiKey: newApiKey })
-    }
+  try {
+    // Store the API key in Supabase
+    await db.insert(WebhookRequests).values({
+      orgId: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j',
+      connectionId: 'conn_2vCR1xwHHTLxE5m20AYewlc5y2j',
+      apiKey: newApiKey,
+      request: {
+        id: crypto.randomUUID(),
+        method: 'PUT',
+        url: req.url,
+        headers: {},
+        timestamp: Date.now(),
+      },
+      status: 'completed',
+      tunnelId: newApiKey,
+      userId: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+    });
 
-    case 'list-clients': {
-      const clients = await kv.hgetall<Record<string, string>>('tunnel:clients')
-      const activeClients = Object.entries(clients ?? {})
-        .filter(([key]) => key.startsWith(`${apiKey}:`))
-        .map(([key]) => key.split(':')[1])
-      return NextResponse.json({ clients: activeClients })
-    }
-
-    case 'request': {
-      const clientId = req.headers.get('x-client-id')
-      if (!clientId) {
-        return new NextResponse('Client ID required', { status: 400 })
-      }
-
-      const clientKey = `${apiKey}:${clientId}`
-      const isClientConnected = await kv.hexists('tunnel:clients', clientKey)
-      if (!isClientConnected) {
-        return new NextResponse('Client not connected', { status: 404 })
-      }
-
-      const request: TunnelRequest = await req.json()
-      await kv.rpush(`tunnel:requests:${clientKey}`, request)
-
-      // Wait for response with timeout
-      const timeout = 30000 // 30 seconds
-      const startTime = Date.now()
-
-      while (Date.now() - startTime < timeout) {
-        const response = await kv.lpop<TunnelResponse>(
-          `tunnel:responses:${clientKey}`,
-        )
-        if (response) {
-          return new NextResponse(response.body, {
-            status: response.status,
-            headers: response.headers,
-          })
-        }
-        await new Promise((resolve) => setTimeout(resolve, 100))
-      }
-
-      return new NextResponse('Request timeout', { status: 504 })
-    }
-
-    case 'response': {
-      const clientId = req.headers.get('x-client-id')
-      if (!clientId) {
-        return new NextResponse('Client ID required', { status: 400 })
-      }
-
-      const clientKey = `${apiKey}:${clientId}`
-      const response: TunnelResponse = await req.json()
-      await kv.rpush(`tunnel:responses:${clientKey}`, response)
-      return new NextResponse('OK')
-    }
-
-    default:
-      return new NextResponse('Invalid action', { status: 400 })
+    return NextResponse.json({ apiKey: newApiKey });
+  } catch (error) {
+    console.error('Error creating API key:', error);
+    return new NextResponse('Internal server error', { status: 500 });
   }
 }

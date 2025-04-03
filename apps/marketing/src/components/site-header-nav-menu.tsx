@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import Link from 'next/link'
-import * as React from 'react'
+import Image from 'next/image';
+import Link from 'next/link';
+import * as React from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,7 +13,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from '@acme/ui/navigation-menu'
+} from '@acme/ui/navigation-menu';
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -39,7 +39,7 @@ const components: { title: string; href: string; description: string }[] = [
     href: '/docs/features/ai-powered-competitor-analysis',
     title: 'AI-Powered Competitor Analysis',
   },
-]
+];
 
 export function SiteHeaderNavigationMenu() {
   return (
@@ -102,7 +102,7 @@ export function SiteHeaderNavigationMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
+          <Link href={'/docs' as any} legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Fundraising Basics
             </NavigationMenuLink>
@@ -110,7 +110,7 @@ export function SiteHeaderNavigationMenu() {
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
-  )
+  );
 }
 
 const ListItem = React.forwardRef<
@@ -135,6 +135,6 @@ const ListItem = React.forwardRef<
         </a>
       </NavigationMenuLink>
     </li>
-  )
-})
-ListItem.displayName = 'ListItem'
+  );
+});
+ListItem.displayName = 'ListItem';

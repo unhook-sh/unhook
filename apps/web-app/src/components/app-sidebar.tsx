@@ -1,32 +1,23 @@
-'use client'
+'use client';
 
 import {
   BookOpen,
-  Bot,
   ChevronDown,
   ChevronUp,
   Code,
   ExternalLink,
   LayoutDashboard,
-  Logs,
-  PlayCircle,
-  ShieldCheck,
-  Sparkles,
-  SquareFunction,
-  TestTube2,
   User2,
-  Users,
-  Workflow,
-} from 'lucide-react'
-import { useParams, usePathname } from 'next/navigation'
+} from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
-import { Icons } from '@acme/ui/custom/icons'
+import { Icons } from '@acme/ui/custom/icons';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@acme/ui/dropdown-menu'
+} from '@acme/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -38,85 +29,22 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
   SidebarSeparator,
   SidebarTrigger,
-} from '@acme/ui/sidebar'
+} from '@acme/ui/sidebar';
+import { SignOutButton } from '@clerk/nextjs';
 
 export function AppSidebar() {
-  const params = useParams()
-  const pathname = usePathname()
-
-  const projectId = params.projectId as string
-  const environmentId = params.environmentId as string
-
-  if (!projectId || !environmentId) {
-    return (
-      <SidebarMenu>
-        {['sk1', 'sk2', 'sk3', 'sk4', 'sk5'].map((id) => (
-          <SidebarMenuItem key={id}>
-            <SidebarMenuSkeleton />
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
-    )
-  }
+  const pathname = usePathname();
 
   // Menu items.
   const monitoringItems = [
     {
       icon: LayoutDashboard,
-      title: 'Dashboard',
-      url: `/projects/${projectId}/environments/${environmentId}/dashboard`,
+      title: 'Tunnels',
+      url: '/tunnels',
     },
-    {
-      icon: Logs,
-      title: 'Logs',
-      url: `/projects/${projectId}/environments/${environmentId}/logs`,
-    },
-    {
-      icon: Users,
-      title: 'Users',
-      url: `/projects/${projectId}/environments/${environmentId}/users`,
-    },
-  ]
-  const developmentItems = [
-    {
-      icon: Sparkles,
-      title: 'Prompts',
-      url: `/projects/${projectId}/environments/${environmentId}/prompts`,
-    },
-    {
-      icon: Bot,
-      title: 'Agents',
-      url: `/projects/${projectId}/environments/${environmentId}/agents`,
-    },
-    {
-      icon: Workflow,
-      title: 'Workflows',
-      url: `/projects/${projectId}/environments/${environmentId}/workflows`,
-    },
-    {
-      icon: SquareFunction,
-      title: 'Tools',
-      url: `/projects/${projectId}/environments/${environmentId}/tools`,
-    },
-    {
-      icon: ShieldCheck,
-      title: 'Guardrails',
-      url: `/projects/${projectId}/environments/${environmentId}/guardrails`,
-    },
-    {
-      icon: TestTube2,
-      title: 'Tests',
-      url: `/projects/${projectId}/environments/${environmentId}/tests`,
-    },
-    {
-      icon: PlayCircle,
-      title: 'Playground',
-      url: `/projects/${projectId}/environments/${environmentId}/playground`,
-    },
-  ]
+  ];
 
   return (
     <Sidebar collapsible="icon">
@@ -149,23 +77,6 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {monitoringItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.url === pathname}>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Develop</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {developmentItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={item.url === pathname}>
                     <a href={item.url}>
@@ -250,8 +161,10 @@ export function AppSidebar() {
                 <DropdownMenuItem>
                   <span>Billing</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
+                <DropdownMenuItem asChild>
+                  <SignOutButton>
+                    <span>Sign out</span>
+                  </SignOutButton>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -259,5 +172,5 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

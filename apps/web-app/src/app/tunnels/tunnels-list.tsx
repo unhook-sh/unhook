@@ -1,23 +1,23 @@
-'use client'
-import { api } from '@acme/api/client'
-import { Badge } from '@acme/ui/badge'
-import { Button } from '@acme/ui/button'
+'use client';
+import { api } from '@acme/api/client';
+import { Badge } from '@acme/ui/badge';
+import { Button } from '@acme/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card'
-import { Icons } from '@acme/ui/custom/icons'
-import { P } from '@acme/ui/custom/typography'
-import { toast } from '@acme/ui/sonner'
-import { useQueryClient } from '@tanstack/react-query'
+} from '@acme/ui/card';
+import { Icons } from '@acme/ui/custom/icons';
+import { P } from '@acme/ui/custom/typography';
+import { toast } from '@acme/ui/sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function TunnelsList() {
-  const { data: tunnels = [] } = api.tunnels.all.useQuery()
-  const { mutateAsync: deleteTunnel } = api.tunnels.delete.useMutation()
-  const queryClient = useQueryClient()
+  const { data: tunnels = [] } = api.tunnels.all.useQuery();
+  const { mutateAsync: deleteTunnel } = api.tunnels.delete.useMutation();
+  const queryClient = useQueryClient();
 
   if (!tunnels.length) {
     return (
@@ -30,7 +30,7 @@ export function TunnelsList() {
           </P>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -39,12 +39,14 @@ export function TunnelsList() {
         <Card key={tunnel.id}>
           <CardHeader>
             <CardTitle>{tunnel.clientId}</CardTitle>
-            <CardDescription>{tunnel.localAddr}</CardDescription>
+            <CardDescription>{tunnel.port}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              <Badge variant={tunnel.isConnected ? 'default' : 'destructive'}>
-                {tunnel.isConnected ? 'Connected' : 'Disconnected'}
+              <Badge
+                variant={tunnel.status === 'active' ? 'default' : 'destructive'}
+              >
+                {tunnel.status}
               </Badge>
               <Badge variant="secondary">{tunnel.apiKey}</Badge>
             </div>
@@ -57,17 +59,17 @@ export function TunnelsList() {
                 size="sm"
                 onClick={async () => {
                   try {
-                    await deleteTunnel({ id: tunnel.id })
+                    await deleteTunnel({ id: tunnel.id });
                     await queryClient.invalidateQueries({
                       queryKey: ['tunnels', 'all'],
-                    })
+                    });
                     toast.success('Tunnel deleted', {
                       description: 'The tunnel has been deleted successfully.',
-                    })
+                    });
                   } catch (error) {
                     toast.error('Failed to delete tunnel', {
                       description: 'Please try again.',
-                    })
+                    });
                   }
                 }}
               >
@@ -78,5 +80,5 @@ export function TunnelsList() {
         </Card>
       ))}
     </div>
-  )
+  );
 }

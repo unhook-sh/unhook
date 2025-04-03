@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { api } from '@acme/api/client'
-import { Button } from '@acme/ui/button'
-import { Icons } from '@acme/ui/custom/icons'
+import { api } from '@acme/api/client';
+import { Button } from '@acme/ui/button';
+import { Icons } from '@acme/ui/custom/icons';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@acme/ui/dialog'
+} from '@acme/ui/dialog';
 import {
   Form,
   FormControl,
@@ -19,37 +19,35 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@acme/ui/form'
-import { Input } from '@acme/ui/input'
-import { toast } from '@acme/ui/sonner'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+} from '@acme/ui/form';
+import { Input } from '@acme/ui/input';
+import { toast } from '@acme/ui/sonner';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
-  localAddr: z.string().min(1, 'Local address is required'),
-  serverAddr: z.string().min(1, 'Server address is required'),
-})
+  port: z.number().min(1, 'Port is required'),
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 interface CreateTunnelDialogProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function CreateTunnelDialog({ children }: CreateTunnelDialogProps) {
-  const { mutateAsync: createTunnel } = api.tunnels.create.useMutation()
-  const queryClient = useQueryClient()
+  const { mutateAsync: createTunnel } = api.tunnels.create.useMutation();
+  const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     defaultValues: {
       clientId: '',
-      localAddr: 'http://localhost:3000',
-      serverAddr: 'https://tunnel.acme.com/api/tunnel',
+      port: 3000,
     },
     resolver: zodResolver(formSchema),
-  })
+  });
 
   return (
     <Dialog>
@@ -67,18 +65,18 @@ export function CreateTunnelDialog({ children }: CreateTunnelDialogProps) {
             className="space-y-4"
             onSubmit={form.handleSubmit(async (values) => {
               try {
-                await createTunnel(values)
+                await createTunnel(values);
                 await queryClient.invalidateQueries({
                   queryKey: ['tunnels', 'all'],
-                })
+                });
                 toast.success('Tunnel created', {
                   description: 'The tunnel has been created successfully.',
-                })
-                form.reset()
+                });
+                form.reset();
               } catch (error) {
                 toast.error('Failed to create tunnel', {
                   description: 'Please try again.',
-                })
+                });
               }
             })}
           >
@@ -98,29 +96,12 @@ export function CreateTunnelDialog({ children }: CreateTunnelDialogProps) {
 
             <FormField
               control={form.control}
-              name="localAddr"
+              name="port"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Local Address</FormLabel>
+                  <FormLabel>Port</FormLabel>
                   <FormControl>
-                    <Input placeholder="http://localhost:3000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="serverAddr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Server Address</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://tunnel.acme.com/api/tunnel"
-                      {...field}
-                    />
+                    <Input placeholder="3000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -139,5 +120,5 @@ export function CreateTunnelDialog({ children }: CreateTunnelDialogProps) {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

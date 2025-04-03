@@ -1,8 +1,8 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { Badge } from '@acme/ui/badge'
-import { Icons } from '@acme/ui/custom/icons'
+import { Badge } from '@acme/ui/badge';
+import { Icons } from '@acme/ui/custom/icons';
 
 const footerNavs = [
   {
@@ -53,7 +53,7 @@ const footerNavs = [
     ],
     label: 'Legal',
   },
-]
+];
 
 const footerSocials = [
   {
@@ -61,7 +61,7 @@ const footerSocials = [
     icon: <Icons.TwitterX size="sm" />,
     name: 'Twitter',
   },
-]
+];
 
 export function SiteFooter() {
   return (
@@ -98,7 +98,7 @@ export function SiteFooter() {
                   {nav.items.map((item) => (
                     <li key={item.name}>
                       <Link
-                        href={item.href}
+                        href={item.href as any}
                         className="cursor-pointer text-sm font-[450] text-gray-400 duration-200 hover:text-gray-200"
                       >
                         {item.name}
@@ -116,7 +116,7 @@ export function SiteFooter() {
             {footerSocials.map((social) => (
               <Link
                 key={social.name}
-                href={social.href}
+                href={social.href as any}
                 className="fill-gray-500 text-gray-500 hover:fill-gray-900 hover:text-gray-900 dark:hover:fill-gray-600 dark:hover:text-gray-600"
               >
                 {social.icon}
@@ -135,5 +135,5 @@ export function SiteFooter() {
       </div>
       {/*   <SiteBanner /> */}
     </footer>
-  )
+  );
 }

@@ -1,0 +1,39 @@
+{
+  "bin": {
+    "tunnel": "./bin/tunnel"
+  },
+  "dependencies": {
+    "@acme/id": "workspace:*",
+    "@acme/tunnel": "workspace:*",
+    "@t3-oss/env-core": "0.12.0",
+    "debug": "4.4.0",
+    "dedent-js": "1.0.1",
+    "picocolors": "1.1.1",
+    "yargs": "17.7.2",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
+    "@types/yargs": "17.0.33",
+    "typescript": "5.8.2"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/index.ts",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "name": "@acme/tunnel-cli",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "bun build ./src/cli.ts --compile --outfile ./bin/tunnel",
+    "dev": "bun build ./src/cli.ts --compile --outfile ./bin/tunnel --watch",
+    "prepublishOnly": "pnpm build",
+    "start": "bun ./src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "type": "module"
+}

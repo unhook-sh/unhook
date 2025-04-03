@@ -27,7 +27,8 @@
     "drizzle-kit": "0.30.6",
     "supabase": "2.20.5",
     "tsx": "4.19.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "zx": "7.2.3"
   },
   "exports": {
     ".": {
@@ -49,6 +50,10 @@
     "./supabase/server": {
       "default": "./src/supabase/server-exports.ts",
       "types": "./dist/supabase/server-exports.d.ts"
+    },
+    "./supabase/rcs": {
+      "default": "./src/supabase/server.rcs.ts",
+      "types": "./dist/supabase/server.rcs.d.ts"
     }
   },
   "license": "MIT",
@@ -61,6 +66,7 @@
     "gen-migration": "pnpm with-env drizzle-kit generate",
     "migrate": "pnpm with-env drizzle-kit migrate",
     "push": "pnpm with-env drizzle-kit push",
+    "gen-types": "pnpm with-env tsx ./scripts/generate-types.ts",
     "seed": "pnpm with-env tsx src/seed.ts",
     "studio": "pnpm with-env drizzle-kit studio",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",

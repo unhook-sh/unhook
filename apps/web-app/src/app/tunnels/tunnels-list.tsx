@@ -52,7 +52,10 @@ export function TunnelsList() {
             </div>
             <div className="mt-4 flex items-center justify-between">
               <P className="text-sm text-muted-foreground">
-                Last seen: {new Date(tunnel.lastSeenAt).toLocaleString()}
+                Last connection:{' '}
+                {tunnel.lastConnectionAt
+                  ? new Date(tunnel.lastConnectionAt).toLocaleString()
+                  : 'Never'}
               </P>
               <Button
                 variant="ghost"

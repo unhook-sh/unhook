@@ -1,10 +1,11 @@
 import { db } from '@acme/db/client';
-import { WebhookRequests } from '@acme/db/schema';
+import { Requests, Tunnels } from '@acme/db/schema';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { eq } from 'drizzle-orm';
 import { fetch } from 'undici';
 
 import type { WebhookRecord } from './types';
+import { filterHeaders } from './utils/headers';
 import { log } from './utils/logger';
 
 export class WebhookHandler {
@@ -45,6 +46,15 @@ export class WebhookHandler {
    * Forwards the request to the local service and updates the response
    */
   private async forwardRequest(record: WebhookRecord): Promise<void> {
+    // Get tunnel configuration
+    const tunnel = await db.query.Tunnels.findFirst({
+      where: eq(Tunnels.id, record.tunnelId),
+    });
+
+    if (!tunnel) {
+      throw new Error(`Tunnel ${record.tunnelId} not found`);
+    }
+
     // Forward request to local service
     const response = await fetch(
       this.localAddr + new URL(record.request.url).pathname,
@@ -59,7 +69,15 @@ export class WebhookHandler {
 
     // Read response
     const responseBody = await response.arrayBuffer();
-    const responseBodyBase64 = Buffer.from(responseBody).toString('base64');
+    let responseBodyBase64: string | undefined;
+
+    // Only store response body if configured to do so and within size limit
+    if (tunnel.config.storage.storeResponseBody) {
+      const bodySize = responseBody.byteLength;
+      if (bodySize <= tunnel.config.storage.maxResponseBodySize) {
+        responseBodyBase64 = Buffer.from(responseBody).toString('base64');
+      }
+    }
 
     log.response('Response for request %s: %d', record.id, response.status);
     log.response(
@@ -67,19 +85,27 @@ export class WebhookHandler {
       Object.fromEntries(response.headers.entries()),
     );
 
+    // Filter response headers based on configuration
+    const responseHeaders = tunnel.config.storage.storeHeaders
+      ? filterHeaders(
+          Object.fromEntries(response.headers.entries()),
+          tunnel.config.headers,
+        )
+      : {};
+
     // Update request status and response
     await db
-      .update(WebhookRequests)
+      .update(Requests)
       .set({
         status: 'completed',
         completedAt: new Date(),
         response: {
           status: response.status,
-          headers: Object.fromEntries(response.headers.entries()),
+          headers: responseHeaders,
           body: responseBodyBase64,
         },
       })
-      .where(eq(WebhookRequests.id, record.id));
+      .where(eq(Requests.id, record.id));
 
     log.response('Updated request %s status to completed', record.id);
   }
@@ -92,7 +118,7 @@ export class WebhookHandler {
 
     // Update request status to failed
     await db
-      .update(WebhookRequests)
+      .update(Requests)
       .set({
         status: 'failed',
         completedAt: new Date(),
@@ -104,7 +130,7 @@ export class WebhookHandler {
           ).toString('base64'),
         },
       })
-      .where(eq(WebhookRequests.id, requestId));
+      .where(eq(Requests.id, requestId));
 
     log.error('Updated request %s status to failed', requestId);
   }

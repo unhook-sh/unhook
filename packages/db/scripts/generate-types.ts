@@ -27,7 +27,11 @@ async function main() {
     await fs.writeFile(FINAL_FILE, finalContent);
   } finally {
     // Cleanup temp file
-    await fs.rm(TEMP_FILE, { force: true });
+    try {
+      await fs.rm(TEMP_FILE, { force: true });
+    } catch (error) {
+      console.error('Error cleaning up temp file:', error);
+    }
   }
 }
 

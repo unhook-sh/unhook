@@ -5,7 +5,9 @@
     "@t3-oss/env-core": "0.12.0",
     "debug": "4.4.0",
     "drizzle-orm": "0.41.0",
-    "undici": "7.7.0"
+    "find-up": "^7.0.0",
+    "undici": "7.7.0",
+    "yaml": "^2.4.1"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
@@ -15,6 +17,14 @@
     ".": {
       "default": "./src/index.ts",
       "types": "./dist/index.d.ts"
+    },
+    "./config": {
+      "default": "./src/config.ts",
+      "types": "./dist/config.d.ts"
+    },
+    "./utils/headers": {
+      "default": "./src/utils/headers.ts",
+      "types": "./dist/utils/headers.d.ts"
     }
   },
   "license": "MIT",

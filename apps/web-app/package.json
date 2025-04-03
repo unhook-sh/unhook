@@ -4,6 +4,7 @@
     "@acme/api": "workspace:*",
     "@acme/db": "workspace:*",
     "@acme/id": "workspace:*",
+    "@acme/tunnel": "workspace:*",
     "@acme/ui": "workspace:*",
     "@acme/validators": "workspace:*",
     "@boundaryml/baml": "0.82.0",

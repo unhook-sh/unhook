@@ -64,3 +64,9 @@ export function startTunnelClient(options: TunnelClientOptions): () => void {
     log.main('Tunnel client stopped');
   };
 }
+
+export * from './utils/headers';
+export * from './types';
+export * from './webhook-handler';
+export * from './connection-manager';
+export * from './config';

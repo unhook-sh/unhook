@@ -1,21 +1,30 @@
 import { seed } from 'drizzle-seed';
 
 import { db } from './client';
-import { Orgs, OrgMembers, Tunnels, Users, WebhookRequests } from './schema';
+import {
+  Connections,
+  OrgMembers,
+  Orgs,
+  Requests,
+  Tunnels,
+  Users,
+} from './schema';
 
 // Reset all tables
 
 await db.delete(Users);
 await db.delete(Orgs);
 await db.delete(Tunnels);
-await db.delete(WebhookRequests);
+await db.delete(Requests);
+await db.delete(Connections);
 
 await seed(db, {
   Orgs,
   OrgMembers,
   Users,
   Tunnels,
-  WebhookRequests,
+  Requests,
+  Connections,
 }).refine((funcs) => ({
   OrgMembers: {
     columns: {

@@ -1,8 +1,8 @@
 // import { fileURLToPath } from 'node:url'
-import { withSentryConfig } from '@sentry/nextjs'
+import { withSentryConfig } from '@sentry/nextjs';
 // import createJiti from 'jiti'
 
-import baseConfig from '@acme/next-config/base'
+import baseConfig from '@acme/next-config/base';
 
 // Import env files to validate at build time. Use jiti so we can load .ts files in here.
 // createJiti(fileURLToPath(import.meta.url))('./src/env.client')
@@ -11,10 +11,16 @@ import baseConfig from '@acme/next-config/base'
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   ...baseConfig,
-  transpilePackages: ['@acme/api', '@acme/db', '@acme/ui', '@acme/validators'],
-}
+  transpilePackages: [
+    '@acme/api',
+    '@acme/db',
+    '@acme/ui',
+    '@acme/validators',
+    '@acme/tunnel',
+  ],
+};
 
-export default nextConfig
+export default nextConfig;
 
 // Injected content via Sentry wizard below
 
@@ -50,4 +56,4 @@ withSentryConfig(nextConfig, {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
-})
+});

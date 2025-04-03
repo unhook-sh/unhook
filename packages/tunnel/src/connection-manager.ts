@@ -1,5 +1,5 @@
 import { db } from '@acme/db/client';
-import { TunnelConnections, Tunnels } from '@acme/db/schema';
+import { Connections, Tunnels } from '@acme/db/schema';
 import { and, eq, isNull } from 'drizzle-orm';
 
 import type { TunnelClientOptions } from './types';
@@ -31,8 +31,9 @@ export class ConnectionManager {
       }
 
       // Create connection record
-      await db.insert(TunnelConnections).values({
+      await db.insert(Connections).values({
         tunnelId: tunnel.id,
+        ipAddress: this.metadata?.clientIp ?? '0.0.0.0', // Required field
         clientId: this.metadata?.clientId ?? 'unknown',
         clientVersion: this.metadata?.clientVersion,
         clientOs: this.metadata?.clientOs,
@@ -45,8 +46,8 @@ export class ConnectionManager {
       await db
         .update(Tunnels)
         .set({
-          status: 'connected',
-          lastSeenAt: new Date(),
+          status: 'active',
+          lastConnectionAt: new Date(),
         })
         .where(eq(Tunnels.id, tunnel.id));
 
@@ -83,19 +84,19 @@ export class ConnectionManager {
         db
           .update(Tunnels)
           .set({
-            status: 'connected',
-            lastSeenAt: new Date(),
+            status: 'active',
+            lastConnectionAt: new Date(),
           })
           .where(eq(Tunnels.id, tunnel.id)),
         db
-          .update(TunnelConnections)
+          .update(Connections)
           .set({
             lastPingAt: new Date(),
           })
           .where(
             and(
-              eq(TunnelConnections.tunnelId, tunnel.id),
-              isNull(TunnelConnections.disconnectedAt),
+              eq(Connections.tunnelId, tunnel.id),
+              isNull(Connections.disconnectedAt),
             ),
           ),
       ]);
@@ -126,19 +127,19 @@ export class ConnectionManager {
         db
           .update(Tunnels)
           .set({
-            status: 'disconnected',
-            lastSeenAt: new Date(),
+            status: 'inactive',
+            lastConnectionAt: new Date(),
           })
           .where(eq(Tunnels.id, tunnel.id)),
         db
-          .update(TunnelConnections)
+          .update(Connections)
           .set({
             disconnectedAt: new Date(),
           })
           .where(
             and(
-              eq(TunnelConnections.tunnelId, tunnel.id),
-              isNull(TunnelConnections.disconnectedAt),
+              eq(Connections.tunnelId, tunnel.id),
+              isNull(Connections.disconnectedAt),
             ),
           ),
       ]);

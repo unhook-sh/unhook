@@ -65,7 +65,6 @@ export const tunnelsRouter = createTRPCRouter({
         .values({
           apiKey,
           clientId: input.clientId,
-          lastSeenAt: new Date(),
           port: input.port,
           status: 'active',
           orgId: ctx.auth.orgId,

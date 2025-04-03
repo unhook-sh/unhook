@@ -16,8 +16,10 @@ import { z } from 'zod';
 import { createId } from '@acme/id';
 
 export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user']);
+export const tunnelStatusEnum = pgEnum('tunnelStatus', ['active', 'inactive']);
 
 export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
+export const TunnelStatusType = z.enum(tunnelStatusEnum.enumValues).Enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
@@ -45,10 +47,10 @@ export const UsersRelations = relations(Users, ({ many }) => ({
   tunnels: many(Tunnels, {
     relationName: 'user',
   }),
-  tunnelConnections: many(TunnelConnections, {
+  connections: many(Connections, {
     relationName: 'user',
   }),
-  webhookRequests: many(WebhookRequests, {
+  requests: many(Requests, {
     relationName: 'user',
   }),
 }));
@@ -104,8 +106,8 @@ export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
   }),
   orgMembers: many(OrgMembers),
   tunnels: many(Tunnels),
-  tunnelConnections: many(TunnelConnections),
-  webhookRequests: many(WebhookRequests),
+  connections: many(Connections),
+  requests: many(Requests),
 }));
 
 // Company Members Table
@@ -168,6 +170,31 @@ export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
   }),
 }));
 
+// Add new type for tunnel config
+export type TunnelConfig = {
+  // Request/Response Storage Options
+  storage: {
+    storeHeaders: boolean;
+    storeRequestBody: boolean;
+    storeResponseBody: boolean;
+    maxRequestBodySize: number; // in bytes
+    maxResponseBodySize: number; // in bytes
+  };
+  // Header Filtering
+  headers: {
+    allowList?: string[]; // Only store these headers
+    blockList?: string[]; // Never store these headers
+    sensitiveHeaders?: string[]; // Replace these header values with "[REDACTED]"
+  };
+  // Request Filtering
+  requests: {
+    allowedMethods?: string[]; // Only allow specific HTTP methods
+    allowedPaths?: string[]; // Only allow specific paths/patterns
+    blockedPaths?: string[]; // Block specific paths/patterns
+    maxRequestsPerMinute?: number; // Rate limiting
+  };
+};
+
 export const Tunnels = pgTable('tunnels', {
   id: varchar('id', { length: 128 })
     .$defaultFn(() => createId({ prefix: 'tunnel' }))
@@ -176,11 +203,31 @@ export const Tunnels = pgTable('tunnels', {
   clientId: text('clientId').notNull(),
   apiKey: text('apiKey').notNull(),
   port: integer('port').notNull(),
-  lastSeenAt: timestamp('lastSeenAt', {
+  lastConnectionAt: timestamp('lastConnectionAt', {
     mode: 'date',
     withTimezone: true,
-  }).notNull(),
-  status: text('status').notNull().default('disconnected'),
+  }),
+  lastRequestAt: timestamp('lastRequestAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
+  requestCount: integer('requestCount').notNull().default(0),
+  clientCount: integer('clientCount').notNull().default(0),
+  config: json('config')
+    .$type<TunnelConfig>()
+    .default({
+      storage: {
+        storeHeaders: true,
+        storeRequestBody: true,
+        storeResponseBody: true,
+        maxRequestBodySize: 1024 * 1024, // 1MB
+        maxResponseBodySize: 1024 * 1024, // 1MB
+      },
+      headers: {},
+      requests: {},
+    })
+    .notNull(),
+  status: tunnelStatusEnum('status').notNull().default('inactive'),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
@@ -212,11 +259,11 @@ export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
     fields: [Tunnels.orgId],
     references: [Orgs.id],
   }),
-  webhookRequests: many(WebhookRequests),
-  connections: many(TunnelConnections),
+  requests: many(Requests),
+  connections: many(Connections),
 }));
 
-export const WebhookRequests = pgTable('webhookRequests', {
+export const Requests = pgTable('requests', {
   id: varchar('id', { length: 128 })
     .$defaultFn(() => createId({ prefix: 'wr' }))
     .notNull()
@@ -227,18 +274,22 @@ export const WebhookRequests = pgTable('webhookRequests', {
     })
     .notNull(),
   apiKey: text('apiKey').notNull(),
-  connectionId: varchar('connectionId', { length: 128 })
-    .references(() => TunnelConnections.id, {
+  connectionId: varchar('connectionId', { length: 128 }).references(
+    () => Connections.id,
+    {
       onDelete: 'cascade',
-    })
-    .notNull(),
+    },
+  ),
   request: json('request').notNull().$type<{
     id: string;
     method: string;
     url: string;
     headers: Record<string, string>;
+    size: number;
     body?: string;
     timestamp: number;
+    contentType: string;
+    clientIp: string;
   }>(),
   status: varchar('status', {
     enum: ['pending', 'completed', 'failed'],
@@ -258,6 +309,7 @@ export const WebhookRequests = pgTable('webhookRequests', {
     headers: Record<string, string>;
     body?: string;
   }>(),
+  responseTimeMs: integer('responseTimeMs').notNull().default(0),
   userId: varchar('userId')
     .references(() => Users.id, {
       onDelete: 'cascade',
@@ -270,29 +322,26 @@ export const WebhookRequests = pgTable('webhookRequests', {
     .notNull(),
 });
 
-export const WebhookRequestsRelations = relations(
-  WebhookRequests,
-  ({ one }) => ({
-    tunnel: one(Tunnels, {
-      fields: [WebhookRequests.tunnelId],
-      references: [Tunnels.id],
-    }),
-    user: one(Users, {
-      fields: [WebhookRequests.userId],
-      references: [Users.id],
-    }),
-    org: one(Orgs, {
-      fields: [WebhookRequests.orgId],
-      references: [Orgs.id],
-    }),
-    connection: one(TunnelConnections, {
-      fields: [WebhookRequests.connectionId],
-      references: [TunnelConnections.id],
-    }),
+export const RequestsRelations = relations(Requests, ({ one }) => ({
+  tunnel: one(Tunnels, {
+    fields: [Requests.tunnelId],
+    references: [Tunnels.id],
   }),
-);
+  user: one(Users, {
+    fields: [Requests.userId],
+    references: [Users.id],
+  }),
+  org: one(Orgs, {
+    fields: [Requests.orgId],
+    references: [Orgs.id],
+  }),
+  connection: one(Connections, {
+    fields: [Requests.connectionId],
+    references: [Connections.id],
+  }),
+}));
 
-export const TunnelConnections = pgTable('tunnelConnections', {
+export const Connections = pgTable('connections', {
   id: varchar('id', { length: 128 })
     .$defaultFn(() => createId({ prefix: 'tc' }))
     .notNull()
@@ -302,6 +351,7 @@ export const TunnelConnections = pgTable('tunnelConnections', {
       onDelete: 'cascade',
     })
     .notNull(),
+  ipAddress: text('ipAddress').notNull(),
   clientId: text('clientId').notNull(),
   clientVersion: text('clientVersion'),
   clientOs: text('clientOs'),
@@ -334,23 +384,20 @@ export const TunnelConnections = pgTable('tunnelConnections', {
     .notNull(),
 });
 
-export type TunnelConnectionType = typeof TunnelConnections.$inferSelect;
+export type ConnectionType = typeof Connections.$inferSelect;
 
-export const TunnelConnectionsRelations = relations(
-  TunnelConnections,
-  ({ one, many }) => ({
-    tunnel: one(Tunnels, {
-      fields: [TunnelConnections.tunnelId],
-      references: [Tunnels.id],
-    }),
-    user: one(Users, {
-      fields: [TunnelConnections.userId],
-      references: [Users.id],
-    }),
-    org: one(Orgs, {
-      fields: [TunnelConnections.orgId],
-      references: [Orgs.id],
-    }),
-    webhookRequests: many(WebhookRequests),
+export const ConnectionsRelations = relations(Connections, ({ one, many }) => ({
+  tunnel: one(Tunnels, {
+    fields: [Connections.tunnelId],
+    references: [Tunnels.id],
   }),
-);
+  user: one(Users, {
+    fields: [Connections.userId],
+    references: [Users.id],
+  }),
+  org: one(Orgs, {
+    fields: [Connections.orgId],
+    references: [Orgs.id],
+  }),
+  requests: many(Requests),
+}));

@@ -8,6 +8,9 @@ export interface WebhookRequest {
   headers: Record<string, string>;
   body?: string; // base64 encoded
   timestamp: number;
+  size: number;
+  contentType: string;
+  clientIp: string;
 }
 
 /**
@@ -31,6 +34,7 @@ export interface TunnelClientOptions {
     clientVersion: string;
     clientOs: string;
     clientHostname: string;
+    clientIp?: string;
   };
 }
 
@@ -39,6 +43,17 @@ export interface TunnelClientOptions {
  */
 export interface WebhookRecord {
   id: string;
+  tunnelId: string;
+  apiKey: string;
+  userId: string;
+  orgId: string;
   status: string;
   request: WebhookRequest;
+  response?: {
+    status: number;
+    headers: Record<string, string>;
+    body?: string;
+  };
+  createdAt: Date;
+  completedAt?: Date;
 }

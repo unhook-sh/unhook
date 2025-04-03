@@ -12,6 +12,73 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      connections: {
+        Row: {
+          clientHostname: string | null
+          clientId: string
+          clientOs: string | null
+          clientVersion: string | null
+          connectedAt: string
+          disconnectedAt: string | null
+          id: string
+          ipAddress: string
+          lastPingAt: string
+          orgId: string
+          tunnelId: string
+          userId: string
+        }
+        Insert: {
+          clientHostname?: string | null
+          clientId: string
+          clientOs?: string | null
+          clientVersion?: string | null
+          connectedAt?: string
+          disconnectedAt?: string | null
+          id: string
+          ipAddress: string
+          lastPingAt?: string
+          orgId: string
+          tunnelId: string
+          userId: string
+        }
+        Update: {
+          clientHostname?: string | null
+          clientId?: string
+          clientOs?: string | null
+          clientVersion?: string | null
+          connectedAt?: string
+          disconnectedAt?: string | null
+          id?: string
+          ipAddress?: string
+          lastPingAt?: string
+          orgId?: string
+          tunnelId?: string
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connections_orgId_orgs_id_fk"
+            columns: ["orgId"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connections_tunnelId_tunnels_id_fk"
+            columns: ["tunnelId"]
+            isOneToOne: false
+            referencedRelation: "tunnels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "connections_userId_user_id_fk"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orgMembers: {
         Row: {
           createdAt: string | null
@@ -96,63 +163,73 @@ export type Database = {
           },
         ]
       }
-      tunnelConnections: {
+      requests: {
         Row: {
-          clientHostname: string | null
-          clientId: string
-          clientOs: string | null
-          clientVersion: string | null
-          connectedAt: string
-          disconnectedAt: string | null
+          apiKey: string
+          completedAt: string | null
+          connectionId: string
+          createdAt: string
           id: string
-          lastPingAt: string
           orgId: string
+          request: Json
+          response: Json | null
+          responseTimeMs: number
+          status: string
           tunnelId: string
           userId: string
         }
         Insert: {
-          clientHostname?: string | null
-          clientId: string
-          clientOs?: string | null
-          clientVersion?: string | null
-          connectedAt?: string
-          disconnectedAt?: string | null
+          apiKey: string
+          completedAt?: string | null
+          connectionId: string
+          createdAt?: string
           id: string
-          lastPingAt?: string
           orgId: string
+          request: Json
+          response?: Json | null
+          responseTimeMs?: number
+          status: string
           tunnelId: string
           userId: string
         }
         Update: {
-          clientHostname?: string | null
-          clientId?: string
-          clientOs?: string | null
-          clientVersion?: string | null
-          connectedAt?: string
-          disconnectedAt?: string | null
+          apiKey?: string
+          completedAt?: string | null
+          connectionId?: string
+          createdAt?: string
           id?: string
-          lastPingAt?: string
           orgId?: string
+          request?: Json
+          response?: Json | null
+          responseTimeMs?: number
+          status?: string
           tunnelId?: string
           userId?: string
         }
         Relationships: [
           {
-            foreignKeyName: "tunnelConnections_orgId_orgs_id_fk"
+            foreignKeyName: "requests_connectionId_connections_id_fk"
+            columns: ["connectionId"]
+            isOneToOne: false
+            referencedRelation: "connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_orgId_orgs_id_fk"
             columns: ["orgId"]
             isOneToOne: false
             referencedRelation: "orgs"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tunnelConnections_tunnelId_tunnels_id_fk"
+            foreignKeyName: "requests_tunnelId_tunnels_id_fk"
             columns: ["tunnelId"]
             isOneToOne: false
             referencedRelation: "tunnels"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tunnelConnections_userId_user_id_fk"
+            foreignKeyName: "requests_userId_user_id_fk"
             columns: ["userId"]
             isOneToOne: false
             referencedRelation: "user"
@@ -163,36 +240,45 @@ export type Database = {
       tunnels: {
         Row: {
           apiKey: string
+          clientCount: number
           clientId: string
           createdAt: string | null
           id: string
-          lastSeenAt: string
+          lastConnectionAt: string | null
+          lastRequestAt: string
           orgId: string
           port: number
+          requestCount: number
           status: string
           updatedAt: string | null
           userId: string
         }
         Insert: {
           apiKey: string
+          clientCount?: number
           clientId: string
           createdAt?: string | null
           id: string
-          lastSeenAt: string
+          lastConnectionAt?: string | null
+          lastRequestAt: string
           orgId: string
           port: number
+          requestCount?: number
           status?: string
           updatedAt?: string | null
           userId: string
         }
         Update: {
           apiKey?: string
+          clientCount?: number
           clientId?: string
           createdAt?: string | null
           id?: string
-          lastSeenAt?: string
+          lastConnectionAt?: string | null
+          lastRequestAt?: string
           orgId?: string
           port?: number
+          requestCount?: number
           status?: string
           updatedAt?: string | null
           userId?: string
@@ -252,77 +338,6 @@ export type Database = {
           updatedAt?: string | null
         }
         Relationships: []
-      }
-      webhookRequests: {
-        Row: {
-          apiKey: string
-          completedAt: string | null
-          connectionId: string
-          createdAt: string
-          id: string
-          orgId: string
-          request: Json
-          response: Json | null
-          status: string
-          tunnelId: string
-          userId: string
-        }
-        Insert: {
-          apiKey: string
-          completedAt?: string | null
-          connectionId: string
-          createdAt?: string
-          id: string
-          orgId: string
-          request: Json
-          response?: Json | null
-          status: string
-          tunnelId: string
-          userId: string
-        }
-        Update: {
-          apiKey?: string
-          completedAt?: string | null
-          connectionId?: string
-          createdAt?: string
-          id?: string
-          orgId?: string
-          request?: Json
-          response?: Json | null
-          status?: string
-          tunnelId?: string
-          userId?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "webhookRequests_connectionId_tunnelConnections_id_fk"
-            columns: ["connectionId"]
-            isOneToOne: false
-            referencedRelation: "tunnelConnections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "webhookRequests_orgId_orgs_id_fk"
-            columns: ["orgId"]
-            isOneToOne: false
-            referencedRelation: "orgs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "webhookRequests_tunnelId_tunnels_id_fk"
-            columns: ["tunnelId"]
-            isOneToOne: false
-            referencedRelation: "tunnels"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "webhookRequests_userId_user_id_fk"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "user"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {

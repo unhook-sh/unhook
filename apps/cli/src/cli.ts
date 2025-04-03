@@ -3,6 +3,7 @@ import { hostname, platform, release } from 'node:os';
 import { join } from 'node:path';
 import { createId } from '@acme/id';
 import { startTunnelClient } from '@acme/tunnel';
+import { loadConfig } from '@acme/tunnel/config';
 import debug from 'debug';
 import dedent from 'dedent-js';
 import pc from 'picocolors';
@@ -15,32 +16,36 @@ const pkg = JSON.parse(
 ) as { version: string };
 
 async function main() {
+  // Load config file first
+  const config = await loadConfig();
+
   const argv = await yargs(hideBin(process.argv))
     .option('port', {
       alias: 'p',
       type: 'number',
       description: 'Port of the local service (e.g., 3000)',
-      demandOption: true,
+      demandOption: !config.port,
+      default: config.port,
     })
     .option('api-key', {
       alias: 'k',
       type: 'string',
       description: 'API key for authentication with the tunnel server',
-      demandOption: true,
-      // Can also be provided via TUNNEL_API_KEY environment variable
-      default: process.env.TUNNEL_API_KEY,
+      demandOption: !config.apiKey,
+      // Can also be provided via TUNNEL_API_KEY environment variable or config file
+      default: config.apiKey,
     })
     .option('client-id', {
       alias: 'c',
       type: 'string',
       description: 'Unique client identifier (default: auto-generated)',
-      default: createId({ prefix: 'client' }),
+      default: config.clientId ?? createId({ prefix: 'client' }),
     })
     .option('debug', {
       alias: 'd',
       type: 'boolean',
       description: 'Enable debug logging',
-      default: false,
+      default: config.debug ?? false,
     })
     .usage('Usage: $0 -p <port> -k <api-key> [-c <client-id>] [-d]')
     .help()
@@ -56,7 +61,16 @@ async function main() {
   if (!argv.apiKey) {
     console.error(
       pc.red(
-        'Error: API key is required. Provide it via --api-key or TUNNEL_API_KEY environment variable.',
+        'Error: API key is required. Provide it via --api-key, TUNNEL_API_KEY environment variable, or config file.',
+      ),
+    );
+    process.exit(1);
+  }
+
+  if (!argv.port) {
+    console.error(
+      pc.red(
+        'Error: Port is required. Provide it via --port or TUNNEL_PORT environment variable.',
       ),
     );
     process.exit(1);

@@ -60,6 +60,28 @@ await seed(db, {
       clientId: funcs.default({ defaultValue: 'cl_123' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       status: funcs.default({ defaultValue: 'active' }),
+      config: funcs.default({
+        defaultValue: {
+          storage: {
+            storeHeaders: true,
+            storeRequestBody: true,
+            storeResponseBody: true,
+            maxRequestBodySize: 1024 * 1024, // 1MB
+            maxResponseBodySize: 1024 * 1024, // 1MB
+          },
+          headers: {
+            allowList: ['Authorization', 'Content-Type'],
+            blockList: ['Cookie', 'Set-Cookie'],
+            sensitiveHeaders: ['Authorization'],
+          },
+          requests: {
+            allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+            allowedPaths: ['/api/tunnel'],
+            blockedPaths: ['/api/tunnel/private'],
+            maxRequestsPerMinute: 100,
+          },
+        },
+      }),
     },
     count: 1,
   },

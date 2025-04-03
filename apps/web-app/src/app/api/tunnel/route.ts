@@ -21,6 +21,7 @@ interface TunnelRequest {
 }
 
 export async function POST(req: NextRequest) {
+  console.log('req', req);
   const apiKey =
     req.headers.get('x-api-key') ?? req.nextUrl.searchParams.get('key');
   if (!apiKey) {

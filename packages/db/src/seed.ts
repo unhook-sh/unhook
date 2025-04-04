@@ -66,8 +66,8 @@ await seed(db, {
             storeHeaders: true,
             storeRequestBody: true,
             storeResponseBody: true,
-            maxRequestBodySize: 1024 * 1024, // 1MB
-            maxResponseBodySize: 1024 * 1024, // 1MB
+            maxRequestBodySize: 1048576,
+            maxResponseBodySize: 1048576,
           },
           headers: {
             allowList: ['Authorization', 'Content-Type'],
@@ -76,13 +76,48 @@ await seed(db, {
           },
           requests: {
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedPaths: ['/api/tunnel'],
-            blockedPaths: ['/api/tunnel/private'],
+            allowedPaths: ['/webhook/.*'],
+            blockedPaths: [],
             maxRequestsPerMinute: 100,
           },
         },
       }),
     },
+    count: 1,
+  },
+  Requests: {
+    columns: {
+      request: funcs.default({
+        defaultValue: {
+          id: 'req_123',
+          size: 100,
+          url: 'https://example.com',
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+          },
+          body: '{"name": "John Doe"}',
+          clientIp: '127.0.0.1',
+          timestamp: Date.now(),
+          contentType: 'application/json',
+        },
+      }),
+      response: funcs.default({
+        defaultValue: {
+          status: 200,
+          body: 'Hello, world!',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      }),
+      responseTimeMs: funcs.int({ maxValue: 10000, minValue: 0 }),
+    },
+    count: 10,
+  },
+  Connections: {
     count: 1,
   },
 }));

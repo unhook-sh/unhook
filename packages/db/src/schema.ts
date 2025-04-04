@@ -263,6 +263,24 @@ export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
   connections: many(Connections),
 }));
 
+export interface RequestPayload {
+  id: string;
+  method: string;
+  url: string;
+  headers: Record<string, string>;
+  size: number;
+  body?: string;
+  timestamp: number;
+  contentType: string;
+  clientIp: string;
+}
+
+export interface ResponsePayload {
+  status: number;
+  headers: Record<string, string>;
+  body?: string;
+}
+
 export const Requests = pgTable('requests', {
   id: varchar('id', { length: 128 })
     .$defaultFn(() => createId({ prefix: 'wr' }))
@@ -280,17 +298,7 @@ export const Requests = pgTable('requests', {
       onDelete: 'cascade',
     },
   ),
-  request: json('request').notNull().$type<{
-    id: string;
-    method: string;
-    url: string;
-    headers: Record<string, string>;
-    size: number;
-    body?: string;
-    timestamp: number;
-    contentType: string;
-    clientIp: string;
-  }>(),
+  request: json('request').notNull().$type<RequestPayload>(),
   status: varchar('status', {
     enum: ['pending', 'completed', 'failed'],
   }).notNull(),
@@ -304,11 +312,7 @@ export const Requests = pgTable('requests', {
     mode: 'date',
     withTimezone: true,
   }),
-  response: json('response').$type<{
-    status: number;
-    headers: Record<string, string>;
-    body?: string;
-  }>(),
+  response: json('response').$type<ResponsePayload>(),
   responseTimeMs: integer('responseTimeMs').notNull().default(0),
   userId: varchar('userId')
     .references(() => Users.id, {
@@ -340,6 +344,8 @@ export const RequestsRelations = relations(Requests, ({ one }) => ({
     references: [Connections.id],
   }),
 }));
+
+export type RequestType = typeof Requests.$inferSelect;
 
 export const Connections = pgTable('connections', {
   id: varchar('id', { length: 128 })

@@ -1,14 +1,14 @@
 {
   "dependencies": {
-    "@clerk/chrome-extension": "2.2.23",
-    "@clerk/nextjs": "6.12.12",
-    "@sentry/nextjs": "9.10.1",
+    "@clerk/chrome-extension": "2.2.24",
+    "@clerk/nextjs": "6.13.0",
+    "@sentry/nextjs": "9.11.0",
     "@t3-oss/env-core": "0.12.0",
     "@t3-oss/env-nextjs": "0.12.0",
     "@vercel/analytics": "1.5.0",
     "@vercel/speed-insights": "1.2.0",
     "nextjs-google-analytics": "2.3.7",
-    "posthog-js": "1.234.6",
+    "posthog-js": "1.234.7",
     "posthog-node": "4.11.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",

@@ -13,33 +13,31 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
   SidebarTrigger,
 } from '@acme/ui/sidebar';
-import { BookOpen, Code, ExternalLink, LayoutDashboard } from 'lucide-react';
+import { BookOpen, Code, ExternalLink, Link, Logs } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { UserDropdownMenu } from './user-dropdown-menu';
+
 const pagesWithSecondarySidebar = ['/settings'];
 
-export function AppSidebar({
-  orgId,
-  userId,
-}: {
-  orgId?: string;
-  userId: string;
-}) {
+export function AppSidebar() {
   const pathname = usePathname();
 
   // Menu items.
   const monitoringItems = [
     {
-      icon: LayoutDashboard,
+      icon: Link,
       title: 'Tunnels',
       url: '/tunnels',
     },
+    {
+      icon: Logs,
+      title: 'Requests',
+      url: '/requests',
+    },
   ];
 
-  const isLoading = !userId;
   // I don't love this, but it's a quick way to check if we're on the settings page which has it's own sidebar.
   const hasSecondarySidebar = pagesWithSecondarySidebar.some((page) =>
     pathname.includes(page),
@@ -56,7 +54,7 @@ export function AppSidebar({
       <SidebarHeader className="flex-row items-gap-1">
         <SidebarTrigger className="h-8 w-8" />
         <div className="flex-1 group-data-[collapsible=icon]:hidden">
-          {!isLoading && <UserDropdownMenu />}
+          <UserDropdownMenu />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -64,25 +62,16 @@ export function AppSidebar({
           <SidebarGroupLabel>Monitor</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {isLoading
-                ? ['skeleton-1', 'skeleton-2', 'skeleton-3'].map((id) => (
-                    <SidebarMenuItem key={id}>
-                      <SidebarMenuSkeleton showIcon />
-                    </SidebarMenuItem>
-                  ))
-                : monitoringItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={item.url === pathname}
-                      >
-                        <a href={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+              {monitoringItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={item.url === pathname}>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

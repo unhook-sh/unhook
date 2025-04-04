@@ -18,7 +18,6 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { TRPCReactProvider } from '@acme/api/client';
 
 import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 import { AppSidebar } from '~/components/app-sidebar';
 import { env } from '~/env.server';
 
@@ -55,10 +54,6 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   const { orgId, userId } = await auth();
 
-  if (!userId) {
-    redirect('/sign-in');
-  }
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -79,7 +74,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
                   enableSystem
                 >
                   <SidebarProvider defaultOpen={defaultOpen}>
-                    <AppSidebar orgId={orgId} userId={userId} />
+                    <AppSidebar />
                     <SidebarInset className="max-w-[calc(100vw-var(--sidebar-width))] peer-data-[collapsible=offcanvas]:peer-data-[state=collapsed]:max-w-[100vw] peer-data-[state=collapsed]:max-w-[calc(100vw-var(--sidebar-width-icon))]">
                       {props.children}
                     </SidebarInset>

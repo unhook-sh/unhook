@@ -55,7 +55,7 @@
     "react-scan": "0.3.3",
     "react-spring": "9.7.5",
     "react-twc": "1.4.2",
-    "recharts": "2.15.1",
+    "recharts": "2.15.2",
     "remark-gfm": "4.0.1",
     "sonner": "2.0.3",
     "tailwind-merge": "3.1.0",
@@ -65,10 +65,10 @@
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
-    "@tailwindcss/postcss": "4.1.1",
+    "@tailwindcss/postcss": "4.1.2",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
-    "tailwindcss": "4.1.1",
+    "tailwindcss": "4.1.2",
     "typescript": "5.8.2",
     "zod": "3.24.2"
   },

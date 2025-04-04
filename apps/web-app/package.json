@@ -56,7 +56,8 @@
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "start": "pnpm with-env next start",
     "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "test": "pnpm with-env vitest"
   },
   "type": "module",
   "version": "0.1.0"

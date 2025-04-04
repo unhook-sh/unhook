@@ -20,8 +20,12 @@ interface TunnelRequest {
   clientIp: string;
 }
 
+function sanitizePath(path: string): string {
+  // Remove any attempts at path traversal
+  return path.replace(/\.\./g, '').replace(/\/+/g, '/');
+}
+
 export async function POST(req: NextRequest) {
-  console.log('req', req);
   const apiKey =
     req.headers.get('x-api-key') ?? req.nextUrl.searchParams.get('key');
   if (!apiKey) {
@@ -42,22 +46,40 @@ export async function POST(req: NextRequest) {
     return new NextResponse('Invalid API key', { status: 401 });
   }
 
+  // Ensure config exists with defaults
+  const config = {
+    requests: {
+      ...tunnel.config.requests,
+      allowedMethods: tunnel.config.requests?.allowedMethods ?? [],
+      blockedPaths: tunnel.config.requests?.blockedPaths ?? [],
+      allowedPaths: tunnel.config.requests?.allowedPaths ?? [],
+    },
+    storage: {
+      ...tunnel.config.storage,
+      storeRequestBody: tunnel.config.storage?.storeRequestBody ?? false,
+      maxRequestBodySize:
+        tunnel.config.storage?.maxRequestBodySize ?? 1024 * 1024, // 1MB default
+      storeHeaders: tunnel.config.storage?.storeHeaders ?? true,
+    },
+    headers: tunnel.config.headers ?? {},
+  };
+
   // Check request method restrictions
   if (
-    tunnel.config.requests.allowedMethods &&
-    !tunnel.config.requests.allowedMethods.includes(req.method)
+    config.requests.allowedMethods.length > 0 &&
+    !config.requests.allowedMethods.includes(req.method)
   ) {
     return new NextResponse('Method not allowed', { status: 405 });
   }
 
-  // Check path restrictions
-  const path = `/${endpoint}`;
-  if (tunnel.config.requests.blockedPaths?.some((p) => path.match(p))) {
+  // Sanitize and check path restrictions
+  const path = sanitizePath(`/${endpoint}`);
+  if (config.requests.blockedPaths?.some((p) => path.match(p))) {
     return new NextResponse('Path not allowed', { status: 403 });
   }
   if (
-    tunnel.config.requests.allowedPaths?.length &&
-    !tunnel.config.requests.allowedPaths.some((p) => path.match(p))
+    config.requests.allowedPaths?.length &&
+    !config.requests.allowedPaths.some((p) => path.match(p))
   ) {
     return new NextResponse('Path not allowed', { status: 403 });
   }
@@ -67,18 +89,15 @@ export async function POST(req: NextRequest) {
     let body: Buffer | undefined;
     let bodyBase64: string | undefined;
 
-    if (req.body && tunnel.config.storage.storeRequestBody) {
+    if (req.body && config.storage.storeRequestBody) {
       body = Buffer.from(await req.arrayBuffer());
-      if (body.length <= tunnel.config.storage.maxRequestBodySize) {
+      if (body.length <= config.storage.maxRequestBodySize) {
         bodyBase64 = body.toString('base64');
       }
     }
 
-    const headers = tunnel.config.storage.storeHeaders
-      ? filterHeaders(
-          Object.fromEntries(req.headers.entries()),
-          tunnel.config.headers,
-        )
+    const headers = config.storage.storeHeaders
+      ? filterHeaders(Object.fromEntries(req.headers.entries()), config.headers)
       : {};
 
     const request: TunnelRequest = {

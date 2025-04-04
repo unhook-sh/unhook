@@ -76,6 +76,7 @@ import {
   PieChart,
   Play,
   Plus,
+  Rocket,
   Search,
   Settings,
   Share,
@@ -134,6 +135,9 @@ export type SiIconProps = TwcComponentProps<'svg'> &
   VariantProps<typeof iconVariants> & { withColor?: boolean };
 
 export const Icons = {
+  Rocket: twx(Rocket).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   LayoutGrid: twx(LayoutGrid).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),

@@ -38,67 +38,65 @@ export default async function TunnelsPage() {
   await api.tunnels.all.prefetch();
 
   return (
-    <main className="container py-16">
-      <div className="flex flex-col gap-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <H1>Tunnels</H1>
-            <P className="text-muted-foreground">
-              Manage your active and inactive tunnels
-            </P>
-          </div>
-          <CreateTunnelDialog>
-            <Button>
-              <Icons.Plus size="sm" className="mr-2" />
-              Create Tunnel
-            </Button>
-          </CreateTunnelDialog>
+    <div className="flex flex-col gap-8 p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <H1>Tunnels</H1>
+          <P className="text-muted-foreground">
+            Manage your active and inactive tunnels
+          </P>
         </div>
-
-        <Tabs defaultValue="tunnels">
-          <TabsList>
-            <TabsTrigger value="tunnels">Tunnels</TabsTrigger>
-            <TabsTrigger value="metrics">Metrics</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Icons.Search
-              size="sm"
-              variant="muted"
-              className="absolute left-3 top-1/2 -translate-y-1/2"
-            />
-            <input
-              type="search"
-              placeholder="Search tunnels..."
-              className="w-full rounded-md border bg-background px-9 py-2 text-sm outline-none ring-primary/20 transition-all placeholder:text-muted-foreground focus:ring-2"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon">
-              <Icons.LayoutGrid size="sm" />
-            </Button>
-            <Button variant="outline" size="icon">
-              <Icons.Menu size="sm" />
-            </Button>
-            <Button variant="outline">
-              <Icons.SlidersHorizontal size="sm" className="mr-2" />
-              Filter
-            </Button>
-            <Button variant="outline">
-              <Icons.ArrowUpDown size="sm" className="mr-2" />
-              Sort
-            </Button>
-          </div>
-        </div>
-
-        <Suspense fallback={<TunnelsSkeleton />}>
-          <HydrationBoundary>
-            <TunnelsList />
-          </HydrationBoundary>
-        </Suspense>
+        <CreateTunnelDialog>
+          <Button>
+            <Icons.Plus size="sm" className="mr-2" />
+            Create Tunnel
+          </Button>
+        </CreateTunnelDialog>
       </div>
-    </main>
+
+      <Tabs defaultValue="tunnels">
+        <TabsList>
+          <TabsTrigger value="tunnels">Tunnels</TabsTrigger>
+          <TabsTrigger value="metrics">Metrics</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Icons.Search
+            size="sm"
+            variant="muted"
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+          />
+          <input
+            type="search"
+            placeholder="Search tunnels..."
+            className="w-full rounded-md border bg-background px-9 py-2 text-sm outline-none ring-primary/20 transition-all placeholder:text-muted-foreground focus:ring-2"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon">
+            <Icons.LayoutGrid size="sm" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <Icons.Menu size="sm" />
+          </Button>
+          <Button variant="outline">
+            <Icons.SlidersHorizontal size="sm" className="mr-2" />
+            Filter
+          </Button>
+          <Button variant="outline">
+            <Icons.ArrowUpDown size="sm" className="mr-2" />
+            Sort
+          </Button>
+        </div>
+      </div>
+
+      <Suspense fallback={<TunnelsSkeleton />}>
+        <HydrationBoundary>
+          <TunnelsList />
+        </HydrationBoundary>
+      </Suspense>
+    </div>
   );
 }

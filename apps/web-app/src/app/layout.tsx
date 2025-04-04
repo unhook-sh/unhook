@@ -1,56 +1,63 @@
-import { ReactScan } from '@acme/ui/custom/react-scan'
-import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
-import type { Metadata, Viewport } from 'next'
-import { cookies } from 'next/headers'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { ReactScan } from '@acme/ui/custom/react-scan';
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
+import type { Metadata, Viewport } from 'next';
+import { cookies } from 'next/headers';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
-import { AnalyticsProviders } from '@acme/analytics/providers'
-import { ThemeProvider } from '@acme/ui/custom/theme'
-import { cn } from '@acme/ui/lib/utils'
-import { SidebarProvider } from '@acme/ui/sidebar'
-import { Toaster } from '@acme/ui/sonner'
+import { AnalyticsProviders } from '@acme/analytics/providers';
+import { ThemeProvider } from '@acme/ui/custom/theme';
+import { cn } from '@acme/ui/lib/utils';
+import { SidebarInset, SidebarProvider } from '@acme/ui/sidebar';
+import { Toaster } from '@acme/ui/sonner';
 
-import '@acme/ui/globals.css'
+import '@acme/ui/globals.css';
 
-import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs';
 
-import { TRPCReactProvider } from '@acme/api/client'
+import { TRPCReactProvider } from '@acme/api/client';
 
-import { AppSidebar } from '~/components/app-sidebar'
-import { env } from '~/env.server'
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { AppSidebar } from '~/components/app-sidebar';
+import { env } from '~/env.server';
 
 export const metadata: Metadata = {
-  description: 'ShelterBuddy is a tool for shelters to manage their animals',
+  description: 'Tunnel is a tool for shelters to manage their animals',
   metadataBase: new URL(
     env.VERCEL_ENV === 'production'
-      ? 'https://shelterbuddy.vercel.app'
+      ? 'https://tunnel.vercel.app'
       : 'http://localhost:3000',
   ),
   openGraph: {
-    description: 'ShelterBuddy is a tool for shelters to manage their animals',
-    siteName: 'ShelterBuddy',
-    title: 'ShelterBuddy',
-    url: 'https://shelterbuddy.vercel.app',
+    description: 'Tunnel is a tool for shelters to manage their animals',
+    siteName: 'Tunnel',
+    title: 'Tunnel',
+    url: 'https://tunnel.vercel.app',
   },
-  title: 'ShelterBuddy',
+  title: 'Tunnel',
   twitter: {
     card: 'summary_large_image',
     creator: '@seawatts',
     site: '@seawatts',
   },
-}
+};
 
 export const viewport: Viewport = {
   themeColor: [
     { color: 'white', media: '(prefers-color-scheme: light)' },
     { color: 'black', media: '(prefers-color-scheme: dark)' },
   ],
-}
+};
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const cookieStore = await cookies()
-  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true'
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
+  const { orgId, userId } = await auth();
+
+  if (!userId) {
+    redirect('/sign-in');
+  }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -72,8 +79,10 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
                   enableSystem
                 >
                   <SidebarProvider defaultOpen={defaultOpen}>
-                    <AppSidebar />
-                    <main className="flex-1">{props.children}</main>
+                    <AppSidebar orgId={orgId} userId={userId} />
+                    <SidebarInset className="max-w-[calc(100vw-var(--sidebar-width))] peer-data-[collapsible=offcanvas]:peer-data-[state=collapsed]:max-w-[100vw] peer-data-[state=collapsed]:max-w-[calc(100vw-var(--sidebar-width-icon))]">
+                      {props.children}
+                    </SidebarInset>
                   </SidebarProvider>
                   <Toaster />
                 </ThemeProvider>
@@ -83,5 +92,5 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         </NuqsAdapter>
       </body>
     </html>
-  )
+  );
 }

@@ -1,8 +1,6 @@
 {
   "commitlint": {
-    "extends": [
-      "@acme/commitlint-config"
-    ]
+    "extends": ["@acme/commitlint-config"]
   },
   "devDependencies": {
     "@acme/commitlint-config": "workspace:*",
@@ -22,6 +20,13 @@
   "name": "acme",
   "packageManager": "pnpm@10.2.0",
   "private": true,
+  "pnpm": {
+    "overrides": {
+      "@acme/tunnel-cli>react": "18.3.1",
+      "@acme/tunnel-cli>react-dom": "18.3.1",
+      "@acme/tunnel-cli>react-reconciler": "0.29.0"
+    }
+  },
   "scripts": {
     "build": "turbo run build",
     "bump-versions": "pnpm changeset version && pnpm install",

@@ -1,9 +1,15 @@
 {
-  "extends": "@acme/tsconfig/node.json",
+  "extends": "@acme/tsconfig/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"]
+    },
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "jsx": "preserve",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["*.ts", "src"],
+  "include": ["*.ts", "*.tsx", "src"],
   "exclude": ["node_modules"]
 }

@@ -20,6 +20,13 @@
       "command": "pnpm dev",
       "cwd": "${workspaceFolder}/apps/nextjs/",
       "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Bun",
+      "program": "${workspaceFolder}/apps/cli/src/cli.ink.tsx",
+      "args": ["-p", "3000", "-k", "1234567890"]
     }
   ]
 }

@@ -2,6 +2,7 @@
   "commitlint": {
     "extends": ["@acme/commitlint-config"]
   },
+  "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "devDependencies": {
     "@acme/commitlint-config": "workspace:*",
     "@biomejs/biome": "1.9.4",
@@ -20,13 +21,6 @@
   "name": "acme",
   "packageManager": "pnpm@10.2.0",
   "private": true,
-  "pnpm": {
-    "overrides": {
-      "@acme/tunnel-cli>react": "18.3.1",
-      "@acme/tunnel-cli>react-dom": "18.3.1",
-      "@acme/tunnel-cli>react-reconciler": "0.29.0"
-    }
-  },
   "scripts": {
     "build": "turbo run build",
     "bump-versions": "pnpm changeset version && pnpm install",
@@ -44,7 +38,7 @@
     "format:fix": "biome check --write",
     "knip": "knip --include files,dependencies",
     "lint:ws": "pnpm dlx sherif@latest",
-    "postinstall": "pnpm lint:ws",
+    "postinstall1": "pnpm lint:ws",
     "prepare": "npx lefthook install",
     "test": "pnpm with-env vitest",
     "typecheck": "turbo run typecheck",

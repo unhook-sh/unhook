@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       ...tunnel.config.storage,
       storeRequestBody: tunnel.config.storage?.storeRequestBody ?? false,
       maxRequestBodySize:
-        tunnel.config.storage?.maxRequestBodySize ?? 1024 * 1024, // 1MB default
+        tunnel.config.storage?.maxRequestBodySize ?? 1024 * 1024 * 10, // 10MB default
       storeHeaders: tunnel.config.storage?.storeHeaders ?? true,
     },
     headers: tunnel.config.headers ?? {},

@@ -76,16 +76,16 @@ async function main() {
   try {
     const { waitUntilExit } = render(
       <Layout
+        version={pkg.version}
         port={argv.port}
         apiKey={argv.apiKey}
         clientId={argv.clientId}
         debug={argv.debug}
-        onAction={() => {}}
       />,
-      // { patchConsole: true, debug:true },
     );
 
     await waitUntilExit();
+    console.log('Exiting...');
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

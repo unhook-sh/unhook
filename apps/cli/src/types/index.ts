@@ -3,7 +3,7 @@ export interface PageProps {
   apiKey: string;
   clientId: string;
   debug: boolean;
-  onAction: (action: string, data?: Record<string, unknown>) => void;
+  version: string;
 }
 
 export interface RequestItem {

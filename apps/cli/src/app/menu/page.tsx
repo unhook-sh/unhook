@@ -18,7 +18,7 @@ export const MenuPage: FC<RouteProps> = () => {
 
   const handleSelect = (item: { value: MenuAction }) => {
     if (item.value === 'exit') {
-      app.exit();
+      // app.exit();
       return;
     }
     navigate(item.value);

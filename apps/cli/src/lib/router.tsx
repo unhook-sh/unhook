@@ -18,6 +18,8 @@ export interface Route<TPath extends string = string> {
 interface RouterContextType<TPath extends string = string> {
   currentPath: TPath;
   navigate: (path: TPath) => void;
+  goBack: () => void;
+  canGoBack: boolean;
   routes: Route<TPath>[];
 }
 
@@ -39,14 +41,31 @@ export function RouterProvider<TPath extends string = string>({
   const [currentPath, setCurrentPath] = useState<TPath>(
     initialPath ?? routes[0]?.path ?? ('/' as TPath),
   );
+  const [history, setHistory] = useState<TPath[]>([]);
 
   const navigate = (path: TPath) => {
+    // Don't add to history if navigating to the same path
+    if (path === currentPath) return;
+
+    setHistory((prev) => [...prev, currentPath]);
     setCurrentPath(path);
+  };
+
+  const goBack = () => {
+    if (history.length === 0) return;
+
+    const previousPath = history.at(-1);
+    if (!previousPath) return;
+
+    setHistory((prev) => prev.slice(0, -1));
+    setCurrentPath(previousPath);
   };
 
   const value: RouterContextType<TPath> = {
     currentPath,
     navigate,
+    goBack,
+    canGoBack: history.length > 0,
     routes,
   };
 

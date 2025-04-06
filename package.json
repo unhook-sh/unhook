@@ -44,5 +44,13 @@
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
     "with-env": "dotenv -e ./.env --"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "ink@5.2.0": "patches/ink@5.2.0.patch"
+    },
+    "overrides": {
+      "react-reconciler": "0.32.0"
+    }
   }
 }

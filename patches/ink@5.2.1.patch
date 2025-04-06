@@ -1,0 +1,222 @@
+diff --git a/build/hooks/use-input.js b/build/hooks/use-input.js
+index 7b40a138f24d015f76fa303e5f368d7f5455c3d1..b2569730a088330b0048f5d84332021090423fe6 100644
+--- a/build/hooks/use-input.js
++++ b/build/hooks/use-input.js
+@@ -81,9 +81,9 @@ const useInput = (inputHandler, options = {}) => {
+             // If app is not supposed to exit on Ctrl+C, then let input listener handle it
+             if (!(input === 'c' && key.ctrl) || !internal_exitOnCtrlC) {
+                 // @ts-expect-error TypeScript types for `batchedUpdates` require an argument, but React's codebase doesn't provide it and it works without it as exepected.
+-                reconciler.batchedUpdates(() => {
++                // reconciler.batchedUpdates(() => {
+                     inputHandler(input, key);
+-                });
++                // });
+             }
+         };
+         internal_eventEmitter?.on('input', handleData);
+diff --git a/build/ink.js b/build/ink.js
+index a9c444ff161ed4b6ea13909591844909015fe97c..4cd82c08c567904c01dfcd6b2852ff4c7ae1111e 100644
+--- a/build/ink.js
++++ b/build/ink.js
+@@ -56,9 +56,9 @@ export default class Ink {
+         // so that it's rerendered every time, not just new static parts, like in non-debug mode
+         this.fullStaticOutput = '';
+         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+-        this.container = reconciler.createContainer(this.rootNode,
++        this.container = reconciler.createContainer(this.rootNode,
+         // Legacy mode
+-        0, null, false, null, 'id', () => { }, null);
++        1, null, false, false, 'id', console.error, console.error, console.error, null);
+         // Unmount when process exits
+         this.unsubscribeExit = signalExit(this.unmount, { alwaysLast: false });
+         if (process.env['DEV'] === 'true') {
+@@ -66,7 +66,7 @@ export default class Ink {
+                 bundleType: 0,
+                 // Reporting React DOM's version, not Ink's
+                 // See https://github.com/facebook/react/issues/16666#issuecomment-532639905
+-                version: '16.13.1',
++                // version: '16.13.1',
+                 rendererPackageName: 'ink',
+             });
+         }
+diff --git a/build/reconciler.js b/build/reconciler.js
+index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..22392e603c02a471a5133ea8ee2f3b283b54da9f 100644
+--- a/build/reconciler.js
++++ b/build/reconciler.js
+@@ -1,6 +1,6 @@
+ import process from 'node:process';
+ import createReconciler from 'react-reconciler';
+-import { DefaultEventPriority } from 'react-reconciler/constants.js';
++import { DefaultEventPriority, NoEventPriority } from 'react-reconciler/constants.js';
+ import Yoga from 'yoga-layout';
+ import { createTextNode, appendChildNode, insertBeforeNode, removeChildNode, setStyle, setTextNodeValue, createNode, setAttribute, } from './dom.js';
+ import applyStyles from './styles.js';
+@@ -58,6 +58,9 @@ const cleanupYogaNode = (node) => {
+     node?.unsetMeasureFunc();
+     node?.freeRecursive();
+ };
++
++let currentUpdatePriority = NoEventPriority;
++
+ export default createReconciler({
+     getRootHostContext: () => ({
+         isInsideText: false,
+@@ -162,7 +165,11 @@ export default createReconciler({
+     scheduleTimeout: setTimeout,
+     cancelTimeout: clearTimeout,
+     noTimeout: -1,
+-    getCurrentEventPriority: () => DefaultEventPriority,
++    setCurrentUpdatePriority: newPriority => {
++		currentUpdatePriority = newPriority;
++	},
++	getCurrentUpdatePriority: () => currentUpdatePriority,
++    resolveUpdatePriority: () => currentUpdatePriority || DefaultEventPriority,
+     beforeActiveInstanceBlur() { },
+     afterActiveInstanceBlur() { },
+     detachDeletedInstance() { },
+@@ -186,7 +193,8 @@ export default createReconciler({
+         }
+         return { props, style };
+     },
+-    commitUpdate(node, { props, style }) {
++    commitUpdate(node, payload, type, oldProps, newProps) {
++        const { props, style } = newProps;
+         if (props) {
+             for (const [key, value] of Object.entries(props)) {
+                 if (key === 'style') {
+@@ -215,5 +223,21 @@ export default createReconciler({
+         removeChildNode(node, removeNode);
+         cleanupYogaNode(removeNode.yogaNode);
+     },
++    maySuspendCommit() {
++		// TODO: May return false here if we are confident that we don't need to suspend
++		return true;
++	},
++	startSuspendingCommit() {},
++	waitForCommitToBeReady() {
++		return null;
++	},
++	preloadInstance() {
++		// Return true to indicate it's already loaded
++		return true;
++	},
++	suspendInstance() {},
++	shouldAttemptEagerTransition() {
++		return false;
++	},
+ });
+ //# sourceMappingURL=reconciler.js.map
+\ No newline at end of file
+diff --git a/package.json b/package.json
+index 0359c38546c5c159165af12846b7a1f45a3271b9..b70d1d848227905f9a2472d8fdd191e8b773ede1 100644
+--- a/package.json
++++ b/package.json
+@@ -20,7 +20,7 @@
+ 	"scripts": {
+ 		"dev": "tsc --watch",
+ 		"build": "tsc",
+-		"prepare": "npm run build",
++		"prepar": "npm run build",
+ 		"test": "tsc --noEmit && xo && FORCE_COLOR=true ava",
+ 		"example": "NODE_NO_WARNINGS=1 node --loader ts-node/esm",
+ 		"benchmark": "NODE_NO_WARNINGS=1 node --loader ts-node/esm"
+@@ -47,63 +47,63 @@
+ 		"ansi-escapes": "^7.0.0",
+ 		"ansi-styles": "^6.2.1",
+ 		"auto-bind": "^5.0.1",
+-		"chalk": "^5.3.0",
+-		"cli-boxes": "^3.0.0",
+-		"cli-cursor": "^4.0.0",
++		"chalk": "^5.4.1",
++		"cli-boxes": "^4.0.1",
++		"cli-cursor": "^5.0.0",
+ 		"cli-truncate": "^4.0.0",
+ 		"code-excerpt": "^4.0.0",
+-		"es-toolkit": "^1.22.0",
++		"es-toolkit": "^1.34.1",
+ 		"indent-string": "^5.0.0",
+ 		"is-in-ci": "^1.0.0",
+ 		"patch-console": "^2.0.0",
+-		"react-reconciler": "^0.29.0",
+-		"scheduler": "^0.23.0",
+-		"signal-exit": "^3.0.7",
++		"react-reconciler": "^0.32.0",
++		"scheduler": "^0.26.0",
++		"signal-exit": "^4.1.0",
+ 		"slice-ansi": "^7.1.0",
+ 		"stack-utils": "^2.0.6",
+ 		"string-width": "^7.2.0",
+-		"type-fest": "^4.27.0",
++		"type-fest": "^4.39.1",
+ 		"widest-line": "^5.0.0",
+ 		"wrap-ansi": "^9.0.0",
+-		"ws": "^8.18.0",
+-		"yoga-layout": "~3.2.1"
++		"ws": "^8.18.1",
++		"yoga-layout": "^3.2.1"
+ 	},
+ 	"devDependencies": {
+-		"@faker-js/faker": "^9.2.0",
+-		"@sindresorhus/tsconfig": "^6.0.0",
+-		"@types/benchmark": "^2.1.2",
+-		"@types/ms": "^0.7.31",
+-		"@types/node": "^22.9.0",
+-		"@types/react": "^18.3.12",
+-		"@types/react-reconciler": "^0.28.2",
+-		"@types/scheduler": "^0.23.0",
+-		"@types/signal-exit": "^3.0.0",
+-		"@types/sinon": "^17.0.3",
+-		"@types/stack-utils": "^2.0.2",
+-		"@types/ws": "^8.5.13",
++		"@faker-js/faker": "^9.6.0",
++		"@sindresorhus/tsconfig": "^7.0.0",
++		"@types/benchmark": "^2.1.5",
++		"@types/ms": "^2.1.0",
++		"@types/node": "^22.14.0",
++		"@types/react": "^19.1.0",
++		"@types/react-reconciler": "^0.31.0",
++		"@types/scheduler": "^0.26.0",
++		"@types/signal-exit": "^4.0.0",
++		"@types/sinon": "^17.0.4",
++		"@types/stack-utils": "^2.0.3",
++		"@types/ws": "^8.18.1",
+ 		"@vdemedes/prettier-config": "^2.0.1",
+-		"ava": "^5.1.1",
++		"ava": "^6.2.0",
+ 		"boxen": "^8.0.1",
+ 		"delay": "^6.0.0",
+-		"eslint-config-xo-react": "0.27.0",
+-		"eslint-plugin-react": "^7.37.2",
+-		"eslint-plugin-react-hooks": "^5.0.0",
++		"eslint-config-xo-react": "^0.28.0",
++		"eslint-plugin-react": "^7.37.5",
++		"eslint-plugin-react-hooks": "^5.2.0",
+ 		"ms": "^2.1.3",
+ 		"node-pty": "^1.0.0",
+-		"p-queue": "^8.0.0",
+-		"prettier": "^3.3.3",
+-		"react": "^18.0.0",
+-		"react-devtools-core": "^5.0.0",
+-		"sinon": "^19.0.2",
++		"p-queue": "^8.1.0",
++		"prettier": "^3.5.3",
++		"react": "^19.1.0",
++		"react-devtools-core": "^6.1.1",
++		"sinon": "^20.0.0",
+ 		"strip-ansi": "^7.1.0",
+ 		"ts-node": "^10.9.2",
+-		"typescript": "^5.6.3",
+-		"xo": "^0.59.3"
++		"typescript": "^5.8.3",
++		"xo": "^0.60.0"
+ 	},
+ 	"peerDependencies": {
+-		"@types/react": ">=18.0.0",
+-		"react": ">=18.0.0",
+-		"react-devtools-core": "^4.19.1"
++		"@types/react": ">=19.0.0",
++		"react": ">=19.0.0",
++		"react-devtools-core": "^6.1.1"
+ 	},
+ 	"peerDependenciesMeta": {
+ 		"@types/react": {

@@ -4,6 +4,14 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  react-reconciler: 0.32.0
+
+patchedDependencies:
+  ink@5.2.0:
+    hash: a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58
+    path: patches/ink@5.2.0.patch
+
 importers:
 
   .:
@@ -50,30 +58,39 @@ importers:
       '@t3-oss/env-core':
         specifier: 0.12.0
         version: 0.12.0(typescript@5.8.2)(zod@3.24.2)
+      chalk:
+        specifier: 5.4.1
+        version: 5.4.1
+      cli-spinners:
+        specifier: 3.2.0
+        version: 3.2.0
       debug:
         specifier: 4.4.0
         version: 4.4.0(supports-color@8.1.1)
       dedent-js:
         specifier: 1.0.1
         version: 1.0.1
+      figlet:
+        specifier: 1.8.0
+        version: 1.8.0
       figures:
         specifier: 6.1.0
         version: 6.1.0
       ink:
-        specifier: github:QuentinFontenay/ink#react-v19.0.0
-        version: https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
+        specifier: 5.2.0
+        version: 5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
       ink-select-input:
         specifier: 6.0.0
-        version: 6.0.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
+        version: 6.0.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
       ink-spinner:
         specifier: 5.0.0
-        version: 5.0.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
+        version: 5.0.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
       ink-table:
         specifier: 3.1.0
-        version: 3.1.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
+        version: 3.1.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
       ink-text-input:
         specifier: 6.0.0
-        version: 6.0.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
+        version: 6.0.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0)
       meow:
         specifier: 13.2.0
         version: 13.2.0
@@ -95,6 +112,9 @@ importers:
       react-reconciler:
         specifier: 0.32.0
         version: 0.32.0(react@19.1.0)
+      type-fest:
+        specifier: 4.39.1
+        version: 4.39.1
       yargs:
         specifier: 17.7.2
         version: 17.7.2
@@ -111,6 +131,9 @@ importers:
       '@types/bun':
         specifier: latest
         version: 1.2.8
+      '@types/figlet':
+        specifier: 1.7.0
+        version: 1.7.0
       '@types/react':
         specifier: 19.1.0
         version: 19.1.0
@@ -4909,6 +4932,9 @@ packages:
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
+  '@types/figlet@1.7.0':
+    resolution: {integrity: sha512-KwrT7p/8Eo3Op/HBSIwGXOsTZKYiM9NpWRBJ5sVjWP/SmlS+oxxRvJht/FNAtliJvja44N3ul1yATgohnVBV0Q==}
+
   '@types/filesystem@0.0.36':
     resolution: {integrity: sha512-vPDXOZuannb9FZdxgHnqSwAG/jvdGM8Wq+6N4D/d80z+D4HWH+bItqsZaVRQykAn6WEVeEkLm2oQigyHtgb0RA==}
 
@@ -5577,8 +5603,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  caniuse-lite@1.0.30001710:
-    resolution: {integrity: sha512-B5C0I0UmaGqHgo5FuqJ7hBd4L57A4dDD+Xi+XX1nXOoxGeDdY4Ko38qJYOyqznBVJEqON5p8P1x5zRR3+rsnxA==}
+  caniuse-lite@1.0.30001712:
+    resolution: {integrity: sha512-MBqPpGYYdQ7/hfKiet9SCI+nmN5/hp4ZzveOJubl5DTAMa5oggjAuoi0Z4onBpKPFI2ePGnQuQIzF3VxDjDJig==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -5706,6 +5732,10 @@ packages:
   cli-spinners@2.9.2:
     resolution: {integrity: sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==}
     engines: {node: '>=6'}
+
+  cli-spinners@3.2.0:
+    resolution: {integrity: sha512-pXftdQloMZzjCr3pCTIRniDcys6dDzgpgVhAHHk6TKBDbRuP1MkuetTF5KSv4YUutbOPa7+7ZrAJ2kVtbMqyXA==}
+    engines: {node: '>=18.20'}
 
   cli-truncate@4.0.0:
     resolution: {integrity: sha512-nPdaFdQ0h/GEigbPClz11D0v/ZJEwxmeVZGeMo3Z5StPtUTkA9o1lD6QwoirYiSDzbcwn2XcjwmCp68W1IS4TA==}
@@ -6585,6 +6615,11 @@ packages:
   fflate@0.4.8:
     resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
 
+  figlet@1.8.0:
+    resolution: {integrity: sha512-chzvGjd+Sp7KUvPHZv6EXV5Ir3Q7kYNpCr4aHrRW79qFtTefmQZNny+W1pW9kf5zeE6dikku2W50W/wAH2xWgw==}
+    engines: {node: '>= 0.4.0'}
+    hasBin: true
+
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -6991,7 +7026,6 @@ packages:
 
   ink-select-input@6.0.0:
     resolution: {integrity: sha512-2mCbn1b9xeguA3qJiaf8Sx8W4MM005wACcLKwHWWJmJ8BapjsahmQPuY2U2qyGc817IdWFjNk/K41Vn39UlO4Q==}
-    version: 6.0.0
     engines: {node: '>=18'}
     peerDependencies:
       ink: '>=5.0.0'
@@ -6999,7 +7033,6 @@ packages:
 
   ink-spinner@5.0.0:
     resolution: {integrity: sha512-EYEasbEjkqLGyPOUc8hBJZNuC5GvXGMLu0w5gdTNskPc7Izc5vO3tdQEYnzvshucyGCBXc86ig0ujXPMWaQCdA==}
-    version: 5.0.0
     engines: {node: '>=14.16'}
     peerDependencies:
       ink: '>=4.0.0'
@@ -7007,26 +7040,23 @@ packages:
 
   ink-table@3.1.0:
     resolution: {integrity: sha512-qxVb4DIaEaJryvF9uZGydnmP9Hkmas3DCKVpEcBYC0E4eJd3qNgNe+PZKuzgCERFe9LfAS1TNWxCr9+AU4v3YA==}
-    version: 3.1.0
     peerDependencies:
       ink: '>=3.0.0'
       react: '>=16.8.0'
 
   ink-text-input@6.0.0:
     resolution: {integrity: sha512-Fw64n7Yha5deb1rHY137zHTAbSTNelUKuB5Kkk2HACXEtwIHBCf9OH2tP/LQ9fRYTl1F0dZgbW0zPnZk6FA9Lw==}
-    version: 6.0.0
     engines: {node: '>=18'}
     peerDependencies:
       ink: '>=5'
       react: '>=18'
 
-  ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5:
-    resolution: {tarball: https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5}
-    version: 5.1.0
+  ink@5.2.0:
+    resolution: {integrity: sha512-gHzSBBvsh/1ZYuGi+aKzU7RwnYIr6PSz56or9T90i4DDS99euhN7nYKOMR3OTev0dKIB6Zod3vSapYzqoilQcg==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@types/react': 19.0.9
-      react: 19.0.0
+      '@types/react': '>=18.0.0'
+      react: '>=18.0.0'
       react-devtools-core: ^4.19.1
     peerDependenciesMeta:
       '@types/react':
@@ -8806,18 +8836,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  react-reconciler@0.29.2:
-    resolution: {integrity: sha512-zZQqIiYgDCTP/f1N/mAR10nJGrPD2ZR+jDSEsKWJHYC7Cm2wodlwbR3upZRdC3cjIjSlTLNVyO7Iu0Yy7t2AYg==}
-    engines: {node: '>=0.10.0'}
-    peerDependencies:
-      react: ^18.3.1
-
-  react-reconciler@0.31.0:
-    resolution: {integrity: sha512-7Ob7Z+URmesIsIVRjnLoDGwBEG/tVitidU0nMsqX/eeJaLY89RISO/10ERe0MqmzuKUUB1rmY+h1itMbUHg9BQ==}
-    engines: {node: '>=0.10.0'}
-    peerDependencies:
-      react: ^19.0.0
-
   react-reconciler@0.32.0:
     resolution: {integrity: sha512-2NPMOzgTlG0ZWdIf3qG+dcbLSoAc/uLfOwckc3ofy5sSK0pLJqnQLpUFxvGcN2rlXSjnVtGeeFLNimCQEj5gOQ==}
     engines: {node: '>=0.10.0'}
@@ -10237,8 +10255,8 @@ packages:
     resolution: {integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==}
     engines: {node: '>=18'}
 
-  yoga-wasm-web@0.3.3:
-    resolution: {integrity: sha512-N+d4UJSJbt/R3wqY7Coqs5pcV0aUj2j9IaQ3rNj9bVCLld8tTGKRa2USARjnvZJWVx1NDmQev8EknoczaOQDOA==}
+  yoga-layout@3.2.1:
+    resolution: {integrity: sha512-0LPOt3AxKqMdFBZA3HBAt/t/8vIKq7VaQYbuA8WxCgung+p9TVyKRYdpvCb80HcdTN2NkbIKbhNwKUfm3tQywQ==}
 
   zdog@1.1.3:
     resolution: {integrity: sha512-raRj6r0gPzopFm5XWBJZr/NuV4EEnT4iE+U3dp5FV5pCb588Gmm3zLIp/j9yqqcMiHH8VNQlerLTgOqL7krh6w==}
@@ -13873,7 +13891,7 @@ snapshots:
       buffer: 6.0.3
       its-fine: 2.0.0(@types/react@19.1.0)(react@19.1.0)
       react: 19.1.0
-      react-reconciler: 0.31.0(react@19.1.0)
+      react-reconciler: 0.32.0(react@19.1.0)
       react-use-measure: 2.1.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       scheduler: 0.25.0
       suspend-react: 0.1.3(react@19.1.0)
@@ -14551,6 +14569,8 @@ snapshots:
 
   '@types/estree@1.0.7': {}
 
+  '@types/figlet@1.7.0': {}
+
   '@types/filesystem@0.0.36':
     dependencies:
       '@types/filewriter': 0.0.33
@@ -15216,7 +15236,7 @@ snapshots:
 
   browserslist@4.24.4:
     dependencies:
-      caniuse-lite: 1.0.30001710
+      caniuse-lite: 1.0.30001712
       electron-to-chromium: 1.5.132
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
@@ -15290,7 +15310,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  caniuse-lite@1.0.30001710: {}
+  caniuse-lite@1.0.30001712: {}
 
   ccount@2.0.1: {}
 
@@ -15472,6 +15492,8 @@ snapshots:
       yargs: 17.7.2
 
   cli-spinners@2.9.2: {}
+
+  cli-spinners@3.2.0: {}
 
   cli-truncate@4.0.0:
     dependencies:
@@ -16334,6 +16356,8 @@ snapshots:
 
   fflate@0.4.8: {}
 
+  figlet@1.8.0: {}
+
   figures@3.2.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -16779,34 +16803,34 @@ snapshots:
 
   ini@4.1.1: {}
 
-  ink-select-input@6.0.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
+  ink-select-input@6.0.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
     dependencies:
       figures: 6.1.0
-      ink: https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
+      ink: 5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
       lodash.isequal: 4.5.0
       react: 19.1.0
       to-rotated: 1.0.0
 
-  ink-spinner@5.0.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
+  ink-spinner@5.0.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
     dependencies:
       cli-spinners: 2.9.2
-      ink: https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
+      ink: 5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
       react: 19.1.0
 
-  ink-table@3.1.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
+  ink-table@3.1.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
     dependencies:
-      ink: https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
+      ink: 5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
       object-hash: 2.2.0
       react: 19.1.0
 
-  ink-text-input@6.0.0(ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
+  ink-text-input@6.0.0(ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0))(react@19.1.0):
     dependencies:
       chalk: 5.4.1
-      ink: https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
+      ink: 5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0)
       react: 19.1.0
       type-fest: 4.39.1
 
-  ink@https://codeload.github.com/QuentinFontenay/ink/tar.gz/19511c57c0675c9b15addc5c3dee060f504028f5(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0):
+  ink@5.2.0(patch_hash=a04d76f8c62d366b4eae039c491e4b748e13cf7a69403dbb31cc5e7ea2fbba58)(@types/react@19.1.0)(bufferutil@4.0.9)(react-devtools-core@6.1.1(bufferutil@4.0.9))(react@19.1.0):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.1.3
       ansi-escapes: 7.0.0
@@ -16822,7 +16846,7 @@ snapshots:
       is-in-ci: 1.0.0
       patch-console: 2.0.0
       react: 19.1.0
-      react-reconciler: 0.31.0(react@19.1.0)
+      react-reconciler: 0.32.0(react@19.1.0)
       scheduler: 0.23.2
       signal-exit: 3.0.7
       slice-ansi: 7.1.0
@@ -16832,7 +16856,7 @@ snapshots:
       widest-line: 5.0.0
       wrap-ansi: 9.0.0
       ws: 8.18.1(bufferutil@4.0.9)
-      yoga-wasm-web: 0.3.3
+      yoga-layout: 3.2.1
     optionalDependencies:
       '@types/react': 19.1.0
       react-devtools-core: 6.1.1(bufferutil@4.0.9)
@@ -18166,7 +18190,7 @@ snapshots:
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001710
+      caniuse-lite: 1.0.30001712
       postcss: 8.4.31
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -18192,7 +18216,7 @@ snapshots:
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001710
+      caniuse-lite: 1.0.30001712
       postcss: 8.4.31
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -18218,7 +18242,7 @@ snapshots:
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001710
+      caniuse-lite: 1.0.30001712
       postcss: 8.4.31
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -18830,7 +18854,7 @@ snapshots:
       konva: 9.3.20
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
-      react-reconciler: 0.29.2(react@19.1.0)
+      react-reconciler: 0.32.0(react@19.1.0)
       scheduler: 0.23.2
     transitivePeerDependencies:
       - '@types/react'
@@ -18907,17 +18931,6 @@ snapshots:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 19.1.0
-
-  react-reconciler@0.29.2(react@19.1.0):
-    dependencies:
-      loose-envify: 1.4.0
-      react: 19.1.0
-      scheduler: 0.23.2
-
-  react-reconciler@0.31.0(react@19.1.0):
-    dependencies:
-      react: 19.1.0
-      scheduler: 0.25.0
 
   react-reconciler@0.32.0(react@19.1.0):
     dependencies:
@@ -20492,7 +20505,7 @@ snapshots:
 
   yoctocolors-cjs@2.1.2: {}
 
-  yoga-wasm-web@0.3.3: {}
+  yoga-layout@3.2.1: {}
 
   zdog@1.1.3: {}
 

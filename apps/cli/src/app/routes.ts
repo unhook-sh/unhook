@@ -1,4 +1,5 @@
 import type { Route } from '~/lib/router';
+import { DebugPage } from './debug/page';
 import { MenuPage } from './menu/page';
 import { PortPage } from './port/page';
 import { RequestsPage } from './requests/page';
@@ -8,7 +9,8 @@ export type AppRoutePath =
   | '/settings'
   | '/requests'
   | '/status'
-  | '/metrics';
+  | '/metrics'
+  | '/debug';
 
 export type AppRoute = Route<AppRoutePath>;
 
@@ -35,6 +37,12 @@ export const routes: AppRoute[] = [
     component: () => null, // TODO: Implement status page
     label: 'Connection',
     hotkey: 's',
+  },
+  {
+    path: '/debug',
+    component: DebugPage,
+    label: 'Debug Info',
+    hotkey: 'd',
   },
   {
     path: '/metrics',

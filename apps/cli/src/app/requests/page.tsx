@@ -5,7 +5,7 @@ import { Table } from '~/components/table';
 import type { RouteProps } from '~/lib/router';
 import { useSelectionStore } from '~/lib/store';
 import type { RequestItem } from '~/types';
-import { generateMockRequest } from '~/utils/request';
+import { generateMockRequest, requestToTableData } from '~/utils/request';
 import {
   RequestTableCell,
   RequestTableHeader,
@@ -27,20 +27,19 @@ export const RequestsPage: FC<RouteProps> = () => {
     setTimeout(() => {
       setRequests(mockRequests);
       setIsLoading(false);
-    }, 1000);
+    }, 0);
   }, []);
 
   if (isLoading) {
     return <RequestTableSkeleton />;
   }
 
-  // const tableData = requests.map((request, index) =>
-  //   requestToTableData(request, index === selectedIndex),
-  // );
-  const tableData: any[] = [];
+  const tableData = requests.map((request, index) =>
+    requestToTableData(request, index === selectedIndex),
+  );
 
   return (
-    <Box flexDirection="column">
+    <Box>
       <Table
         data={tableData}
         columns={['method', 'url', 'status', 'time']}

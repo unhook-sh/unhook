@@ -1,11 +1,18 @@
+import { useAuth } from '~/lib/auth';
 import type { Route } from '~/lib/router';
 import { DebugPage } from './debug/page';
+import { ExitPage } from './exit/page';
+import { LoginPage } from './login/page';
+import { LogoutPage } from './logout/page';
 import { MenuPage } from './menu/page';
 import { PortPage } from './port/page';
 import { RequestsPage } from './requests/page';
 
 export type AppRoutePath =
   | '/'
+  | '/login'
+  | '/logout'
+  | '/exit'
   | '/settings'
   | '/requests'
   | '/status'
@@ -14,12 +21,7 @@ export type AppRoutePath =
 
 export type AppRoute = Route<AppRoutePath>;
 
-export const routes: AppRoute[] = [
-  {
-    path: '/',
-    component: MenuPage,
-    label: 'Menu',
-  },
+const authenticatedRoutes: AppRoute[] = [
   {
     path: '/settings',
     component: PortPage,
@@ -50,4 +52,43 @@ export const routes: AppRoute[] = [
     label: 'View Metrics',
     hotkey: 'm',
   },
+  {
+    path: '/logout',
+    component: LogoutPage,
+    label: 'Logout',
+    hotkey: 'l',
+  },
 ];
+
+const unauthenticatedRoutes: AppRoute[] = [
+  {
+    path: '/login',
+    component: LoginPage,
+    label: 'Login',
+    hotkey: 'l',
+  },
+];
+
+const commonRoutes: AppRoute[] = [
+  {
+    path: '/',
+    component: MenuPage,
+    label: 'Menu',
+  },
+  {
+    path: '/exit',
+    component: ExitPage,
+    label: 'Exit',
+    hotkey: 'e',
+  },
+];
+
+export function useRoutes() {
+  const { isSignedIn } = useAuth();
+  const routes = [
+    ...commonRoutes,
+    ...(isSignedIn ? authenticatedRoutes : unauthenticatedRoutes),
+  ];
+
+  return routes;
+}

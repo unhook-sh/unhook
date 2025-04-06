@@ -1,10 +1,7 @@
-import debug from 'debug';
 import figures from 'figures';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import React from 'react';
 import { useDimensions } from '~/hooks/use-dimensions';
-
-const log = debug('tunnel:table');
 
 // Types
 interface Scalar {
@@ -15,10 +12,17 @@ interface ScalarDict {
   [key: string]: Scalar | null | undefined;
 }
 
-interface CellProps {
+interface TableAction<T> {
+  key: string;
+  label: string;
+  onAction: (item: T, index: number) => void;
+}
+
+export interface CellProps {
   column: string;
   row: Record<string, unknown>;
   isHeader?: boolean;
+  isSelected?: boolean;
   children?: React.ReactNode;
 }
 
@@ -35,19 +39,17 @@ interface TableProps<T extends ScalarDict> {
   cell?: React.ComponentType<CellProps>;
   /** Component for table borders */
   skeleton?: React.ComponentType<React.PropsWithChildren>;
-}
-
-interface BorderChars {
-  left: string;
-  mid: string;
-  right: string;
-  line: string;
-}
-
-interface BorderConfig {
-  top: BorderChars;
-  middle: BorderChars;
-  bottom: BorderChars;
+  /** Initial selected index */
+  initialIndex?: number;
+  /** Callback when selection changes */
+  onSelectionChange?: (index: number) => void;
+  /** Available actions for each row */
+  actions?: TableAction<T>[];
+  /** Key mapping for navigation */
+  keyMapping?: {
+    up?: string[];
+    down?: string[];
+  };
 }
 
 // Default components
@@ -59,23 +61,28 @@ function Header({ children }: CellProps) {
   );
 }
 
-function Cell({ children }: CellProps) {
-  return <Text>{children}</Text>;
+function Cell({ children, isSelected }: CellProps) {
+  return <Text color={isSelected ? 'green' : undefined}>{children}</Text>;
 }
 
 function Skeleton({ children }: React.PropsWithChildren) {
   return <Text color="gray">{children}</Text>;
 }
 
-// Helper functions
-function calculateColumnWidths<T extends ScalarDict>(
-  data: T[],
-  columns: (keyof T)[],
-  padding: number,
-): Record<string, number> {
+function calculateColumnWidths<T extends ScalarDict>({
+  data,
+  columns,
+  padding,
+  maxWidth,
+}: {
+  data: T[];
+  columns: (keyof T)[];
+  padding: number;
+  maxWidth: number;
+}): Record<string, number> {
   const widths: Record<string, number> = {};
 
-  // Initialize widths with column header lengths
+  // Calculate initial widths
   for (const column of columns) {
     widths[String(column)] = String(column).length + padding * 2;
   }
@@ -86,37 +93,31 @@ function calculateColumnWidths<T extends ScalarDict>(
       const value = row[column];
       if (value != null) {
         const length = String(value).length + padding * 2;
-        widths[String(column)] = Math.max(widths[String(column)] || 0, length);
+        widths[String(column)] = Math.max(widths[String(column)] ?? 0, length);
       }
     }
   }
 
-  log('widths', widths);
+  // Calculate total width including borders
+  const borderChars = columns.length - 1; // Vertical borders between columns
+  const totalWidth =
+    Object.values(widths).reduce((sum, width) => sum + (width ?? 0), 0) +
+    borderChars;
+
+  // If total width exceeds maxWidth, proportionally reduce column widths
+  if (totalWidth > maxWidth) {
+    const ratio = (maxWidth - borderChars) / (totalWidth - borderChars);
+    for (const key of Object.keys(widths)) {
+      widths[key] = Math.max(
+        Math.floor((widths[key] ?? 0) * ratio),
+        padding * 2 + 1,
+      );
+    }
+  }
+
   return widths;
 }
 
-const BORDER_CHARS: BorderConfig = {
-  top: {
-    left: figures.lineDownRight,
-    mid: figures.lineDownBoldRight,
-    right: figures.lineDownLeft,
-    line: figures.line,
-  },
-  middle: {
-    left: figures.lineUpDownRight,
-    mid: figures.lineUpDownLeftRight,
-    right: figures.lineUpDownLeft,
-    line: figures.line,
-  },
-  bottom: {
-    left: figures.lineUpRight,
-    mid: figures.lineUpBoldRight,
-    right: figures.lineUpLeft,
-    line: figures.line,
-  },
-};
-
-// Main component
 export function Table<T extends ScalarDict>({
   data,
   columns: propColumns,
@@ -124,8 +125,21 @@ export function Table<T extends ScalarDict>({
   header: HeaderComponent = Header,
   cell: CellComponent = Cell,
   skeleton: SkeletonComponent = Skeleton,
+  initialIndex = -1,
+  onSelectionChange,
+  actions = [],
+  keyMapping = {
+    up: ['k', 'up'],
+    down: ['j', 'down'],
+  },
 }: TableProps<T>) {
   const dimensions = useDimensions();
+  const [selectedIndex, setSelectedIndex] = React.useState(initialIndex);
+
+  // Sync internal state with external state
+  React.useEffect(() => {
+    setSelectedIndex(initialIndex);
+  }, [initialIndex]);
 
   const columns = React.useMemo(() => {
     if (propColumns) return propColumns;
@@ -140,9 +154,49 @@ export function Table<T extends ScalarDict>({
   }, [data, propColumns]);
 
   const columnWidths = React.useMemo(
-    () => calculateColumnWidths(data, columns, padding),
-    [data, columns, padding],
+    () =>
+      calculateColumnWidths({
+        data,
+        columns,
+        padding,
+        maxWidth: dimensions.width - 2,
+      }), // -2 for outer borders
+    [data, columns, padding, dimensions.width],
   );
+
+  // Handle keyboard input
+  useInput((input, key) => {
+    const isUpKey =
+      keyMapping.up?.includes(input) ||
+      (key.upArrow && keyMapping.up?.includes('up'));
+    const isDownKey =
+      keyMapping.down?.includes(input) ||
+      (key.downArrow && keyMapping.down?.includes('down'));
+
+    if (isUpKey) {
+      const newIndex = Math.max(0, selectedIndex - 1);
+      if (newIndex !== selectedIndex) {
+        setSelectedIndex(newIndex);
+        onSelectionChange?.(newIndex);
+      }
+    } else if (isDownKey) {
+      const newIndex = Math.min(data.length - 1, selectedIndex + 1);
+      if (newIndex !== selectedIndex) {
+        setSelectedIndex(newIndex);
+        onSelectionChange?.(newIndex);
+      }
+    } else {
+      // Check for action hotkeys
+      const action = actions.find((a) => a.key === input.toLowerCase());
+      const selectedItem =
+        selectedIndex >= 0 && selectedIndex < data.length
+          ? data[selectedIndex]
+          : null;
+      if (action && selectedItem) {
+        action.onAction(selectedItem, selectedIndex);
+      }
+    }
+  });
 
   const renderCell = React.useCallback(
     (props: {
@@ -151,21 +205,34 @@ export function Table<T extends ScalarDict>({
       isHeader: boolean;
       row: T;
       colIndex: number;
+      rowIndex: number;
     }) => {
-      const { column, value, isHeader, row, colIndex } = props;
+      const { column, value, isHeader, row, colIndex, rowIndex } = props;
       const key = String(column);
       const width = columnWidths[key] || 0;
       const content = String(value ?? '');
 
       const leftPadding = ' '.repeat(padding);
-      const rightPadding = ' '.repeat(width - content.length - padding);
-      const paddedContent = `${leftPadding}${content}${rightPadding}`;
+      const contentWidth = width - padding * 2;
+      const truncatedContent =
+        content.length > contentWidth
+          ? `${content.slice(0, contentWidth - 1)}…`
+          : content;
+      const rightPadding = ' '.repeat(
+        width - truncatedContent.length - padding,
+      );
+      const paddedContent = `${leftPadding}${truncatedContent}${rightPadding}`;
 
       const Component = isHeader ? HeaderComponent : CellComponent;
 
       return (
         <React.Fragment>
-          <Component column={key} row={row} isHeader={isHeader}>
+          <Component
+            column={key}
+            row={row}
+            isHeader={isHeader}
+            isSelected={!isHeader && rowIndex === selectedIndex}
+          >
             {paddedContent}
           </Component>
           {colIndex < columns.length - 1 && (
@@ -181,6 +248,7 @@ export function Table<T extends ScalarDict>({
       CellComponent,
       SkeletonComponent,
       columns.length,
+      selectedIndex,
     ],
   );
 
@@ -205,6 +273,7 @@ export function Table<T extends ScalarDict>({
               isHeader,
               row,
               colIndex,
+              rowIndex,
             })}
           </React.Fragment>
         ))}
@@ -214,14 +283,19 @@ export function Table<T extends ScalarDict>({
   );
 
   const renderBorder = React.useCallback(
-    (position: keyof BorderConfig, rowIndex = -1) => {
-      const chars = BORDER_CHARS[position];
+    (position: 'top' | 'middle' | 'bottom', rowIndex = -1) => {
+      const chars = {
+        top: figures.line,
+        middle: figures.line,
+        bottom: figures.line,
+      };
+
       const parts: React.ReactNode[] = [];
 
       for (const [i, column] of columns.entries()) {
         const key = String(column);
         const width = columnWidths[key] || 0;
-        const line = chars.line.repeat(width);
+        const line = chars[position].repeat(width);
 
         parts.push(
           <SkeletonComponent key={`border-${position}-${String(column)}-line`}>
@@ -232,19 +306,15 @@ export function Table<T extends ScalarDict>({
         if (i < columns.length - 1) {
           parts.push(
             <SkeletonComponent key={`border-${position}-${String(column)}-mid`}>
-              {chars.mid}
+              {figures.lineUpDownLeftRight}
             </SkeletonComponent>,
           );
         }
       }
 
-      return (
-        <Box key={`border-${position}-${rowIndex}`} width={dimensions.width}>
-          {parts}
-        </Box>
-      );
+      return <Box key={`border-${position}-${rowIndex}`}>{parts}</Box>;
     },
-    [columns, columnWidths, dimensions.width, SkeletonComponent],
+    [columns, columnWidths, SkeletonComponent],
   );
 
   const headerData = React.useMemo(
@@ -260,29 +330,49 @@ export function Table<T extends ScalarDict>({
   );
 
   return (
-    <Box
-      borderColor="gray"
-      borderStyle="round"
-      width={dimensions.width}
-      flexDirection="column"
-    >
-      {renderRow({ row: headerData, isHeader: true })}
-      {renderBorder('middle')}
+    <Box flexDirection="column">
+      <Box borderColor="gray" borderStyle="round" flexDirection="column">
+        {renderRow({ row: headerData, isHeader: true })}
+        {renderBorder('middle')}
 
-      {data.map((row) => {
-        // Create a stable key from the row's unique data
-        const rowKey = Object.entries(row)
-          .map(([k, v]) => `${k}:${String(v)}`)
-          .join('|');
+        {data.map((row, index) => {
+          const rowKey = Object.entries(row)
+            .map(([k, v]) => `${k}:${String(v)}`)
+            .join('|');
 
-        return (
-          <Box key={rowKey} flexDirection="column">
-            {renderRow({ row, isHeader: false })}
-          </Box>
-        );
-      })}
+          return (
+            <Box key={rowKey} flexDirection="column">
+              {renderRow({ row, isHeader: false, rowIndex: index })}
+            </Box>
+          );
+        })}
+      </Box>
+
+      <Box marginTop={1}>
+        <Text dimColor>
+          Press{' '}
+          <Text color="cyan">
+            {[...(keyMapping.up ?? []), ...(keyMapping.down ?? [])].join('/')}
+          </Text>{' '}
+          to navigate
+          {actions.length > 0 && (
+            <>
+              {', '}
+              {actions
+                .map((a) => (
+                  <Text key={a.key}>
+                    <Text color="cyan">{a.key}</Text> to {a.label.toLowerCase()}
+                  </Text>
+                ))
+                .reduce((prev, curr) => (
+                  <React.Fragment key={`${prev.key}-${curr.key}`}>
+                    {prev}, {curr}
+                  </React.Fragment>
+                ))}
+            </>
+          )}
+        </Text>
+      </Box>
     </Box>
   );
 }
-
-export default Table;

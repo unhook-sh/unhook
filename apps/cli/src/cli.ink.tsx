@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { sql } from '@acme/db/client';
 import { createId } from '@acme/id';
 import { loadConfig } from '@acme/tunnel';
 import debug from 'debug';
@@ -85,6 +86,7 @@ async function main() {
     );
 
     await waitUntilExit();
+    await sql.end();
     console.log('Exiting...');
   } catch (error) {
     console.error('Error:', error);

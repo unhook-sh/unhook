@@ -55,11 +55,13 @@ import {
   Heart,
   Home,
   Info,
+  Key,
   LayoutGrid,
   ListFilter,
   ListOrdered,
   ListPlus,
   Loader2,
+  LogIn,
   Mail,
   MapPin,
   Maximize,
@@ -135,6 +137,12 @@ export type SiIconProps = TwcComponentProps<'svg'> &
   VariantProps<typeof iconVariants> & { withColor?: boolean };
 
 export const Icons = {
+  LogIn: twx(LogIn).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Key: twx(Key).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   Rocket: twx(Rocket).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),

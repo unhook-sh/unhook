@@ -1,49 +1,32 @@
-import { Box, useApp } from 'ink';
+import { Box } from 'ink';
 import type { FC } from 'react';
 import { SelectInput } from '~/components/select-input';
 import { useRouter } from '~/lib/router';
 import type { RouteProps } from '~/lib/router';
 import { useSelectionStore } from '~/lib/store';
 import type { AppRoutePath } from '../routes';
-import { routes } from '../routes';
-
-type MenuAction = AppRoutePath | 'exit';
+import { useRoutes } from '../routes';
 
 export const MenuPage: FC<RouteProps> = () => {
   const { navigate } = useRouter<AppRoutePath>();
-  const app = useApp();
+  const routes = useRoutes();
   const selectedIndex = useSelectionStore(
     (state) => state.selectedIndices.menu,
   );
 
-  const handleSelect = (item: { value: MenuAction }) => {
-    if (item.value === 'exit') {
-      // app.exit();
-      return;
-    }
-    navigate(item.value);
-  };
-
-  const menuItems = [
-    ...routes
-      .map((route) => ({
-        label: route.label,
-        value: route.path,
-        hotkey: route.hotkey,
-      }))
-      .filter((item) => item.label !== 'Menu'),
-    {
-      label: 'Exit',
-      value: 'exit' as const,
-      hotkey: 'e',
-    },
-  ];
+  const menuItems = routes
+    .map((route) => ({
+      label: route.label,
+      value: route.path,
+      hotkey: route.hotkey,
+    }))
+    .filter((item) => item.label !== 'Menu');
 
   return (
     <Box flexDirection="column">
-      <SelectInput<MenuAction>
+      <SelectInput<AppRoutePath>
         items={menuItems}
-        onSelect={handleSelect}
+        onSelect={(item) => navigate(item.value)}
         initialIndex={selectedIndex}
       />
     </Box>

@@ -69,24 +69,22 @@ export function ConnectionStatus({ port }: ConnectionStatusProps) {
 
   return (
     <Box>
-      <Text>
-        {isConnected && (
-          <>
-            <Text color="green">{figures.circleFilled}</Text> Connected to
-            server on port {port}
-            {pid ? (
-              <Text dimColor> (PID: {pid})</Text>
-            ) : (
-              <Text dimColor> (PID: unknown)</Text>
-            )}
-          </>
-        )}
-        {!isConnected && (
-          <>
-            <Spinner color="red" /> Waiting for server to start on port {port}
-          </>
-        )}
-      </Text>
+      {isConnected ? (
+        <Text>
+          <Text color="green">{figures.circleFilled}</Text> Connected to server
+          on port {port}
+          {pid ? (
+            <Text dimColor> (PID: {pid})</Text>
+          ) : (
+            <Text dimColor> (PID: unknown)</Text>
+          )}
+        </Text>
+      ) : (
+        <Text>
+          <Spinner color="red" />
+          <Text> Waiting for server to start on port {port}</Text>
+        </Text>
+      )}
     </Box>
   );
 }

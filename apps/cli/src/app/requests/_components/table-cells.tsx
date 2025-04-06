@@ -9,30 +9,42 @@ export function RequestTableHeader({ children }: CellProps) {
   );
 }
 
-export function RequestTableCell({ children, column, row }: CellProps) {
+export function RequestTableCell({ children, column, isSelected }: CellProps) {
   if (column === 'status') {
     const status = Number(String(children).trim());
     const color = status < 400 ? 'green' : 'red';
-    return <Text color={color}>{children}</Text>;
-  }
-
-  if (column === 'method' && row.isSelected) {
     return (
-      <Text bold color="cyan">
+      <Text color={color} bold={isSelected}>
         {children}
       </Text>
     );
   }
 
-  if (column === 'selected' && String(children).trim() === '→') {
-    return <Text color="yellow">{children}</Text>;
+  if (column === 'method') {
+    return (
+      <Text color={isSelected ? 'cyan' : undefined} bold={isSelected}>
+        {children}
+      </Text>
+    );
   }
 
-  if (row.isSelected) {
-    return <Text bold>{children}</Text>;
+  if (column === 'url') {
+    return (
+      <Text color={isSelected ? 'blue' : undefined} bold={isSelected}>
+        {children}
+      </Text>
+    );
   }
 
-  return <Text>{children}</Text>;
+  if (column === 'time') {
+    return (
+      <Text color={isSelected ? 'yellow' : 'gray'} bold={isSelected}>
+        {children}
+      </Text>
+    );
+  }
+
+  return <Text bold={isSelected}>{children}</Text>;
 }
 
 export function RequestTableSkeleton({

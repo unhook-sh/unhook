@@ -1,6 +1,7 @@
 'use client';
 import type {
   REALTIME_SUBSCRIBE_STATES,
+  RealtimeChannel,
   RealtimePostgresChangesFilter,
   RealtimePostgresChangesPayload,
 } from '@supabase/supabase-js';
@@ -98,6 +99,7 @@ export function useSubscription<T extends TableName>({
   timeout,
 }: SubscriptionProps<T>) {
   const [status, setStatus] = useState<SubscriptionStatus>('disconnected');
+  const channelRef = useRef<RealtimeChannel | null>(null);
   const stableCallbacks = useRef({
     onDelete,
     onError,
@@ -142,6 +144,15 @@ export function useSubscription<T extends TableName>({
     [channelName, table],
   );
 
+  const disconnect = useCallback(async () => {
+    if (channelRef.current) {
+      const supabase = createClient('');
+      await supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+      await handleStatusChange('disconnected');
+    }
+  }, [handleStatusChange]);
+
   useEffect(() => {
     void handleStatusChange('connecting');
 
@@ -182,9 +193,10 @@ export function useSubscription<T extends TableName>({
         timeout,
       );
 
+    channelRef.current = channel;
+
     return () => {
-      void supabase.removeChannel(channel);
-      void handleStatusChange('disconnected');
+      void disconnect();
     };
   }, [
     table,
@@ -193,10 +205,11 @@ export function useSubscription<T extends TableName>({
     handleStatusChange,
     channelNameMemo,
     event,
-    // session,
+    disconnect,
   ]);
 
   return {
     status,
+    disconnect,
   };
 }

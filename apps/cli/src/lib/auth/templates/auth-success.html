@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Authentication Successful - Unhook</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://cdn.jsdelivr.net/npm/figlet@1.8.0/lib/figlet.min.js"></script>
+	<script>
+		tailwind.config = {
+			darkMode: 'class',
+			theme: {
+				extend: {
+					colors: {
+						background: "oklch(var(--background))",
+						foreground: "oklch(var(--foreground))",
+						card: "oklch(var(--card))",
+						"card-foreground": "oklch(var(--card-foreground))",
+						primary: "oklch(var(--primary))",
+						"primary-foreground": "oklch(var(--primary-foreground))",
+						secondary: "oklch(var(--secondary))",
+						"secondary-foreground": "oklch(var(--secondary-foreground))",
+						muted: "oklch(var(--muted))",
+						"muted-foreground": "oklch(var(--muted-foreground))",
+						border: "oklch(var(--border))",
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		:root {
+			--background: 1 0 0;
+			--foreground: 0.145 0 0;
+			--card: 1 0 0;
+			--card-foreground: 0.145 0 0;
+			--primary: 0.205 0 0;
+			--primary-foreground: 0.985 0 0;
+			--secondary: 0.97 0 0;
+			--secondary-foreground: 0.205 0 0;
+			--muted: 0.97 0 0;
+			--muted-foreground: 0.556 0 0;
+			--border: 0.922 0 0;
+		}
+
+		.dark {
+			--background: 0.145 0 0;
+			--foreground: 0.985 0 0;
+			--card: 0.145 0 0;
+			--card-foreground: 0.985 0 0;
+			--primary: 0.985 0 0;
+			--primary-foreground: 0.205 0 0;
+			--secondary: 0.269 0 0;
+			--secondary-foreground: 0.985 0 0;
+			--muted: 0.269 0 0;
+			--muted-foreground: 0.708 0 0;
+			--border: 0.269 0 0;
+		}
+
+		/* Shadcn button styles */
+		.button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 0.375rem;
+			font-weight: 500;
+			font-size: 0.875rem;
+			line-height: 1.25rem;
+			height: 2.5rem;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+			transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+			transition-duration: 150ms;
+		}
+
+		.button-primary {
+			background-color: oklch(var(--primary));
+			color: oklch(var(--primary-foreground));
+		}
+
+		.button-primary:hover {
+			background-color: oklch(var(--primary) / 0.9);
+		}
+
+		/* ASCII art container */
+		.ascii-art {
+			font-family: monospace;
+			white-space: pre;
+			color: oklch(var(--muted-foreground));
+			font-size: 8px;
+			line-height: 1;
+			text-align: center;
+			margin: 0;
+			padding: 0;
+			user-select: none;
+		}
+	</style>
+</head>
+
+<body class="bg-background text-foreground min-h-screen flex items-center justify-center p-4 font-sans antialiased">
+	<div class="w-full max-w-md">
+		<div class="flex flex-col items-center justify-center mb-6">
+			<pre id="ascii-logo" class="ascii-art"></pre>
+		</div>
+		<div data-slot="card" class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
+			<div data-slot="card-header" class="flex flex-col gap-1.5 px-6">
+				<div class="flex justify-center mb-6">
+					<div class="flex items-center justify-center size-12 rounded-full bg-primary/10 text-primary">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-6">
+							<polyline points="20 6 9 17 4 12"></polyline>
+						</svg>
+					</div>
+				</div>
+				<div data-slot="card-title" class="text-2xl font-semibold text-center leading-none">
+					Authentication Successful
+				</div>
+				<div data-slot="card-description" class="text-muted-foreground text-sm text-center">
+					You have been successfully authenticated. You can now close this window and return to the CLI.
+				</div>
+			</div>
+			<div data-slot="card-footer" class="flex flex-col items-center gap-4 px-6">
+				<button class="button button-primary" onclick="window.close()">
+					Close Window
+				</button>
+				<p class="text-sm text-muted-foreground">
+					Window will close automatically in <span data-countdown class="font-medium text-primary">5</span> seconds
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Load the ANSI Shadow font and render ASCII art
+		async function loadAndRenderAscii() {
+			try {
+				// Set the font path to the correct jsDelivr CDN path
+				figlet.defaults({
+					fontPath: 'https://cdn.jsdelivr.net/npm/figlet@1.8.0/fonts'
+				});
+
+				// Load and render the ASCII art
+				figlet.text('Unhook', {
+					font: 'ANSI Shadow',
+					horizontalLayout: 'default',
+					verticalLayout: 'default',
+					width: 80
+				}, function (err, result) {
+					if (err) {
+						console.error('Failed to generate ASCII art:', err);
+						return;
+					}
+					const container = document.getElementById('ascii-logo');
+					if (container) {
+						container.textContent = result;
+					}
+				});
+			} catch (error) {
+				console.error('Failed to load font:', error);
+			}
+		}
+
+		// Load ASCII art when the page is ready
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', loadAndRenderAscii);
+		} else {
+			loadAndRenderAscii();
+		}
+
+		// Countdown timer
+		let timeLeft = 5;
+		const countdownElement = document.querySelector('[data-countdown]');
+
+		const countdown = setInterval(() => {
+			timeLeft--;
+			if (countdownElement) {
+				countdownElement.textContent = timeLeft.toString();
+			}
+
+			if (timeLeft <= 0) {
+				clearInterval(countdown);
+				window.close();
+			}
+		}, 1000);
+
+		// Fallback for browsers that block window.close()
+		setTimeout(() => {
+			if (document.querySelector('[data-slot="card-footer"]')) {
+				const message = document.createElement('p');
+				message.className = 'text-sm text-muted-foreground text-center mt-2';
+				message.textContent = 'Please close this window manually if it doesn\'t close automatically.';
+				document.querySelector('[data-slot="card-footer"]').appendChild(message);
+			}
+		}, 5500);
+	</script>
+</body>
+
+</html>

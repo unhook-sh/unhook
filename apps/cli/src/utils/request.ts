@@ -1,4 +1,7 @@
-import type { MenuItem, RequestItem } from '../types';
+import type { MenuItem } from '~/components/select-input';
+import type { RequestItem } from '../types';
+
+import type { RequestType } from '@acme/db/schema';
 
 export function formatTime(timestamp: number): string {
   const now = Date.now();
@@ -20,16 +23,16 @@ export function requestsToMenuItems(requests: RequestItem[]): MenuItem[] {
   }));
 }
 
-export function requestToTableData(request: RequestItem, isSelected: boolean) {
+export function requestToTableData(request: RequestType, isSelected: boolean) {
   return {
     selected: isSelected ? '→' : '',
-    method: request.method,
+    method: request.request.method,
     url:
-      request.url.length > 35
-        ? `${request.url.substring(0, 35)}...`
-        : request.url,
+      request.request.url.length > 35
+        ? `${request.request.url.substring(0, 35)}...`
+        : request.request.url,
     status: request.status,
-    time: formatTime(request.timestamp),
+    time: formatTime(request.createdAt.getTime()),
     id: request.id,
     isSelected,
   };

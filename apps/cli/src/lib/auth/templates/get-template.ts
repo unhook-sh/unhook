@@ -10,7 +10,7 @@ import authSuccessTemplate from '../../../templates/auth-success.html' with {
 export async function getAuthSuccessTemplate(): Promise<string> {
   try {
     return await file(authSuccessTemplate).text();
-  } catch (error) {
+  } catch (_error) {
     // Fallback template in case the embedded file cannot be read
     return `
       <!DOCTYPE html>

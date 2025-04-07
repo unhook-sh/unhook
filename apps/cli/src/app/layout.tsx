@@ -11,6 +11,9 @@ import { RouteRenderer, RouterProvider, useRouter } from '~/lib/router';
 import type { PageProps } from '~/types';
 import type { AppRoutePath } from './routes';
 import { useRoutes } from './routes';
+import { useAuthStore } from '~/lib/auth/store';
+import { useTunnelStore } from '~/lib/tunnel-store';
+import { useConnectionStore } from '~/lib/connection-store';
 
 function Fallback({ error }: { error: Error }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
@@ -37,12 +40,13 @@ function NavigationHandler() {
 
 function Router({ children }: { children: React.ReactNode }) {
   const routes = useRoutes();
+  const isAuthenticated = useAuthStore.use.isAuthenticated();
 
   return (
     <RouterProvider<AppRoutePath>
       routes={routes}
-      initialPath="/requests"
-      initialHistory={['/']} // This is how we can hit go back to the menu after requests are already there
+      initialPath={isAuthenticated ? '/requests' : '/'}
+      initialHistory={isAuthenticated ? ['/'] : []}
     >
       {children}
     </RouterProvider>
@@ -58,10 +62,19 @@ function CliArgsProvider({
   children,
 }: PageProps & { children: React.ReactNode }) {
   const setCliArgs = useCliStore.use.setCliArgs();
+  const fetchTunnelByApiKey = useTunnelStore.use.fetchTunnelByApiKey();
 
   useEffect(() => {
     setCliArgs({ port, apiKey, clientId, debug, version });
   }, [port, apiKey, clientId, debug, version, setCliArgs]);
+
+  useEffect(() => {
+    if (apiKey) {
+      fetchTunnelByApiKey(apiKey).catch((error) => {
+        console.error('Failed to fetch tunnel:', error);
+      });
+    }
+  }, [apiKey, fetchTunnelByApiKey]);
 
   return <>{children}</>;
 }
@@ -70,6 +83,22 @@ function AppContent() {
   const dimensions = useDimensions();
   const clientId = useCliStore.use.clientId();
   const port = useCliStore.use.port();
+  const isConnected = useConnectionStore.use.isConnected();
+  const connect = useConnectionStore.use.connect();
+  const disconnect = useConnectionStore.use.disconnect();
+  const isAuthenticated = useAuthStore.use.isAuthenticated();
+  const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
+  const apiKey = useCliStore.use.apiKey();
+
+  useEffect(() => {
+    if (!isConnected && selectedTunnelId && isAuthenticated) {
+      connect()
+    }
+
+    // return () => {
+      // disconnect();
+    // };
+  }, [isConnected, selectedTunnelId, connect]);
 
   return (
     <Box padding={1} flexDirection="column" minHeight={dimensions.height}>
@@ -82,14 +111,16 @@ function AppContent() {
         />
       </Box>
       <Box marginBottom={1} flexDirection="column">
-        <Text dimColor>Client ID: {clientId}</Text>
+        <Text dimColor>Client: {clientId}</Text>
+        <Text dimColor>Tunnel: {selectedTunnelId}</Text>
+        <Text dimColor>Api Key: {apiKey}</Text>
         <Text dimColor>
           Platform: {platform()} {release()}
         </Text>
         <Text dimColor>Hostname: {hostname()}</Text>
       </Box>
       <Box marginBottom={1}>
-        <ConnectionStatus port={port} />
+        <ConnectionStatus  />
       </Box>
 
       <RouteRenderer />

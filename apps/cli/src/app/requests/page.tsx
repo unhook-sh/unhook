@@ -1,18 +1,46 @@
 import type { RequestType } from '@acme/db/schema';
 import { Box, useInput } from 'ink';
 import type { FC } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import React from 'react';
 import { Table } from '~/components/table';
 import type { RouteProps } from '~/lib/router';
 import { useRouter } from '~/lib/router';
 import { useRequestStore } from '~/lib/request-store';
-import { requestToTableData } from '~/utils/request';
 import { RequestDetails } from './_components/request-details';
+import { useConnectionStore } from '~/lib/connection-store';
 import {
   RequestTableCell,
   RequestTableHeader,
 } from './_components/table-cells';
+import { formatDistanceToNow, differenceInMinutes, format } from 'date-fns';
+
+function formatRequestTime(date: Date) {
+  const now = new Date();
+  const diffInMinutes = differenceInMinutes(now, date);
+
+  if (diffInMinutes < 1) {
+    return formatDistanceToNow(date, { addSuffix: true, includeSeconds: true });
+  }
+
+  return format(date, 'MMM d, HH:mm:ss');
+}
+
+export function requestToTableData(request: RequestType, isSelected: boolean) {
+  return {
+    ...request,
+    selected: isSelected ? '→' : '',
+    method: request.request.method,
+    url:
+      request.request.url.length > 35
+        ? `${request.request.url.substring(0, 35)}...`
+        : request.request.url,
+    status: request.status,
+    time: formatRequestTime(new Date(request.createdAt)),
+    id: request.id,
+    isSelected,
+  };
+}
 
 export const RequestsPage: FC<RouteProps> = () => {
   const selectedRequestId = useRequestStore.use.selectedRequestId();
@@ -21,10 +49,21 @@ export const RequestsPage: FC<RouteProps> = () => {
   const isLoading = useRequestStore.use.isLoading();
   const isDetailsVisible = useRequestStore.use.isDetailsVisible();
   const setIsDetailsVisible = useRequestStore.use.setIsDetailsVisible();
+  const isConnected = useConnectionStore.use.isConnected();
   const [selectedIndex, setSelectedIndex] = useState(
     requests.findIndex((request) => request.id === selectedRequestId),
   );
   const { navigate } = useRouter();
+  const [, forceUpdate] = useState({});
+
+  // Add timer effect to update the page every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      forceUpdate({});
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const toggleDetails = useCallback(() => {
     setIsDetailsVisible(!isDetailsVisible);
@@ -37,7 +76,6 @@ export const RequestsPage: FC<RouteProps> = () => {
     }
   });
 
-
   const handleViewDetails = useCallback(
     (request: RequestType) => {
       setSelectedRequestId(request.id);
@@ -49,9 +87,12 @@ export const RequestsPage: FC<RouteProps> = () => {
   const replayRequest = useRequestStore.use.replayRequest();
   const handleReplay = useCallback(
     (request: RequestType) => {
+      if (!isConnected) {
+        return;
+      }
       void replayRequest(request);
     },
-    [replayRequest],
+    [replayRequest, isConnected],
   );
 
   const tableData = requests.map((request) =>
@@ -86,10 +127,10 @@ export const RequestsPage: FC<RouteProps> = () => {
             },
             {
               key: 'r',
-              label: 'Replay',
+              label: isConnected ? 'Replay' : 'Replay (Not Connected)',
               onAction: (_, index) => {
                 const request = requests[index];
-                if (request) {
+                if (request && isConnected) {
                   handleReplay(request);
                 }
               },

@@ -36,7 +36,7 @@ export function RequestSubscription() {
       }
     },
     onStatusChange: (newStatus) => {
-      console.log('Subscription status:', newStatus);
+      // console.log('Subscription status:', newStatus);
     },
     onUpdate: () => {
       void fetchRequests();

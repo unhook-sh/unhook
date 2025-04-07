@@ -32,7 +32,7 @@ const defaultRequestState: RequestState = {
   requests: [],
   selectedRequestId: null,
   isLoading: true,
-  isDetailsVisible: true,
+  isDetailsVisible: false,
 };
 
 const store = createStore<RequestStore>()((set, get) => ({
@@ -147,17 +147,24 @@ const store = createStore<RequestStore>()((set, get) => ({
     }
   },
   replayRequest: async (request: RequestType) => {
-    const userId = useAuthStore.use.userId();
-    const orgId = useAuthStore.use.orgId();
-    const connectionId = useConnectionStore.use.connectionId();
+    const { userId, orgId, }= useAuthStore.getState();
+    const { connectionId } = useConnectionStore.getState();
+
+    if (!userId || !orgId) {
+      throw new Error('User or org not authenticated');
+    }
+
+    if (!connectionId) {
+      throw new Error('Connection not found');
+    }
 
     // Insert the new request
     await db.insert(Requests).values({
       tunnelId: request.tunnelId,
       apiKey: request.apiKey,
-      userId: userId ?? 'FIXME',
-      orgId: orgId ?? 'FIXME',
-      connectionId: connectionId ?? 'FIXME',
+      userId: userId,
+      orgId: orgId,
+      connectionId,
       request: request.request,
       status: 'pending',
     });

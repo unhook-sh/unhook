@@ -5,8 +5,9 @@ import { Connections } from '@acme/db/schema';
 import { createId } from '@acme/id';
 import { createStore } from 'zustand';
 import { getProcessIdForPort } from '../utils/get-process-id';
-import { useAuth } from './auth';
+import { useAuth, useAuthStore } from './auth';
 import { useCliStore } from './cli-store';
+import { useTunnelStore } from './tunnel-store';
 import { createSelectors } from './zustand-create-selectors';
 
 interface ConnectionState {
@@ -24,6 +25,7 @@ interface ConnectionActions {
   setConnectionState: (state: {
     isConnected: boolean;
     pid: number | null;
+    connectionId: string | null;
   }) => Promise<void>;
 }
 
@@ -46,7 +48,7 @@ const createConnectionStore = () => {
   return createStore<ConnectionStore>()((set, get) => ({
     ...defaultConnectionState,
 
-    setConnectionState: async ({ isConnected, pid }) => {
+    setConnectionState: async ({ isConnected, pid, connectionId }) => {
       const currentState = get();
       const now = new Date();
       const lastConnectedAt = isConnected ? now : currentState.lastConnectedAt;
@@ -59,19 +61,22 @@ const createConnectionStore = () => {
         pid,
         lastConnectedAt,
         lastDisconnectedAt,
-        connectionId: isConnected ? currentState.connectionId : null,
+        connectionId,
         isLoading: false,
       });
     },
 
     connect: async () => {
-      const { userId, orgId } = useAuth();
-      const clientId = useCliStore.use.clientId();
-      const version = useCliStore.use.version();
-      const port = useCliStore.use.port();
+      const { userId, orgId } = useAuthStore.getState();
+      const { clientId, version, port } = useCliStore.getState();
+      const { selectedTunnelId } = useTunnelStore.getState();
 
-      if (!userId || !orgId) {
+      if (!userId) {
         throw new Error('User must be authenticated to connect');
+      }
+
+      if (!selectedTunnelId) {
+        throw new Error('No tunnel selected');
       }
 
       set({ isLoading: true });
@@ -91,15 +96,14 @@ const createConnectionStore = () => {
           const result = await db
             .insert(Connections)
             .values({
-              id: createId({ prefix: 'conn' }),
-              tunnelId: clientId,
+              tunnelId: selectedTunnelId,
               ipAddress: '127.0.0.1',
               clientId,
               clientVersion: version,
               clientOs: `${platform()} ${release()}`,
               clientHostname: hostname(),
               userId,
-              orgId,
+              orgId: orgId ?? 'org_2vCR1xwHHTLxE5m20AYewlc5y2j',
             })
             .returning();
 
@@ -109,9 +113,11 @@ const createConnectionStore = () => {
 
           // Update local connection state
           await get().setConnectionState({
+            connectionId: result[0].id,
             isConnected: true,
             pid: foundPid,
           });
+
 
           socketRef?.destroy(); // Close connection after successful check
         }
@@ -122,6 +128,7 @@ const createConnectionStore = () => {
           await get().setConnectionState({
             isConnected: false,
             pid: null,
+            connectionId: null,
           });
         }
       });
@@ -150,6 +157,7 @@ const createConnectionStore = () => {
       await get().setConnectionState({
         isConnected: false,
         pid: null,
+        connectionId: null,
       });
     },
   }));

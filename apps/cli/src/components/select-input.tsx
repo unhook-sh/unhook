@@ -90,8 +90,7 @@ export const SelectInput = <T extends string = string>({
 
         return (
           <Box key={item.value} marginY={0}>
-            <Text>
-              <Text color={isSelected ? highlightColor : undefined}>
+              <Text>
                 {isSelected ? `${indicatorComponent} ` : '  '}
                 {typeof item.label === 'string' ? item.label : null}
                 {showHotkeys && item.hotkey && (
@@ -101,7 +100,6 @@ export const SelectInput = <T extends string = string>({
                   </Text>
                 )}
               </Text>
-            </Text>
           </Box>
         );
       })}

@@ -18,9 +18,9 @@ interface TableAction<T> {
   onAction: (item: T, index: number) => void;
 }
 
-export interface CellProps {
+export interface CellProps<T extends ScalarDict> {
   column: string;
-  row: Record<string, unknown>;
+  row: T;
   isHeader?: boolean;
   isSelected?: boolean;
   children?: React.ReactNode;
@@ -34,9 +34,9 @@ interface TableProps<T extends ScalarDict> {
   /** Cell padding */
   padding?: number;
   /** Component for header cells */
-  header?: React.ComponentType<CellProps>;
+  header?: React.ComponentType<CellProps<T>>;
   /** Component for data cells */
-  cell?: React.ComponentType<CellProps>;
+  cell?: React.ComponentType<CellProps<T>>;
   /** Component for table borders */
   skeleton?: React.ComponentType<React.PropsWithChildren>;
   /** Initial selected index */
@@ -53,7 +53,7 @@ interface TableProps<T extends ScalarDict> {
 }
 
 // Default components
-function Header({ children }: CellProps) {
+function Header<T extends ScalarDict>({ children }: CellProps<T>) {
   return (
     <Text bold color="blue">
       {children}
@@ -61,7 +61,7 @@ function Header({ children }: CellProps) {
   );
 }
 
-function Cell({ children, isSelected }: CellProps) {
+function Cell<T extends ScalarDict>({ children, isSelected }: CellProps<T>) {
   return <Text color={isSelected ? 'green' : undefined}>{children}</Text>;
 }
 
@@ -122,8 +122,8 @@ export function Table<T extends ScalarDict>({
   data,
   columns: propColumns,
   padding = 1,
-  header: HeaderComponent = Header,
-  cell: CellComponent = Cell,
+  header: HeaderComponent = Header<T>,
+  cell: CellComponent = Cell<T>,
   skeleton: SkeletonComponent = Skeleton,
   initialIndex = -1,
   onSelectionChange,

@@ -9,6 +9,7 @@ import {
 import { CliLoginButton } from './_components/cli-login-button';
 
 export default function CliTokenPage() {
+  // TODO: Add a button to switch organizations
   return (
     <main className="container grid min-h-screen place-items-center">
       <div className="w-full max-w-md">

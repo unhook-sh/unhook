@@ -1,4 +1,5 @@
 import { seed } from 'drizzle-seed';
+import { subDays } from 'date-fns';
 
 import { db } from './client';
 import {
@@ -14,6 +15,7 @@ import {
 
 await db.delete(Users);
 await db.delete(Orgs);
+await db.delete(OrgMembers);
 await db.delete(Tunnels);
 await db.delete(Requests);
 await db.delete(Connections);
@@ -38,6 +40,7 @@ await seed(db, {
   Orgs: {
     columns: {
       id: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      clerkOrgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
     },
     count: 1,
   },
@@ -59,7 +62,10 @@ await seed(db, {
       apiKey: funcs.default({ defaultValue: 'pk_123' }),
       clientId: funcs.default({ defaultValue: 'cl_123' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
+      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
       status: funcs.default({ defaultValue: 'active' }),
+      requestCount: funcs.int({ maxValue: 1000, minValue: 0 }),
+      clientCount: funcs.int({ maxValue: 1000, minValue: 0 }),
       config: funcs.default({
         defaultValue: {
           storage: {
@@ -87,12 +93,17 @@ await seed(db, {
   },
   Requests: {
     columns: {
+      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      apiKey: funcs.default({ defaultValue: 'pk_123' }),
+      status: funcs.valuesFromArray({
+        values: ['pending', 'completed', 'failed'],
+      }),
       request: funcs.default({
         defaultValue: {
           id: 'req_123',
           size: 100,
-          url: 'https://example.com',
-          method: 'GET',
+          url: '/webhooks/clerk',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'User-Agent':
@@ -102,6 +113,7 @@ await seed(db, {
           clientIp: '127.0.0.1',
           timestamp: Date.now(),
           contentType: 'application/json',
+
         },
       }),
       response: funcs.default({
@@ -113,11 +125,18 @@ await seed(db, {
           },
         },
       }),
+      createdAt: funcs.date({
+        minDate: subDays(new Date(), 5),
+        maxDate: new Date()
+      }),
       responseTimeMs: funcs.int({ maxValue: 10000, minValue: 0 }),
     },
     count: 10,
   },
   Connections: {
+    columns: {
+      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+    },
     count: 1,
   },
 }));

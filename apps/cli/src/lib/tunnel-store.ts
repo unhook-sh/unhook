@@ -7,6 +7,7 @@ import { createStore } from 'zustand';
 import { useAuthStore } from './auth/store';
 import { useConnectionStore } from './connection-store';
 import { createSelectors } from './zustand-create-selectors';
+import { useCliStore } from './cli-store';
 
 interface TunnelState {
   tunnels: TunnelType[];
@@ -19,6 +20,7 @@ interface TunnelActions {
   setSelectedTunnelId: (id: string | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   fetchTunnels: () => Promise<void>;
+  fetchTunnelByApiKey: (apiKey: string) => Promise<TunnelType | null>;
   createTunnel: (port: number) => Promise<void>;
   deleteTunnel: (id: string) => Promise<void>;
   updateTunnel: (id: string, data: Partial<TunnelType>) => Promise<void>;
@@ -37,6 +39,23 @@ const store = createStore<TunnelStore>()((set, get) => ({
   setTunnels: (tunnels) => set({ tunnels }),
   setSelectedTunnelId: (id) => set({ selectedTunnelId: id }),
   setIsLoading: (isLoading) => set({ isLoading }),
+  fetchTunnelByApiKey: async (apiKey: string) => {
+    const tunnel = await db.query.Tunnels.findFirst({
+      where: eq(Tunnels.apiKey, apiKey),
+      orderBy: [desc(Tunnels.createdAt)],
+    });
+
+    if (tunnel) {
+      set((state) => ({
+        tunnels: [tunnel],
+        selectedTunnelId: tunnel.id,
+        isLoading: false,
+      }));
+      return tunnel;
+    }
+
+    return null;
+  },
   fetchTunnels: async () => {
     const tunnels = await db.query.Tunnels.findMany({
       orderBy: [desc(Tunnels.createdAt)],
@@ -56,18 +75,19 @@ const store = createStore<TunnelStore>()((set, get) => ({
     });
   },
   createTunnel: async (port: number) => {
-    const userId = useAuthStore.use.userId();
-    const orgId = useAuthStore.use.orgId();
-    const connectionId = useConnectionStore.use.connectionId();
+    const { userId, orgId } = useAuthStore.getState();
+    const { connectionId } = useConnectionStore.getState();
+    const { apiKey, clientId } = useCliStore.getState();
 
-    const clientId = createId();
-    const apiKey = createId();
+    if (!userId || !apiKey || !clientId) {
+      throw new Error('User must be authenticated to create a tunnel');
+    }
 
     await db.insert(Tunnels).values({
       clientId,
       apiKey,
       port,
-      userId: userId ?? 'FIXME',
+      userId,
       orgId: orgId ?? 'FIXME',
       requestCount: 0,
       clientCount: 0,

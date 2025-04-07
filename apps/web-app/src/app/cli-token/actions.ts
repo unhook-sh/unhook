@@ -7,7 +7,7 @@ import { createSafeActionClient } from 'next-safe-action';
 const action = createSafeActionClient();
 
 export const createClerkToken = action.action(async () => {
-  const user= await auth();
+  const user = await auth();
 
   if (!user.userId) {
     throw new Error('User not found');

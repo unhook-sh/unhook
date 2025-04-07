@@ -27,7 +27,7 @@ const config = {
   // Can also be set via:
   // - TUNNEL_API_KEY environment variable
   // - --api-key command line flag
-  apiKey: 'your-api-key-here',
+  apiKey: 'pk_123',
 
   // Optional: Unique client identifier
   // Can also be set via TUNNEL_CLIENT_ID environment variable

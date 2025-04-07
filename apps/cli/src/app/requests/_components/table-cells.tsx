@@ -1,7 +1,8 @@
+import { RequestType } from '@acme/db/schema';
 import { Text } from 'ink';
 import type { CellProps } from '~/components/table';
 
-export function RequestTableHeader({ children }: CellProps) {
+export function RequestTableHeader({ children }: CellProps<RequestType>) {
   return (
     <Text bold color="cyan">
       {children}
@@ -14,10 +15,18 @@ export function RequestTableCell({
   column,
   isSelected,
   row,
-}: CellProps) {
+}: CellProps<RequestType>) {
   if (column === 'status') {
-    const status = Number(String(children).trim());
-    const color = isSelected ? 'cyan' : status < 400 ? 'green' : 'red';
+    let color = isSelected ? 'cyan' : 'white';
+
+    if (row.status === 'pending') {
+      color = 'yellow';
+    } else if (row.status === 'completed') {
+      color = 'green';
+    } else if (row.status === 'failed') {
+      color = 'red';
+    }
+
     return (
       <Text color={color} dimColor={!isSelected} bold={isSelected}>
         {children}

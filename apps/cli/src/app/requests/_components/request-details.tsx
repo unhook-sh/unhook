@@ -120,7 +120,7 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
       )}
 
       {/* Response Body */}
-      {formattedResponseBody && (
+      {/* {formattedResponseBody && (
         <Box flexDirection="column" marginTop={2}>
           <Text bold color="blue">
             Response Body
@@ -129,7 +129,7 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
             <SyntaxHighlight code={formattedResponseBody} language="json" />
           </Box>
         </Box>
-      )}
+      )} */}
 
       {request.status === 'failed' && (
         <Box flexDirection="column" marginTop={2}>

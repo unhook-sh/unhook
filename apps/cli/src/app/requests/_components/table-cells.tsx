@@ -52,6 +52,41 @@ export function RequestTableCell({
     );
   }
 
+  if (column === 'responseCode') {
+    let color = isSelected ? 'cyan' : 'green';
+
+    if (row.response?.status && row.response?.status >= 500) {
+      color = 'red';
+    } else if (row.response?.status && row.response?.status >= 400) {
+      color = 'yellow';
+    }
+
+    return (
+      <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        {children}
+      </Text>
+    );
+  }
+
+  if (column === 'responseTimeMs') {
+    let color = isSelected ? 'cyan' : 'white';
+    const responseTimeMs = row.responseTimeMs;
+
+    if (responseTimeMs < 500) {
+      color = 'green';
+    } else if (responseTimeMs < 1000) {
+      color = 'yellow';
+    } else {
+      color = 'red';
+    }
+
+    return (
+      <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        {children}
+      </Text>
+    );
+  }
+
   if (column === 'time') {
     const color = isSelected ? 'cyan' : 'gray';
     return (

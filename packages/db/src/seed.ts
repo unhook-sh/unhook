@@ -76,13 +76,13 @@ await seed(db, {
             maxResponseBodySize: 1048576,
           },
           headers: {
-            allowList: ['Authorization', 'Content-Type'],
+            allowList: ['Authorization', 'Content-Type', 'Svix-Id', 'Svix-Timestamp', 'Svix-Signature'],
             blockList: ['Cookie', 'Set-Cookie'],
             sensitiveHeaders: ['Authorization'],
           },
           requests: {
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedPaths: ['/webhook/.*'],
+            allowedPaths: ['/api/webhooks/.*'],
             blockedPaths: [],
             maxRequestsPerMinute: 100,
           },
@@ -102,7 +102,7 @@ await seed(db, {
         defaultValue: {
           id: 'req_123',
           size: 100,
-          url: '/webhooks/clerk',
+          url: '/api/webhooks/clerk',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

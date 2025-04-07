@@ -39,6 +39,8 @@ export function requestToTableData(request: RequestType, isSelected: boolean) {
     time: formatRequestTime(new Date(request.createdAt)),
     id: request.id,
     isSelected,
+    responseCode: request.response?.status,
+    responseTimeMs: request.responseTimeMs,
   };
 }
 
@@ -104,7 +106,7 @@ export const RequestsPage: FC<RouteProps> = () => {
       <Box width={isDetailsVisible ? '50%' : undefined}>
         <Table
           data={tableData}
-          columns={['method', 'url', 'status', 'time']}
+          columns={['method', 'url', 'status', 'responseCode', 'responseTimeMs', 'time']}
           header={RequestTableHeader}
           cell={RequestTableCell}
           initialIndex={selectedIndex}

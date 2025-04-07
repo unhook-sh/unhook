@@ -24,7 +24,6 @@
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "chokidar": "4.0.3",
-    "dotenv-cli": "8.0.0",
     "drizzle-kit": "0.30.6",
     "supabase": "2.20.5",
     "tsx": "4.19.3",
@@ -72,8 +71,8 @@
     "gen-types": "echo 'TODO: gen-types'",
     "seed": "pnpm with-env tsx src/seed.ts",
     "studio": "pnpm with-env drizzle-kit studio",
-    "typecheck": "pnpm gen-types && tsc --noEmit --emitDeclarationOnly false",
-    "with-env": "dotenv -e ../../.env --"
+    "typecheck": "tsc --noEmit",
+    "with-env": "infisical run --"
   },
   "type": "module",
   "version": "0.1.0"

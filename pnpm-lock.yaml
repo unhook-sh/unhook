@@ -279,12 +279,6 @@ importers:
       '@types/react-dom':
         specifier: 19.1.1
         version: 19.1.1(@types/react@19.1.0)
-      dotenv-cli:
-        specifier: 8.0.0
-        version: 8.0.0
-      jiti:
-        specifier: 2.4.2
-        version: 2.4.2
       next-sitemap:
         specifier: 4.2.3
         version: 4.2.3(next@15.2.4(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
@@ -418,12 +412,6 @@ importers:
       '@types/react-dom':
         specifier: 19.1.1
         version: 19.1.1(@types/react@19.1.0)
-      dotenv-cli:
-        specifier: 8.0.0
-        version: 8.0.0
-      jiti:
-        specifier: 2.4.2
-        version: 2.4.2
       next-sitemap:
         specifier: 4.2.3
         version: 4.2.3(next@15.2.4(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
@@ -616,9 +604,6 @@ importers:
       chokidar:
         specifier: 4.0.3
         version: 4.0.3
-      dotenv-cli:
-        specifier: 8.0.0
-        version: 8.0.0
       drizzle-kit:
         specifier: 0.30.6
         version: 0.30.6
@@ -6295,14 +6280,6 @@ packages:
   dot-prop@6.0.1:
     resolution: {integrity: sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA==}
     engines: {node: '>=10'}
-
-  dotenv-cli@8.0.0:
-    resolution: {integrity: sha512-aLqYbK7xKOiTMIRf1lDPbI+Y+Ip/wo5k3eyp6ePysVaSqbyxjyK3dK35BTxG+rmd7djf5q2UPs4noPNH+cj0Qw==}
-    hasBin: true
-
-  dotenv-expand@10.0.0:
-    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
-    engines: {node: '>=12'}
 
   dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
@@ -16182,15 +16159,6 @@ snapshots:
   dot-prop@6.0.1:
     dependencies:
       is-obj: 2.0.0
-
-  dotenv-cli@8.0.0:
-    dependencies:
-      cross-spawn: 7.0.6
-      dotenv: 16.4.7
-      dotenv-expand: 10.0.0
-      minimist: 1.2.8
-
-  dotenv-expand@10.0.0: {}
 
   dotenv@16.3.1: {}
 

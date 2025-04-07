@@ -1,0 +1,107 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Unhook Development Rules
+
+## Development Philosophy
+- Build a reliable, secure webhook testing platform that simplifies local development.
+- Focus on team collaboration and shared webhook management.
+- Create intuitive, developer-friendly interfaces for both CLI and web dashboard.
+- Prioritize security and encryption for all webhook traffic.
+- Document features, configurations, and best practices thoroughly.
+- Design for extensibility to support various webhook providers and use cases.
+
+## Project Overview
+We are developing a modern webhook development tool that enables teams to easily test webhooks locally. The system:
+- **Routes webhooks** to the appropriate developer's machine based on active sessions and routing rules.
+- **Shares webhook URLs** across teams while maintaining individual developer environments.
+- **Provides real-time monitoring** through a web dashboard for webhook inspection and debugging.
+- **Ensures security** with end-to-end encryption and API key authentication.
+- **Supports extensibility** for various webhook providers (Stripe, GitHub, Clerk, etc.).
+
+## Core Requirements
+
+1. **Webhook Routing Module:**
+   - Route incoming webhooks to active developer sessions based on client IDs and routing rules.
+   - Support multiple developers sharing the same webhook URL.
+   - Handle connection management and session tracking.
+
+2. **URL Management:**
+   - Generate and manage webhook URLs with format: `https://unhook.sh/h?k=KEY&e=ENDPOINT`
+   - Support both full (`key`, `endpoint`) and shorthand (`k`, `e`) URL parameters.
+   - Validate and process incoming webhook requests.
+
+3. **Team Collaboration:**
+   - Enable shared webhook URLs across development teams.
+   - Maintain separate developer environments with unique client IDs.
+   - Support team-wide configuration and routing rules.
+
+4. **Security Layer:**
+   - Implement end-to-end encryption for all webhook traffic.
+   - Manage API key authentication and validation.
+   - Ensure secure transmission of webhook data to local environments.
+
+5. **Web Dashboard:**
+   - Provide real-time monitoring of webhook requests.
+   - Enable request replay and analysis features.
+   - Support team management and webhook routing configuration.
+   - Display active team members and their connections.
+
+6. **CLI Interface:**
+   - Offer simple command-line interface for starting tunnels.
+   - Support configuration via command line arguments and config files.
+   - Provide clear, helpful output and debugging information.
+
+7. **Configuration Management:**
+   - Load team and individual configurations from config files.
+   - Support shared team settings and routing rules.
+   - Enable environment-specific configurations.
+
+8. **Provider Integration:**
+   - Support major webhook providers out of the box (Stripe, GitHub, Clerk).
+   - Define standard interfaces for adding new provider support.
+   - Handle provider-specific webhook formats and requirements.
+
+## Code Style and Structure
+
+1. **Project Organization:**
+   - Maintain clear separation between CLI, server, and dashboard components.
+   - Use modular architecture for easy extension and maintenance.
+   - Keep configuration and routing logic separate from core functionality.
+
+2. **Documentation:**
+   - Document all public APIs and interfaces.
+   - Provide clear examples for common use cases.
+   - Include setup instructions for different environments.
+   - Maintain comprehensive troubleshooting guides.
+
+3. **Testing:**
+   - Write unit tests for core functionality.
+   - Include integration tests for webhook routing.
+   - Test team collaboration features.
+   - Verify security measures and encryption.
+
+4. **Error Handling:**
+   - Implement comprehensive error handling.
+   - Provide clear error messages and debugging information.
+   - Log relevant information for troubleshooting.
+   - Handle network and connection issues gracefully.
+
+## Security Guidelines
+
+1. **API Key Management:**
+   - Use secure methods for generating and storing API keys.
+   - Implement key rotation and revocation capabilities.
+   - Support team-wide and individual API keys.
+
+2. **Data Privacy:**
+   - Do not store webhook payload data permanently.
+   - Encrypt all data in transit.
+   - Clear sensitive information from logs.
+
+3. **Access Control:**
+   - Implement role-based access for team management.
+   - Secure dashboard access with authentication.
+   - Control webhook routing based on permissions.

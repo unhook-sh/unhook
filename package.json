@@ -43,7 +43,7 @@
     "test": "pnpm with-env vitest",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
-    "with-env": "dotenv -e ./.env --"
+    "with-env": "infisical run -- "
   },
   "pnpm": {
     "patchedDependencies": {

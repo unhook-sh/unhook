@@ -54,7 +54,7 @@
     "start:debug": "DEV=true pnpm with-env bun run ./src/cli.ink.tsx",
     "test": "vitest",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "with-env": "dotenv -e ../../.env --",
+    "with-env": "infisical run -- ",
     "notarize": "./scripts/notarize.sh ./bin/unhook",
     "notarize:ci": "pnpm notarize \"$APPLE_ID\" \"$APPLE_PASSWORD\""
   },

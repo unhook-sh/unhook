@@ -33,6 +33,26 @@ runs:
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Update package.json version
+      shell: bash
+      run: |
+        cd apps/cli
+        npm version v${{ inputs.version }} --no-git-tag-version
+
+    - name: Publish to NPM
+      shell: bash
+      run: |
+        cd apps/cli
+        npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
+
     - name: Create Sentry release
       uses: getsentry/action-release@v1.7.0
       with:

@@ -49,7 +49,7 @@
   "name": "@acme/web-app",
   "private": true,
   "scripts": {
-    "build": "pnpm with-env next build",
+    "build": "next build",
     "clean": "git clean -xdf .next .turbo node_modules dist",
     "dev": "pnpm with-env next dev",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",

@@ -1,0 +1,97 @@
+name: CLI Build
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/cli/**"
+      - "packages/**"
+      - ".github/workflows/cli-build.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_COLOR: 3
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+  SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+  NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+  NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST }}
+  POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+  MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+  MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+  APPLE_ID: ${{ secrets.APPLE_ID }}
+  APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+  MACOS_IDENTITY: ${{ secrets.MACOS_IDENTITY }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          # Linux builds (glibc)
+          - os: ubuntu-latest
+            platform: linux
+            target: x64
+            binary_ext: ""
+          - os: ubuntu-latest
+            platform: linux
+            target: arm64
+            binary_ext: ""
+          # Linux builds (musl)
+          - os: ubuntu-latest
+            platform: linux
+            target: x64-musl
+            binary_ext: ""
+          - os: ubuntu-latest
+            platform: linux
+            target: arm64-musl
+            binary_ext: ""
+          # macOS builds
+          - os: macos-latest
+            platform: darwin
+            target: x64
+            binary_ext: ""
+            needs_codesign: true
+          - os: macos-latest
+            platform: darwin
+            target: arm64
+            binary_ext: ""
+            needs_codesign: true
+          # Windows builds
+          - os: windows-latest
+            platform: win32
+            target: x64
+            binary_ext: ".exe"
+
+    runs-on: ${{ matrix.os }}
+    outputs:
+      version: ${{ github.run_number }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./tooling/github/cli/build
+        with:
+          platform: ${{ matrix.platform }}
+          target: ${{ matrix.target }}
+          binary_ext: ${{ matrix.binary_ext }}
+          needs_codesign: ${{ matrix.needs_codesign || false }}
+
+      - uses: ./tooling/github/cli/codesign
+        if: matrix.needs_codesign
+        with:
+          platform: ${{ matrix.platform }}
+          target: ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unhook-${{ matrix.platform }}-${{ matrix.target }}
+          path: apps/cli/bin/unhook-${{ matrix.platform }}-${{ matrix.target }}${{ matrix.binary_ext }}

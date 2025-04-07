@@ -1,18 +1,17 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { file } from 'bun';
+import authSuccessTemplate from '../../../templates/auth-success.html' with {
+  type: 'file',
+};
 
 /**
- * Reads the auth success template HTML file
+ * Gets the auth success template HTML
  * @returns The HTML content of the success template
  */
-export function getAuthSuccessTemplate(): string {
+export async function getAuthSuccessTemplate(): Promise<string> {
   try {
-    return fs.readFileSync(
-      path.join(__dirname, '..', 'templates', 'auth-success.html'),
-      'utf-8',
-    );
-  } catch (_error) {
-    // Fallback template in case the file cannot be read
+    return await file(authSuccessTemplate).text();
+  } catch (error) {
+    // Fallback template in case the embedded file cannot be read
     return `
       <!DOCTYPE html>
       <html>

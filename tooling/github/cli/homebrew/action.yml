@@ -1,0 +1,23 @@
+name: "Update Homebrew Formula"
+description: "Update Homebrew tap with new CLI version"
+
+inputs:
+  version:
+    description: "Version number for the release"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: ../../setup
+
+    - name: Update Homebrew formula
+      uses: mislav/bump-homebrew-formula-action@v3
+      with:
+        formula-name: unhook
+        formula-path: tooling/homebrew/unhook.rb
+        homebrew-tap: seawatts/homebrew-tap
+        download-url: https://github.com/seawatts/tunnel/releases/download/v${{ inputs.version }}/unhook-darwin-{arch}
+        tag-name: v${{ inputs.version }}
+      env:
+        COMMITTER_TOKEN: ${{ env.COMMITTER_TOKEN }}

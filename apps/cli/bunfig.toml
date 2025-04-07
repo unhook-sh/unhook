@@ -1,0 +1,19 @@
+[build]
+entrypoints = ["./src/cli.ink.tsx", "./src/templates/auth-success.html"]
+outdir = "./bin"
+minify = true
+sourcemap = true
+target = "${BUN_BUILD_TARGET:-bun}"  # Default to 'bun' if BUN_BUILD_TARGET is not set
+main-fields = ["bin", "module", "main"]
+bytecode = true
+asset-naming = "[name].[ext]"  # Keep original names for embedded files
+
+[env]
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://rfuhplccghbdpvbiucru.supabase.co"
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
+process.env.NEXT_PUBLIC_POSTHOG_KEY = "${NEXT_PUBLIC_POSTHOG_KEY}"
+process.env.NEXT_PUBLIC_POSTHOG_HOST = "${NEXT_PUBLIC_POSTHOG_HOST}"
+process.env.SENTRY_DSN = "${SENTRY_DSN}"
+process.env.SENTRY_ORG = "${SENTRY_ORG}"
+process.env.SENTRY_PROJECT = "${SENTRY_PROJECT}"
+process.env.SENTRY_AUTH_TOKEN = "${SENTRY_AUTH_TOKEN}"

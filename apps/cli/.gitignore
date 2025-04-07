@@ -1,0 +1,9 @@
+# Certificates and signing
+/certificates/
+*.p12
+*.cert
+*.key
+*.pem
+*.cer
+*.crt
+*.txt

@@ -84,7 +84,7 @@ export class AuthService {
         }
 
         try {
-          const html = getAuthSuccessTemplate();
+          const html = await getAuthSuccessTemplate();
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(html);
         } catch (error) {

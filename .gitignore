@@ -25,7 +25,9 @@ apps/expo/ios
 apps/expo/android
 
 # production
-build
+build/
+**/build/
+!tooling/github/cli/build/
 
 # misc
 .DS_Store

@@ -7,7 +7,9 @@ export const env = createEnv({
    * Specify your client-side environment variables schema here.
    * For them to be exposed to the client, prefix them with `NEXT_PUBLIC_`.
    */
-  client: {},
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().url().optional(),
+  },
 
   extends: [vercel()],
 
@@ -16,6 +18,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 
   shared: {

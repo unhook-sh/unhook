@@ -1,4 +1,5 @@
 import { hostname, platform, release } from 'node:os';
+import { TRPCReactProvider } from '@acme/api/client';
 import { Box, Text, useInput } from 'ink';
 import { type FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -82,10 +83,8 @@ function CliArgsProvider({
 function AppContent() {
   const dimensions = useDimensions();
   const clientId = useCliStore.use.clientId();
-  const _port = useCliStore.use.port();
   const isConnected = useConnectionStore.use.isConnected();
   const connect = useConnectionStore.use.connect();
-  const _disconnect = useConnectionStore.use.disconnect();
   const isAuthenticated = useAuthStore.use.isAuthenticated();
   const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
   const apiKey = useCliStore.use.apiKey();
@@ -94,10 +93,6 @@ function AppContent() {
     if (!isConnected && selectedTunnelId && isAuthenticated) {
       connect();
     }
-
-    // return () => {
-    // disconnect();
-    // };
   }, [isConnected, selectedTunnelId, connect, isAuthenticated]);
 
   return (
@@ -133,9 +128,11 @@ export const Layout: FC<PageProps> = (props) => {
     <ErrorBoundary FallbackComponent={Fallback}>
       <Router>
         <CliArgsProvider {...props}>
-          <NavigationHandler />
-          <RequestSubscription />
-          <AppContent />
+          <TRPCReactProvider sourceHeader="cli">
+            <NavigationHandler />
+            <RequestSubscription />
+            <AppContent />
+          </TRPCReactProvider>
         </CliArgsProvider>
       </Router>
     </ErrorBoundary>

@@ -1,5 +1,4 @@
 {
-  "recommendations": ["denoland.vscode-deno"],
   "editor.codeActionsOnSave": {
     "quickfix.biome": "explicit",
     "source.organizeImports.biome": "explicit"
@@ -7,6 +6,18 @@
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer",
     "editor.formatOnSave": true
+  },
+  "files.exclude": {
+    "tooling/github/cli/build": false,
+    "**/build": false
+  },
+  "search.exclude": {
+    "tooling/github/cli/build": false,
+    "**/build": false
+  },
+  "files.watcherExclude": {
+    "tooling/github/cli/build": false,
+    "**/build": false
   },
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
@@ -29,22 +40,5 @@
     ["twx\\.[^`]+\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
     ["twx\\(.*?\\).*?\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
-  "cSpell.words": ["Omni", "openai"],
-  "deno.enablePaths": ["supabase/functions"],
-  "deno.unstable": [
-    "bare-node-builtins",
-    "byonm",
-    "sloppy-imports",
-    "unsafe-proto",
-    "webgpu",
-    "broadcast-channel",
-    "worker-options",
-    "cron",
-    "kv",
-    "ffi",
-    "fs",
-    "http",
-    "net"
-  ],
-  "deno.enable": true
+  "cSpell.words": ["Omni", "openai"]
 }

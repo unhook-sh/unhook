@@ -1,0 +1,47 @@
+name: "Build CLI"
+description: "Build CLI for different platforms"
+
+inputs:
+  platform:
+    description: "Platform to build for (linux, darwin, win32)"
+    required: true
+  target:
+    description: "Target architecture (x64, arm64, x64-musl, arm64-musl)"
+    required: true
+  binary_ext:
+    description: "Binary extension (e.g. .exe for Windows)"
+    required: true
+    default: ""
+  needs_codesign:
+    description: "Whether the binary needs code signing (macOS only)"
+    required: true
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+
+    - uses: ../../setup
+
+    - name: Build CLI
+      shell: bash
+      run: pnpm --filter @acme/unhook-cli build
+      env:
+        BUN_BUILD_TARGET: ${{ inputs.platform }}-${{ inputs.target }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_POSTHOG_KEY: ${{ env.NEXT_PUBLIC_POSTHOG_KEY }}
+        NEXT_PUBLIC_POSTHOG_HOST: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
+        SENTRY_DSN: ${{ env.SENTRY_DSN }}
+        SENTRY_ORG: ${{ env.SENTRY_ORG }}
+        SENTRY_PROJECT: ${{ env.SENTRY_PROJECT }}
+        SENTRY_AUTH_TOKEN: ${{ env.SENTRY_AUTH_TOKEN }}
+
+    - name: Rename binary for platform
+      shell: bash
+      run: |
+        cd apps/cli/bin
+        mv unhook${{ inputs.binary_ext }} unhook-${{ inputs.platform }}-${{ inputs.target }}${{ inputs.binary_ext }}

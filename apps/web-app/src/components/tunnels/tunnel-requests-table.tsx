@@ -17,6 +17,7 @@ import {
 import { RequestDetails } from '~/components/requests/request-details';
 import { RequestMetadata } from '~/components/requests/request-metadata';
 import type { LogEntry } from '~/types/logs';
+import { RequestType } from '@acme/db/schema';
 
 interface TunnelRequestsTableProps {
   tunnelId: string;
@@ -27,7 +28,7 @@ export function TunnelRequestsTable({
   tunnelId,
   limit,
 }: TunnelRequestsTableProps) {
-  const [requests, setRequests] = useState<LogEntry[]>([]);
+  const [requests, setRequests] = useState<RequestType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequestIndex, setSelectedRequestIndex] = useState<
     number | null
@@ -43,85 +44,50 @@ export function TunnelRequestsTable({
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Generate mock data
-        const mockRequests: LogEntry[] = Array.from({ length: 20 }).map(
+        const mockRequests: RequestType[] = Array.from({ length: 20 }).map(
           (_, i) => {
             const timestamp = new Date(
               Date.now() - Math.random() * 1000 * 60 * 60 * 24,
             );
-            const status =
-              Math.random() > 0.8
-                ? Math.floor(Math.random() * 100) + 400
-                : Math.floor(Math.random() * 100) + 200;
+            const status = Math.random() > 0.8 ? 'failed' : 'completed';
+            const responseStatus = status === 'failed' ? 400 + Math.floor(Math.random() * 100) : 200 + Math.floor(Math.random() * 100);
 
             return {
               id: `req_${i}_${Date.now()}`,
-              timestamp: format(timestamp, 'HH:mm:ss.SS'),
-              method: ['GET', 'POST', 'PUT', 'DELETE'][
-                Math.floor(Math.random() * 4)
-              ],
+              tunnelId,
+              apiKey: 'pk_test_123',
               status,
-              host: `tunnel-${tunnelId.substring(0, 6)}.example.com`,
-              path: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
-                Math.floor(Math.random() * 4)
-              ],
-              request: `req Request { method: '${['GET', 'POST', 'PUT', 'DELETE'][Math.floor(Math.random() * 4)]}' }`,
-              level: status >= 400 ? 'error' : 'info',
-              userAgent: 'Svix-Webhooks/1.62.0 (sender-9Y...)',
-              location: 'Dublin, Ireland (dub1)',
-              searchParams: {
-                key: 'pk_123',
-                endpoint: 'webhooks/clerk',
-                port: '3000',
-              },
-              externalApis: [
-                {
-                  method: 'POST',
-                  url: 'c4508560513171456.ingest.us.sumologic.com',
-                  status: 200,
-                },
-              ],
-              details: {
-                request: {
-                  method: ['GET', 'POST', 'PUT', 'DELETE'][
-                    Math.floor(Math.random() * 4)
-                  ],
-                  url: `https://tunnel-${tunnelId.substring(0, 6)}.example.com/api/data`,
-                  headers: {
-                    'content-type': 'application/json',
-                    'user-agent': 'Svix-Webhooks/1.62.0 (sender-9Y...)',
-                    'x-clerk-auth-reason': 'dev-browser-missing',
-                    'svix-id': 'msg_2vEoS4gtL6R096JSYNvMv0oHaIs',
-                    'svix-timestamp': '1743719590',
-                  },
-                },
-                response: {
-                  status,
-                  headers: {
-                    'content-type': 'application/json',
-                  },
-                  body: {
-                    success: status < 400,
-                    message: status < 400 ? 'Success' : 'Error',
-                  },
-                },
+              createdAt: timestamp,
+              userId: 'user_123',
+              orgId: 'org_123',
+              connectionId: null,
+              request: {
+                id: `req_${i}_${Date.now()}`,
+                method: ['GET', 'POST', 'PUT', 'DELETE'][Math.floor(Math.random() * 4)] as string,
+                url: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][Math.floor(Math.random() * 4)] as string,
                 headers: {
                   'content-type': 'application/json',
-                  'user-agent': 'Svix-Webhooks/1.62.0 (sender-9Y...)',
-                  'x-clerk-auth-reason': 'dev-browser-missing',
-                  'svix-id': 'msg_2vEoS4gtL6R096JSYNvMv0oHaIs',
-                  'svix-timestamp': '1743719590',
+                  'user-agent': 'Svix-Webhooks/1.62.0',
                 },
+                size: Math.floor(Math.random() * 1000),
+                timestamp: timestamp.getTime(),
+                contentType: 'application/json',
+                clientIp: '127.0.0.1'
               },
+              failedReason: status === 'failed' ? 'Connection error' : null,
+              completedAt: status === 'completed' ? new Date() : null,
+              response: status === 'completed' ? {
+                status: responseStatus,
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ success: responseStatus < 400 })
+              } : null,
+              responseTimeMs: Math.floor(Math.random() * 1000)
             };
           },
         );
 
         // Sort by timestamp (newest first)
-        mockRequests.sort((a, b) => {
-          return (
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-          );
-        });
+        mockRequests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
         setRequests(limit ? mockRequests.slice(0, limit) : mockRequests);
       } catch (error) {
@@ -212,32 +178,26 @@ export function TunnelRequestsTable({
                     onClick={() => handleRequestClick(index)}
                   >
                     <TableCell className="font-mono text-xs">
-                      {request.timestamp}
+                      {format(request.createdAt, 'HH:mm:ss.SS')}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-mono">
-                        {request.method}
+                        {request.request.method}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs truncate max-w-[300px]">
-                      {request.path}
+                      {request.request.url}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {request.status >= 400 && (
+                        {request.status === 'failed' && (
                           <AlertTriangle className="h-4 w-4 text-destructive" />
                         )}
                         <Badge
-                          variant={
-                            request.status >= 400 ? 'destructive' : 'outline'
-                          }
-                          className={
-                            request.status < 400
-                              ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
-                              : ''
-                          }
+                          variant={request.status === 'failed' ? 'destructive' : 'outline'}
+                          className={request.status === 'completed' ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500' : ''}
                         >
-                          {request.status}
+                          {request.response?.status ?? 'Pending'}
                         </Badge>
                       </div>
                     </TableCell>

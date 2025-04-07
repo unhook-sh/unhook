@@ -3,7 +3,7 @@
 import { MoreHorizontal, Play, Square, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-import type { Tunnel } from '@/components/types/tunnel';
+import type { Tunnel } from '~/types/tunnel';
 import { Badge } from '@acme/ui/components/badge';
 import { Button } from '@acme/ui/components/button';
 import {

@@ -114,8 +114,10 @@ export function TunnelStatusCodesChart() {
     <div className="h-[300px] w-full">
       <ChartContainer
         config={{
-          label: 'Status Codes',
-          color: 'hsl(var(--primary))',
+          label: {
+            label: 'Status Codes',
+            color: 'hsl(var(--primary))',
+          },
         }}
       >
         <ResponsiveContainer width="100%" height="100%">

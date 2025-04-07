@@ -1,7 +1,7 @@
 'use client';
 
-import type { Tunnel } from '@/components/types/tunnel';
 import { useEffect, useState } from 'react';
+import { Tunnel } from '~/types/tunnel';
 
 // Mock data for tunnels
 const mockTunnels: Tunnel[] = [

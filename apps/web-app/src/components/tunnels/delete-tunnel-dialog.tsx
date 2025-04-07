@@ -3,7 +3,7 @@
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import type { Tunnel } from '@/components/types/tunnel';
+import type { Tunnel } from '~/types/tunnel';
 import {
   AlertDialog,
   AlertDialogCancel,

@@ -105,7 +105,7 @@ export function TunnelErrorRateChart({ timeRange }: TunnelErrorRateChartProps) {
                           Time
                         </span>
                         <span className="font-bold text-muted-foreground">
-                          {payload[0].payload.time}
+                          {payload[0]?.payload?.time}
                         </span>
                       </div>
                       <div className="flex flex-col">
@@ -113,7 +113,7 @@ export function TunnelErrorRateChart({ timeRange }: TunnelErrorRateChartProps) {
                           Error Rate
                         </span>
                         <span className="font-bold text-destructive">
-                          {payload[0].value}%
+                          {payload[0]?.value}%
                         </span>
                       </div>
                     </div>

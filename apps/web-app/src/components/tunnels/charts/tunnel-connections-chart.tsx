@@ -77,21 +77,21 @@ export function TunnelConnectionsChart({
         newData.shift();
 
         // Add new data point
-        const lastTime = newData[newData.length - 1].time;
-        const [hour, minute] = lastTime.split(':').map(Number);
+        const lastTime = newData[newData.length - 1]?.time;
+        const [hour, minute] = lastTime?.split(':').map(Number) ?? [];
 
-        let newMinute = minute + 1;
-        let newHour = hour;
+        let newMinute = minute ?? 0 + 1;
+        let newHour = hour ?? 0;
 
         if (newMinute >= 60) {
           newMinute = 0;
-          newHour = (newHour + 1) % 24;
+          newHour = (newHour ?? 0 + 1) % 24;
         }
 
-        const newTimeStr = `${newHour.toString().padStart(2, '0')}:${newMinute.toString().padStart(2, '0')}`;
+        const newTimeStr = `${newHour?.toString().padStart(2, '0')}:${newMinute?.toString().padStart(2, '0')}`;
 
         // Calculate new connections value with some continuity from the last value
-        const lastConnections = newData[newData.length - 1].connections;
+        const lastConnections = newData[newData.length - 1]?.connections ?? 0;
         let newConnections =
           lastConnections +
           (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3);

@@ -1,7 +1,7 @@
 'use client';
 
-import type { Tunnel } from '@/components/types/tunnel';
 import { Card, CardContent } from '@acme/ui/components/card';
+import { Tunnel } from '~/types/tunnel';
 
 interface TunnelMetricsProps {
   tunnel: Tunnel;

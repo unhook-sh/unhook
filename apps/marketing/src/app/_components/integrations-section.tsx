@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import { useRef } from 'react'
+import Image from 'next/image';
+import { useRef } from 'react';
 
-import { Icons } from '@acme/ui/custom/icons'
-import { cn, twx } from '@acme/ui/lib/utils'
-import { AnimatedBeam } from '@acme/ui/magicui/animated-beam'
-import { DotPattern } from '@acme/ui/magicui/dot-pattern'
-import { ShineBorder } from '@acme/ui/magicui/shine-border'
+import { Icons } from '@acme/ui/custom/icons';
+import { cn, twx } from '@acme/ui/lib/utils';
+import { AnimatedBeam } from '@acme/ui/magicui/animated-beam';
+import { DotPattern } from '@acme/ui/magicui/dot-pattern';
+import { ShineBorder } from '@acme/ui/magicui/shine-border';
 
-const Circle = twx.div`z-10 flex size-12 items-center justify-center rounded-full border-2 bg-secondary p-3 shadow-md`
+const Circle = twx.div`z-10 flex size-12 items-center justify-center rounded-full border-2 bg-secondary p-3 shadow-md`;
 
 export function IntegrationsSection({ className }: { className?: string }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const div1Ref = useRef<HTMLDivElement>(null)
-  const div2Ref = useRef<HTMLDivElement>(null)
-  const div3Ref = useRef<HTMLDivElement>(null)
-  const div4Ref = useRef<HTMLDivElement>(null)
-  const div5Ref = useRef<HTMLDivElement>(null)
-  const div6Ref = useRef<HTMLDivElement>(null)
-  const div7Ref = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null);
+  const div1Ref = useRef<HTMLDivElement>(null);
+  const div2Ref = useRef<HTMLDivElement>(null);
+  const div3Ref = useRef<HTMLDivElement>(null);
+  const div4Ref = useRef<HTMLDivElement>(null);
+  const div5Ref = useRef<HTMLDivElement>(null);
+  const div6Ref = useRef<HTMLDivElement>(null);
+  const div7Ref = useRef<HTMLDivElement>(null);
 
   return (
     <section
@@ -161,5 +161,5 @@ export function IntegrationsSection({ className }: { className?: string }) {
         />
       </ShineBorder>
     </section>
-  )
+  );
 }

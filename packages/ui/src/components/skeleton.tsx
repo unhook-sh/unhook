@@ -1,4 +1,4 @@
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -7,7 +7,7 @@ function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
       className={cn('animate-pulse rounded-md bg-primary/10', className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Skeleton }
+export { Skeleton };

@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { useUser } from '@clerk/nextjs'
-import * as Sentry from '@sentry/nextjs'
-import { useEffect } from 'react'
+import { useUser } from '@clerk/nextjs';
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
 
 export function SentryIdentifyUser() {
-  const user = useUser()
+  const user = useUser();
 
   useEffect(() => {
     if (user.user) {
       Sentry.setUser({
         id: user.user.id,
         email: user.user.primaryEmailAddress?.emailAddress,
-      })
+      });
     } else {
-      Sentry.setUser(null)
+      Sentry.setUser(null);
     }
-  }, [user])
+  }, [user]);
 
-  return null
+  return null;
 }

@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
-type TColorProp = string | string[]
+type TColorProp = string | string[];
 
 interface ShineBorderProps {
-  borderRadius?: number
-  borderWidth?: number
-  duration?: number
-  color?: TColorProp
-  className?: string
-  children: React.ReactNode
+  borderRadius?: number;
+  borderWidth?: number;
+  duration?: number;
+  color?: TColorProp;
+  className?: string;
+  children: React.ReactNode;
 }
 
 /**
@@ -65,6 +65,6 @@ export const ShineBorder = React.forwardRef<HTMLDivElement, ShineBorderProps>(
         />
         {children}
       </div>
-    )
+    );
   },
-)
+);

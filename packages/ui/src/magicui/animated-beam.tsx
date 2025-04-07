@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import { motion } from 'motion/react'
-import type { RefObject } from 'react'
-import { useEffect, useId, useState } from 'react'
+import { motion } from 'motion/react';
+import type { RefObject } from 'react';
+import { useEffect, useId, useState } from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 export interface AnimatedBeamProps {
-  className?: string
-  containerRef: RefObject<HTMLElement | null> // Container ref
-  fromRef: RefObject<HTMLElement | null>
-  toRef: RefObject<HTMLElement | null>
-  curvature?: number
-  reverse?: boolean
-  pathColor?: string
-  pathWidth?: number
-  pathOpacity?: number
-  gradientStartColor?: string
-  gradientStopColor?: string
-  delay?: number
-  duration?: number
-  startXOffset?: number
-  startYOffset?: number
-  endXOffset?: number
-  endYOffset?: number
+  className?: string;
+  containerRef: RefObject<HTMLElement | null>; // Container ref
+  fromRef: RefObject<HTMLElement | null>;
+  toRef: RefObject<HTMLElement | null>;
+  curvature?: number;
+  reverse?: boolean;
+  pathColor?: string;
+  pathWidth?: number;
+  pathOpacity?: number;
+  gradientStartColor?: string;
+  gradientStopColor?: string;
+  delay?: number;
+  duration?: number;
+  startXOffset?: number;
+  startYOffset?: number;
+  endXOffset?: number;
+  endYOffset?: number;
 }
 
 export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
@@ -45,9 +45,9 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   endXOffset = 0,
   endYOffset = 0,
 }) => {
-  const id = useId()
-  const [pathD, setPathD] = useState('')
-  const [svgDimensions, setSvgDimensions] = useState({ height: 0, width: 0 })
+  const id = useId();
+  const [pathD, setPathD] = useState('');
+  const [svgDimensions, setSvgDimensions] = useState({ height: 0, width: 0 });
 
   // Calculate the gradient coordinates based on the reverse prop
   const gradientCoordinates = reverse
@@ -62,56 +62,56 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         x2: ['0%', '100%'],
         y1: ['0%', '0%'],
         y2: ['0%', '0%'],
-      }
+      };
 
   useEffect(() => {
     const updatePath = () => {
       if (containerRef.current && fromRef.current && toRef.current) {
-        const containerRect = containerRef.current.getBoundingClientRect()
-        const rectA = fromRef.current.getBoundingClientRect()
-        const rectB = toRef.current.getBoundingClientRect()
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const rectA = fromRef.current.getBoundingClientRect();
+        const rectB = toRef.current.getBoundingClientRect();
 
-        const svgWidth = containerRect.width
-        const svgHeight = containerRect.height
-        setSvgDimensions({ height: svgHeight, width: svgWidth })
+        const svgWidth = containerRect.width;
+        const svgHeight = containerRect.height;
+        setSvgDimensions({ height: svgHeight, width: svgWidth });
 
         const startX =
-          rectA.left - containerRect.left + rectA.width / 2 + startXOffset
+          rectA.left - containerRect.left + rectA.width / 2 + startXOffset;
         const startY =
-          rectA.top - containerRect.top + rectA.height / 2 + startYOffset
+          rectA.top - containerRect.top + rectA.height / 2 + startYOffset;
         const endX =
-          rectB.left - containerRect.left + rectB.width / 2 + endXOffset
+          rectB.left - containerRect.left + rectB.width / 2 + endXOffset;
         const endY =
-          rectB.top - containerRect.top + rectB.height / 2 + endYOffset
+          rectB.top - containerRect.top + rectB.height / 2 + endYOffset;
 
-        const controlY = startY - curvature
+        const controlY = startY - curvature;
         const d = `M ${startX},${startY} Q ${
           (startX + endX) / 2
-        },${controlY} ${endX},${endY}`
-        setPathD(d)
+        },${controlY} ${endX},${endY}`;
+        setPathD(d);
       }
-    }
+    };
 
     // Initialize ResizeObserver
     const resizeObserver = new ResizeObserver((entries) => {
       // For all entries, recalculate the path
       for (const _entry of entries) {
-        updatePath()
+        updatePath();
       }
-    })
+    });
 
     // Observe the container element
     if (containerRef.current) {
-      resizeObserver.observe(containerRef.current)
+      resizeObserver.observe(containerRef.current);
     }
 
     // Call the updatePath initially to set the initial path
-    updatePath()
+    updatePath();
 
     // Clean up the observer on component unmount
     return () => {
-      resizeObserver.disconnect()
-    }
+      resizeObserver.disconnect();
+    };
   }, [
     containerRef,
     fromRef,
@@ -121,7 +121,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
     startYOffset,
     endXOffset,
     endYOffset,
-  ])
+  ]);
 
   return (
     <svg
@@ -182,5 +182,5 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         </motion.linearGradient>
       </defs>
     </svg>
-  )
-}
+  );
+};

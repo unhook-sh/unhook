@@ -9,42 +9,58 @@ export function RequestTableHeader({ children }: CellProps) {
   );
 }
 
-export function RequestTableCell({ children, column, isSelected }: CellProps) {
+export function RequestTableCell({
+  children,
+  column,
+  isSelected,
+  row,
+}: CellProps) {
   if (column === 'status') {
     const status = Number(String(children).trim());
-    const color = status < 400 ? 'green' : 'red';
+    const color = isSelected ? 'cyan' : status < 400 ? 'green' : 'red';
     return (
-      <Text color={color} bold={isSelected}>
+      <Text color={color} dimColor={!isSelected} bold={isSelected}>
         {children}
       </Text>
     );
   }
 
   if (column === 'method') {
+    const color = isSelected ? 'cyan' : 'white';
     return (
-      <Text color={isSelected ? 'cyan' : undefined} bold={isSelected}>
+      <Text color={color} dimColor={!isSelected} bold={isSelected}>
         {children}
       </Text>
     );
   }
 
   if (column === 'url') {
+    const color = isSelected ? 'cyan' : 'white';
     return (
-      <Text color={isSelected ? 'blue' : undefined} bold={isSelected}>
+      <Text color={color} dimColor={!isSelected} bold={isSelected}>
         {children}
       </Text>
     );
   }
 
   if (column === 'time') {
+    const color = isSelected ? 'cyan' : 'gray';
     return (
-      <Text color={isSelected ? 'yellow' : 'gray'} bold={isSelected}>
+      <Text color={color} dimColor={!isSelected} bold={isSelected}>
         {children}
       </Text>
     );
   }
 
-  return <Text bold={isSelected}>{children}</Text>;
+  return (
+    <Text
+      color={isSelected ? 'cyan' : undefined}
+      dimColor={!isSelected}
+      bold={isSelected}
+    >
+      {children}
+    </Text>
+  );
 }
 
 export function RequestTableSkeleton({

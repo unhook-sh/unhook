@@ -1,24 +1,34 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { ChevronDown, ChevronRight, Search } from "lucide-react"
+import { ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { useState } from 'react';
 
-import { Button } from "@acme/ui/components/button"
-import { Checkbox } from "@acme/ui/components/checkbox"
-import { Input } from "@acme/ui/components/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@acme/ui/components/select"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@acme/ui/components/collapsible"
-import { cn } from "@acme/ui/lib/utils"
+import { Button } from '@acme/ui/components/button';
+import { Checkbox } from '@acme/ui/components/checkbox';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@acme/ui/components/collapsible';
+import { Input } from '@acme/ui/components/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@acme/ui/components/select';
+import { cn } from '@acme/ui/lib/utils';
 
 interface FilterAreaProps {
-  className?: string
+  className?: string;
 }
 
 export function FilterArea({ className }: FilterAreaProps) {
-  const [routeSearch, setRouteSearch] = useState("")
+  const [routeSearch, setRouteSearch] = useState('');
 
   return (
-    <div className={cn("flex flex-col bg-background overflow-auto", className)}>
+    <div className={cn('flex flex-col bg-background overflow-auto', className)}>
       <div className="flex items-center justify-between p-4">
         <h2 className="text-lg font-semibold">Filters</h2>
         <Button variant="outline" size="sm">
@@ -66,7 +76,9 @@ export function FilterArea({ className }: FilterAreaProps) {
                     Warning
                   </label>
                 </div>
-                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">0</span>
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                  0
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -75,7 +87,9 @@ export function FilterArea({ className }: FilterAreaProps) {
                     Error
                   </label>
                 </div>
-                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">0</span>
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                  0
+                </span>
               </div>
             </div>
           </CollapsibleContent>
@@ -89,7 +103,9 @@ export function FilterArea({ className }: FilterAreaProps) {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-4 pt-0">{/* Environment filters would go here */}</div>
+            <div className="p-4 pt-0">
+              {/* Environment filters would go here */}
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -119,7 +135,9 @@ export function FilterArea({ className }: FilterAreaProps) {
                       /api/tunnel
                     </label>
                   </div>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs">3</span>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                    3
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -128,7 +146,9 @@ export function FilterArea({ className }: FilterAreaProps) {
                       null
                     </label>
                   </div>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs">0</span>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                    0
+                  </span>
                 </div>
               </div>
             </div>
@@ -143,7 +163,9 @@ export function FilterArea({ className }: FilterAreaProps) {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-4 pt-0">{/* Request Path filters would go here */}</div>
+            <div className="p-4 pt-0">
+              {/* Request Path filters would go here */}
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -155,7 +177,9 @@ export function FilterArea({ className }: FilterAreaProps) {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-4 pt-0">{/* Status Code filters would go here */}</div>
+            <div className="p-4 pt-0">
+              {/* Status Code filters would go here */}
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -167,7 +191,9 @@ export function FilterArea({ className }: FilterAreaProps) {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-4 pt-0">{/* Resource filters would go here */}</div>
+            <div className="p-4 pt-0">
+              {/* Resource filters would go here */}
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -179,7 +205,9 @@ export function FilterArea({ className }: FilterAreaProps) {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-4 pt-0">{/* Request Type filters would go here */}</div>
+            <div className="p-4 pt-0">
+              {/* Request Type filters would go here */}
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -191,7 +219,9 @@ export function FilterArea({ className }: FilterAreaProps) {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="p-4 pt-0">{/* Request Method filters would go here */}</div>
+            <div className="p-4 pt-0">
+              {/* Request Method filters would go here */}
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -208,6 +238,5 @@ export function FilterArea({ className }: FilterAreaProps) {
         </Collapsible>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,13 +1,13 @@
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 interface MarqueeProps {
-  className?: string
-  reverse?: boolean
-  pauseOnHover?: boolean
-  children?: React.ReactNode
-  vertical?: boolean
-  repeat?: number
-  [key: string]: unknown
+  className?: string;
+  reverse?: boolean;
+  pauseOnHover?: boolean;
+  children?: React.ReactNode;
+  vertical?: boolean;
+  repeat?: number;
+  [key: string]: unknown;
 }
 
 export function Marquee({
@@ -47,5 +47,5 @@ export function Marquee({
           </div>
         ))}
     </div>
-  )
+  );
 }

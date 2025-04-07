@@ -1,5 +1,5 @@
 import { Clerk } from '@clerk/clerk-js/headless';
-import { authStore } from './store';
+import { useAuthStore } from './store';
 
 global.window = global.window || {};
 
@@ -9,7 +9,7 @@ const clerkFactory = (options: { publishableKey: string }) => {
 
   return async () => {
     const getToken = () => {
-      const state = authStore.getState();
+      const state = useAuthStore.getState();
       return state.token;
     };
 
@@ -21,13 +21,19 @@ const clerkFactory = (options: { publishableKey: string }) => {
     clerkInstance.__unstable__onBeforeRequest(async (requestInit) => {
       requestInit.credentials = 'omit';
       requestInit.url?.searchParams.append('_is_native', '1');
-      (requestInit.headers as Headers).set('authorization', getToken() || '');
+      const token = getToken();
+      if (token) {
+        (requestInit.headers as Headers).set('authorization', token);
+      }
     });
 
     clerkInstance.__unstable__onAfterResponse(async (_, response) => {
       const authHeader = response?.headers.get('authorization');
       if (authHeader) {
-        authStore.setState({ token: authHeader });
+        const currentState = useAuthStore.getState();
+        if (currentState.token !== authHeader) {
+          useAuthStore.setState({ token: authHeader });
+        }
       }
     });
 

@@ -32,6 +32,9 @@ export function CliLoginButton() {
       // Add the token to the redirect URL
       redirectUrl.searchParams.set('token', result.data.token);
       redirectUrl.searchParams.set('userId', result.data.userId);
+      if (result.data.orgId) {
+        redirectUrl.searchParams.set('orgId', result.data.orgId);
+      }
       redirectUrl.searchParams.set('status', result.data.status);
       redirectUrl.searchParams.set('url', result.data.url);
       redirectUrl.searchParams.set('id', result.data.id);

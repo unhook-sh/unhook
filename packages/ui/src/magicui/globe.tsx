@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import type { COBEOptions } from 'cobe'
-import createGlobe from 'cobe'
-import { useTheme } from 'next-themes'
-import { useCallback, useEffect, useRef } from 'react'
-import { useSpring } from 'react-spring'
+import type { COBEOptions } from 'cobe';
+import createGlobe from 'cobe';
+import { useTheme } from 'next-themes';
+import { useCallback, useEffect, useRef } from 'react';
+import { useSpring } from 'react-spring';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 const GLOBE_CONFIG: COBEOptions = {
   baseColor: [1, 1, 1],
@@ -39,21 +39,21 @@ const GLOBE_CONFIG: COBEOptions = {
   phi: 0,
   theta: 0.3,
   width: 800,
-}
+};
 
 export function Globe({
   className,
   config = GLOBE_CONFIG,
 }: {
-  className?: string
-  config?: COBEOptions
+  className?: string;
+  config?: COBEOptions;
 }) {
-  let phi = 0
-  let width = 0
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const pointerInteracting = useRef<number | null>(null)
-  const pointerInteractionMovement = useRef(0)
-  const theme = useTheme()
+  let phi = 0;
+  let width = 0;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pointerInteracting = useRef<number | null>(null);
+  const pointerInteractionMovement = useRef(0);
+  const theme = useTheme();
   const [{ r }, api] = useSpring(() => ({
     config: {
       friction: 40,
@@ -62,44 +62,44 @@ export function Globe({
       tension: 280,
     },
     r: 0,
-  }))
+  }));
 
   const updatePointerInteraction = (value: number | null) => {
-    pointerInteracting.current = value
+    pointerInteracting.current = value;
     if (canvasRef.current) {
-      canvasRef.current.style.cursor = value ? 'grabbing' : 'grab'
+      canvasRef.current.style.cursor = value ? 'grabbing' : 'grab';
     }
-  }
+  };
 
   const updateMovement = (clientX: number) => {
     if (pointerInteracting.current !== null) {
-      const delta = clientX - pointerInteracting.current
-      pointerInteractionMovement.current = delta
-      api.start({ r: delta / 200 })
+      const delta = clientX - pointerInteracting.current;
+      pointerInteractionMovement.current = delta;
+      api.start({ r: delta / 200 });
     }
-  }
+  };
 
   const onRender = useCallback(
     (state: Record<string, number>) => {
-      if (!pointerInteracting.current) phi += 0.005
-      state.phi = phi + r.get()
-      state.width = width * 2
-      state.height = width * 2
+      if (!pointerInteracting.current) phi += 0.005;
+      state.phi = phi + r.get();
+      state.width = width * 2;
+      state.height = width * 2;
     },
     [phi, r, width],
-  )
+  );
 
   const onResize = useCallback(() => {
     if (canvasRef.current) {
-      width = canvasRef.current.offsetWidth
+      width = canvasRef.current.offsetWidth;
     }
-  }, [width])
+  }, [width]);
 
   useEffect(() => {
-    window.addEventListener('resize', onResize)
-    onResize()
+    window.addEventListener('resize', onResize);
+    onResize();
 
-    if (!canvasRef.current) return
+    if (!canvasRef.current) return;
 
     const globe = createGlobe(canvasRef.current, {
       ...config,
@@ -108,15 +108,15 @@ export function Globe({
       onRender,
       opacity: 0.5,
       width: width * 2,
-    })
+    });
 
     setTimeout(() => {
       if (canvasRef.current) {
-        canvasRef.current.style.opacity = '1'
+        canvasRef.current.style.opacity = '1';
       }
-    })
-    return () => globe.destroy()
-  }, [theme.theme, width, config, onRender, onResize])
+    });
+    return () => globe.destroy();
+  }, [theme.theme, width, config, onRender, onResize]);
 
   return (
     <div
@@ -143,5 +143,5 @@ export function Globe({
         }
       />
     </div>
-  )
+  );
 }

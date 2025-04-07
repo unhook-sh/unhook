@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import type { SignInResource } from '@clerk/types';
 import open from 'open';
 import { createClerkClient } from './clerk';
-import { authStore } from './store';
+import { useAuthStore} from './store';
 import { getAuthSuccessTemplate } from './templates/get-template';
 
 interface AuthConfig {
@@ -18,8 +18,7 @@ export class AuthService {
     | ((value: {
         token: string;
         userId: string;
-        firstName?: string;
-        lastName?: string;
+        orgId?: string| null;
       }) => void)
     | null = null;
   private rejectAuth: ((reason: Error) => void) | null = null;
@@ -34,6 +33,7 @@ export class AuthService {
   private startServer(): Promise<{
     token: string;
     userId: string;
+    orgId?: string | null;
   }> {
     return new Promise((resolve, reject) => {
       this.resolveAuth = resolve;
@@ -54,6 +54,7 @@ export class AuthService {
         const state = url.searchParams.get('state');
         const token = url.searchParams.get('token');
         const userId = url.searchParams.get('userId');
+        const orgId = url.searchParams.get('orgId');
         const error = url.searchParams.get('error');
 
         // Set CORS headers
@@ -95,6 +96,7 @@ export class AuthService {
         this.resolveAuth?.({
           token,
           userId,
+          orgId,
         });
       });
 
@@ -114,6 +116,7 @@ export class AuthService {
     userId: string;
     firstName?: string;
     lastName?: string;
+    orgId?: string | null;
   }> {
     try {
       this.stateToken = this.generateStateToken();
@@ -147,7 +150,6 @@ export class AuthService {
       }
 
       const token = await clerk.session?.getToken();
-      console.log('signInResponse', signInResponse, clerk.session, token);
 
       if (!token) {
         throw new Error('Failed to get token');
@@ -158,6 +160,7 @@ export class AuthService {
         userId: result.userId,
         firstName: signInResponse?.userData.firstName,
         lastName: signInResponse?.userData.lastName,
+        orgId: result.orgId,
       };
     } finally {
       this.stopServer();
@@ -175,7 +178,7 @@ export class AuthService {
     this.stateToken = null;
 
     // Clear auth store state
-    authStore.setState({
+    useAuthStore.setState({
       isAuthenticated: false,
       token: null,
       userId: null,

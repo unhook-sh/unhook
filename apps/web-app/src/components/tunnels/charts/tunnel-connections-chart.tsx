@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@acme/ui/components/chart';
 import { useEffect, useState } from 'react';
 import {
   Area,
@@ -9,11 +14,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@acme/ui/components/chart';
 
 interface TunnelConnectionsChartProps {
   timeRange: string;

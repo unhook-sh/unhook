@@ -83,6 +83,7 @@ async function main() {
         clientId={argv.clientId}
         debug={argv.debug}
       />,
+      { debug: undefined },
     );
 
     await waitUntilExit();

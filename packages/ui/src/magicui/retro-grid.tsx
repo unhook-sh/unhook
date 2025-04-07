@@ -1,4 +1,4 @@
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 export default function RetroGrid({ className }: { className?: string }) {
   return (
@@ -28,5 +28,5 @@ export default function RetroGrid({ className }: { className?: string }) {
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-linear-to-t from-white to-transparent to-90% dark:from-black" />
     </div>
-  )
+  );
 }

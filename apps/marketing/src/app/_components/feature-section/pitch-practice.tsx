@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react';
 
-import { Button } from '@acme/ui/button'
+import { Button } from '@acme/ui/button';
 import {
   Card,
   CardContent,
@@ -10,8 +10,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card'
-import { Progress } from '@acme/ui/progress'
+} from '@acme/ui/card';
+import { Progress } from '@acme/ui/progress';
 
 const feedbackData = [
   {
@@ -44,7 +44,7 @@ const feedbackData = [
       'We project a 150% year-over-year growth with a break-even point reached within the first 18 months of operation.',
     score: 92,
   },
-]
+];
 
 export function PitchPractice() {
   return (
@@ -86,5 +86,5 @@ export function PitchPractice() {
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

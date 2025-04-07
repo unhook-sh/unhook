@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   BarChart,
@@ -8,20 +8,20 @@ import {
   HeartHandshake,
   Rss,
   Shield,
-} from 'lucide-react'
-import { motion, useAnimation, useInView } from 'motion/react'
-import Link from 'next/link'
-import { useEffect, useId, useRef, useState } from 'react'
-import type { ReactElement } from 'react'
+} from 'lucide-react';
+import { motion, useAnimation, useInView } from 'motion/react';
+import Link from 'next/link';
+import { useEffect, useId, useRef, useState } from 'react';
+import type { ReactElement } from 'react';
 
-import { buttonVariants } from '@acme/ui/button'
-import { cn } from '@acme/ui/lib/utils'
-import { Marquee } from '@acme/ui/magicui/marquee'
+import { buttonVariants } from '@acme/ui/button';
+import { cn } from '@acme/ui/lib/utils';
+import { Marquee } from '@acme/ui/magicui/marquee';
 
 interface Tile {
-  id: string
-  bg: ReactElement
-  icon: ReactElement
+  id: string;
+  bg: ReactElement;
+  icon: ReactElement;
 }
 
 const tiles: Tile[] = [
@@ -67,26 +67,26 @@ const tiles: Tile[] = [
     ),
     icon: <BarChart className="size-full" />,
   },
-]
+];
 
 const shuffleArray = (array: Tile[]): Tile[] => {
-  return [...array].sort(() => Math.random() - 0.5)
-}
+  return [...array].sort(() => Math.random() - 0.5);
+};
 
 const Card = (card: { icon: React.ReactNode; bg: React.ReactNode }) => {
-  const id = useId()
-  const controls = useAnimation()
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true })
+  const id = useId();
+  const controls = useAnimation();
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
 
   useEffect(() => {
     if (inView) {
       controls.start({
         opacity: 1,
         transition: { delay: Math.random() * 2, duration: 1, ease: 'easeOut' },
-      })
+      });
     }
-  }, [controls, inView])
+  }, [controls, inView]);
 
   return (
     <motion.div
@@ -105,24 +105,24 @@ const Card = (card: { icon: React.ReactNode; bg: React.ReactNode }) => {
       {card.icon}
       {card.bg}
     </motion.div>
-  )
-}
+  );
+};
 
 export function CallToActionSection() {
-  const [randomTiles1, setRandomTiles1] = useState<Tile[]>([])
-  const [randomTiles2, setRandomTiles2] = useState<Tile[]>([])
-  const [randomTiles3, setRandomTiles3] = useState<Tile[]>([])
-  const [randomTiles4, setRandomTiles4] = useState<Tile[]>([])
+  const [randomTiles1, setRandomTiles1] = useState<Tile[]>([]);
+  const [randomTiles2, setRandomTiles2] = useState<Tile[]>([]);
+  const [randomTiles3, setRandomTiles3] = useState<Tile[]>([]);
+  const [randomTiles4, setRandomTiles4] = useState<Tile[]>([]);
 
   useEffect(() => {
     if (typeof globalThis !== 'undefined') {
       // Ensures this runs client-side
-      setRandomTiles1(shuffleArray([...tiles]))
-      setRandomTiles2(shuffleArray([...tiles]))
-      setRandomTiles3(shuffleArray([...tiles]))
-      setRandomTiles4(shuffleArray([...tiles]))
+      setRandomTiles1(shuffleArray([...tiles]));
+      setRandomTiles2(shuffleArray([...tiles]));
+      setRandomTiles3(shuffleArray([...tiles]));
+      setRandomTiles4(shuffleArray([...tiles]));
     }
-  }, [])
+  }, []);
 
   return (
     <section
@@ -190,5 +190,5 @@ export function CallToActionSection() {
         <div className="absolute inset-x-0 bottom-0 h-full bg-linear-to-b from-transparent to-background to-70% dark:to-background" />
       </div>
     </section>
-  )
+  );
 }

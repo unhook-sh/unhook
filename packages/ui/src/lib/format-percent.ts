@@ -3,5 +3,5 @@ export function formatPercentage(value: number): string {
     maximumFractionDigits: 2,
     minimumFractionDigits: 0,
     style: 'percent',
-  }).format(value)
+  }).format(value);
 }

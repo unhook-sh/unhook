@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { useInView, useMotionValue, useSpring } from 'motion/react'
-import { useEffect, useRef } from 'react'
+import { useInView, useMotionValue, useSpring } from 'motion/react';
+import { useEffect, useRef } from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 export function NumberTicker({
   value,
@@ -11,25 +11,25 @@ export function NumberTicker({
   delay = 0,
   className,
 }: {
-  value: number
-  direction?: 'up' | 'down'
-  className?: string
-  delay?: number // delay in s
+  value: number;
+  direction?: 'up' | 'down';
+  className?: string;
+  delay?: number; // delay in s
 }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const motionValue = useMotionValue(direction === 'down' ? value : 0)
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionValue = useMotionValue(direction === 'down' ? value : 0);
   const springValue = useSpring(motionValue, {
     damping: 60,
     stiffness: 100,
-  })
-  const isInView = useInView(ref, { margin: '0px', once: true })
+  });
+  const isInView = useInView(ref, { margin: '0px', once: true });
 
   useEffect(() => {
     isInView &&
       setTimeout(() => {
-        motionValue.set(direction === 'down' ? 0 : value)
-      }, delay * 1000)
-  }, [motionValue, isInView, delay, value, direction])
+        motionValue.set(direction === 'down' ? 0 : value);
+      }, delay * 1000);
+  }, [motionValue, isInView, delay, value, direction]);
 
   useEffect(
     () =>
@@ -37,11 +37,11 @@ export function NumberTicker({
         if (ref.current) {
           ref.current.textContent = Intl.NumberFormat('en-US').format(
             Number(latest.toFixed(0)),
-          )
+          );
         }
       }),
     [springValue],
-  )
+  );
 
   return (
     <span
@@ -51,5 +51,5 @@ export function NumberTicker({
       )}
       ref={ref}
     />
-  )
+  );
 }

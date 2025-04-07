@@ -1,6 +1,6 @@
-import type { Callback, Context, Handler } from 'aws-lambda'
+import type { Callback, Context, Handler } from 'aws-lambda';
 
-import { posthog } from './server'
+import { posthog } from './server';
 
 /**
  * Wraps an AWS Lambda handler to ensure proper shutdown of services
@@ -15,9 +15,9 @@ export function withPosthog<TEvent = unknown, TResult = unknown>(
     callback: Callback<TResult>,
   ): Promise<TResult> => {
     try {
-      return handler(event, context, callback) as TResult
+      return handler(event, context, callback) as TResult;
     } finally {
-      await posthog.shutdown()
+      await posthog.shutdown();
     }
-  }
+  };
 }

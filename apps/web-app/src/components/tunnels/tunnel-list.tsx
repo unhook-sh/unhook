@@ -1,44 +1,57 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { MoreHorizontal, Play, Square, Trash2 } from "lucide-react"
+import { MoreHorizontal, Play, Square, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
-import { Badge } from "@acme/ui/components/badge"
-import { Button } from "@acme/ui/components/button"
+import type { Tunnel } from '@/components/types/tunnel';
+import { Badge } from '@acme/ui/components/badge';
+import { Button } from '@acme/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@acme/ui/components/dropdown-menu"
-import { Skeleton } from "@acme/ui/components/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@acme/ui/components/table"
-import type { Tunnel } from "@/components/types/tunnel"
-import { formatDistanceToNow } from "date-fns"
-import { DeleteTunnelDialog } from "./delete-tunnel-dialog"
+} from '@acme/ui/components/dropdown-menu';
+import { Skeleton } from '@acme/ui/components/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@acme/ui/components/table';
+import { formatDistanceToNow } from 'date-fns';
+import { DeleteTunnelDialog } from './delete-tunnel-dialog';
 
 interface TunnelListProps {
-  tunnels: Tunnel[]
-  isLoading: boolean
-  onStart: (id: string) => void
-  onStop: (id: string) => void
-  onDelete: (id: string) => void
+  tunnels: Tunnel[];
+  isLoading: boolean;
+  onStart: (id: string) => void;
+  onStop: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-export function TunnelList({ tunnels, isLoading, onStart, onStop, onDelete }: TunnelListProps) {
-  const [tunnelToDelete, setTunnelToDelete] = useState<Tunnel | null>(null)
+export function TunnelList({
+  tunnels,
+  isLoading,
+  onStart,
+  onStop,
+  onDelete,
+}: TunnelListProps) {
+  const [tunnelToDelete, setTunnelToDelete] = useState<Tunnel | null>(null);
 
   const handleDelete = (tunnel: Tunnel) => {
-    setTunnelToDelete(tunnel)
-  }
+    setTunnelToDelete(tunnel);
+  };
 
   const confirmDelete = () => {
     if (tunnelToDelete) {
-      onDelete(tunnelToDelete.id)
-      setTunnelToDelete(null)
+      onDelete(tunnelToDelete.id);
+      setTunnelToDelete(null);
     }
-  }
+  };
 
   return (
     <>
@@ -83,18 +96,26 @@ export function TunnelList({ tunnels, isLoading, onStart, onStop, onDelete }: Tu
             tunnels.map((tunnel) => (
               <TableRow key={tunnel.id}>
                 <TableCell className="font-mono text-xs">{tunnel.id}</TableCell>
-                <TableCell className="font-mono text-xs">{tunnel.forwardingAddress}</TableCell>
-                <TableCell>{formatDistanceToNow(new Date(tunnel.createdAt), { addSuffix: true })}</TableCell>
+                <TableCell className="font-mono text-xs">
+                  {tunnel.forwardingAddress}
+                </TableCell>
+                <TableCell>
+                  {formatDistanceToNow(new Date(tunnel.createdAt), {
+                    addSuffix: true,
+                  })}
+                </TableCell>
                 <TableCell>
                   <Badge
-                    variant={tunnel.status === "active" ? "default" : "secondary"}
+                    variant={
+                      tunnel.status === 'active' ? 'default' : 'secondary'
+                    }
                     className={
-                      tunnel.status === "active"
-                        ? "bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500"
-                        : ""
+                      tunnel.status === 'active'
+                        ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
+                        : ''
                     }
                   >
-                    {tunnel.status === "active" ? "Active" : "Inactive"}
+                    {tunnel.status === 'active' ? 'Active' : 'Inactive'}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -106,7 +127,7 @@ export function TunnelList({ tunnels, isLoading, onStart, onStop, onDelete }: Tu
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {tunnel.status === "active" ? (
+                      {tunnel.status === 'active' ? (
                         <DropdownMenuItem onClick={() => onStop(tunnel.id)}>
                           <Square className="mr-2 h-4 w-4" />
                           Stop Tunnel
@@ -141,6 +162,5 @@ export function TunnelList({ tunnels, isLoading, onStart, onStop, onDelete }: Tu
         onConfirm={confirmDelete}
       />
     </>
-  )
+  );
 }
-

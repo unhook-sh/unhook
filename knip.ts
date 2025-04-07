@@ -1,4 +1,4 @@
-import type { KnipConfig } from 'knip'
+import type { KnipConfig } from 'knip';
 
 const config: KnipConfig = {
   ignoreDependencies: ['cz-conventional-changelog'],
@@ -13,6 +13,6 @@ const config: KnipConfig = {
       entry: ['**/*.test.ts'],
     },
   },
-}
+};
 
-export default config
+export default config;

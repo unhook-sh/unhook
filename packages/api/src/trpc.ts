@@ -6,11 +6,11 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
-import { TRPCError, initTRPC } from '@trpc/server'
-import superjson from 'superjson'
-import { ZodError } from 'zod'
+import { TRPCError, initTRPC } from '@trpc/server';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
 
-import type { Context } from './context'
+import type { Context } from './context';
 
 /**
  * 2. INITIALIZATION
@@ -27,13 +27,13 @@ const t = initTRPC.context<Context>().create({
     },
   }),
   transformer: superjson,
-})
+});
 
 /**
  * Create a server-side caller
  * @see https://trpc.io/docs/server/server-side-calls
  */
-export const createCallerFactory = t.createCallerFactory
+export const createCallerFactory = t.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -46,7 +46,7 @@ export const createCallerFactory = t.createCallerFactory
  * This is how you create new routers and subrouters in your tRPC API
  * @see https://trpc.io/docs/router
  */
-export const createTRPCRouter = t.router
+export const createTRPCRouter = t.router;
 
 /**
  * Middleware for timing procedure execution and adding an articifial delay in development.
@@ -55,21 +55,21 @@ export const createTRPCRouter = t.router
  * network latency that would occur in production but not in local development.
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now()
+  const start = Date.now();
 
   if (t._config.isDev) {
     // artificial delay in dev 100-500ms
-    const waitMs = Math.floor(Math.random() * 400) + 100
-    await new Promise((resolve) => setTimeout(resolve, waitMs))
+    const waitMs = Math.floor(Math.random() * 400) + 100;
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 
-  const result = await next()
+  const result = await next();
 
-  const end = Date.now()
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`)
+  const end = Date.now();
+  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
 
-  return result
-})
+  return result;
+});
 
 /**
  * Public (unauthed) procedure
@@ -78,18 +78,18 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * tRPC API. It does not guarantee that a user querying is authorized, but you
  * can still access user session data if they are logged in
  */
-export const publicProcedure = t.procedure.use(timingMiddleware)
+export const publicProcedure = t.procedure.use(timingMiddleware);
 
 const isAuthed = t.middleware(({ next, ctx }) => {
   if (!ctx.auth.userId) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' })
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
       auth: ctx.auth,
     },
-  })
-})
+  });
+});
 
 /**
  * Protected (authenticated) procedure
@@ -101,4 +101,4 @@ const isAuthed = t.middleware(({ next, ctx }) => {
  */
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
-  .use(isAuthed)
+  .use(isAuthed);

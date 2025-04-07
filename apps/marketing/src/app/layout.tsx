@@ -1,17 +1,17 @@
-import { GeistMono } from 'geist/font/mono'
-import { GeistSans } from 'geist/font/sans'
-import type { Metadata, Viewport } from 'next'
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
+import type { Metadata, Viewport } from 'next';
 
-import { PostHogProvider } from '@acme/analytics/posthog/client'
-import { ThemeProvider } from '@acme/ui/custom/theme'
-import { cn } from '@acme/ui/lib/utils'
-import { Toaster } from '@acme/ui/sonner'
+import { PostHogProvider } from '@acme/analytics/posthog/client';
+import { ThemeProvider } from '@acme/ui/custom/theme';
+import { cn } from '@acme/ui/lib/utils';
+import { Toaster } from '@acme/ui/sonner';
 
-import '@acme/ui/globals.css'
+import '@acme/ui/globals.css';
 
-import { SiteBanner } from '~/components/site-banner'
-import { SiteFooter } from '~/components/site-footer'
-import { SiteHeader } from '~/components/site-header'
+import { SiteBanner } from '~/components/site-banner';
+import { SiteFooter } from '~/components/site-footer';
+import { SiteHeader } from '~/components/site-header';
 
 export const metadata: Metadata = {
   description: 'CoFounder AI',
@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     creator: '@seawatts',
     site: '@seawatts',
   },
-}
+};
 
 export const viewport: Viewport = {
   themeColor: [
     { color: 'white', media: '(prefers-color-scheme: light)' },
     { color: 'black', media: '(prefers-color-scheme: dark)' },
   ],
-}
+};
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
@@ -63,5 +63,5 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         </PostHogProvider>
       </body>
     </html>
-  )
+  );
 }

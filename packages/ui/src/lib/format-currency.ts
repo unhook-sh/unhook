@@ -4,13 +4,13 @@ export const formatCurrency = ({
   locale = 'en-US',
   compact = true,
 }: {
-  amount?: number | null
-  currency?: string
-  locale?: string
-  compact?: boolean
+  amount?: number | null;
+  currency?: string;
+  locale?: string;
+  compact?: boolean;
 }): string => {
   if (amount === null || amount === undefined) {
-    return 'N/A'
+    return 'N/A';
   }
 
   return new Intl.NumberFormat(locale, {
@@ -20,5 +20,5 @@ export const formatCurrency = ({
     minimumFractionDigits: 0,
     notation: compact ? 'compact' : 'standard',
     style: 'currency',
-  }).format(amount)
-}
+  }).format(amount);
+};

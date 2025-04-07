@@ -1,6 +1,6 @@
-import { useUser } from '@clerk/chrome-extension'
-import posthog from 'posthog-js/dist/module.full.no-external'
-import { useEffect } from 'react'
+import { useUser } from '@clerk/chrome-extension';
+import posthog from 'posthog-js/dist/module.full.no-external';
+import { useEffect } from 'react';
 
 // import { PostHogProvider as Provider, usePostHog } from "posthog-js/react";
 
@@ -9,24 +9,24 @@ export function PostHogPageView() {
     posthog.register({
       domain: globalThis.location.hostname,
       full_url: globalThis.location.href,
-    })
-  }, [])
+    });
+  }, []);
 
-  return null
+  return null;
 }
 
 export function PostHogIdentifyUser() {
-  const { user } = useUser()
+  const { user } = useUser();
 
   useEffect(() => {
     if (user) {
       posthog.identify(user.id, {
         email: user.primaryEmailAddress?.emailAddress,
-      })
+      });
     }
-  }, [user])
+  }, [user]);
 
-  return null
+  return null;
 }
 
 // export function PostHogProvider({ children }: PropsWithChildren) {
@@ -42,14 +42,14 @@ posthog.init(process.env.PLASMO_PUBLIC_POSTHOG_KEY || '', {
     posthog.register({
       domain: globalThis.location.hostname,
       full_url: globalThis.location.href,
-    })
+    });
 
     // if (process.env.NODE_ENV === "development") {
     // posthog.debug(false);
     // }
   },
   persistence: 'localStorage',
-})
+});
 // }, []);
 
 // return <Provider client={posthog as unknown as PostHog}>{children}</Provider>;
@@ -57,4 +57,4 @@ posthog.init(process.env.PLASMO_PUBLIC_POSTHOG_KEY || '', {
 
 // export { usePostHog } from "posthog-js/react";
 
-export { default as posthog } from 'posthog-js/dist/module.full.no-external'
+export { default as posthog } from 'posthog-js/dist/module.full.no-external';

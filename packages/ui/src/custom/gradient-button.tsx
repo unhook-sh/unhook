@@ -1,6 +1,6 @@
-import { cn } from '@acme/ui/lib/utils'
-import { type VariantProps, cva } from 'class-variance-authority'
-import * as React from 'react'
+import { cn } from '@acme/ui/lib/utils';
+import { type VariantProps, cva } from 'class-variance-authority';
+import * as React from 'react';
 
 const gradientButtonVariants = cva(
   'inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
@@ -23,12 +23,12 @@ const gradientButtonVariants = cva(
       size: 'default',
     },
   },
-)
+);
 
 export interface GradientButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof gradientButtonVariants> {
-  asChild?: boolean
+  asChild?: boolean;
 }
 
 const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
@@ -39,9 +39,9 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
         ref={ref}
         {...props}
       />
-    )
+    );
   },
-)
-GradientButton.displayName = 'GradientButton'
+);
+GradientButton.displayName = 'GradientButton';
 
-export { GradientButton, gradientButtonVariants }
+export { GradientButton, gradientButtonVariants };

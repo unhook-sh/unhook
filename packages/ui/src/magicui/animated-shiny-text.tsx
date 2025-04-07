@@ -1,11 +1,11 @@
-import type { CSSProperties, FC, ReactNode } from 'react'
+import type { CSSProperties, FC, ReactNode } from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 interface AnimatedShinyTextProps {
-  children: ReactNode
-  className?: string
-  shimmerWidth?: number
+  children: ReactNode;
+  className?: string;
+  shimmerWidth?: number;
 }
 
 export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
@@ -34,5 +34,5 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
     >
       {children}
     </p>
-  )
-}
+  );
+};

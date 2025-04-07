@@ -1,18 +1,18 @@
-import { createStore } from 'zustand/vanilla'
+import { createStore } from 'zustand/vanilla';
 
 export interface PresenceState {
-  onlineUsers?: Set<string>
+  onlineUsers?: Set<string>;
 }
 
 export interface PresenceActions {
-  setOnlineUsers: (onlineUsers: Set<string>) => void
+  setOnlineUsers: (onlineUsers: Set<string>) => void;
 }
 
-export type PresenceStore = PresenceState & PresenceActions
+export type PresenceStore = PresenceState & PresenceActions;
 
 export const defaultInitState: PresenceState = {
   onlineUsers: new Set(),
-}
+};
 
 export const createPresenceStore = (
   initState: PresenceState = defaultInitState,
@@ -23,5 +23,5 @@ export const createPresenceStore = (
       set(() => ({
         onlineUsers,
       })),
-  }))
-}
+  }));
+};

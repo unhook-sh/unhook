@@ -1,7 +1,7 @@
-'use client'
-import Image from 'next/image'
+'use client';
+import Image from 'next/image';
 
-import { Globe } from '@acme/ui/magicui/globe'
+import { Globe } from '@acme/ui/magicui/globe';
 
 const investors = [
   'first-round',
@@ -12,7 +12,7 @@ const investors = [
   'y-combinator',
   'greylock-partners',
   'accel',
-]
+];
 
 export function InvestorNetworkSection() {
   return (
@@ -50,5 +50,5 @@ export function InvestorNetworkSection() {
       </div>
       <Globe />
     </section>
-  )
+  );
 }

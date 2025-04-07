@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import type { CSSProperties, ReactElement, ReactNode } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 interface NeonColorsProps {
-  firstColor: string
-  secondColor: string
+  firstColor: string;
+  secondColor: string;
 }
 
 interface NeonGradientCardProps {
@@ -17,14 +17,14 @@ interface NeonGradientCardProps {
    * @description
    * The component to be rendered as the card
    * */
-  as?: ReactElement
+  as?: ReactElement;
   /**
    * @default ""
    * @type string
    * @description
    * The className of the card
    */
-  className?: string
+  className?: string;
 
   /**
    * @default ""
@@ -32,7 +32,7 @@ interface NeonGradientCardProps {
    * @description
    * The children of the card
    * */
-  children?: ReactNode
+  children?: ReactNode;
 
   /**
    * @default 5
@@ -40,7 +40,7 @@ interface NeonGradientCardProps {
    * @description
    * The size of the border in pixels
    * */
-  borderSize?: number
+  borderSize?: number;
 
   /**
    * @default 20
@@ -48,7 +48,7 @@ interface NeonGradientCardProps {
    * @description
    * The size of the radius in pixels
    * */
-  borderRadius?: number
+  borderRadius?: number;
 
   /**
    * @default "{ firstColor: '#ff00aa', secondColor: '#00FFF1' }"
@@ -56,9 +56,9 @@ interface NeonGradientCardProps {
    * @description
    * The colors of the neon gradient
    * */
-  neonColors?: NeonColorsProps
+  neonColors?: NeonColorsProps;
 
-  [key: string]: unknown
+  [key: string]: unknown;
 }
 
 const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
@@ -72,31 +72,31 @@ const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
   },
   ...props
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [dimensions, setDimensions] = useState({ height: 0, width: 0 })
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ height: 0, width: 0 });
 
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
-        const { offsetWidth, offsetHeight } = containerRef.current
-        setDimensions({ height: offsetHeight, width: offsetWidth })
+        const { offsetWidth, offsetHeight } = containerRef.current;
+        setDimensions({ height: offsetHeight, width: offsetWidth });
       }
-    }
+    };
 
-    updateDimensions()
-    window.addEventListener('resize', updateDimensions)
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
 
     return () => {
-      window.removeEventListener('resize', updateDimensions)
-    }
-  }, [])
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, []);
 
   useEffect(() => {
     if (containerRef.current) {
-      const { offsetWidth, offsetHeight } = containerRef.current
-      setDimensions({ height: offsetHeight, width: offsetWidth })
+      const { offsetWidth, offsetHeight } = containerRef.current;
+      setDimensions({ height: offsetHeight, width: offsetWidth });
     }
-  }, [])
+  }, []);
 
   return (
     <div
@@ -139,7 +139,7 @@ const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
         {children}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { NeonGradientCard }
+export { NeonGradientCard };

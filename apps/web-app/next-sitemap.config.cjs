@@ -9,10 +9,10 @@ module.exports = {
       const withoutHost = robotsTxt.replace(
         `# Host\nHost: ${process.env.SITE_URL}\n\n`,
         '',
-      )
+      );
 
-      return withoutHost
+      return withoutHost;
     },
   },
   siteUrl: process.env.SITE_URL || 'https://acme.com',
-}
+};

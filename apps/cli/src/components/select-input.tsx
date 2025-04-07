@@ -37,7 +37,7 @@ export const SelectInput = <T extends string = string>({
     select: ['return'],
   },
   showHotkeys = true,
-  initialIndex = -1,
+  initialIndex = 0,
 }: SelectInputProps<T>) => {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 

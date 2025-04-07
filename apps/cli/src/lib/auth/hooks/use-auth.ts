@@ -6,13 +6,14 @@ import { useAuthStore } from '../store';
  * @returns boolean indicating if the user is signed in
  */
 export function useAuth() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const userId = useAuthStore((state) => state.userId);
-  const token = useAuthStore((state) => state.token);
-  const firstName = useAuthStore((state) => state.firstName);
-  const lastName = useAuthStore((state) => state.lastName);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const isAuthenticated = useAuthStore.use.isAuthenticated();
+  const isLoading = useAuthStore.use.isLoading();
+  const userId = useAuthStore.use.userId();
+  const orgId = useAuthStore.use.orgId();
+  const token = useAuthStore.use.token();
+  const firstName = useAuthStore.use.firstName();
+  const lastName = useAuthStore.use.lastName();
+  const clearAuth = useAuthStore.use.clearAuth();
 
   const logout = async () => {
     const clerk = await createClerkClient();
@@ -24,6 +25,7 @@ export function useAuth() {
     isAuthenticated,
     isLoading,
     userId,
+    orgId,
     token,
     firstName,
     lastName,

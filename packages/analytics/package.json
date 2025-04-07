@@ -8,7 +8,7 @@
     "@vercel/analytics": "1.5.0",
     "@vercel/speed-insights": "1.2.0",
     "nextjs-google-analytics": "2.3.7",
-    "posthog-js": "1.234.7",
+    "posthog-js": "1.234.9",
     "posthog-node": "4.11.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -21,14 +21,11 @@
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "next": "15.2.4",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./*": [
-      "./src/*.tsx",
-      "./src/*.ts"
-    ]
+    "./*": ["./src/*.tsx", "./src/*.ts"]
   },
   "license": "MIT",
   "name": "@acme/analytics",

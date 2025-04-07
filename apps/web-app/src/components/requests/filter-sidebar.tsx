@@ -1,11 +1,16 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { ChevronDown, ChevronRight, Search } from "lucide-react"
+import { ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { useState } from 'react';
 
-import { Button } from "@acme/ui/components/button"
-import { Checkbox } from "@acme/ui/components/checkbox"
-import { Input } from "@acme/ui/components/input"
+import { Button } from '@acme/ui/components/button';
+import { Checkbox } from '@acme/ui/components/checkbox';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@acme/ui/components/collapsible';
+import { Input } from '@acme/ui/components/input';
 import {
   Sidebar,
   SidebarContent,
@@ -13,11 +18,10 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-} from "@acme/ui/components/sidebar"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@acme/ui/components/collapsible"
+} from '@acme/ui/components/sidebar';
 
 export function FilterSidebar() {
-  const [routeSearch, setRouteSearch] = useState("")
+  const [routeSearch, setRouteSearch] = useState('');
 
   return (
     <Sidebar className="border-r">
@@ -45,7 +49,10 @@ export function FilterSidebar() {
                     <label htmlFor="timeline" className="text-sm">
                       Maximum
                     </label>
-                    <select id="timeline" className="rounded-md border border-input bg-background px-2 py-1 text-sm">
+                    <select
+                      id="timeline"
+                      className="rounded-md border border-input bg-background px-2 py-1 text-sm"
+                    >
                       <option value="1day">1 day</option>
                       <option value="3days">3 days</option>
                       <option value="7days">7 days</option>
@@ -102,7 +109,9 @@ export function FilterSidebar() {
             </SidebarGroupLabel>
             <CollapsibleContent>
               <SidebarGroupContent className="p-4 pt-0">
-                <div className="space-y-2">{/* Environment filters would go here */}</div>
+                <div className="space-y-2">
+                  {/* Environment filters would go here */}
+                </div>
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>
@@ -221,6 +230,5 @@ export function FilterSidebar() {
         </Collapsible>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
-

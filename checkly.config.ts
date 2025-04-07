@@ -1,4 +1,4 @@
-import { defineConfig } from 'checkly'
+import { defineConfig } from 'checkly';
 
 /**
  * See https://www.checklyhq.com/docs/cli/project-structure/
@@ -40,6 +40,6 @@ const config = defineConfig({
     /* An array of default reporters to use when a reporter is not specified with the "--reporter" flag */
     reporters: ['list'],
   },
-})
+});
 
-export default config
+export default config;

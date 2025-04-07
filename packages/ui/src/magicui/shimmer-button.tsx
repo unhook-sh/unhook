@@ -1,17 +1,17 @@
-import type { CSSProperties } from 'react'
-import React from 'react'
+import type { CSSProperties } from 'react';
+import React from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 export interface ShimmerButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  shimmerColor?: string
-  shimmerSize?: string
-  borderRadius?: string
-  shimmerDuration?: string
-  background?: string
-  className?: string
-  children?: React.ReactNode
+  shimmerColor?: string;
+  shimmerSize?: string;
+  borderRadius?: string;
+  shimmerDuration?: string;
+  background?: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export const ShimmerButton = React.forwardRef<
@@ -91,8 +91,8 @@ export const ShimmerButton = React.forwardRef<
           )}
         />
       </button>
-    )
+    );
   },
-)
+);
 
-ShimmerButton.displayName = 'ShimmerButton'
+ShimmerButton.displayName = 'ShimmerButton';

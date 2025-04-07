@@ -8,8 +8,8 @@ import { useAuth } from './use-auth';
 export function useSession() {
   const { isAuthenticated, isLoading, userId, token, firstName, lastName } =
     useAuth();
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const setAuth = useAuthStore.use.setAuth();
+  const clearAuth = useAuthStore.use.clearAuth();
 
   return {
     isAuthenticated,

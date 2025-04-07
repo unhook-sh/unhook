@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts'
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts';
 
 import {
   Card,
@@ -8,13 +8,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card'
-import type { ChartConfig } from '@acme/ui/chart'
+} from '@acme/ui/card';
+import type { ChartConfig } from '@acme/ui/chart';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@acme/ui/chart'
+} from '@acme/ui/chart';
 
 const chartData = [
   {
@@ -37,7 +37,7 @@ const chartData = [
     criteria: 'Product Quality',
     startup: 95,
   },
-]
+];
 
 const chartConfig = {
   competitorA: {
@@ -52,7 +52,7 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
     label: 'Startup',
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function CompetitorWatch() {
   return (
@@ -104,5 +104,5 @@ export function CompetitorWatch() {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

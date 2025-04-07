@@ -1,14 +1,15 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { type ReactNode, createContext, useContext, useRef } from 'react';
-import { createStore, useStore } from 'zustand';
+import { createStore } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { createSelectors } from '../zustand-create-selectors';
 
 interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
   userId: string | null;
+  orgId: string | null;
   firstName: string | null;
   lastName: string | null;
   isLoading: boolean;
@@ -18,6 +19,7 @@ interface AuthActions {
   setAuth: (auth: {
     token: string;
     userId: string;
+    orgId?: string | null;
     firstName?: string;
     lastName?: string;
   }) => void;
@@ -27,10 +29,11 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
-export const defaultInitState: AuthState = {
+const defaultInitState: AuthState = {
   isAuthenticated: false,
   token: null,
   userId: null,
+  orgId: null,
   firstName: null,
   lastName: null,
   isLoading: false,
@@ -74,32 +77,64 @@ const fsStorage = {
 };
 
 // Create and export the store instance
-export const authStore = createStore<AuthStore>()(
+const store = createStore<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...defaultInitState,
       setAuth: (auth: {
         token: string;
         userId: string;
+        orgId?: string | null;
         firstName?: string;
         lastName?: string;
-      }) =>
+      }) => {
+        const currentState = get();
+        if (
+          currentState.token === auth.token &&
+          currentState.userId === auth.userId &&
+          currentState.orgId === auth.orgId &&
+          currentState.firstName === auth.firstName &&
+          currentState.lastName === auth.lastName
+        ) {
+          return;
+        }
         set({
           isAuthenticated: true,
           token: auth.token,
           userId: auth.userId,
+          orgId: auth.orgId,
           firstName: auth.firstName,
           lastName: auth.lastName,
-        }),
-      clearAuth: () =>
+        });
+      },
+      clearAuth: () => {
+        const currentState = get();
+        if (
+          !currentState.isAuthenticated &&
+          !currentState.token &&
+          !currentState.userId &&
+          !currentState.orgId &&
+          !currentState.firstName &&
+          !currentState.lastName
+        ) {
+          return;
+        }
         set({
           isAuthenticated: false,
           token: null,
           userId: null,
+          orgId: null,
           firstName: null,
           lastName: null,
-        }),
-      setIsLoading: (isLoading: boolean) => set({ isLoading }),
+        });
+      },
+      setIsLoading: (isLoading: boolean) => {
+        const currentState = get();
+        if (currentState.isLoading === isLoading) {
+          return;
+        }
+        set({ isLoading });
+      },
     }),
     {
       name: 'auth-storage',
@@ -108,37 +143,4 @@ export const authStore = createStore<AuthStore>()(
   ),
 );
 
-export const createAuthStore = (initState: AuthState = defaultInitState) => {
-  return authStore;
-};
-
-export type AuthStoreApi = ReturnType<typeof createAuthStore>;
-
-const AuthStoreContext = createContext<AuthStoreApi | undefined>(undefined);
-
-export interface AuthStoreProviderProps {
-  children: ReactNode;
-}
-
-export function AuthStoreProvider({ children }: AuthStoreProviderProps) {
-  const storeRef = useRef<AuthStoreApi | null>(null);
-  if (storeRef.current === null) {
-    storeRef.current = createAuthStore();
-  }
-
-  return (
-    <AuthStoreContext.Provider value={storeRef.current}>
-      {children}
-    </AuthStoreContext.Provider>
-  );
-}
-
-export const useAuthStore = <T,>(selector: (store: AuthStore) => T): T => {
-  const authStoreContext = useContext(AuthStoreContext);
-
-  if (!authStoreContext) {
-    throw new Error('useAuthStore must be used within AuthStoreProvider');
-  }
-
-  return useStore(authStoreContext, selector);
-};
+export const useAuthStore = createSelectors(store);

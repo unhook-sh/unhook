@@ -14,10 +14,10 @@ export const LoginPage: FC<RouteProps> = () => {
   const [authUrl, setAuthUrl] = useState<string | null>(null);
   const [shouldAuthenticate, setShouldAuthenticate] = useState(true);
   const { navigate } = useRouter<AppRoutePath>();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const setIsLoading = useAuthStore((state) => state.setIsLoading);
+  const isAuthenticated = useAuthStore.use.isAuthenticated();
+  const isLoading = useAuthStore.use.isLoading();
+  const setAuth = useAuthStore.use.setAuth();
+  const setIsLoading = useAuthStore.use.setIsLoading();
 
   // Initialize auth service with available port
   useEffect(() => {
@@ -66,8 +66,8 @@ export const LoginPage: FC<RouteProps> = () => {
         setAuthUrl(authService.getAuthUrl());
 
         // Wait for authentication to complete
-        const { token, userId, firstName, lastName } = await authPromise;
-        setAuth({ token, userId, firstName, lastName });
+        const { token, userId, firstName, lastName, orgId } = await authPromise;
+        setAuth({ token, userId, firstName, lastName, orgId });
         navigate('/');
       } catch (error) {
         console.error('Authentication failed:', error);

@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import type { AnimationProps } from 'motion/react'
-import { motion } from 'motion/react'
-import type React from 'react'
+import type { AnimationProps } from 'motion/react';
+import { motion } from 'motion/react';
+import type React from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 const animationProps = {
   animate: { '--x': '-100%', scale: 1 },
@@ -25,10 +25,10 @@ const animationProps = {
     type: 'spring',
   },
   whileTap: { scale: 0.95 },
-} as AnimationProps
+} as AnimationProps;
 interface ShinyButtonProps {
-  text: React.ReactNode
-  className?: string
+  text: React.ReactNode;
+  className?: string;
 }
 
 export const ShinyButton = ({
@@ -60,5 +60,5 @@ export const ShinyButton = ({
         className="absolute inset-0 z-10 block rounded-[inherit] bg-[linear-gradient(-75deg,hsl(var(--primary)/10%)_calc(var(--x)+20%),hsl(var(--primary)/50%)_calc(var(--x)+25%),hsl(var(--primary)/10%)_calc(var(--x)+100%))] p-px"
       />
     </motion.button>
-  )
-}
+  );
+};

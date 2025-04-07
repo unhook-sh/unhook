@@ -12,6 +12,8 @@ export interface Route<TPath extends string = string> {
   component: FC<RouteProps>;
   label: string;
   hotkey?: string;
+  pattern?: RegExp;
+  showInMenu?: boolean;
 }
 
 // Router context and provider
@@ -31,17 +33,19 @@ interface RouterProviderProps<TPath extends string = string> {
   children: ReactNode;
   routes: Route<TPath>[];
   initialPath?: TPath;
+  initialHistory?: TPath[];
 }
 
 export function RouterProvider<TPath extends string = string>({
   children,
   routes,
   initialPath,
+  initialHistory
 }: RouterProviderProps<TPath>) {
   const [currentPath, setCurrentPath] = useState<TPath>(
     initialPath ?? routes[0]?.path ?? ('/' as TPath),
   );
-  const [history, setHistory] = useState<TPath[]>([]);
+  const [history, setHistory] = useState<TPath[]>(initialHistory ?? []);
 
   const navigate = (path: TPath) => {
     // Don't add to history if navigating to the same path
@@ -87,16 +91,46 @@ export function useRouter<TPath extends string = string>() {
   return context as unknown as RouterContextType<TPath>;
 }
 
+// Helper function to match dynamic routes
+function matchRoute(
+  path: string,
+  routes: Route[],
+): { route: Route | undefined; params: Record<string, string> } {
+  // First try exact match
+  const exactRoute = routes.find((route) => route.path === path);
+  if (exactRoute) {
+    return { route: exactRoute, params: {} };
+  }
+
+  // Then try pattern matching for dynamic routes
+  for (const route of routes) {
+    if (route.pattern) {
+      const match = path.match(route.pattern);
+      if (match) {
+        // Extract named capture groups as params
+        const params: Record<string, string> = {};
+        if (match.groups) {
+          Object.entries(match.groups).forEach(([key, value]) => {
+            if (value) params[key] = value;
+          });
+        }
+        return { route, params };
+      }
+    }
+  }
+
+  return { route: undefined, params: {} };
+}
+
 // Route rendering component
 export const RouteRenderer: FC = () => {
   const { currentPath, routes } = useRouter();
-  const CurrentComponent = routes.find(
-    (route) => route.path === currentPath,
-  )?.component;
+  const { route: matchedRoute, params } = matchRoute(currentPath, routes);
 
-  if (!CurrentComponent) {
+  if (!matchedRoute?.component) {
     return <Text color="red">404: Page not found</Text>;
   }
 
-  return <CurrentComponent params={{}} />;
+  const CurrentComponent = matchedRoute.component;
+  return <CurrentComponent params={params} />;
 };

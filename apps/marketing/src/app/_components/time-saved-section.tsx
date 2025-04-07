@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useInView } from 'motion/react'
-import { useRef } from 'react'
+import { useInView } from 'motion/react';
+import { useRef } from 'react';
 
-import { Text } from '@acme/ui/custom/typography'
-import { NumberTicker } from '@acme/ui/magicui/number-ticker'
+import { Text } from '@acme/ui/custom/typography';
+import { NumberTicker } from '@acme/ui/magicui/number-ticker';
 
 export function TimeSavedSection() {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { amount: 1, margin: '500px', once: true })
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { amount: 1, margin: '500px', once: true });
 
   return (
     <section
@@ -53,5 +53,5 @@ export function TimeSavedSection() {
         </div>
       )}
     </section>
-  )
+  );
 }

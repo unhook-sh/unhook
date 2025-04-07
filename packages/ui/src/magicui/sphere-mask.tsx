@@ -1,4 +1,4 @@
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
 export const SphereMask = ({ reverse = false }: { reverse?: boolean }) => {
   return (
@@ -21,5 +21,5 @@ export const SphereMask = ({ reverse = false }: { reverse?: boolean }) => {
         'after:absolute after:-left-1/2 after:top-1/2 after:aspect-[1/0.7] after:w-[200%] after:rounded-[50%] after:border-t after:border-[hsl(var(--border))] after:bg-background',
       )}
     />
-  )
-}
+  );
+};

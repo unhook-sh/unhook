@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useInView } from 'motion/react'
-import Image from 'next/image'
-import type { PropsWithChildren } from 'react'
-import { useRef } from 'react'
+import { useInView } from 'motion/react';
+import Image from 'next/image';
+import type { PropsWithChildren } from 'react';
+import { useRef } from 'react';
 
-import { Button } from '@acme/ui/button'
-import { cn } from '@acme/ui/lib/utils'
-import { AnimatedShinyText } from '@acme/ui/magicui/animated-shiny-text'
-import { BorderBeam } from '@acme/ui/magicui/border-beam'
+import { Button } from '@acme/ui/button';
+import { cn } from '@acme/ui/lib/utils';
+import { AnimatedShinyText } from '@acme/ui/magicui/animated-shiny-text';
+import { BorderBeam } from '@acme/ui/magicui/border-beam';
 
 export function HeroSection(props: PropsWithChildren) {
   return (
@@ -18,7 +18,7 @@ export function HeroSection(props: PropsWithChildren) {
     >
       {props.children}
     </section>
-  )
+  );
 }
 
 export const HeroBadge = (props: PropsWithChildren) => {
@@ -28,24 +28,24 @@ export const HeroBadge = (props: PropsWithChildren) => {
         {props.children}
       </AnimatedShinyText>
     </div>
-  )
-}
+  );
+};
 
 export const HeroTitle = (props: PropsWithChildren) => {
   return (
     <h1 className="text-balance bg-linear-to-br from-black from-30% to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent [--animation-delay:200ms] motion-safe:translate-y-[-1rem] motion-safe:animate-fade-in motion-safe:opacity-0 dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl">
       {props.children}
     </h1>
-  )
-}
+  );
+};
 
 export const HeroSubTitle = (props: PropsWithChildren) => {
   return (
     <p className="mb-12 text-balance text-lg tracking-tight text-gray-400 [--animation-delay:400ms] motion-safe:translate-y-[-1rem] motion-safe:animate-fade-in motion-safe:opacity-0 md:text-xl">
       {props.children}
     </p>
-  )
-}
+  );
+};
 
 export const HeroCta = (props: PropsWithChildren) => {
   return (
@@ -54,16 +54,16 @@ export const HeroCta = (props: PropsWithChildren) => {
         {props.children}
       </Button>
     </div>
-  )
-}
+  );
+};
 
 export const HeroImage = (props: {
-  src: string
-  alt: string
-  className?: string
+  src: string;
+  alt: string;
+  className?: string;
 }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { margin: '-100px', once: true })
+  const ref = useRef(null);
+  const inView = useInView(ref, { margin: '-100px', once: true });
 
   return (
     <div
@@ -97,5 +97,5 @@ export const HeroImage = (props: {
         />
       </div>
     </div>
-  )
-}
+  );
+};

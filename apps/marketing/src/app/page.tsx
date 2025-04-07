@@ -1,12 +1,12 @@
-import { Icons } from '@acme/ui/custom/icons'
-import { Particles } from '@acme/ui/magicui/particles'
-import { SphereMask } from '@acme/ui/magicui/sphere-mask'
+import { Icons } from '@acme/ui/custom/icons';
+import { Particles } from '@acme/ui/magicui/particles';
+import { SphereMask } from '@acme/ui/magicui/sphere-mask';
 
-import { BentoFeaturesSection } from './_components/bento-features-section'
-import { CallToActionSection } from './_components/cta-section'
-import { FAQSection } from './_components/faq-section'
-import { FeatureSection } from './_components/feature-section/section'
-import { FundraiseSection } from './_components/fundraise-section/section'
+import { BentoFeaturesSection } from './_components/bento-features-section';
+import { CallToActionSection } from './_components/cta-section';
+import { FAQSection } from './_components/faq-section';
+import { FeatureSection } from './_components/feature-section/section';
+import { FundraiseSection } from './_components/fundraise-section/section';
 import {
   HeroBadge,
   HeroCta,
@@ -14,11 +14,11 @@ import {
   HeroSection,
   HeroSubTitle,
   HeroTitle,
-} from './_components/hero-section'
-import { IntegrationsSection } from './_components/integrations-section'
-import { InvestorNetworkSection } from './_components/investor-network-section'
-import { PricingSection } from './_components/pricing-section'
-import { TimeSavedSection } from './_components/time-saved-section'
+} from './_components/hero-section';
+import { IntegrationsSection } from './_components/integrations-section';
+import { InvestorNetworkSection } from './_components/investor-network-section';
+import { PricingSection } from './_components/pricing-section';
+import { TimeSavedSection } from './_components/time-saved-section';
 
 export default function Page() {
   return (
@@ -77,5 +77,5 @@ export default function Page() {
         color={'#ffffff'}
       />
     </main>
-  )
+  );
 }

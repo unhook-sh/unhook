@@ -1,26 +1,26 @@
-'use client'
+'use client';
 
-import { Loader } from 'lucide-react'
-import { motion } from 'motion/react'
-import { useState } from 'react'
+import { Loader } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
 
-import { Badge } from '@acme/ui/badge'
-import { Button } from '@acme/ui/button'
-import { Icons } from '@acme/ui/custom/icons'
-import { cn } from '@acme/ui/lib/utils'
-import { NeonGradientCard } from '@acme/ui/magicui/neon-gradient-card'
-import { Switch } from '@acme/ui/switch'
+import { Badge } from '@acme/ui/badge';
+import { Button } from '@acme/ui/button';
+import { Icons } from '@acme/ui/custom/icons';
+import { cn } from '@acme/ui/lib/utils';
+import { NeonGradientCard } from '@acme/ui/magicui/neon-gradient-card';
+import { Switch } from '@acme/ui/switch';
 
-type Interval = 'month' | 'year'
+type Interval = 'month' | 'year';
 
 export const toHumanPrice = (price: number, decimals = 2) => {
-  return Number(price / 100).toFixed(decimals)
-}
+  return Number(price / 100).toFixed(decimals);
+};
 
-const annualDiscount = 0.8
-const launchMonthlyPrice = 1000
-const accelerateMonthlyPrice = 4900
-const unicornMonthlyPrice = 9900
+const annualDiscount = 0.8;
+const launchMonthlyPrice = 1000;
+const accelerateMonthlyPrice = 4900;
+const unicornMonthlyPrice = 9900;
 
 const demoPrices = [
   {
@@ -79,24 +79,24 @@ const demoPrices = [
     name: 'Unicorn',
     yearlyPrice: unicornMonthlyPrice * annualDiscount,
   },
-] as const
+] as const;
 
 export function PricingSection() {
-  const [interval, setPricingInterval] = useState<Interval>('year')
-  const [isLoading, setIsLoading] = useState(false)
-  const [id, setId] = useState<string | null>(null)
+  const [interval, setPricingInterval] = useState<Interval>('year');
+  const [isLoading, setIsLoading] = useState(false);
+  const [id, setId] = useState<string | null>(null);
 
   const onSubscribeClick = async (priceId: string) => {
-    setIsLoading(true)
-    setId(priceId)
-    await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate a delay
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    setId(priceId);
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate a delay
+    setIsLoading(false);
+  };
   const percentFormatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 0,
     minimumFractionDigits: 0,
     style: 'percent',
-  })
+  });
 
   return (
     <section
@@ -120,7 +120,7 @@ export function PricingSection() {
           aria-description="Toggle between monthly and annual pricing"
           checked={interval === 'year'}
           onCheckedChange={(checked) => {
-            setPricingInterval(checked ? 'year' : 'month')
+            setPricingInterval(checked ? 'year' : 'month');
           }}
         />
         <span>Annual</span>
@@ -165,23 +165,23 @@ export function PricingSection() {
         ))}
       </div>
     </section>
-  )
+  );
 }
 
 function PriceCardContent(props: {
-  price: (typeof demoPrices)[number]
-  interval: Interval
-  isLoading: boolean
-  id: string | null
-  index: number
-  onSubscribeClick: (priceId: string) => void
+  price: (typeof demoPrices)[number];
+  interval: Interval;
+  isLoading: boolean;
+  id: string | null;
+  index: number;
+  onSubscribeClick: (priceId: string) => void;
 }) {
   const currencyFormatter = new Intl.NumberFormat('en-US', {
     currency: 'USD',
     maximumFractionDigits: 0,
     minimumFractionDigits: 0,
     style: 'currency',
-  })
+  });
 
   return (
     <>
@@ -270,5 +270,5 @@ function PriceCardContent(props: {
         </ul>
       )}
     </>
-  )
+  );
 }

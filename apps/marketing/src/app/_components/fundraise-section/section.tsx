@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { TrendingUp } from 'lucide-react'
-import { useInView } from 'motion/react'
-import { useRef } from 'react'
+import { TrendingUp } from 'lucide-react';
+import { useInView } from 'motion/react';
+import { useRef } from 'react';
 import {
   Area,
   AreaChart,
@@ -13,7 +13,7 @@ import {
   RadialBar,
   RadialBarChart,
   XAxis,
-} from 'recharts'
+} from 'recharts';
 
 import {
   Card,
@@ -22,17 +22,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card'
-import type { ChartConfig } from '@acme/ui/chart'
+} from '@acme/ui/card';
+import type { ChartConfig } from '@acme/ui/chart';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@acme/ui/chart'
-import { Icons } from '@acme/ui/custom/icons'
-import { Text } from '@acme/ui/custom/typography'
-import { cn } from '@acme/ui/lib/utils'
-import { ShinyButton } from '@acme/ui/magicui/shiny-button'
+} from '@acme/ui/chart';
+import { Icons } from '@acme/ui/custom/icons';
+import { Text } from '@acme/ui/custom/typography';
+import { cn } from '@acme/ui/lib/utils';
+import { ShinyButton } from '@acme/ui/magicui/shiny-button';
 
 const chartData = [
   { month: 'January', raised: 80, target: 186 },
@@ -41,7 +41,7 @@ const chartData = [
   { month: 'April', raised: 190, target: 73 },
   { month: 'May', raised: 130, target: 209 },
   { month: 'June', raised: 140, target: 214 },
-]
+];
 
 const chartConfig = {
   raised: {
@@ -52,11 +52,11 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
     label: 'Target',
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 const chartData2 = [
   { browser: 'safari', fill: 'var(--color-safari)', visitors: 1_500_000 },
-]
+];
 
 const chartConfig2 = {
   safari: {
@@ -66,7 +66,7 @@ const chartConfig2 = {
   visitors: {
     label: 'Visitors',
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function FundraiseSection() {
   const financialNumberFormatter = new Intl.NumberFormat('en-US', {
@@ -75,10 +75,10 @@ export function FundraiseSection() {
     maximumFractionDigits: 0,
     notation: 'compact',
     style: 'currency',
-  })
+  });
 
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true })
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
 
   // useEffect(() => {
   //   if (inView) {
@@ -240,7 +240,7 @@ export function FundraiseSection() {
                                 Raised
                               </tspan>
                             </text>
-                          )
+                          );
                         }
                       }}
                     />
@@ -302,5 +302,5 @@ export function FundraiseSection() {
         </Card>
       </div>
     </section>
-  )
+  );
 }

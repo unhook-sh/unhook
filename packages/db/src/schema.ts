@@ -17,9 +17,16 @@ import { createId } from '@acme/id';
 
 export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user']);
 export const tunnelStatusEnum = pgEnum('tunnelStatus', ['active', 'inactive']);
+export const localConnectionStatusEnum = pgEnum('localConnectionStatus', [
+  'connected',
+  'disconnected',
+]);
 
 export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
 export const TunnelStatusType = z.enum(tunnelStatusEnum.enumValues).Enum;
+export const LocalConnectionStatusType = z.enum(
+  localConnectionStatusEnum.enumValues,
+).Enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
@@ -213,6 +220,18 @@ export const Tunnels = pgTable('tunnels', {
   }),
   requestCount: integer('requestCount').notNull().default(0),
   clientCount: integer('clientCount').notNull().default(0),
+  localConnectionStatus: localConnectionStatusEnum('localConnectionStatus')
+    .notNull()
+    .default('disconnected'),
+  localConnectionPid: integer('localConnectionPid'),
+  lastLocalConnectionAt: timestamp('lastLocalConnectionAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
+  lastLocalDisconnectionAt: timestamp('lastLocalDisconnectionAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
   config: json('config')
     .$type<TunnelConfig>()
     .default({
@@ -302,6 +321,7 @@ export const Requests = pgTable('requests', {
   status: varchar('status', {
     enum: ['pending', 'completed', 'failed'],
   }).notNull(),
+  failedReason: text('failedReason'),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,

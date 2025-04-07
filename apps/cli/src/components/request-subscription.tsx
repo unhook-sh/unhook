@@ -1,13 +1,11 @@
-import type { RequestType, ResponsePayload } from '@acme/db/schema';
+import type { RequestType } from '@acme/db/schema';
 import { useSubscription } from '@acme/db/supabase/client';
 import { useEffect } from 'react';
-import { useSelectionStore } from '~/lib/store';
+import { useRequestStore } from '~/lib/request-store';
 
 export function RequestSubscription() {
-  const fetchRequests = useSelectionStore((state) => state.fetchRequests);
-  const handlePendingRequest = useSelectionStore(
-    (state) => state.handlePendingRequest,
-  );
+  const fetchRequests = useRequestStore.use.fetchRequests();
+  const handlePendingRequest = useRequestStore.use.handlePendingRequest();
 
   // Initial fetch
   useEffect(() => {
@@ -34,28 +32,7 @@ export function RequestSubscription() {
         typeof payload.request === 'object' &&
         payload.request !== null
       ) {
-        const requestPayload = payload.request as Record<string, unknown>;
-        const request: RequestType = {
-          ...payload,
-          createdAt: new Date(payload.createdAt),
-          completedAt: payload.completedAt
-            ? new Date(payload.completedAt)
-            : null,
-          request: {
-            id: requestPayload.id as string,
-            method: requestPayload.method as string,
-            url: requestPayload.url as string,
-            headers: requestPayload.headers as Record<string, string>,
-            size: requestPayload.size as number,
-            body: requestPayload.body as string | undefined,
-            timestamp: requestPayload.timestamp as number,
-            contentType: requestPayload.contentType as string,
-            clientIp: requestPayload.clientIp as string,
-          },
-          response: payload.response as ResponsePayload | null,
-          status: 'pending',
-        };
-        await handlePendingRequest(request);
+        await handlePendingRequest(payload as unknown as RequestType);
       }
     },
     onStatusChange: (newStatus) => {

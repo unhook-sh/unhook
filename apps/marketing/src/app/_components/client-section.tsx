@@ -50,5 +50,5 @@ export function ClientSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

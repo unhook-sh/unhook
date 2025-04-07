@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { Activity, Calendar, Mail } from 'lucide-react'
+import { Activity, Calendar, Mail } from 'lucide-react';
 
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card'
+} from '@acme/ui/card';
 
 const engagementData = [
   {
@@ -27,12 +27,12 @@ const engagementData = [
     count: 30,
     icon: <Activity className="h-6 w-6 text-yellow-500" />,
   },
-]
+];
 
 const metricsData = {
   openRate: '75%',
   responseRate: '60%',
-}
+};
 
 export function InvestorEngagement() {
   return (
@@ -70,5 +70,5 @@ export function InvestorEngagement() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
 import type {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-} from '@tanstack/react-table'
+} from '@tanstack/react-table';
 import {
   flexRender,
   getCoreRowModel,
@@ -13,13 +13,13 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
-import * as React from 'react'
+} from '@tanstack/react-table';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import * as React from 'react';
 
-import { Button } from '@acme/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@acme/ui/card'
-import { Checkbox } from '@acme/ui/checkbox'
+import { Button } from '@acme/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@acme/ui/card';
+import { Checkbox } from '@acme/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,8 +27,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@acme/ui/dropdown-menu'
-import { Input } from '@acme/ui/input'
+} from '@acme/ui/dropdown-menu';
+import { Input } from '@acme/ui/input';
 import {
   Table,
   TableBody,
@@ -36,7 +36,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@acme/ui/table'
+} from '@acme/ui/table';
 
 const data: Payment[] = [
   {
@@ -69,13 +69,13 @@ const data: Payment[] = [
     id: 'bhqecj4p',
     status: 'Intro Sent',
   },
-]
+];
 
 export interface Payment {
-  id: string
-  amount?: number
-  status: string
-  email: string
+  id: string;
+  amount?: number;
+  status: string;
+  email: string;
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -117,11 +117,11 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: 'amount',
     cell: ({ row }) => {
       // const amount = Number.parseFloat(row.getValue("amount"));
-      const amount = row.getValue('amount')
+      const amount = row.getValue('amount');
 
       // Format the amount as a dollar amount
       if (amount === undefined) {
-        return <div className="text-right">-</div>
+        return <div className="text-right">-</div>;
       }
 
       const formatted = new Intl.NumberFormat('en-US', {
@@ -130,9 +130,9 @@ export const columns: ColumnDef<Payment>[] = [
         maximumFractionDigits: 0,
         notation: 'compact',
         style: 'currency',
-      }).format(amount as number)
+      }).format(amount as number);
 
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-right font-medium">{formatted}</div>;
     },
     header: ({ column }) => {
       return (
@@ -143,12 +143,12 @@ export const columns: ColumnDef<Payment>[] = [
           Amount
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
     cell: ({ row }) => {
-      const payment = row.original
+      const payment = row.original;
 
       return (
         <DropdownMenu>
@@ -170,21 +170,21 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuItem>View Agreement</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
     enableHiding: false,
     id: 'actions',
   },
-]
+];
 
 export function DataTableDemo() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
-  )
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     columns,
@@ -203,7 +203,7 @@ export function DataTableDemo() {
       rowSelection,
       sorting,
     },
-  })
+  });
 
   return (
     <Card className="w-full">
@@ -240,7 +240,7 @@ export function DataTableDemo() {
                             header.getContext(),
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -277,5 +277,5 @@ export function DataTableDemo() {
         {/* </div> */}
       </CardContent>
     </Card>
-  )
+  );
 }

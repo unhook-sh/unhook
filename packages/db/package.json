@@ -28,7 +28,7 @@
     "drizzle-kit": "0.30.6",
     "supabase": "2.20.5",
     "tsx": "4.19.3",
-    "typescript": "5.8.2",
+    "typescript": "5.8.3",
     "zx": "8.5.0"
   },
   "exports": {

@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@acme/ui/accordion'
+} from '@acme/ui/accordion';
 
 const faqs = [
   {
@@ -169,7 +169,7 @@ const faqs = [
     ],
     section: 'Support',
   },
-]
+];
 export function FAQSection() {
   return (
     <section id="faq" className="container mx-auto px-4 md:px-8">
@@ -216,5 +216,5 @@ export function FAQSection() {
         </a>
       </h4>
     </section>
-  )
+  );
 }

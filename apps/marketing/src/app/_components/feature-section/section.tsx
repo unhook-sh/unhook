@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import * as Accordion from '@radix-ui/react-accordion'
-import { useInView } from 'motion/react'
-import type { ReactNode } from 'react'
-import type React from 'react'
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
+import * as Accordion from '@radix-ui/react-accordion';
+import { useInView } from 'motion/react';
+import type { ReactNode } from 'react';
+import type React from 'react';
+import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
-import { cn } from '@acme/ui/lib/utils'
+import { cn } from '@acme/ui/lib/utils';
 
-import { CompetitorWatch } from './competitor-watch'
-import { DataTableDemo } from './investor-crm'
-import { InvestorEngagement } from './investor-engagement'
-import { MarketInsights } from './market-insights'
-import { PitchPractice } from './pitch-practice'
+import { CompetitorWatch } from './competitor-watch';
+import { DataTableDemo } from './investor-crm';
+import { InvestorEngagement } from './investor-engagement';
+import { MarketInsights } from './market-insights';
+import { PitchPractice } from './pitch-practice';
 
 type AccordionItemProps = {
-  children: React.ReactNode
-  className?: string
-} & Accordion.AccordionItemProps
+  children: React.ReactNode;
+  className?: string;
+} & Accordion.AccordionItemProps;
 
 const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
   ({ children, className, ...props }, forwardedRef) => (
@@ -32,11 +32,11 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
       {children}
     </Accordion.Item>
   ),
-)
+);
 
 interface AccordionTriggerProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }
 
 const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
@@ -54,12 +54,12 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
       </Accordion.Trigger>
     </Accordion.Header>
   ),
-)
+);
 
 type AccordionContentProps = {
-  children: ReactNode
-  className?: string
-} & Accordion.AccordionContentProps
+  children: ReactNode;
+  className?: string;
+} & Accordion.AccordionContentProps;
 
 const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
   ({ children, className, ...props }, forwardedRef) => (
@@ -74,14 +74,14 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
       <div className="px-5 py-2">{children}</div>
     </Accordion.Content>
   ),
-)
+);
 
 interface CardDataProps {
-  id: number
-  title: string
-  content: React.ReactNode
-  image?: React.ReactNode
-  video?: string
+  id: number;
+  title: string;
+  content: React.ReactNode;
+  image?: React.ReactNode;
+  video?: string;
 }
 const cardData: CardDataProps[] = [
   {
@@ -120,12 +120,12 @@ const cardData: CardDataProps[] = [
     image: <PitchPractice />,
     title: 'AI Pitch Practice',
   },
-]
+];
 
 interface FeatureProps {
-  collapseDelay?: number
-  ltr?: boolean
-  linePosition?: 'left' | 'right'
+  collapseDelay?: number;
+  ltr?: boolean;
+  linePosition?: 'left' | 'right';
 }
 
 const Feature = ({
@@ -133,86 +133,86 @@ const Feature = ({
   ltr = false,
   linePosition = 'left',
 }: FeatureProps) => {
-  const [currentIndex, setCurrentIndex] = useState<number>(-1)
+  const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
-  const carouselRef = useRef<HTMLUListElement>(null)
-  const ref = useRef(null)
+  const carouselRef = useRef<HTMLUListElement>(null);
+  const ref = useRef(null);
   const isInView = useInView(ref, {
     amount: 0.5,
     once: true,
-  })
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (isInView) {
-        setCurrentIndex(0)
+        setCurrentIndex(0);
       } else {
-        setCurrentIndex(-1)
+        setCurrentIndex(-1);
       }
-    }, 100)
+    }, 100);
 
-    return () => clearTimeout(timer)
-  }, [isInView])
+    return () => clearTimeout(timer);
+  }, [isInView]);
 
   const scrollToIndex = useCallback((index: number) => {
     if (carouselRef.current) {
-      const card = carouselRef.current.querySelectorAll('.card')[index]
+      const card = carouselRef.current.querySelectorAll('.card')[index];
       if (card) {
-        const cardRect = card.getBoundingClientRect()
-        const carouselRect = carouselRef.current.getBoundingClientRect()
+        const cardRect = card.getBoundingClientRect();
+        const carouselRect = carouselRef.current.getBoundingClientRect();
         const offset =
           cardRect.left -
           carouselRect.left -
-          (carouselRect.width - cardRect.width) / 2
+          (carouselRect.width - cardRect.width) / 2;
 
         carouselRef.current.scrollTo({
           behavior: 'smooth',
           left: carouselRef.current.scrollLeft + offset,
-        })
+        });
       }
     }
-  }, [])
+  }, []);
 
   // interval for changing images
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((previousIndex) =>
         previousIndex === undefined ? 0 : (previousIndex + 1) % cardData.length,
-      )
-    }, collapseDelay)
+      );
+    }, collapseDelay);
 
-    return () => clearInterval(timer)
-  }, [collapseDelay])
+    return () => clearInterval(timer);
+  }, [collapseDelay]);
 
   useEffect(() => {
     const handleAutoScroll = () => {
       const nextIndex =
-        (currentIndex === undefined ? 0 : currentIndex + 1) % cardData.length
-      scrollToIndex(nextIndex)
-    }
+        (currentIndex === undefined ? 0 : currentIndex + 1) % cardData.length;
+      scrollToIndex(nextIndex);
+    };
 
-    const autoScrollTimer = setInterval(handleAutoScroll, collapseDelay)
+    const autoScrollTimer = setInterval(handleAutoScroll, collapseDelay);
 
-    return () => clearInterval(autoScrollTimer)
-  }, [currentIndex, collapseDelay, scrollToIndex])
+    return () => clearInterval(autoScrollTimer);
+  }, [currentIndex, collapseDelay, scrollToIndex]);
 
   useEffect(() => {
-    const carousel = carouselRef.current
+    const carousel = carouselRef.current;
     if (carousel) {
       const handleScroll = () => {
-        const scrollLeft = carousel.scrollLeft
-        const cardWidth = carousel.querySelector('.card')?.clientWidth || 0
+        const scrollLeft = carousel.scrollLeft;
+        const cardWidth = carousel.querySelector('.card')?.clientWidth || 0;
         const newIndex = Math.min(
           Math.floor(scrollLeft / cardWidth),
           cardData.length - 1,
-        )
-        setCurrentIndex(newIndex)
-      }
+        );
+        setCurrentIndex(newIndex);
+      };
 
-      carousel.addEventListener('scroll', handleScroll)
-      return () => carousel.removeEventListener('scroll', handleScroll)
+      carousel.addEventListener('scroll', handleScroll);
+      return () => carousel.removeEventListener('scroll', handleScroll);
     }
-  }, [])
+  }, []);
 
   return (
     <section
@@ -340,9 +340,9 @@ const Feature = ({
         </ul>
       </div>
     </section>
-  )
-}
+  );
+};
 
 export function FeatureSection() {
-  return <Feature collapseDelay={500_000} linePosition="left" />
+  return <Feature collapseDelay={500_000} linePosition="left" />;
 }

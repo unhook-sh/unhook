@@ -136,10 +136,14 @@ export function Table<T extends ScalarDict>({
   const dimensions = useDimensions();
   const [selectedIndex, setSelectedIndex] = React.useState(initialIndex);
 
-  // Sync internal state with external state
+  // Initialize selection if not set and we have data
   React.useEffect(() => {
-    setSelectedIndex(initialIndex);
-  }, [initialIndex]);
+    if (selectedIndex === -1 && data.length > 0) {
+      const newIndex = 0;
+      setSelectedIndex(newIndex);
+      onSelectionChange?.(newIndex);
+    }
+  }, [data.length, selectedIndex, onSelectionChange]);
 
   const columns = React.useMemo(() => {
     if (propColumns) return propColumns;
@@ -173,27 +177,29 @@ export function Table<T extends ScalarDict>({
       keyMapping.down?.includes(input) ||
       (key.downArrow && keyMapping.down?.includes('down'));
 
-    if (isUpKey) {
-      const newIndex = Math.max(0, selectedIndex - 1);
-      if (newIndex !== selectedIndex) {
-        setSelectedIndex(newIndex);
-        onSelectionChange?.(newIndex);
-      }
-    } else if (isDownKey) {
-      const newIndex = Math.min(data.length - 1, selectedIndex + 1);
-      if (newIndex !== selectedIndex) {
-        setSelectedIndex(newIndex);
-        onSelectionChange?.(newIndex);
-      }
+    if (isUpKey && selectedIndex > 0) {
+      const newIndex = selectedIndex - 1;
+      setSelectedIndex(newIndex);
+      onSelectionChange?.(newIndex);
+    } else if (isDownKey && selectedIndex < data.length - 1) {
+      const newIndex = selectedIndex + 1;
+      setSelectedIndex(newIndex);
+      onSelectionChange?.(newIndex);
     } else {
       // Check for action hotkeys
-      const action = actions.find((a) => a.key === input.toLowerCase());
-      const selectedItem =
-        selectedIndex >= 0 && selectedIndex < data.length
-          ? data[selectedIndex]
-          : null;
-      if (action && selectedItem) {
-        action.onAction(selectedItem, selectedIndex);
+      const action = actions.find(
+        (a) =>
+          a.key === input.toLowerCase() ||
+          key[a.key as unknown as keyof typeof key],
+      );
+      if (action) {
+        const selectedItem =
+          selectedIndex >= 0 && selectedIndex < data.length
+            ? data[selectedIndex]
+            : null;
+        if (selectedItem) {
+          action.onAction(selectedItem, selectedIndex);
+        }
       }
     }
   });
@@ -226,7 +232,7 @@ export function Table<T extends ScalarDict>({
       const Component = isHeader ? HeaderComponent : CellComponent;
 
       return (
-        <React.Fragment>
+        <React.Fragment key={`${key}-${rowIndex}-${selectedIndex}`}>
           <Component
             column={key}
             row={row}
@@ -262,10 +268,13 @@ export function Table<T extends ScalarDict>({
       isHeader?: boolean;
       rowIndex?: number;
     }) => (
-      <Box key={isHeader ? 'header' : `row-${rowIndex}`} flexDirection="row">
+      <Box
+        key={`${isHeader ? 'header' : `row-${rowIndex}`}-${selectedIndex}`}
+        flexDirection="row"
+      >
         {columns.map((column, colIndex) => (
           <React.Fragment
-            key={`cell-${isHeader ? 'header' : rowIndex}-${String(column)}`}
+            key={`cell-${isHeader ? 'header' : rowIndex}-${String(column)}-${selectedIndex}`}
           >
             {renderCell({
               column,
@@ -279,7 +288,7 @@ export function Table<T extends ScalarDict>({
         ))}
       </Box>
     ),
-    [columns, renderCell],
+    [columns, renderCell, selectedIndex],
   );
 
   const renderBorder = React.useCallback(
@@ -341,8 +350,9 @@ export function Table<T extends ScalarDict>({
             .join('|');
 
           return (
-            <Box key={rowKey} flexDirection="column">
+            <Box key={`${rowKey}-${selectedIndex}`} flexDirection="column">
               {renderRow({ row, isHeader: false, rowIndex: index })}
+              {/* {index < data.length - 1 && renderBorder('middle', index)} */}
             </Box>
           );
         })}

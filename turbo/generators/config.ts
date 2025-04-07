@@ -1,11 +1,11 @@
-import { execSync } from 'node:child_process'
-import type { PlopTypes } from '@turbo/gen'
+import { execSync } from 'node:child_process';
+import type { PlopTypes } from '@turbo/gen';
 
 interface PackageJson {
-  name: string
-  scripts: Record<string, string>
-  dependencies: Record<string, string>
-  devDependencies: Record<string, string>
+  name: string;
+  scripts: Record<string, string>;
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
 }
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
@@ -32,9 +32,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           typeof answers.name === 'string' &&
           answers.name.startsWith('@acme/')
         ) {
-          answers.name = answers.name.replace('@acme/', '')
+          answers.name = answers.name.replace('@acme/', '');
         }
-        return 'Config sanitized'
+        return 'Config sanitized';
       },
       {
         type: 'add',
@@ -56,19 +56,19 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         path: 'packages/{{ name }}/package.json',
         async transform(content, answers) {
           if ('deps' in answers && typeof answers.deps === 'string') {
-            const pkg = JSON.parse(content) as PackageJson
+            const pkg = JSON.parse(content) as PackageJson;
             for (const dep of answers.deps.split(' ').filter(Boolean)) {
               const version = await fetch(
                 `https://registry.npmjs.org/-/package/${dep}/dist-tags`,
               )
                 .then((res) => res.json())
-                .then((json) => json.latest)
-              if (!pkg.dependencies) pkg.dependencies = {}
-              pkg.dependencies[dep] = `^${version}`
+                .then((json) => json.latest);
+              if (!pkg.dependencies) pkg.dependencies = {};
+              pkg.dependencies[dep] = `^${version}`;
             }
-            return JSON.stringify(pkg, null, 2)
+            return JSON.stringify(pkg, null, 2);
           }
-          return content
+          return content;
         },
       },
       async (answers) => {
@@ -79,12 +79,12 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           // execSync("pnpm dlx sherif@latest --fix", {
           //   stdio: "inherit",
           // });
-          execSync('pnpm i', { stdio: 'inherit' })
-          execSync(`pnpm format:fix packages/${answers.name}/**`)
-          return 'Package scaffolded'
+          execSync('pnpm i', { stdio: 'inherit' });
+          execSync(`pnpm format:fix packages/${answers.name}/**`);
+          return 'Package scaffolded';
         }
-        return 'Package not scaffolded'
+        return 'Package not scaffolded';
       },
     ],
-  })
+  });
 }

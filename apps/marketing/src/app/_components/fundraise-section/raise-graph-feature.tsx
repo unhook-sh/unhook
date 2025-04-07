@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { cubicBezier, motion } from 'motion/react'
+import { cubicBezier, motion } from 'motion/react';
 
 export function RaiseGraphFeature() {
   const variant1 = {
@@ -24,7 +24,7 @@ export function RaiseGraphFeature() {
       },
       viewBox: '0 -60 366 310',
     },
-  }
+  };
   const variant2 = {
     initial: {
       transition: {
@@ -42,7 +42,7 @@ export function RaiseGraphFeature() {
       },
       y: 0,
     },
-  }
+  };
 
   const containerVariants = {
     initial: {},
@@ -51,7 +51,7 @@ export function RaiseGraphFeature() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   return (
     <div className="relative h-full w-full max-w-[24rem] transform-gpu rounded-lg border bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)] dark:bg-black dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] md:max-h-[500px]">
@@ -110,5 +110,5 @@ export function RaiseGraphFeature() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

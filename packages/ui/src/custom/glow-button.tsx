@@ -1,8 +1,8 @@
-import { cn } from '@acme/ui/lib/utils'
-import { Slot } from '@radix-ui/react-slot'
-import { type VariantProps, cva } from 'class-variance-authority'
-import { ArrowRight } from 'lucide-react'
-import type * as React from 'react'
+import { cn } from '@acme/ui/lib/utils';
+import { Slot } from '@radix-ui/react-slot';
+import { type VariantProps, cva } from 'class-variance-authority';
+import { ArrowRight } from 'lucide-react';
+import type * as React from 'react';
 
 const glowButtonVariants = cva(
   'relative inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
@@ -28,7 +28,7 @@ const glowButtonVariants = cva(
       showArrow: false,
     },
   },
-)
+);
 
 function GlowButton({
   className,
@@ -40,9 +40,9 @@ function GlowButton({
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof glowButtonVariants> & {
-    asChild?: boolean
+    asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot : 'button'
+  const Comp = asChild ? Slot : 'button';
 
   return (
     <Comp
@@ -64,7 +64,7 @@ function GlowButton({
         </div>
       </>
     </Comp>
-  )
+  );
 }
 
-export { GlowButton, glowButtonVariants }
+export { GlowButton, glowButtonVariants };

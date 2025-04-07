@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { BellIcon, FileTextIcon, InputIcon } from '@radix-ui/react-icons'
+import { BellIcon, FileTextIcon, InputIcon } from '@radix-ui/react-icons';
 
-import { Icons } from '@acme/ui/custom/icons'
-import { cn } from '@acme/ui/lib/utils'
-import { AnimatedList } from '@acme/ui/magicui/animated-list'
-import { BentoCard, BentoGrid } from '@acme/ui/magicui/bento-grid'
-import { Marquee } from '@acme/ui/magicui/marquee'
-import { NumberTicker } from '@acme/ui/magicui/number-ticker'
-import { WordFadeIn } from '@acme/ui/magicui/word-fade-in'
+import { Icons } from '@acme/ui/custom/icons';
+import { cn } from '@acme/ui/lib/utils';
+import { AnimatedList } from '@acme/ui/magicui/animated-list';
+import { BentoCard, BentoGrid } from '@acme/ui/magicui/bento-grid';
+import { Marquee } from '@acme/ui/magicui/marquee';
+import { NumberTicker } from '@acme/ui/magicui/number-ticker';
+import { WordFadeIn } from '@acme/ui/magicui/word-fade-in';
 
 interface Item {
-  name: string
-  description: string
-  icon: string
-  color: string
-  time: string
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  time: string;
 }
 let notifications = [
   {
@@ -60,9 +60,9 @@ let notifications = [
     name: 'Refine business plan',
     time: '2w ago',
   },
-]
+];
 
-notifications = Array.from({ length: 10 }, () => notifications).flat()
+notifications = Array.from({ length: 10 }, () => notifications).flat();
 
 const Notification = ({ name, description, icon, color, time }: Item) => {
   return (
@@ -98,8 +98,8 @@ const Notification = ({ name, description, icon, color, time }: Item) => {
         </div>
       </div>
     </figure>
-  )
-}
+  );
+};
 
 function AnimatedListDemo({ className }: { className?: string }) {
   return (
@@ -115,7 +115,7 @@ function AnimatedListDemo({ className }: { className?: string }) {
         ))}
       </AnimatedList>
     </div>
-  )
+  );
 }
 
 const files = [
@@ -159,7 +159,7 @@ const files = [
     body: 'Market research reports and competitive analysis.',
     name: 'market.pdf',
   },
-]
+];
 
 const features = [
   {
@@ -288,7 +288,7 @@ const features = [
     href: '/',
     name: 'Investor Matchmaking',
   },
-]
+];
 
 export function BentoFeaturesSection() {
   return (
@@ -311,5 +311,5 @@ export function BentoFeaturesSection() {
         ))}
       </BentoGrid>
     </section>
-  )
+  );
 }

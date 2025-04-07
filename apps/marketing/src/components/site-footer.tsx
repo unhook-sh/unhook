@@ -98,7 +98,7 @@ export function SiteFooter() {
                   {nav.items.map((item) => (
                     <li key={item.name}>
                       <Link
-                        href={item.href as any}
+                        href={item.href as unknown as string}
                         className="cursor-pointer text-sm font-[450] text-gray-400 duration-200 hover:text-gray-200"
                       >
                         {item.name}
@@ -116,7 +116,7 @@ export function SiteFooter() {
             {footerSocials.map((social) => (
               <Link
                 key={social.name}
-                href={social.href as any}
+                href={social.href as unknown as string}
                 className="fill-gray-500 text-gray-500 hover:fill-gray-900 hover:text-gray-900 dark:hover:fill-gray-600 dark:hover:text-gray-600"
               >
                 {social.icon}

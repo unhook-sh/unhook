@@ -2,10 +2,9 @@ import net from 'node:net';
 import { hostname, platform, release } from 'node:os';
 import { db } from '@acme/db/client';
 import { Connections } from '@acme/db/schema';
-import { createId } from '@acme/id';
 import { createStore } from 'zustand';
 import { getProcessIdForPort } from '../utils/get-process-id';
-import { useAuth, useAuthStore } from './auth';
+import { useAuthStore } from './auth';
 import { useCliStore } from './cli-store';
 import { useTunnelStore } from './tunnel-store';
 import { createSelectors } from './zustand-create-selectors';
@@ -117,7 +116,6 @@ const createConnectionStore = () => {
             isConnected: true,
             pid: foundPid,
           });
-
 
           socketRef?.destroy(); // Close connection after successful check
         }

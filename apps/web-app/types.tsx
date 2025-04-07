@@ -11,5 +11,5 @@ export interface LogEntry {
   location: string;
   searchParams: { [key: string]: string };
   externalApis: { method: string; url: string; status: number }[];
-  details: any;
+  details: Record<string, unknown>;
 }

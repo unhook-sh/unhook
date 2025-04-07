@@ -1,19 +1,18 @@
 import type { RequestType } from '@acme/db/schema';
+import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
 import { Box, useInput } from 'ink';
 import type { FC } from 'react';
-import { useCallback, useState, useEffect } from 'react';
-import React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Table } from '~/components/table';
+import { useConnectionStore } from '~/lib/connection-store';
+import { useRequestStore } from '~/lib/request-store';
 import type { RouteProps } from '~/lib/router';
 import { useRouter } from '~/lib/router';
-import { useRequestStore } from '~/lib/request-store';
 import { RequestDetails } from './_components/request-details';
-import { useConnectionStore } from '~/lib/connection-store';
 import {
   RequestTableCell,
   RequestTableHeader,
 } from './_components/table-cells';
-import { formatDistanceToNow, differenceInMinutes, format } from 'date-fns';
 
 function formatRequestTime(date: Date) {
   const now = new Date();
@@ -26,7 +25,26 @@ function formatRequestTime(date: Date) {
   return format(date, 'MMM d, HH:mm:ss');
 }
 
+function tryDecodeBase64(str: string): string {
+  try {
+    return Buffer.from(str, 'base64').toString('utf-8');
+  } catch {
+    return str;
+  }
+}
+
 export function requestToTableData(request: RequestType, isSelected: boolean) {
+  const decodedBody = request.request.body
+    ? tryDecodeBase64(request.request.body)
+    : null;
+
+  let parsedBody = null;
+  try {
+    parsedBody = decodedBody ? JSON.parse(decodedBody) : null;
+  } catch {
+    parsedBody = null;
+  }
+
   return {
     ...request,
     selected: isSelected ? '→' : '',
@@ -41,6 +59,7 @@ export function requestToTableData(request: RequestType, isSelected: boolean) {
     isSelected,
     responseCode: request.response?.status,
     responseTimeMs: request.responseTimeMs,
+    event: parsedBody?.type ?? null,
   };
 }
 
@@ -48,11 +67,11 @@ export const RequestsPage: FC<RouteProps> = () => {
   const selectedRequestId = useRequestStore.use.selectedRequestId();
   const setSelectedRequestId = useRequestStore.use.setSelectedRequestId();
   const requests = useRequestStore.use.requests();
-  const isLoading = useRequestStore.use.isLoading();
+  const _isLoading = useRequestStore.use.isLoading();
   const isDetailsVisible = useRequestStore.use.isDetailsVisible();
   const setIsDetailsVisible = useRequestStore.use.setIsDetailsVisible();
   const isConnected = useConnectionStore.use.isConnected();
-  const [selectedIndex, setSelectedIndex] = useState(
+  const [selectedIndex, _setSelectedIndex] = useState(
     requests.findIndex((request) => request.id === selectedRequestId),
   );
   const { navigate } = useRouter();
@@ -106,7 +125,15 @@ export const RequestsPage: FC<RouteProps> = () => {
       <Box width={isDetailsVisible ? '50%' : undefined}>
         <Table
           data={tableData}
-          columns={['method', 'url', 'status', 'responseCode', 'responseTimeMs', 'time']}
+          columns={[
+            'method',
+            'url',
+            'status',
+            'responseCode',
+            'responseTimeMs',
+            'event',
+            'time',
+          ]}
           header={RequestTableHeader}
           cell={RequestTableCell}
           initialIndex={selectedIndex}

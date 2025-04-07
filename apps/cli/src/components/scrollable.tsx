@@ -17,7 +17,7 @@ export function Scrollable({
   const [scrollTop, setScrollTop] = useState(0);
   const height = propHeight ?? dimensions.height - 2; // Default to terminal height minus margins
 
-  useInput((input, key) => {
+  useInput((_input, key) => {
     // Only handle scroll when holding shift
     if (!key.shift) {
       return;
@@ -40,7 +40,7 @@ export function Scrollable({
   // Reset scroll position when content changes
   useEffect(() => {
     setScrollTop(0);
-  }, [children]);
+  }, []);
 
   return (
     <Box flexDirection="column" height={height} overflow="hidden" {...props}>

@@ -102,7 +102,7 @@ export function SiteHeaderNavigationMenu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href={'/docs' as any} legacyBehavior passHref>
+          <Link href={'/docs'} legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Fundraising Basics
             </NavigationMenuLink>

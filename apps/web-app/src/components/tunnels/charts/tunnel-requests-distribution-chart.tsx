@@ -43,7 +43,7 @@ export function TunnelRequestsDistributionChart({
         { name: 'tunnel-3m4n5o', requests: 178 },
       ];
 
-  const handleMouseEnter = (_: any, index: number) => {
+  const handleMouseEnter = (_: unknown, index: number) => {
     setActiveIndex(index);
   };
 
@@ -103,8 +103,8 @@ export function TunnelRequestsDistributionChart({
               radius={[4, 4, 0, 0]}
               onMouseEnter={handleMouseEnter}
             >
-              {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={getBarFill(index)} />
+              {data.map(({ name }, index) => (
+                <Cell key={name} fill={getBarFill(index)} />
               ))}
             </Bar>
           </BarChart>

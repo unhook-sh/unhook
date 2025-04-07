@@ -31,9 +31,13 @@ export function RequestList({
 
       <div className="divide-y">
         {isLoading ? (
-          Array.from({ length: 5 }).map((_, i) => (
-            <RequestRowSkeleton key={i} />
-          ))
+          [
+            'request-skeleton-1',
+            'request-skeleton-2',
+            'request-skeleton-3',
+            'request-skeleton-4',
+            'request-skeleton-5',
+          ].map((index) => <RequestRowSkeleton key={`skeleton-${index}`} />)
         ) : requests.length === 0 ? (
           <div className="flex h-32 items-center justify-center text-muted-foreground">
             No logs found

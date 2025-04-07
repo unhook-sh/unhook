@@ -94,9 +94,10 @@ export function useTunnel(id: string) {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     fetchTunnel();
-  }, [id]);
+  }, []);
 
   return {
     tunnel,

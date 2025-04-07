@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@acme/ui/components/card';
-import { Tunnel } from '~/types/tunnel';
+import type { Tunnel } from '~/types/tunnel';
 
 interface TunnelMetricsProps {
   tunnel: Tunnel;
@@ -40,8 +40,8 @@ export function TunnelMetrics({ tunnel }: TunnelMetricsProps) {
     <Card>
       <CardContent className="p-0">
         <div className="grid grid-cols-2 divide-x divide-y md:grid-cols-5 md:divide-y-0">
-          {metrics.map((metric, index) => (
-            <div key={index} className="flex flex-col p-4">
+          {metrics.map((metric) => (
+            <div key={metric.label} className="flex flex-col p-4">
               <span className="text-xs font-medium text-muted-foreground">
                 {metric.label}
               </span>

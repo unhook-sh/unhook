@@ -28,7 +28,6 @@ interface SelectInputProps<T extends string = string> {
 export const SelectInput = <T extends string = string>({
   items,
   onSelect,
-  highlightColor = 'blue',
   indicatorComponent = figures.pointer,
   renderItem,
   keyMapping = {
@@ -90,16 +89,16 @@ export const SelectInput = <T extends string = string>({
 
         return (
           <Box key={item.value} marginY={0}>
-              <Text>
-                {isSelected ? `${indicatorComponent} ` : '  '}
-                {typeof item.label === 'string' ? item.label : null}
-                {showHotkeys && item.hotkey && (
-                  <Text color="cyan" dimColor>
-                    {' '}
-                    ({item.hotkey})
-                  </Text>
-                )}
-              </Text>
+            <Text>
+              {isSelected ? `${indicatorComponent} ` : '  '}
+              {typeof item.label === 'string' ? item.label : null}
+              {showHotkeys && item.hotkey && (
+                <Text color="cyan" dimColor>
+                  {' '}
+                  ({item.hotkey})
+                </Text>
+              )}
+            </Text>
           </Box>
         );
       })}

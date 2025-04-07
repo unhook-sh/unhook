@@ -36,8 +36,7 @@ const cardVariants = {
 };
 
 export function TunnelsList() {
-  const [tunnels, { refetch, isRefetching }] =
-    api.tunnels.all.useSuspenseQuery();
+  const [tunnels, { refetch }] = api.tunnels.all.useSuspenseQuery();
   const { mutateAsync: deleteTunnel } = api.tunnels.delete.useMutation();
   const queryClient = useQueryClient();
 
@@ -160,7 +159,7 @@ export function TunnelsList() {
                         description:
                           'The tunnel has been deleted successfully.',
                       });
-                    } catch (error) {
+                    } catch (_error) {
                       toast.error('Failed to delete tunnel', {
                         description: 'Please try again.',
                       });

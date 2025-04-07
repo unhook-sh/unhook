@@ -54,7 +54,7 @@ vi.mock('node:http2', () => {
 });
 
 // Mock fetch for local requests
-const mockFetch = vi.fn() as unknown as (typeof fetch & ReturnType<typeof vi.fn>);
+const mockFetch = vi.fn() as unknown as typeof fetch & ReturnType<typeof vi.fn>;
 global.fetch = mockFetch;
 
 describe('startTunnelClient', () => {

@@ -147,7 +147,7 @@ const store = createStore<RequestStore>()((set, get) => ({
     }
   },
   replayRequest: async (request: RequestType) => {
-    const { userId, orgId, }= useAuthStore.getState();
+    const { userId, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
 
     if (!userId || !orgId) {

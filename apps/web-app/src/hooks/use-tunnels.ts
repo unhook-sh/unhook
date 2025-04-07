@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Tunnel } from '~/types/tunnel';
+import type { Tunnel } from '~/types/tunnel';
 
 // Mock data for tunnels
 const mockTunnels: Tunnel[] = [
@@ -97,6 +97,7 @@ export function useTunnels() {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This is a mock hook
   useEffect(() => {
     fetchTunnels();
   }, []);

@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import type { SignInResource } from '@clerk/types';
 import open from 'open';
 import { createClerkClient } from './clerk';
-import { useAuthStore} from './store';
+import { useAuthStore } from './store';
 import { getAuthSuccessTemplate } from './templates/get-template';
 
 interface AuthConfig {
@@ -18,7 +18,7 @@ export class AuthService {
     | ((value: {
         token: string;
         userId: string;
-        orgId?: string| null;
+        orgId?: string | null;
       }) => void)
     | null = null;
   private rejectAuth: ((reason: Error) => void) | null = null;

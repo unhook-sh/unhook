@@ -29,7 +29,7 @@ export function TunnelTopPathsChart() {
     { path: '/api/orders', requests: 275, avgLatency: 118 },
   ];
 
-  const handleMouseEnter = (_: any, index: number) => {
+  const handleMouseEnter = (_: unknown, index: number) => {
     setActiveIndex(index);
   };
 
@@ -102,8 +102,8 @@ export function TunnelTopPathsChart() {
               radius={[4, 4, 0, 0]}
               onMouseEnter={handleMouseEnter}
             >
-              {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={getBarFill(index)} />
+              {data.map(({ path }, index) => (
+                <Cell key={path} fill={getBarFill(index)} />
               ))}
             </Bar>
             <Bar

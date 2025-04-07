@@ -30,7 +30,8 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
 }) => {
   const selectedRequestId = useRequestStore.use.selectedRequestId();
   const requests = useRequestStore.use.requests();
-  const request = propRequest ?? requests.find((r) => r.id === selectedRequestId);
+  const request =
+    propRequest ?? requests.find((r) => r.id === selectedRequestId);
 
   if (!request) {
     return (
@@ -48,7 +49,7 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
     : null;
 
   const formattedRequestBody = requestBody ? tryParseJson(requestBody) : null;
-  const formattedResponseBody = responseBody
+  const _formattedResponseBody = responseBody
     ? tryParseJson(responseBody)
     : null;
 

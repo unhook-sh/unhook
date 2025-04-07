@@ -123,10 +123,10 @@ export function SiteHeader() {
               <SiteHeaderNavigationMenu />
             </div>
             <Button asChild variant={'ghost'} className="hidden md:block">
-              <Link href={'/signin' as any}>Log in</Link>
+              <Link href={'/signin'}>Log in</Link>
             </Button>
             <Button asChild>
-              <Link href={'/signup' as any}>Sign up</Link>
+              <Link href={'/signup'}>Sign up</Link>
             </Button>
             <div className="hidden md:block">
               <ThemeToggle />
@@ -201,7 +201,7 @@ export function SiteHeader() {
                   className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
                     hamburgerMenuIsOpen ? '[&_a]:translate-y-0' : ''
                   }`}
-                  href={item.href as any}
+                  href={item.href as unknown as string}
                 >
                   {item.label}
                 </Link>

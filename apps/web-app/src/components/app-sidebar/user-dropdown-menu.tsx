@@ -33,7 +33,7 @@ export function UserDropdownMenu() {
 
   // const organizations = user?.getOrgs();
 
-  const handleOrgChange = async (orgId: string) => {
+  const _handleOrgChange = async (_orgId: string) => {
     // await setActiveOrg(orgId);
     router.refresh();
   };

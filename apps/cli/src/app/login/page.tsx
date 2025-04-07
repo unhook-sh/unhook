@@ -88,7 +88,7 @@ export const LoginPage: FC<RouteProps> = () => {
     shouldAuthenticate,
   ]);
 
-  const handleRetry = () => {
+  const _handleRetry = () => {
     setShouldAuthenticate(true);
   };
 

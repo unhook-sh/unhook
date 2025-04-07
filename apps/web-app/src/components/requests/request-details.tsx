@@ -21,7 +21,7 @@ interface LogDetailsProps {
 
 export function RequestDetails({ request, onClose }: LogDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [_copied, setCopied] = useState(false);
 
   const handleCopy = (data: RequestType) => {
     navigator.clipboard.writeText(JSON.stringify(data, null, 2));

@@ -35,7 +35,7 @@ export function RequestSubscription() {
         await handlePendingRequest(payload as unknown as RequestType);
       }
     },
-    onStatusChange: (newStatus) => {
+    onStatusChange: (_newStatus) => {
       // console.log('Subscription status:', newStatus);
     },
     onUpdate: () => {

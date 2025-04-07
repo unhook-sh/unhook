@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import type { RequestType } from '@acme/db/schema';
 import { Badge } from '@acme/ui/components/badge';
 import { Skeleton } from '@acme/ui/components/skeleton';
 import {
@@ -16,8 +17,6 @@ import {
 } from '@acme/ui/components/table';
 import { RequestDetails } from '~/components/requests/request-details';
 import { RequestMetadata } from '~/components/requests/request-metadata';
-import type { LogEntry } from '~/types/logs';
-import { RequestType } from '@acme/db/schema';
 
 interface TunnelRequestsTableProps {
   tunnelId: string;
@@ -50,7 +49,10 @@ export function TunnelRequestsTable({
               Date.now() - Math.random() * 1000 * 60 * 60 * 24,
             );
             const status = Math.random() > 0.8 ? 'failed' : 'completed';
-            const responseStatus = status === 'failed' ? 400 + Math.floor(Math.random() * 100) : 200 + Math.floor(Math.random() * 100);
+            const responseStatus =
+              status === 'failed'
+                ? 400 + Math.floor(Math.random() * 100)
+                : 200 + Math.floor(Math.random() * 100);
 
             return {
               id: `req_${i}_${Date.now()}`,
@@ -63,8 +65,12 @@ export function TunnelRequestsTable({
               connectionId: null,
               request: {
                 id: `req_${i}_${Date.now()}`,
-                method: ['GET', 'POST', 'PUT', 'DELETE'][Math.floor(Math.random() * 4)] as string,
-                url: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][Math.floor(Math.random() * 4)] as string,
+                method: ['GET', 'POST', 'PUT', 'DELETE'][
+                  Math.floor(Math.random() * 4)
+                ] as string,
+                url: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
+                  Math.floor(Math.random() * 4)
+                ] as string,
                 headers: {
                   'content-type': 'application/json',
                   'user-agent': 'Svix-Webhooks/1.62.0',
@@ -72,22 +78,27 @@ export function TunnelRequestsTable({
                 size: Math.floor(Math.random() * 1000),
                 timestamp: timestamp.getTime(),
                 contentType: 'application/json',
-                clientIp: '127.0.0.1'
+                clientIp: '127.0.0.1',
               },
               failedReason: status === 'failed' ? 'Connection error' : null,
               completedAt: status === 'completed' ? new Date() : null,
-              response: status === 'completed' ? {
-                status: responseStatus,
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ success: responseStatus < 400 })
-              } : null,
-              responseTimeMs: Math.floor(Math.random() * 1000)
+              response:
+                status === 'completed'
+                  ? {
+                      status: responseStatus,
+                      headers: { 'content-type': 'application/json' },
+                      body: JSON.stringify({ success: responseStatus < 400 }),
+                    }
+                  : null,
+              responseTimeMs: Math.floor(Math.random() * 1000),
             };
           },
         );
 
         // Sort by timestamp (newest first)
-        mockRequests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        mockRequests.sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+        );
 
         setRequests(limit ? mockRequests.slice(0, limit) : mockRequests);
       } catch (error) {
@@ -148,8 +159,14 @@ export function TunnelRequestsTable({
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                Array.from({ length: limit || 5 }).map((_, i) => (
-                  <TableRow key={i}>
+                [
+                  'skeleton-1',
+                  'skeleton-2',
+                  'skeleton-3',
+                  'skeleton-4',
+                  'skeleton-5',
+                ].map((index) => (
+                  <TableRow key={index}>
                     <TableCell>
                       <Skeleton className="h-5 w-[80px]" />
                     </TableCell>
@@ -194,8 +211,16 @@ export function TunnelRequestsTable({
                           <AlertTriangle className="h-4 w-4 text-destructive" />
                         )}
                         <Badge
-                          variant={request.status === 'failed' ? 'destructive' : 'outline'}
-                          className={request.status === 'completed' ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500' : ''}
+                          variant={
+                            request.status === 'failed'
+                              ? 'destructive'
+                              : 'outline'
+                          }
+                          className={
+                            request.status === 'completed'
+                              ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
+                              : ''
+                          }
                         >
                           {request.response?.status ?? 'Pending'}
                         </Badge>

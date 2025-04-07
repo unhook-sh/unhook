@@ -5,7 +5,6 @@ import { ExitPage } from './exit/page';
 import { LoginPage } from './login/page';
 import { LogoutPage } from './logout/page';
 import { MenuPage } from './menu/page';
-import { PortPage } from './port/page';
 import { RequestPage } from './requests/[id]/page';
 import { RequestsPage } from './requests/page';
 

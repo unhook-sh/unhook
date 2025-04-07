@@ -1,6 +1,6 @@
 'use server';
 
-import { auth, clerkClient, currentUser, getAuth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { createSafeActionClient } from 'next-safe-action';
 
 // Create the action client

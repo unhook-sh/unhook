@@ -16,8 +16,6 @@ import '@acme/ui/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 
 import { TRPCReactProvider } from '@acme/api/client';
-
-import { auth } from '@clerk/nextjs/server';
 import { AppSidebar } from '~/components/app-sidebar';
 import { env } from '~/env.server';
 
@@ -52,7 +50,6 @@ export const viewport: Viewport = {
 export default async function RootLayout(props: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
-  const { orgId, userId } = await auth();
 
   return (
     <html lang="en" suppressHydrationWarning>

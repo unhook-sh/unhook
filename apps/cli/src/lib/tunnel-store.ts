@@ -1,13 +1,11 @@
 import { db } from '@acme/db/client';
 import { Tunnels } from '@acme/db/schema';
 import type { TunnelType } from '@acme/db/schema';
-import { createId } from '@acme/id';
 import { desc, eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { useAuthStore } from './auth/store';
-import { useConnectionStore } from './connection-store';
-import { createSelectors } from './zustand-create-selectors';
 import { useCliStore } from './cli-store';
+import { createSelectors } from './zustand-create-selectors';
 
 interface TunnelState {
   tunnels: TunnelType[];
@@ -46,7 +44,7 @@ const store = createStore<TunnelStore>()((set, get) => ({
     });
 
     if (tunnel) {
-      set((state) => ({
+      set((_state) => ({
         tunnels: [tunnel],
         selectedTunnelId: tunnel.id,
         isLoading: false,
@@ -76,7 +74,6 @@ const store = createStore<TunnelStore>()((set, get) => ({
   },
   createTunnel: async (port: number) => {
     const { userId, orgId } = useAuthStore.getState();
-    const { connectionId } = useConnectionStore.getState();
     const { apiKey, clientId } = useCliStore.getState();
 
     if (!userId || !apiKey || !clientId) {

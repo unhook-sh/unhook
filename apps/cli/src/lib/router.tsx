@@ -40,7 +40,7 @@ export function RouterProvider<TPath extends string = string>({
   children,
   routes,
   initialPath,
-  initialHistory
+  initialHistory,
 }: RouterProviderProps<TPath>) {
   const [currentPath, setCurrentPath] = useState<TPath>(
     initialPath ?? routes[0]?.path ?? ('/' as TPath),
@@ -110,9 +110,9 @@ function matchRoute(
         // Extract named capture groups as params
         const params: Record<string, string> = {};
         if (match.groups) {
-          Object.entries(match.groups).forEach(([key, value]) => {
+          for (const [key, value] of Object.entries(match.groups)) {
             if (value) params[key] = value;
-          });
+          }
         }
         return { route, params };
       }

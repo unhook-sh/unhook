@@ -73,7 +73,7 @@ export function CreateTunnelDialog({ children }: CreateTunnelDialogProps) {
                   description: 'The tunnel has been created successfully.',
                 });
                 form.reset();
-              } catch (error) {
+              } catch (_error) {
                 toast.error('Failed to create tunnel', {
                   description: 'Please try again.',
                 });

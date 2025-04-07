@@ -1,7 +1,7 @@
 'use client';
 
 import { ChartContainer } from '@acme/ui/components/chart';
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import {
   Cell,
   Legend,
@@ -10,6 +10,8 @@ import {
   ResponsiveContainer,
   Sector,
 } from 'recharts';
+import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
+import type { ActiveShape } from 'recharts/types/util/types';
 
 const statusData = [
   { name: '200 OK', value: 65, color: '#10b981' },
@@ -21,7 +23,19 @@ const statusData = [
   { name: '500 Server Error', value: 3, color: '#b91c1c' },
 ];
 
-const renderActiveShape = (props: any) => {
+const renderActiveShape = (props: {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  payload: { name: string; value: number };
+  percent: number;
+  value: number;
+}): JSX.Element => {
   const RADIAN = Math.PI / 180;
   const {
     cx,
@@ -106,7 +120,7 @@ const renderActiveShape = (props: any) => {
 export function TunnelStatusCodesChart() {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const onPieEnter = (_: any, index: number) => {
+  const onPieEnter = (_: unknown, index: number) => {
     setActiveIndex(index);
   };
 
@@ -124,7 +138,7 @@ export function TunnelStatusCodesChart() {
           <PieChart>
             <Pie
               activeIndex={activeIndex}
-              activeShape={renderActiveShape}
+              activeShape={renderActiveShape as ActiveShape<PieSectorDataItem>}
               data={statusData}
               cx="50%"
               cy="50%"
@@ -134,8 +148,8 @@ export function TunnelStatusCodesChart() {
               dataKey="value"
               onMouseEnter={onPieEnter}
             >
-              {statusData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+              {statusData.map((entry) => (
+                <Cell key={entry.name} fill={entry.color} />
               ))}
             </Pie>
             <Legend

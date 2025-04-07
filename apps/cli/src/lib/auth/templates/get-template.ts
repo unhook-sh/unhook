@@ -11,7 +11,7 @@ export function getAuthSuccessTemplate(): string {
       path.join(__dirname, '..', 'templates', 'auth-success.html'),
       'utf-8',
     );
-  } catch (error) {
+  } catch (_error) {
     // Fallback template in case the file cannot be read
     return `
       <!DOCTYPE html>

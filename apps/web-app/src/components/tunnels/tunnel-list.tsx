@@ -3,7 +3,6 @@
 import { MoreHorizontal, Play, Square, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-import type { Tunnel } from '~/types/tunnel';
 import { Badge } from '@acme/ui/components/badge';
 import { Button } from '@acme/ui/components/button';
 import {
@@ -23,6 +22,7 @@ import {
   TableRow,
 } from '@acme/ui/components/table';
 import { formatDistanceToNow } from 'date-fns';
+import type { Tunnel } from '~/types/tunnel';
 import { DeleteTunnelDialog } from './delete-tunnel-dialog';
 
 interface TunnelListProps {
@@ -67,8 +67,14 @@ export function TunnelList({
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
+            [
+              'skeleton-1',
+              'skeleton-2',
+              'skeleton-3',
+              'skeleton-4',
+              'skeleton-5',
+            ].map((index) => (
+              <TableRow key={index}>
                 <TableCell>
                   <Skeleton className="h-5 w-[180px]" />
                 </TableCell>

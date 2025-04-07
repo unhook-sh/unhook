@@ -20,7 +20,7 @@ export interface LogEntry {
     response: {
       status: number;
       headers: Record<string, string>;
-      body: Record<string, any>;
+      body: Record<string, unknown>;
     };
     headers: Record<string, string>;
   };

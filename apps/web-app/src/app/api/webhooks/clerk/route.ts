@@ -33,7 +33,6 @@ export async function POST(request: Request) {
 
   // If there are no headers, error out
   if (!svixId || !svixTimestamp || !svixSignature) {
-
     return new Response('Error occurred -- no svix headers', {
       status: 400,
     });

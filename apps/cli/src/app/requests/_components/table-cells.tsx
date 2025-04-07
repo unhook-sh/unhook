@@ -1,4 +1,4 @@
-import { RequestType } from '@acme/db/schema';
+import type { RequestType } from '@acme/db/schema';
 import { Text } from 'ink';
 import type { CellProps } from '~/components/table';
 

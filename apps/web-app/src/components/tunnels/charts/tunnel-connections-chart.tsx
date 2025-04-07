@@ -77,7 +77,7 @@ export function TunnelConnectionsChart({
         newData.shift();
 
         // Add new data point
-        const lastTime = newData[newData.length - 1]?.time;
+        const lastTime = newData.at(-1)?.time;
         const [hour, minute] = lastTime?.split(':').map(Number) ?? [];
 
         let newMinute = minute ?? 0 + 1;
@@ -91,7 +91,7 @@ export function TunnelConnectionsChart({
         const newTimeStr = `${newHour?.toString().padStart(2, '0')}:${newMinute?.toString().padStart(2, '0')}`;
 
         // Calculate new connections value with some continuity from the last value
-        const lastConnections = newData[newData.length - 1]?.connections ?? 0;
+        const lastConnections = newData.at(-1)?.connections ?? 0;
         let newConnections =
           lastConnections +
           (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3);
@@ -209,6 +209,7 @@ export function TunnelConnectionsChart({
       </ChartContainer>
       <div className="mt-2 flex items-center justify-end">
         <button
+          type="button"
           onClick={() => setIsLive(!isLive)}
           className={`text-xs ${isLive ? 'text-green-500' : 'text-muted-foreground'} flex items-center gap-1`}
         >

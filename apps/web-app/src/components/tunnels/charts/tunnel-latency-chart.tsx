@@ -26,7 +26,14 @@ export function TunnelLatencyChart({
   timeRange,
   detailed = false,
 }: TunnelLatencyChartProps) {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<
+    {
+      time: string;
+      avgLatency: number;
+      p95Latency?: number;
+      p99Latency?: number;
+    }[]
+  >([]);
 
   useEffect(() => {
     const generateData = () => {
@@ -55,7 +62,12 @@ export function TunnelLatencyChart({
           avgLatency += Math.floor(Math.random() * 100);
         }
 
-        const dataPoint: any = {
+        const dataPoint: {
+          time: string;
+          avgLatency: number;
+          p95Latency?: number;
+          p99Latency?: number;
+        } = {
           time: `${hour}:${minute}`,
           avgLatency,
         };

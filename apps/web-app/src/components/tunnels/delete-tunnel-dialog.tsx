@@ -3,7 +3,6 @@
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import type { Tunnel } from '~/types/tunnel';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -14,6 +13,7 @@ import {
   AlertDialogTitle,
 } from '@acme/ui/components/alert-dialog';
 import { Button } from '@acme/ui/components/button';
+import type { Tunnel } from '~/types/tunnel';
 
 interface DeleteTunnelDialogProps {
   open: boolean;

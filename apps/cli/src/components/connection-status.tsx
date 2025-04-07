@@ -1,8 +1,8 @@
 import figures from 'figures';
 import { Box, Text } from 'ink';
+import { useCliStore } from '~/lib/cli-store';
 import { useConnectionStore } from '~/lib/connection-store';
 import { Spinner } from './spinner';
-import { useCliStore } from '~/lib/cli-store';
 
 export function ConnectionStatus() {
   const isConnected = useConnectionStore.use.isConnected();

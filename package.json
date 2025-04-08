@@ -5,6 +5,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@changesets/cli": "2.28.1",
+    "@changesets/changelog-github": "0.5.1",
     "@commitlint/cli": "19.8.0",
     "@turbo/gen": "2.5.0",
     "@unhook/commitlint-config": "workspace:*",
@@ -18,7 +19,7 @@
   "engines": {
     "node": ">=20.12.0"
   },
-  "name": "unhook",
+  "name": "@unhook/root",
   "packageManager": "pnpm@10.2.0",
   "pnpm": {
     "overrides": {
@@ -48,6 +49,7 @@
     "lint:ws": "pnpm dlx sherif@latest",
     "postinstall": "pnpm lint:ws",
     "prepare": "npx lefthook install",
+    "v": "pnpm changeset version",
     "release": "pnpm build && pnpm changeset publish",
     "test": "pnpm with-env vitest",
     "typecheck": "turbo run typecheck",

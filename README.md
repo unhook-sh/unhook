@@ -5,7 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/@unhook/cli.svg)](https://www.npmjs.com/package/@unhook/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/unhook-sh/unhook/ci.yml?branch=main)](https://github.com/unhook-sh/unhook/actions)
-[![Discord](https://img.shields.io/discord/1234567890)](https://discord.gg/unhook)
+[![Discord](https://img.shields.io/discord/1234567890)](https://discord.gg/qRZzTCK6MZ)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 </div>

@@ -48,9 +48,15 @@
     "typescript": "5.8.3"
   },
   "license": "MIT",
-  "module": "index.ts",
   "name": "@unhook/cli",
   "private": false,
+  "files": ["bin", "README.md", "LICENSE"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "bun build ./src/cli.ink.tsx ./src/templates/auth-success.html --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --asset-naming \"[name].[ext]\"",
     "dev": "pnpm with-env pnpm build --watch",

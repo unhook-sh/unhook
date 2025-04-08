@@ -10,7 +10,7 @@
     "@turbo/gen": "2.5.0",
     "checkly": "5.2.0",
     "knip": "5.47.0",
-    "lefthook": "1.11.6",
+    "lefthook": "1.11.7",
     "turbo": "2.5.0",
     "typescript": "5.8.3",
     "vitest": "3.1.1"

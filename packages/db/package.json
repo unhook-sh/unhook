@@ -1,11 +1,12 @@
 {
   "dependencies": {
     "@acme/id": "workspace:*",
-    "@clerk/nextjs": "6.13.0",
+    "@clerk/nextjs": "6.14.0",
     "@supabase/ssr": "0.6.1",
     "@supabase/supabase-js": "2.49.4",
     "@t3-oss/env-core": "0.12.0",
     "@vercel/postgres": "0.10.0",
+    "date-fns": "4.1.0",
     "drizzle-orm": "0.41.0",
     "drizzle-seed": "0.3.1",
     "drizzle-zod": "0.7.1",
@@ -47,13 +48,13 @@
       "default": "./src/supabase/client-exports.ts",
       "types": "./dist/supabase/client-exports.d.ts"
     },
-    "./supabase/server": {
-      "default": "./src/supabase/server-exports.ts",
-      "types": "./dist/supabase/server-exports.d.ts"
-    },
     "./supabase/rcs": {
       "default": "./src/supabase/server.rcs.ts",
       "types": "./dist/supabase/server.rcs.d.ts"
+    },
+    "./supabase/server": {
+      "default": "./src/supabase/server-exports.ts",
+      "types": "./dist/supabase/server-exports.d.ts"
     }
   },
   "license": "MIT",
@@ -65,10 +66,10 @@
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsx ./scripts/watch.ts",
     "gen-migration": "pnpm with-env drizzle-kit generate",
+    "gen-types": "echo 'TODO: gen-types'",
+    "gen-types.todo": "pnpm with-env tsx ./scripts/generate-types.ts",
     "migrate": "pnpm with-env drizzle-kit migrate && pnpm gen-types",
     "push": "pnpm with-env drizzle-kit push && pnpm gen-types",
-    "gen-types.todo": "pnpm with-env tsx ./scripts/generate-types.ts",
-    "gen-types": "echo 'TODO: gen-types'",
     "seed": "pnpm with-env tsx src/seed.ts",
     "studio": "pnpm with-env drizzle-kit studio",
     "typecheck": "tsc --noEmit",

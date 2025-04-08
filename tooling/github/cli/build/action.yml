@@ -34,6 +34,8 @@ runs:
       shell: bash
       run: |
         # Map platform and target to Bun's target format
+        echo "Platform: ${{ inputs.platform }}"
+        echo "Target: ${{ inputs.target }}"
         BUN_TARGET=""
         if [[ "${{ inputs.platform }}" == "linux" ]]; then
           if [[ "${{ inputs.target }}" == "x64" ]]; then
@@ -57,14 +59,22 @@ runs:
           fi
         fi
 
+        echo "Selected BUN_TARGET: $BUN_TARGET"
+
         if [[ -z "$BUN_TARGET" ]]; then
           echo "Error: Unsupported platform-target combination: ${{ inputs.platform }}-${{ inputs.target }}"
           exit 1
         fi
 
+        # Export and verify the environment variable
+        export BUN_BUILD_TARGET="$BUN_TARGET"
+        echo "Exported BUN_BUILD_TARGET=$BUN_BUILD_TARGET"
+
+        echo "Running build command with BUN_BUILD_TARGET=$BUN_BUILD_TARGET"
+        env | grep BUN_BUILD_TARGET
         pnpm --filter @unhook/cli build
       env:
-        BUN_BUILD_TARGET: $BUN_TARGET
+        BUN_BUILD_TARGET: "$BUN_TARGET"
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
         NEXT_PUBLIC_POSTHOG_KEY: ${{ env.NEXT_PUBLIC_POSTHOG_KEY }}

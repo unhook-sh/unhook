@@ -58,7 +58,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "bun build ./src/cli.ink.tsx ./src/templates/auth-success.html --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --asset-naming \"[name].[ext]\"",
+    "build": "echo \"BUN_BUILD_TARGET=$BUN_BUILD_TARGET\" && bun build ./src/cli.ink.tsx ./src/templates/auth-success.html --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --asset-naming \"[name].[ext]\"",
     "dev": "pnpm with-env pnpm build --watch",
     "notarize": "./scripts/notarize.sh ./bin/unhook",
     "notarize:ci": "pnpm notarize \"$APPLE_ID\" \"$APPLE_PASSWORD\"",

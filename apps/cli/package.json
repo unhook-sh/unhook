@@ -60,8 +60,6 @@
   "scripts": {
     "build": "echo \"BUN_BUILD_TARGET=$BUN_BUILD_TARGET\" && bun build ./src/cli.ink.tsx ./src/templates/auth-success.html --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --asset-naming \"[name].[ext]\"",
     "dev": "pnpm with-env pnpm build --watch",
-    "notarize": "./scripts/notarize.sh ./bin/unhook",
-    "notarize:ci": "pnpm notarize \"$APPLE_ID\" \"$APPLE_PASSWORD\"",
     "copy-readme": "cp ../../README.md ./README.md",
     "prepublishOnly": "pnpm copy-readme && pnpm build",
     "start": "pnpm with-env bun run ./src/cli.ink.tsx",

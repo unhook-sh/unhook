@@ -5,13 +5,13 @@ import { defineConfig } from 'checkly';
  */
 const config = defineConfig({
   /* A human friendly name for your project */
-  projectName: 'acme',
+  projectName: 'unhook',
   /** A logical ID that needs to be unique across your Checkly account,
    * See https://www.checklyhq.com/docs/cli/constructs/ to learn more about logical IDs.
    */
-  logicalId: 'acme',
+  logicalId: 'unhook',
   /* An optional URL to your Git repo */
-  repoUrl: 'https://github.com/seawatts/acme',
+  repoUrl: 'https://github.com/unhook-sh/unhook',
   /* Sets default values for Checks */
   checks: {
     /* A default for how often your Check should run in minutes */

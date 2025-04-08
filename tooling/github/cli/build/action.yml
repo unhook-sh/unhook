@@ -26,9 +26,13 @@ runs:
 
     - uses: ./tooling/github/setup
 
+    - name: Create bin directory
+      shell: bash
+      run: mkdir -p apps/cli/bin
+
     - name: Build CLI
       shell: bash
-      run: pnpm --filter @acme/unhook-cli build
+      run: pnpm --filter @unhook/cli build
       env:
         BUN_BUILD_TARGET: ${{ inputs.platform }}-${{ inputs.target }}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

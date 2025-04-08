@@ -13,6 +13,7 @@
     "chalk": "5.4.1",
     "cli-highlight": "^2.1.11",
     "cli-spinners": "3.2.0",
+    "date-fns": "4.1.0",
     "debug": "4.4.0",
     "dedent-js": "1.0.1",
     "drizzle-orm": "0.41.0",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
     "@types/bun": "latest",
+    "@types/debug": "4.1.12",
     "@types/figlet": "1.7.0",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",

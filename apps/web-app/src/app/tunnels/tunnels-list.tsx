@@ -9,7 +9,7 @@ import { formatNumber } from '@acme/ui/lib/format-number';
 import { toast } from '@acme/ui/sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 // Animation variants for the cards
 const cardVariants = {

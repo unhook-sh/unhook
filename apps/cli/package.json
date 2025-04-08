@@ -1,6 +1,10 @@
 {
+  "author": "Unhook Team (https://github.com/unhook-sh)",
   "bin": {
     "unhook": "./bin/unhook"
+  },
+  "bugs": {
+    "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
     "@clerk/clerk-js": "5.59.1",
@@ -37,6 +41,7 @@
     "zod": "3.24.2",
     "zustand": "5.0.3"
   },
+  "description": "A CLI tool for testing webhooks locally with team collaboration features.",
   "devDependencies": {
     "@types/bun": "latest",
     "@types/debug": "4.1.12",
@@ -47,29 +52,11 @@
     "@unhook/tsconfig": "workspace:*",
     "typescript": "5.8.3"
   },
-  "license": "MIT",
-  "name": "@unhook/cli",
-  "private": false,
-  "files": ["bin", "README.md", "LICENSE"],
-  "publishConfig": {
-    "access": "public"
-  },
   "engines": {
     "node": ">=20.0.0"
   },
-  "scripts": {
-    "build": "echo \"BUN_BUILD_TARGET=$BUN_BUILD_TARGET\" && bun build ./src/cli.ink.tsx ./src/templates/auth-success.html --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --asset-naming \"[name].[ext]\"",
-    "dev": "pnpm with-env pnpm build --watch",
-    "copy-readme": "cp ../../README.md ./README.md",
-    "prepublishOnly": "pnpm copy-readme && pnpm build",
-    "start": "pnpm with-env bun run ./src/cli.ink.tsx",
-    "start:debug": "DEV=true pnpm with-env bun run ./src/cli.ink.tsx",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "with-env": "infisical run -- "
-  },
-  "type": "module",
-  "version": "0.3.0",
+  "files": ["bin", "README.md", "LICENSE"],
+  "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",
     "development",
@@ -87,5 +74,28 @@
     "github-webhooks",
     "slack-webhooks",
     "clerk-webhooks"
-  ]
+  ],
+  "license": "MIT",
+  "name": "@unhook/cli",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unhook-sh/unhook.git"
+  },
+  "scripts": {
+    "build": "echo \"BUN_BUILD_TARGET=$BUN_BUILD_TARGET\" && bun build ./src/cli.ink.tsx ./src/templates/auth-success.html --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --asset-naming \"[name].[ext]\"",
+    "copy-readme": "cp ../../README.md ./README.md",
+    "dev": "pnpm with-env pnpm build --watch",
+    "prepublishOnly": "pnpm copy-readme && pnpm build",
+    "start": "pnpm with-env bun run ./src/cli.ink.tsx",
+    "start:debug": "DEV=true pnpm with-env bun run ./src/cli.ink.tsx",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "with-env": "infisical run -- "
+  },
+  "type": "module",
+  "version": "0.3.0"
 }

@@ -2,11 +2,11 @@
   "commitlint": {
     "extends": ["@acme/commitlint-config"]
   },
-  "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "devDependencies": {
     "@acme/commitlint-config": "workspace:*",
     "@biomejs/biome": "1.9.4",
     "@changesets/cli": "2.28.1",
+    "@commitlint/cli": "19.8.0",
     "@turbo/gen": "2.5.0",
     "checkly": "5.2.0",
     "knip": "5.47.0",
@@ -20,6 +20,14 @@
   },
   "name": "acme",
   "packageManager": "pnpm@10.2.0",
+  "pnpm": {
+    "overrides": {
+      "react-reconciler": "0.32.0"
+    },
+    "patchedDependencies": {
+      "ink@5.2.0": "patches/ink@5.2.0.patch"
+    }
+  },
   "private": true,
   "scripts": {
     "build": "pnpm with-env turbo run build",
@@ -45,12 +53,5 @@
     "ui-add": "turbo run ui-add",
     "with-env": "infisical run -- "
   },
-  "pnpm": {
-    "patchedDependencies": {
-      "ink@5.2.0": "patches/ink@5.2.0.patch"
-    },
-    "overrides": {
-      "react-reconciler": "0.32.0"
-    }
-  }
+  "workspaces": ["packages/*", "apps/*", "tooling/*"]
 }

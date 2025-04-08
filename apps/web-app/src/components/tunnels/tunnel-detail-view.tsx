@@ -201,7 +201,7 @@ export function TunnelDetailView({ id }: TunnelDetailViewProps) {
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
-                onClick={() => router.push(`/tunnels/${id}/settings` as any)}
+                onClick={() => router.push(`/tunnels/${id}/settings`)}
               >
                 <Settings className="mr-2 h-4 w-4" />
                 Tunnel Settings

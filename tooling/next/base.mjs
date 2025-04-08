@@ -9,11 +9,7 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   experimental: {
     scrollRestoration: true,
-    typedRoutes: true,
     // dynamicIO: true,
-    serverActions: {
-      bodySizeLimit: '20mb',
-    },
   },
   images: {
     remotePatterns: [

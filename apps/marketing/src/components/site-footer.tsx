@@ -98,7 +98,7 @@ export function SiteFooter() {
                   {nav.items.map((item) => (
                     <li key={item.name}>
                       <Link
-                        href={item.href as unknown as string}
+                        href={item.href}
                         className="cursor-pointer text-sm font-[450] text-gray-400 duration-200 hover:text-gray-200"
                       >
                         {item.name}

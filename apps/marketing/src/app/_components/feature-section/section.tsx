@@ -236,7 +236,7 @@ const Feature = ({
             type="single"
             defaultValue={`item-${currentIndex}`}
             value={`item-${currentIndex}`}
-            onValueChange={(value) =>
+            onValueChange={(value: string) =>
               setCurrentIndex(Number(value.split('-')[1]))
             }
           >

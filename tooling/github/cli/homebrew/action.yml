@@ -9,7 +9,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: ../../setup
+    - uses: ./tooling/github/setup
 
     - name: Update Homebrew formula
       uses: mislav/bump-homebrew-formula-action@v3

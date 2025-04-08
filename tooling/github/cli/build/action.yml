@@ -24,7 +24,7 @@ runs:
       with:
         bun-version: latest
 
-    - uses: ../../setup
+    - uses: ./tooling/github/setup
 
     - name: Build CLI
       shell: bash

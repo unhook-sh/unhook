@@ -11,7 +11,7 @@
     "@unhook/id": "workspace:*",
     "@unhook/tunnel": "workspace:*",
     "chalk": "5.4.1",
-    "cli-highlight": "^2.1.11",
+    "cli-highlight": "2.1.11",
     "cli-spinners": "3.2.0",
     "date-fns": "4.1.0",
     "debug": "4.4.0",

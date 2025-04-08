@@ -1,5 +1,5 @@
 {
-  "extends": "@acme/tsconfig/node.json",
+  "extends": "@unhook/tsconfig/node.json",
   "compilerOptions": {
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },

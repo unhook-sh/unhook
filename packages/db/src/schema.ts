@@ -13,7 +13,7 @@ import {
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-import { createId } from '@acme/id';
+import { createId } from '@unhook/id';
 
 export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user']);
 export const tunnelStatusEnum = pgEnum('tunnelStatus', ['active', 'inactive']);

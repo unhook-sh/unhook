@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://acme.com
+Host: https://unhook.com
 
 # Sitemaps
-Sitemap: https://acme.com/sitemap.xml
+Sitemap: https://unhook.com/sitemap.xml

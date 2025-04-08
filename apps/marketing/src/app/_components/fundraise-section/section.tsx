@@ -22,17 +22,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card';
-import type { ChartConfig } from '@acme/ui/chart';
+} from '@unhook/ui/card';
+import type { ChartConfig } from '@unhook/ui/chart';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@acme/ui/chart';
-import { Icons } from '@acme/ui/custom/icons';
-import { Text } from '@acme/ui/custom/typography';
-import { cn } from '@acme/ui/lib/utils';
-import { ShinyButton } from '@acme/ui/magicui/shiny-button';
+} from '@unhook/ui/chart';
+import { Icons } from '@unhook/ui/custom/icons';
+import { Text } from '@unhook/ui/custom/typography';
+import { cn } from '@unhook/ui/lib/utils';
+import { ShinyButton } from '@unhook/ui/magicui/shiny-button';
 
 const chartData = [
   { month: 'January', raised: 80, target: 186 },

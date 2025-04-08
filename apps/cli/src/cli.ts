@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { hostname, platform, release } from 'node:os';
 import { join } from 'node:path';
-import { createId } from '@acme/id';
-import { startTunnelClient } from '@acme/tunnel';
-import { loadConfig } from '@acme/tunnel/config';
+import { createId } from '@unhook/id';
+import { startTunnelClient } from '@unhook/tunnel';
+import { loadConfig } from '@unhook/tunnel/config';
 import debug from 'debug';
 import dedent from 'dedent-js';
 import pc from 'picocolors';

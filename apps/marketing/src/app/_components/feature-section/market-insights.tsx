@@ -17,7 +17,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card';
+} from '@unhook/ui/card';
 
 const marketTrendsData = [
   { month: 'January', value: 400 },

@@ -1,4 +1,4 @@
-import { SphereMask } from '@acme/ui/magicui/sphere-mask';
+import { SphereMask } from '@unhook/ui/magicui/sphere-mask';
 
 import { CallToActionSection } from '../_components/cta-section';
 

@@ -1,6 +1,6 @@
-import { db } from '@acme/db/client';
-import { Requests, Tunnels } from '@acme/db/schema';
-import type { RequestType } from '@acme/db/schema';
+import { db } from '@unhook/db/client';
+import { Requests, Tunnels } from '@unhook/db/schema';
+import type { RequestType } from '@unhook/db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { useAuthStore } from './auth/store';

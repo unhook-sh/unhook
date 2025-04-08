@@ -1,6 +1,6 @@
 import { RequestView } from '~/components/requests/request-view';
 
-import { HydrationBoundary, getApi } from '@acme/api/server';
+import { HydrationBoundary, getApi } from '@unhook/api/server';
 import { Suspense } from 'react';
 
 export default async function RequestsPage() {

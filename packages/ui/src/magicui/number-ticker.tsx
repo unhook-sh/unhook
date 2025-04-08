@@ -3,7 +3,7 @@
 import { useInView, useMotionValue, useSpring } from 'motion/react';
 import { useEffect, useRef } from 'react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 export function NumberTicker({
   value,

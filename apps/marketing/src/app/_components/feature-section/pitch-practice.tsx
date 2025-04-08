@@ -2,7 +2,7 @@
 
 import { CheckCircle } from 'lucide-react';
 
-import { Button } from '@acme/ui/button';
+import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -10,8 +10,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card';
-import { Progress } from '@acme/ui/progress';
+} from '@unhook/ui/card';
+import { Progress } from '@unhook/ui/progress';
 
 const feedbackData = [
   {

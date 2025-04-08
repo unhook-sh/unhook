@@ -5,7 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@acme/ui/accordion';
+} from '@unhook/ui/accordion';
 
 const faqs = [
   {

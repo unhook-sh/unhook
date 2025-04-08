@@ -1,8 +1,10 @@
 'use client';
 
-import { api } from '@acme/api/client';
-import { Button } from '@acme/ui/button';
-import { Icons } from '@acme/ui/custom/icons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@unhook/api/client';
+import { Button } from '@unhook/ui/button';
+import { Icons } from '@unhook/ui/custom/icons';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@acme/ui/dialog';
+} from '@unhook/ui/dialog';
 import {
   Form,
   FormControl,
@@ -19,11 +21,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@acme/ui/form';
-import { Input } from '@acme/ui/input';
-import { toast } from '@acme/ui/sonner';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+} from '@unhook/ui/form';
+import { Input } from '@unhook/ui/input';
+import { toast } from '@unhook/ui/sonner';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 

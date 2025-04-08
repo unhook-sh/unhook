@@ -5,7 +5,7 @@ import type React from 'react';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@acme/ui/components/button';
+import { Button } from '@unhook/ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@acme/ui/components/dialog';
-import { Input } from '@acme/ui/components/input';
-import { Label } from '@acme/ui/components/label';
+} from '@unhook/ui/components/dialog';
+import { Input } from '@unhook/ui/components/input';
+import { Label } from '@unhook/ui/components/label';
 
 interface CreateTunnelDialogProps {
   open: boolean;

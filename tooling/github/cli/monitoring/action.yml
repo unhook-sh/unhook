@@ -1,0 +1,29 @@
+name: "Update Monitoring Services"
+description: "Create Sentry release and PostHog annotation for CLI release"
+
+inputs:
+  version:
+    description: "Version number for the release"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Create Sentry release
+      uses: getsentry/action-release@v1.7.0
+      with:
+        version: v${{ inputs.version }}
+        environment: production
+        set_commits: auto
+
+    - name: Create PostHog release annotation
+      shell: bash
+      run: |
+        curl -X POST "https://${{ env.NEXT_PUBLIC_POSTHOG_HOST }}/api/projects/@current/annotations/" \
+        -H "Authorization: Bearer ${{ env.POSTHOG_PERSONAL_API_KEY }}" \
+        -H "Content-Type: application/json" \
+        -d '{
+          "content": "CLI v${{ inputs.version }} released",
+          "scope": "project",
+          "date_marker": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
+        }'

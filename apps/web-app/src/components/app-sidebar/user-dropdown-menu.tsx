@@ -1,7 +1,8 @@
 'use client';
 
-import { Button } from '@acme/ui/components/button';
-import { Icons } from '@acme/ui/custom/icons';
+import { SignOutButton, useUser } from '@clerk/nextjs';
+import { Button } from '@unhook/ui/components/button';
+import { Icons } from '@unhook/ui/custom/icons';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,10 +12,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@acme/ui/dropdown-menu';
-import { SidebarMenuButton } from '@acme/ui/sidebar';
-import { ToggleGroup, ToggleGroupItem } from '@acme/ui/toggle-group';
-import { SignOutButton, useUser } from '@clerk/nextjs';
+} from '@unhook/ui/dropdown-menu';
+import { SidebarMenuButton } from '@unhook/ui/sidebar';
+import { ToggleGroup, ToggleGroupItem } from '@unhook/ui/toggle-group';
 
 import {
   ArrowLeftFromLine,

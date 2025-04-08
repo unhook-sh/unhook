@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card';
+} from '@unhook/ui/card';
 
 const engagementData = [
   {

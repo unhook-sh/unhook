@@ -4,7 +4,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@acme/ui/components/chart';
+} from '@unhook/ui/components/chart';
 import { useEffect, useState } from 'react';
 import {
   Area,

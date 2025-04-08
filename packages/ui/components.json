@@ -11,11 +11,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@acme/ui/components",
-    "utils": "@acme/ui/lib/utils",
-    "hooks": "@acme/ui/hooks",
-    "lib": "@acme/ui/lib",
-    "ui": "@acme/ui/components",
-    "magicui": "@acme/ui/magicui"
+    "components": "@unhook/ui/components",
+    "utils": "@unhook/ui/lib/utils",
+    "hooks": "@unhook/ui/hooks",
+    "lib": "@unhook/ui/lib",
+    "ui": "@unhook/ui/components",
+    "magicui": "@unhook/ui/magicui"
   }
 }

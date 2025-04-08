@@ -1,5 +1,5 @@
 {
-  "extends": "@acme/tsconfig/react-library.json",
+  "extends": "@unhook/tsconfig/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"

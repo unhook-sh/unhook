@@ -15,7 +15,7 @@ async function buildCli() {
       target: 'node20',
       outfile: join(ROOT_DIR, 'dist/cli.js'),
       format: 'esm',
-      external: ['@acme/*'],
+      external: ['@unhook/*'],
       banner: {
         js: '#!/usr/bin/env node',
       },

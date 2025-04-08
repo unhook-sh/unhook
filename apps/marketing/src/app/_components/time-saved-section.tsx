@@ -3,8 +3,8 @@
 import { useInView } from 'motion/react';
 import { useRef } from 'react';
 
-import { Text } from '@acme/ui/custom/typography';
-import { NumberTicker } from '@acme/ui/magicui/number-ticker';
+import { Text } from '@unhook/ui/custom/typography';
+import { NumberTicker } from '@unhook/ui/magicui/number-ticker';
 
 export function TimeSavedSection() {
   const ref = useRef<HTMLDivElement>(null);

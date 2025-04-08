@@ -1,7 +1,7 @@
 'use client';
 
-import { Icons } from '@acme/ui/custom/icons';
-import { cn } from '@acme/ui/lib/utils';
+import { Icons } from '@unhook/ui/custom/icons';
+import { cn } from '@unhook/ui/lib/utils';
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-} from '@acme/ui/sidebar';
+} from '@unhook/ui/sidebar';
 import { BookOpen, Code, ExternalLink, Link, Logs } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { UserDropdownMenu } from './user-dropdown-menu';
@@ -107,7 +107,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <a
-                href="https://docs.acme.com"
+                href="https://docs.unhook.com"
                 target="_blank"
                 className="flex items-center justify-between"
                 rel="noreferrer"
@@ -123,7 +123,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <a
-                href="https://docs.acme.com/ref/overview"
+                href="https://docs.unhook.com/ref/overview"
                 target="_blank"
                 className="flex items-center justify-between"
                 rel="noreferrer"

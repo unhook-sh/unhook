@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import type React from 'react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 import { CompetitorWatch } from './competitor-watch';
 import { DataTableDemo } from './investor-crm';

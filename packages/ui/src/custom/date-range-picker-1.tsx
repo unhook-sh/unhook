@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import type { DateRange } from 'react-day-picker';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 import type { VariantProps } from 'class-variance-authority';
 import { Button, type buttonVariants } from '../components/button';

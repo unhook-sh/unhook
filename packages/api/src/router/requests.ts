@@ -1,7 +1,7 @@
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { Requests } from '@acme/db/schema';
+import { Requests } from '@unhook/db/schema';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 

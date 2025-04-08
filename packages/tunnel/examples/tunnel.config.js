@@ -16,7 +16,7 @@
  * 3. Configuration file
  * 4. Default values
  *
- * @type {import('@acme/tunnel/config').TunnelConfig}
+ * @type {import('@unhook/tunnel/config').TunnelConfig}
  */
 const config = {
   // Port of the local service to forward traffic to

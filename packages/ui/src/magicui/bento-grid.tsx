@@ -1,7 +1,7 @@
 import { ArrowRightIcon } from '@radix-ui/react-icons';
 import type { ElementType, ReactNode } from 'react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 import { Button } from '../components/button';
 

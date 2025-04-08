@@ -1,5 +1,5 @@
 import { hostname, platform, release } from 'node:os';
-import { TRPCReactProvider } from '@acme/api/client';
+import { TRPCReactProvider } from '@unhook/api/client';
 import { Box, Text, useInput } from 'ink';
 import { type FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';

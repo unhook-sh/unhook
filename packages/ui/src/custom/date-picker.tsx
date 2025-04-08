@@ -2,7 +2,7 @@
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 import { Button } from '../components/button';
 import { Calendar } from '../components/calendar';

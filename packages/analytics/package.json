@@ -15,21 +15,21 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
     "@types/aws-lambda": "8.10.148",
     "@types/chrome": "0.0.313",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
+    "@unhook/tsconfig": "workspace:*",
     "next": "15.2.4",
     "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./posthog/server": "./src/posthog/server.ts",
-    "./posthog/client": "./src/posthog/client.tsx"
+    "./posthog/client": "./src/posthog/client.tsx",
+    "./posthog/server": "./src/posthog/server.ts"
   },
   "license": "MIT",
-  "name": "@acme/analytics",
+  "name": "@unhook/analytics",
   "private": true,
   "scripts": {
     "build": "tsc",

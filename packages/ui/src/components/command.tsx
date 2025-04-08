@@ -10,8 +10,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@acme/ui/components/dialog';
-import { cn } from '@acme/ui/lib/utils';
+} from '@unhook/ui/components/dialog';
+import { cn } from '@unhook/ui/lib/utils';
 
 function Command({
   className,

@@ -3,14 +3,14 @@
 import { Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@acme/ui/components/button';
-import { Input } from '@acme/ui/components/input';
+import { Button } from '@unhook/ui/components/button';
+import { Input } from '@unhook/ui/components/input';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@acme/ui/components/tabs';
+} from '@unhook/ui/components/tabs';
 import { CreateTunnelDialog } from '~/components/tunnels/create-tunnel-dialog';
 import { TunnelAnalyticsDashboard } from '~/components/tunnels/tunnel-analytics-dashboard';
 import { TunnelList } from '~/components/tunnels/tunnel-list';

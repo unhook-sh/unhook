@@ -1,4 +1,4 @@
-import type { RequestType } from '@acme/db/schema';
+import type { RequestType } from '@unhook/db/schema';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';

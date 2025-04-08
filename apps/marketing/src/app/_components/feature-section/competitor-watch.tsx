@@ -8,13 +8,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card';
-import type { ChartConfig } from '@acme/ui/chart';
+} from '@unhook/ui/card';
+import type { ChartConfig } from '@unhook/ui/chart';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@acme/ui/chart';
+} from '@unhook/ui/chart';
 
 const chartData = [
   {

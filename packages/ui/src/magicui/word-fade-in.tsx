@@ -2,7 +2,7 @@
 
 import { type Variants, motion } from 'motion/react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 interface WordFadeInProps {
   words: string;

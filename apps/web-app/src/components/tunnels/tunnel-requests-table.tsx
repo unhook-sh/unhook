@@ -4,9 +4,9 @@ import { format } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import type { RequestType } from '@acme/db/schema';
-import { Badge } from '@acme/ui/components/badge';
-import { Skeleton } from '@acme/ui/components/skeleton';
+import type { RequestType } from '@unhook/db/schema';
+import { Badge } from '@unhook/ui/components/badge';
+import { Skeleton } from '@unhook/ui/components/skeleton';
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@acme/ui/components/table';
+} from '@unhook/ui/components/table';
 import { RequestDetails } from '~/components/requests/request-details';
 import { RequestMetadata } from '~/components/requests/request-metadata';
 

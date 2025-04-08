@@ -14,7 +14,7 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "utils": "@acme/ui/lib/utils",
-    "ui": "@acme/ui/components"
+    "utils": "@unhook/ui/lib/utils",
+    "ui": "@unhook/ui/components"
   }
 }

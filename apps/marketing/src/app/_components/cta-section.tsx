@@ -14,9 +14,9 @@ import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
 
-import { buttonVariants } from '@acme/ui/button';
-import { cn } from '@acme/ui/lib/utils';
-import { Marquee } from '@acme/ui/magicui/marquee';
+import { buttonVariants } from '@unhook/ui/button';
+import { cn } from '@unhook/ui/lib/utils';
+import { Marquee } from '@unhook/ui/magicui/marquee';
 
 interface Tile {
   id: string;

@@ -1,5 +1,5 @@
-import type { RequestType } from '@acme/db/schema';
-import { useSubscription } from '@acme/db/supabase/client';
+import type { RequestType } from '@unhook/db/schema';
+import { useSubscription } from '@unhook/db/supabase/client';
 import { useEffect } from 'react';
 import { useRequestStore } from '~/lib/request-store';
 

@@ -10,13 +10,13 @@ interface PackageJson {
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
   plop.setGenerator('init', {
-    description: 'Generate a new package for the Acme Monorepo',
+    description: 'Generate a new package for the unhook Monorepo',
     prompts: [
       {
         type: 'input',
         name: 'name',
         message:
-          'What is the name of the package? (You can skip the `@acme/` prefix)',
+          'What is the name of the package? (You can skip the `@unhook/` prefix)',
       },
       {
         type: 'input',
@@ -30,9 +30,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         if (
           'name' in answers &&
           typeof answers.name === 'string' &&
-          answers.name.startsWith('@acme/')
+          answers.name.startsWith('@unhook/')
         ) {
-          answers.name = answers.name.replace('@acme/', '');
+          answers.name = answers.name.replace('@unhook/', '');
         }
         return 'Config sanitized';
       },

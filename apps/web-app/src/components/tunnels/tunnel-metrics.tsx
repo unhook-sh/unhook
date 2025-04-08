@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from '@acme/ui/components/card';
+import { Card, CardContent } from '@unhook/ui/components/card';
 import type { Tunnel } from '~/types/tunnel';
 
 interface TunnelMetricsProps {

@@ -3,17 +3,17 @@
 import { ArrowDown, ArrowUp, Copy, Shield, X } from 'lucide-react';
 import { useState } from 'react';
 
-import type { RequestType } from '@acme/db/schema';
-import { Badge } from '@acme/ui/components/badge';
-import { Button } from '@acme/ui/components/button';
-import { ScrollArea } from '@acme/ui/components/scroll-area';
+import type { RequestType } from '@unhook/db/schema';
+import { Badge } from '@unhook/ui/components/badge';
+import { Button } from '@unhook/ui/components/button';
+import { ScrollArea } from '@unhook/ui/components/scroll-area';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@acme/ui/components/tooltip';
-import { cn } from '@acme/ui/lib/utils';
+} from '@unhook/ui/components/tooltip';
+import { cn } from '@unhook/ui/lib/utils';
 
 interface LogMetadataProps {
   request: RequestType;

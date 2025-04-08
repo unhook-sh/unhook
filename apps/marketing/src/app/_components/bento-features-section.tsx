@@ -2,13 +2,13 @@
 
 import { BellIcon, FileTextIcon, InputIcon } from '@radix-ui/react-icons';
 
-import { Icons } from '@acme/ui/custom/icons';
-import { cn } from '@acme/ui/lib/utils';
-import { AnimatedList } from '@acme/ui/magicui/animated-list';
-import { BentoCard, BentoGrid } from '@acme/ui/magicui/bento-grid';
-import { Marquee } from '@acme/ui/magicui/marquee';
-import { NumberTicker } from '@acme/ui/magicui/number-ticker';
-import { WordFadeIn } from '@acme/ui/magicui/word-fade-in';
+import { Icons } from '@unhook/ui/custom/icons';
+import { cn } from '@unhook/ui/lib/utils';
+import { AnimatedList } from '@unhook/ui/magicui/animated-list';
+import { BentoCard, BentoGrid } from '@unhook/ui/magicui/bento-grid';
+import { Marquee } from '@unhook/ui/magicui/marquee';
+import { NumberTicker } from '@unhook/ui/magicui/number-ticker';
+import { WordFadeIn } from '@unhook/ui/magicui/word-fade-in';
 
 interface Item {
   name: string;

@@ -15,7 +15,7 @@ vi.mock('@t3-oss/env-nextjs', () => ({
 
 // Mock database client
 const mockValues = vi.fn().mockResolvedValue(undefined);
-vi.mock('@acme/db/client', () => ({
+vi.mock('@unhook/db/client', () => ({
   db: {
     query: {
       Tunnels: {
@@ -37,7 +37,7 @@ describe('Tunnel Route Handler', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     // Setup mocks
-    const { db } = await import('@acme/db/client');
+    const { db } = await import('@unhook/db/client');
     mockFindFirst = db.query.Tunnels.findFirst as Mock;
 
     // Default mock responses
@@ -70,11 +70,11 @@ describe('Tunnel Route Handler', () => {
       requestCount: 0,
     });
 
-    vi.doMock('@acme/id', () => ({
+    vi.doMock('@unhook/id', () => ({
       createId: () => 'test-id',
     }));
 
-    vi.doMock('@acme/tunnel', () => ({
+    vi.doMock('@unhook/tunnel', () => ({
       filterHeaders: vi.fn().mockReturnValue({}),
     }));
 

@@ -1,5 +1,5 @@
-import { db } from '@acme/db/client';
-import { Connections, Tunnels } from '@acme/db/schema';
+import { db } from '@unhook/db/client';
+import { Connections, Tunnels } from '@unhook/db/schema';
 import { and, eq, isNull } from 'drizzle-orm';
 
 import type { TunnelClientOptions } from './types';

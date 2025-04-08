@@ -3,22 +3,22 @@
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@acme/ui/components/button';
-import { Checkbox } from '@acme/ui/components/checkbox';
+import { Button } from '@unhook/ui/components/button';
+import { Checkbox } from '@unhook/ui/components/checkbox';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@acme/ui/components/collapsible';
-import { Input } from '@acme/ui/components/input';
+} from '@unhook/ui/components/collapsible';
+import { Input } from '@unhook/ui/components/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@acme/ui/components/select';
-import { cn } from '@acme/ui/lib/utils';
+} from '@unhook/ui/components/select';
+import { cn } from '@unhook/ui/lib/utils';
 
 interface FilterAreaProps {
   className?: string;

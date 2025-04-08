@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@acme/db": "workspace:*",
-    "@acme/id": "workspace:*",
     "@supabase/supabase-js": "2.49.4",
     "@t3-oss/env-core": "0.12.0",
+    "@unhook/db": "workspace:*",
+    "@unhook/id": "workspace:*",
     "@vercel/kv": "3.0.0",
     "debug": "4.4.0",
     "drizzle-orm": "0.41.0",
@@ -13,8 +13,8 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
     "@types/debug": "4.1.12",
+    "@unhook/tsconfig": "workspace:*",
     "typescript": "5.8.3"
   },
   "exports": {
@@ -32,7 +32,7 @@
     }
   },
   "license": "MIT",
-  "name": "@acme/tunnel",
+  "name": "@unhook/tunnel",
   "private": true,
   "scripts": {
     "build": "tsc",

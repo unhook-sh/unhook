@@ -1,6 +1,6 @@
-import { db } from '@acme/db/client';
-import { Requests, Tunnels } from '@acme/db/schema';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import { db } from '@unhook/db/client';
+import { Requests, Tunnels } from '@unhook/db/schema';
 import { eq } from 'drizzle-orm';
 import { fetch } from 'undici';
 

@@ -1,12 +1,12 @@
-import { H1, P } from '@acme/ui/custom/typography';
+import { H1, P } from '@unhook/ui/custom/typography';
 export default async function Page() {
   return (
     <main className="container py-16">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <H1>Tunnel</H1>
+          <H1>Unhook</H1>
           <P className="text-muted-foreground">
-            Amarix is a map gallery for the Amarix game.
+            Unhook is a tool for building webhooks.
           </P>
         </div>
 

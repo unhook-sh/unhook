@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Badge } from '@acme/ui/badge';
-import { Icons } from '@acme/ui/custom/icons';
+import { Badge } from '@unhook/ui/badge';
+import { Icons } from '@unhook/ui/custom/icons';
 
 const footerNavs = [
   {

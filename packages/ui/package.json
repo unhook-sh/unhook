@@ -64,10 +64,10 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "4.1.3",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
+    "@unhook/tsconfig": "workspace:*",
     "tailwindcss": "4.1.3",
     "typescript": "5.8.3",
     "zod": "3.24.2"
@@ -81,7 +81,7 @@
     "./postcss.config": "./postcss.config.mjs"
   },
   "license": "MIT",
-  "name": "@acme/ui",
+  "name": "@unhook/ui",
   "private": true,
   "scripts": {
     "clean": "rm -rf .turbo node_modules dist",

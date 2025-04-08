@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@acme/ui/button';
-import { Icons } from '@acme/ui/custom/icons';
+import { Button } from '@unhook/ui/button';
+import { Icons } from '@unhook/ui/custom/icons';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { createClerkToken } from '../actions';

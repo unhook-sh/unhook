@@ -5,7 +5,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@acme/ui/card';
+} from '@unhook/ui/card';
 import { CliLoginButton } from './_components/cli-login-button';
 
 export default function CliTokenPage() {

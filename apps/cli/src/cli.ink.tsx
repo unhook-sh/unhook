@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { sql } from '@acme/db/client';
-import { createId } from '@acme/id';
-import { loadConfig } from '@acme/tunnel';
+import { sql } from '@unhook/db/client';
+import { createId } from '@unhook/id';
+import { loadConfig } from '@unhook/tunnel';
 import debug from 'debug';
 import { render } from 'ink';
 import yargs from 'yargs';

@@ -3,7 +3,7 @@
 import type { CSSProperties, ReactElement, ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 
 interface NeonColorsProps {
   firstColor: string;

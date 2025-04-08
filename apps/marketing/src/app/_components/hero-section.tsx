@@ -5,10 +5,10 @@ import Image from 'next/image';
 import type { PropsWithChildren } from 'react';
 import { useRef } from 'react';
 
-import { Button } from '@acme/ui/button';
-import { cn } from '@acme/ui/lib/utils';
-import { AnimatedShinyText } from '@acme/ui/magicui/animated-shiny-text';
-import { BorderBeam } from '@acme/ui/magicui/border-beam';
+import { Button } from '@unhook/ui/button';
+import { cn } from '@unhook/ui/lib/utils';
+import { AnimatedShinyText } from '@unhook/ui/magicui/animated-shiny-text';
+import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 
 export function HeroSection(props: PropsWithChildren) {
   return (

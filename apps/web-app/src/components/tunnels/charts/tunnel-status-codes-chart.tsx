@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartContainer } from '@acme/ui/components/chart';
+import { ChartContainer } from '@unhook/ui/components/chart';
 import { type JSX, useState } from 'react';
 import {
   Cell,

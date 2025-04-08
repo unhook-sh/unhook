@@ -1,5 +1,5 @@
 {
-  "name": "@acme/validators",
+  "name": "@unhook/validators",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -20,7 +20,7 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
+    "@unhook/tsconfig": "workspace:*",
     "typescript": "5.8.3"
   }
 }

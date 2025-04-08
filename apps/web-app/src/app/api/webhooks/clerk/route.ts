@@ -1,11 +1,11 @@
-import { posthog } from '@acme/analytics/posthog/server';
 import type { WebhookEvent } from '@clerk/nextjs/server';
+import { posthog } from '@unhook/analytics/posthog/server';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { Webhook } from 'svix';
 
-import { db } from '@acme/db/client';
-import { Users } from '@acme/db/schema';
+import { db } from '@unhook/db/client';
+import { Users } from '@unhook/db/schema';
 
 import { env } from '~/env.server';
 

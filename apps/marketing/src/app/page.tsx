@@ -1,6 +1,6 @@
-import { Icons } from '@acme/ui/custom/icons';
-import { Particles } from '@acme/ui/magicui/particles';
-import { SphereMask } from '@acme/ui/magicui/sphere-mask';
+import { Icons } from '@unhook/ui/custom/icons';
+import { Particles } from '@unhook/ui/magicui/particles';
+import { SphereMask } from '@unhook/ui/magicui/sphere-mask';
 
 import { BentoFeaturesSection } from './_components/bento-features-section';
 import { CallToActionSection } from './_components/cta-section';

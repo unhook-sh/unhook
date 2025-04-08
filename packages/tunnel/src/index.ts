@@ -1,4 +1,4 @@
-import { createClient } from '@acme/db/supabase/server';
+import { createClient } from '@unhook/db/supabase/server';
 import { ConnectionManager } from './connection-manager';
 import type { TunnelClientOptions } from './types';
 import { log } from './utils/logger';

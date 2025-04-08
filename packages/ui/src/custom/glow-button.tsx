@@ -1,5 +1,5 @@
-import { cn } from '@acme/ui/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
+import { cn } from '@unhook/ui/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { ArrowRight } from 'lucide-react';
 import type * as React from 'react';

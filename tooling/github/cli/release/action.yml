@@ -1,5 +1,5 @@
 name: "Release CLI"
-description: "Create GitHub release and update monitoring services"
+description: "Create GitHub release for CLI binaries"
 
 inputs:
   version:
@@ -32,42 +32,3 @@ runs:
           dist/unhook-win32-x64/unhook-win32-x64.exe
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        registry-url: 'https://registry.npmjs.org'
-
-    - name: Update package.json version
-      shell: bash
-      run: |
-        cd apps/cli
-        npm version v${{ inputs.version }} --no-git-tag-version
-
-    - name: Publish to NPM
-      shell: bash
-      run: |
-        cd apps/cli
-        npm publish --access public
-      env:
-        NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
-
-    - name: Create Sentry release
-      uses: getsentry/action-release@v1.7.0
-      with:
-        version: v${{ inputs.version }}
-        environment: production
-        set_commits: auto
-
-    - name: Create PostHog release annotation
-      shell: bash
-      run: |
-        curl -X POST "https://${{ env.NEXT_PUBLIC_POSTHOG_HOST }}/api/projects/@current/annotations/" \
-        -H "Authorization: Bearer ${{ env.POSTHOG_PERSONAL_API_KEY }}" \
-        -H "Content-Type: application/json" \
-        -d '{
-          "content": "CLI v${{ inputs.version }} released",
-          "scope": "project",
-          "date_marker": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-        }'

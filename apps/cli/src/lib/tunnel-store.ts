@@ -1,6 +1,6 @@
-import { db } from '@acme/db/client';
-import { Tunnels } from '@acme/db/schema';
-import type { TunnelType } from '@acme/db/schema';
+import { db } from '@unhook/db/client';
+import { Tunnels } from '@unhook/db/schema';
+import type { TunnelType } from '@unhook/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { useAuthStore } from './auth/store';

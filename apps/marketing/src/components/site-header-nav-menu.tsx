@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,7 +13,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from '@acme/ui/navigation-menu';
+} from '@unhook/ui/navigation-menu';
 
 const components: { title: string; href: string; description: string }[] = [
   {

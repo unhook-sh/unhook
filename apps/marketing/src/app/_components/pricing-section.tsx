@@ -4,12 +4,12 @@ import { Loader } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 
-import { Badge } from '@acme/ui/badge';
-import { Button } from '@acme/ui/button';
-import { Icons } from '@acme/ui/custom/icons';
-import { cn } from '@acme/ui/lib/utils';
-import { NeonGradientCard } from '@acme/ui/magicui/neon-gradient-card';
-import { Switch } from '@acme/ui/switch';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { Icons } from '@unhook/ui/custom/icons';
+import { cn } from '@unhook/ui/lib/utils';
+import { NeonGradientCard } from '@unhook/ui/magicui/neon-gradient-card';
+import { Switch } from '@unhook/ui/switch';
 
 type Interval = 'month' | 'year';
 

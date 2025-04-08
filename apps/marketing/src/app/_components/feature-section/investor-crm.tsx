@@ -17,9 +17,9 @@ import {
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
-import { Button } from '@acme/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@acme/ui/card';
-import { Checkbox } from '@acme/ui/checkbox';
+import { Button } from '@unhook/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
+import { Checkbox } from '@unhook/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,8 +27,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@acme/ui/dropdown-menu';
-import { Input } from '@acme/ui/input';
+} from '@unhook/ui/dropdown-menu';
+import { Input } from '@unhook/ui/input';
 import {
   Table,
   TableBody,
@@ -36,7 +36,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@acme/ui/table';
+} from '@unhook/ui/table';
 
 const data: Payment[] = [
   {

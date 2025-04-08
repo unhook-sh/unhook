@@ -1,13 +1,13 @@
 'use client';
-import { api } from '@acme/api/client';
-import { useSubscription } from '@acme/db/supabase/client';
-import { Badge } from '@acme/ui/badge';
-import { Button } from '@acme/ui/button';
-import { Icons } from '@acme/ui/custom/icons';
-import { P } from '@acme/ui/custom/typography';
-import { formatNumber } from '@acme/ui/lib/format-number';
-import { toast } from '@acme/ui/sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@unhook/api/client';
+import { useSubscription } from '@unhook/db/supabase/client';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { Icons } from '@unhook/ui/custom/icons';
+import { P } from '@unhook/ui/custom/typography';
+import { formatNumber } from '@unhook/ui/lib/format-number';
+import { toast } from '@unhook/ui/sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { AnimatePresence, motion } from 'motion/react';
 

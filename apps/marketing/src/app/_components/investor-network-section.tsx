@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 
-import { Globe } from '@acme/ui/magicui/globe';
+import { Globe } from '@unhook/ui/magicui/globe';
 
 const investors = [
   'first-round',

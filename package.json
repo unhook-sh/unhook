@@ -1,13 +1,13 @@
 {
   "commitlint": {
-    "extends": ["@acme/commitlint-config"]
+    "extends": ["@unhook/commitlint-config"]
   },
   "devDependencies": {
-    "@acme/commitlint-config": "workspace:*",
     "@biomejs/biome": "1.9.4",
     "@changesets/cli": "2.28.1",
     "@commitlint/cli": "19.8.0",
     "@turbo/gen": "2.5.0",
+    "@unhook/commitlint-config": "workspace:*",
     "checkly": "5.2.0",
     "knip": "5.47.0",
     "lefthook": "1.11.7",
@@ -18,7 +18,7 @@
   "engines": {
     "node": ">=20.12.0"
   },
-  "name": "acme",
+  "name": "unhook",
   "packageManager": "pnpm@10.2.0",
   "pnpm": {
     "overrides": {
@@ -34,13 +34,13 @@
     "bump-versions": "pnpm changeset version && pnpm install",
     "clean": "git clean -xdf node_modules",
     "clean:ws": "turbo run clean",
-    "db:gen-migration": "turbo -F @acme/db gen-migration",
-    "db:migrate": "turbo -F @acme/db migrate",
-    "db:push": "turbo -F @acme/db push",
-    "db:seed": "turbo -F @acme/db seed",
-    "db:studio": "turbo -F @acme/db studio",
+    "db:gen-migration": "turbo -F @unhook/db gen-migration",
+    "db:migrate": "turbo -F @unhook/db migrate",
+    "db:push": "turbo -F @unhook/db push",
+    "db:seed": "turbo -F @unhook/db seed",
+    "db:studio": "turbo -F @unhook/db studio",
     "dev": "turbo watch dev",
-    "dev:next": "turbo watch dev -F @acme/web-app...",
+    "dev:next": "turbo watch dev -F @unhook/web-app...",
     "format": "biome check",
     "format:ci": "biome ci",
     "format:fix": "biome check --write",
@@ -48,6 +48,7 @@
     "lint:ws": "pnpm dlx sherif@latest",
     "postinstall": "pnpm lint:ws",
     "prepare": "npx lefthook install",
+    "release": "pnpm build && pnpm changeset publish",
     "test": "pnpm with-env vitest",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",

@@ -1,4 +1,4 @@
-import { cn } from '@acme/ui/lib/utils';
+import { cn } from '@unhook/ui/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
 

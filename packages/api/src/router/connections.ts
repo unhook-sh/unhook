@@ -2,7 +2,7 @@ import { kv } from '@vercel/kv';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { Connections } from '@acme/db/schema';
+import { Connections } from '@unhook/db/schema';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 

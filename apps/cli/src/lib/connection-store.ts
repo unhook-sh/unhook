@@ -1,7 +1,7 @@
 import net from 'node:net';
 import { hostname, platform, release } from 'node:os';
-import { db } from '@acme/db/client';
-import { Connections } from '@acme/db/schema';
+import { db } from '@unhook/db/client';
+import { Connections } from '@unhook/db/schema';
 import { createStore } from 'zustand';
 import { getProcessIdForPort } from '../utils/get-process-id';
 import { useAuthStore } from './auth';

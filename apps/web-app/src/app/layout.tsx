@@ -1,21 +1,21 @@
-import { ReactScan } from '@acme/ui/custom/react-scan';
+import { ReactScan } from '@unhook/ui/custom/react-scan';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
-import { AnalyticsProviders } from '@acme/analytics';
-import { ThemeProvider } from '@acme/ui/custom/theme';
-import { cn } from '@acme/ui/lib/utils';
-import { SidebarInset, SidebarProvider } from '@acme/ui/sidebar';
-import { Toaster } from '@acme/ui/sonner';
+import { AnalyticsProviders } from '@unhook/analytics';
+import { ThemeProvider } from '@unhook/ui/custom/theme';
+import { cn } from '@unhook/ui/lib/utils';
+import { SidebarInset, SidebarProvider } from '@unhook/ui/sidebar';
+import { Toaster } from '@unhook/ui/sonner';
 
-import '@acme/ui/globals.css';
+import '@unhook/ui/globals.css';
 
 import { ClerkProvider } from '@clerk/nextjs';
 
-import { TRPCReactProvider } from '@acme/api/client';
+import { TRPCReactProvider } from '@unhook/api/client';
 import { AppSidebar } from '~/components/app-sidebar';
 import { env } from '~/env.server';
 

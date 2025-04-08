@@ -6,10 +6,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { Badge } from '@acme/ui/badge';
-import { Button } from '@acme/ui/button';
-import { ThemeToggle } from '@acme/ui/custom/theme';
-import { cn } from '@acme/ui/lib/utils';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { ThemeToggle } from '@unhook/ui/custom/theme';
+import { cn } from '@unhook/ui/lib/utils';
 
 import { SiteHeaderNavigationMenu } from './site-header-nav-menu';
 

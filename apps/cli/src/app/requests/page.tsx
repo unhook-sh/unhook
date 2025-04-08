@@ -1,4 +1,4 @@
-import type { RequestType } from '@acme/db/schema';
+import type { RequestType } from '@unhook/db/schema';
 import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
 import { Box, useInput } from 'ink';
 import type { FC } from 'react';

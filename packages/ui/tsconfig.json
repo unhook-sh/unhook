@@ -1,10 +1,10 @@
 {
-  "extends": "@acme/tsconfig/react-library.json",
+  "extends": "@unhook/tsconfig/react-library.json",
   "compilerOptions": {
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "baseUrl": ".",
     "paths": {
-      "@acme/ui/*": ["src/*"]
+      "@unhook/ui/*": ["src/*"]
     },
     "rootDir": ".",
     "outDir": "dist"

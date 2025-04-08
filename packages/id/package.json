@@ -1,5 +1,5 @@
 {
-  "name": "@acme/id",
+  "name": "@unhook/id",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -21,7 +21,7 @@
     "ulid": "3.0.0"
   },
   "devDependencies": {
-    "@acme/tsconfig": "workspace:*",
+    "@unhook/tsconfig": "workspace:*",
     "typescript": "5.8.3"
   }
 }

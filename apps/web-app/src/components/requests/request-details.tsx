@@ -3,16 +3,16 @@
 import { ChevronDown, ChevronUp, Copy, X } from 'lucide-react';
 import { useState } from 'react';
 
-import type { RequestType } from '@acme/db/schema';
-import { Button } from '@acme/ui/components/button';
-import { ScrollArea } from '@acme/ui/components/scroll-area';
+import type { RequestType } from '@unhook/db/schema';
+import { Button } from '@unhook/ui/components/button';
+import { ScrollArea } from '@unhook/ui/components/scroll-area';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@acme/ui/components/tabs';
-import { cn } from '@acme/ui/lib/utils';
+} from '@unhook/ui/components/tabs';
+import { cn } from '@unhook/ui/lib/utils';
 
 interface LogDetailsProps {
   request: RequestType;

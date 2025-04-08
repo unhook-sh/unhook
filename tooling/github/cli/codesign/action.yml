@@ -1,5 +1,5 @@
 name: "Code Sign macOS Binary"
-description: "Sign and notarize macOS binary"
+description: "Sign macOS binary"
 
 inputs:
   platform:
@@ -18,12 +18,9 @@ runs:
         p12-file-base64: ${{ env.MACOS_CERTIFICATE }}
         p12-password: ${{ env.MACOS_CERTIFICATE_PWD }}
 
-    - name: Sign and Notarize macOS binary
+    - name: Sign macOS binary
       shell: bash
       env:
-        APPLE_ID: ${{ env.APPLE_ID }}
-        APPLE_PASSWORD: ${{ env.APPLE_PASSWORD }}
-        APPLE_TEAM_ID: ${{ env.APPLE_TEAM_ID }}
         MACOS_IDENTITY: ${{ env.MACOS_IDENTITY }}
       run: |
         # Sign the binary
@@ -32,22 +29,5 @@ runs:
           --entitlements apps/cli/entitlements.plist \
           apps/cli/bin/unhook-${{ inputs.platform }}-${{ inputs.target }}
 
-        # Create ZIP for notarization
-        cd apps/cli/bin
-        ditto -c -k --keepParent unhook-${{ inputs.platform }}-${{ inputs.target }} unhook.zip
-
-        # Submit for notarization and wait
-        xcrun notarytool submit unhook.zip \
-          --apple-id "$APPLE_ID" \
-          --password "$APPLE_PASSWORD" \
-          --team-id "$APPLE_TEAM_ID" \
-          --wait
-
-        # Staple the notarization ticket
-        xcrun stapler staple unhook-${{ inputs.platform }}-${{ inputs.target }}
-
-        # Verify notarization
-        spctl --assess --type exec --verbose unhook-${{ inputs.platform }}-${{ inputs.target }}
-
-        # Cleanup
-        rm unhook.zip
+        # Verify code signing
+        codesign -dvvv apps/cli/bin/unhook-${{ inputs.platform }}-${{ inputs.target }}

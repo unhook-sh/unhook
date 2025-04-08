@@ -32,9 +32,39 @@ runs:
 
     - name: Build CLI
       shell: bash
-      run: pnpm --filter @unhook/cli build
+      run: |
+        # Map platform and target to Bun's target format
+        BUN_TARGET=""
+        if [[ "${{ inputs.platform }}" == "linux" ]]; then
+          if [[ "${{ inputs.target }}" == "x64" ]]; then
+            BUN_TARGET="bun-linux-x64"
+          elif [[ "${{ inputs.target }}" == "arm64" ]]; then
+            BUN_TARGET="bun-linux-arm64"
+          elif [[ "${{ inputs.target }}" == "x64-musl" ]]; then
+            BUN_TARGET="bun-linux-x64-musl"
+          elif [[ "${{ inputs.target }}" == "arm64-musl" ]]; then
+            BUN_TARGET="bun-linux-arm64-musl"
+          fi
+        elif [[ "${{ inputs.platform }}" == "darwin" ]]; then
+          if [[ "${{ inputs.target }}" == "x64" ]]; then
+            BUN_TARGET="bun-darwin-x64"
+          elif [[ "${{ inputs.target }}" == "arm64" ]]; then
+            BUN_TARGET="bun-darwin-arm64"
+          fi
+        elif [[ "${{ inputs.platform }}" == "win32" ]]; then
+          if [[ "${{ inputs.target }}" == "x64" ]]; then
+            BUN_TARGET="bun-windows-x64"
+          fi
+        fi
+
+        if [[ -z "$BUN_TARGET" ]]; then
+          echo "Error: Unsupported platform-target combination: ${{ inputs.platform }}-${{ inputs.target }}"
+          exit 1
+        fi
+
+        pnpm --filter @unhook/cli build
       env:
-        BUN_BUILD_TARGET: ${{ inputs.platform }}-${{ inputs.target }}
+        BUN_BUILD_TARGET: $BUN_TARGET
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
         NEXT_PUBLIC_POSTHOG_KEY: ${{ env.NEXT_PUBLIC_POSTHOG_KEY }}

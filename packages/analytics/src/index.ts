@@ -1,1 +1,1 @@
-export const name = 'analytics';
+export * from './providers';

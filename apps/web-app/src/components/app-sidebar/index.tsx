@@ -155,7 +155,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <a
-                href="https://github.com/BoundaryML/baml/blob/canary/CHANGELOG.md"
+                href="https://github.com/unhook-sh/unhook/blob/main/CHANGELOG.md"
                 target="_blank"
                 className="flex items-center justify-between"
                 rel="noreferrer"

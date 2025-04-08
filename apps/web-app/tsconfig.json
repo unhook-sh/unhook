@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@acme/ui/*": ["../../packages/ui/src/*"]
+      "@acme/ui/*": ["../../packages/ui/src/*"],
+      "@acme/analytics/*": ["../../packages/analytics/src/*"]
     },
     "plugins": [{ "name": "next" }],
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"

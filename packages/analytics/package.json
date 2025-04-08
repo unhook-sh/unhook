@@ -25,7 +25,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./*": ["./src/*.tsx", "./src/*.ts"]
+    "./posthog/server": "./src/posthog/server.ts",
+    "./posthog/client": "./src/posthog/client.tsx"
   },
   "license": "MIT",
   "name": "@acme/analytics",

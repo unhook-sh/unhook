@@ -5,7 +5,7 @@ import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
-import { AnalyticsProviders } from '@acme/analytics/providers';
+import { AnalyticsProviders } from '@acme/analytics';
 import { ThemeProvider } from '@acme/ui/custom/theme';
 import { cn } from '@acme/ui/lib/utils';
 import { SidebarInset, SidebarProvider } from '@acme/ui/sidebar';
@@ -20,19 +20,19 @@ import { AppSidebar } from '~/components/app-sidebar';
 import { env } from '~/env.server';
 
 export const metadata: Metadata = {
-  description: 'Tunnel is a tool for shelters to manage their animals',
+  description: 'Unhook is a tool for developers to manage their webhooks',
   metadataBase: new URL(
     env.VERCEL_ENV === 'production'
-      ? 'https://tunnel.vercel.app'
+      ? 'https://unhook.sh'
       : 'http://localhost:3000',
   ),
   openGraph: {
-    description: 'Tunnel is a tool for shelters to manage their animals',
-    siteName: 'Tunnel',
-    title: 'Tunnel',
-    url: 'https://tunnel.vercel.app',
+    description: 'Unhook is a tool for developers to manage their webhooks',
+    siteName: 'Unhook',
+    title: 'Unhook',
+    url: 'https://unhook.sh',
   },
-  title: 'Tunnel',
+  title: 'Unhook',
   twitter: {
     card: 'summary_large_image',
     creator: '@seawatts',

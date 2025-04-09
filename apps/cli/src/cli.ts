@@ -10,7 +10,7 @@ import pc from 'picocolors';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-const log = debug('tunnel:cli');
+const log = debug('unhook:cli');
 const pkg = JSON.parse(
   readFileSync(join(__dirname, '../package.json'), 'utf-8'),
 ) as { version: string };

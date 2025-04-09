@@ -1,20 +1,3 @@
-diff --git a/.vscode/settings.json b/.vscode/settings.json
-new file mode 100644
-index 0000000000000000000000000000000000000000..7f8b253c0dc6921872d9419417b816373ba1b4fb
---- /dev/null
-+++ b/.vscode/settings.json
-@@ -0,0 +1,10 @@
-+{
-+	"files.exclude": {
-+		"**/build": false,
-+		"build": false,
-+	},
-+	"search.exclude": {
-+		"**/build": false,
-+		"build": false,
-+	}
-+}
-\ No newline at end of file
 diff --git a/build/components/Box.js b/build/components/Box.js
 index d62c0094452eb9741692f5b772d6326770821e33..1b2e270e9247d2db2e50c7d785a34af3247c48b6 100644
 --- a/build/components/Box.js
@@ -54,7 +37,7 @@ index a9c444ff161ed4b6ea13909591844909015fe97c..4cd82c08c567904c01dfcd6b2852ff4c
          // so that it's rerendered every time, not just new static parts, like in non-debug mode
          this.fullStaticOutput = '';
          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
--        this.container = reconciler.createContainer(this.rootNode, 
+-        this.container = reconciler.createContainer(this.rootNode,
 +        this.container = reconciler.createContainer(this.rootNode,
          // Legacy mode
 -        0, null, false, null, 'id', () => { }, null);
@@ -72,7 +55,7 @@ index a9c444ff161ed4b6ea13909591844909015fe97c..4cd82c08c567904c01dfcd6b2852ff4c
              });
          }
 diff --git a/build/reconciler.js b/build/reconciler.js
-index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..22392e603c02a471a5133ea8ee2f3b283b54da9f 100644
+index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..4d672ebf5919cdae30df8ae0a81682c519ffdfcd 100644
 --- a/build/reconciler.js
 +++ b/build/reconciler.js
 @@ -1,6 +1,6 @@
@@ -140,18 +123,9 @@ index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..22392e603c02a471a5133ea8ee2f3b28
  //# sourceMappingURL=reconciler.js.map
 \ No newline at end of file
 diff --git a/package.json b/package.json
-index 0359c38546c5c159165af12846b7a1f45a3271b9..b70d1d848227905f9a2472d8fdd191e8b773ede1 100644
+index 0359c38546c5c159165af12846b7a1f45a3271b9..22c7f5d51facd3afd73852842f403b8f84d3e471 100644
 --- a/package.json
 +++ b/package.json
-@@ -20,7 +20,7 @@
- 	"scripts": {
- 		"dev": "tsc --watch",
- 		"build": "tsc",
--		"prepare": "npm run build",
-+		"prepar": "npm run build",
- 		"test": "tsc --noEmit && xo && FORCE_COLOR=true ava",
- 		"example": "NODE_NO_WARNINGS=1 node --loader ts-node/esm",
- 		"benchmark": "NODE_NO_WARNINGS=1 node --loader ts-node/esm"
 @@ -47,63 +47,63 @@
  		"ansi-escapes": "^7.0.0",
  		"ansi-styles": "^6.2.1",

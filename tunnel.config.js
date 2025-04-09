@@ -16,12 +16,12 @@
  * 3. Configuration file
  * 4. Default values
  *
- * @type {import('@unhook/tunnel/config').TunnelConfig}
+ * @type {import('@unhook/cli').TunnelConfig}
  */
 const config = {
   // Port of the local service to forward traffic to
   // Can also be set via TUNNEL_PORT environment variable
-  port: 3000,
+  // port: 3000,
 
   // API key for authentication with the tunnel server
   // Can also be set via:
@@ -29,10 +29,15 @@ const config = {
   // - --api-key command line flag
   apiKey: 'pk_123',
 
+  // ping: 'https://o2em3sulde.execute-api.us-east-1.amazonaws.com/_debug/ping',
+  ping: false,
+
   // Optional: Unique client identifier
   // Can also be set via TUNNEL_CLIENT_ID environment variable
   // Default: auto-generated
   clientId: 'my-app',
+
+  redirect: 'https://o2em3sulde.execute-api.us-east-1.amazonaws.com',
 
   // Optional: Enable debug logging
   // Can also be set via TUNNEL_DEBUG environment variable

@@ -17,12 +17,36 @@ const CONFIG_FILES = [
   'tunnel.config.yml',
 ];
 
-const configSchema = z.object({
+// Base schema defines the shape without the cross-field validation
+const baseConfigSchema = z.object({
   port: z.number().min(1).max(65535).optional(),
   apiKey: z.string().optional(),
   clientId: z.string().optional(),
   debug: z.boolean().optional(),
+  redirect: z.string().url().optional(),
+  ping: z
+    .union([z.boolean(), z.string().url(), z.number().min(1).max(65535)])
+    .optional(),
 });
+
+// Refined schema enforces the mutual exclusion of port and redirect
+const configSchema = baseConfigSchema.refine(
+  (data) => {
+    const portProvided = data.port !== undefined;
+    const redirectProvided = data.redirect !== undefined;
+    // Valid if exactly one is provided
+    return (
+      (portProvided && !redirectProvided) || (!portProvided && redirectProvided)
+    );
+  },
+  {
+    // Custom error message if validation fails
+    message:
+      'Configuration error: Either "port" or "redirect" must be provided, but not both.',
+    // Indicate which fields are involved for better error context (optional)
+    path: ['port', 'redirect'],
+  },
+);
 
 export type TunnelConfig = z.infer<typeof configSchema>;
 
@@ -54,6 +78,46 @@ function loadEnvVars(): Partial<TunnelConfig> {
     config.debug = true;
   } else if (debug === 'false' || debug === '0' || debug === 'no') {
     config.debug = false;
+  }
+
+  // REDIRECT
+  if (process.env.TUNNEL_REDIRECT) {
+    try {
+      // Validate if it's a URL, though schema validation will catch it later
+      new URL(process.env.TUNNEL_REDIRECT);
+      config.redirect = process.env.TUNNEL_REDIRECT;
+    } catch {
+      // Ignore invalid URL from env var, let schema validation handle it
+    }
+  }
+
+  // PING
+  const pingEnv = process.env.TUNNEL_PING;
+  if (pingEnv) {
+    const pingLower = pingEnv.toLowerCase();
+    if (pingLower === 'true' || pingLower === '1' || pingLower === 'yes') {
+      config.ping = true;
+    } else if (
+      pingLower === 'false' ||
+      pingLower === '0' ||
+      pingLower === 'no'
+    ) {
+      config.ping = false;
+    } else {
+      // Try parsing as number (port)
+      const parsedPort = Number.parseInt(pingEnv, 10);
+      if (!Number.isNaN(parsedPort) && parsedPort > 0 && parsedPort <= 65535) {
+        config.ping = parsedPort;
+      } else {
+        // Try parsing as URL
+        try {
+          new URL(pingEnv);
+          config.ping = pingEnv;
+        } catch {
+          // Ignore invalid value from env var, let schema validation handle it
+        }
+      }
+    }
   }
 
   return config;
@@ -106,8 +170,13 @@ export async function loadConfig(cwd = process.cwd()): Promise<TunnelConfig> {
   }
 
   // Merge configs with environment variables taking precedence
-  return {
+  const mergedConfig = {
     ...fileConfig,
     ...envConfig,
+  };
+
+  return {
+    ping: true, // Default ping to true
+    ...mergedConfig,
   };
 }

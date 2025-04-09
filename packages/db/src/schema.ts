@@ -224,6 +224,7 @@ export const Tunnels = pgTable('tunnels', {
     .notNull()
     .default('disconnected'),
   localConnectionPid: integer('localConnectionPid'),
+  localConnectionProcessName: text('localConnectionProcessName'),
   lastLocalConnectionAt: timestamp('lastLocalConnectionAt', {
     mode: 'date',
     withTimezone: true,

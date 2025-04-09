@@ -5,9 +5,9 @@ pre-commit:
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
     lint-ws:
-      run: pnpm dlx sherif@latest
+      run: bunx sherif@latest
 
 commit-msg:
   commands:
     "lint commit message":
-      run: pnpm commitlint --edit {1}
+      run: bun commitlint --edit {1}

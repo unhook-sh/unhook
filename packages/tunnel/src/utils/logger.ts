@@ -2,8 +2,8 @@ import debug from 'debug';
 
 // Create debuggers for different concerns
 export const log = {
-  main: debug('tunnel:main'),
-  request: debug('tunnel:request'),
-  response: debug('tunnel:response'),
-  error: debug('tunnel:error'),
+  main: debug('unhook:main'),
+  request: debug('unhook:request'),
+  response: debug('unhook:response'),
+  error: debug('unhook:error'),
 } as const;

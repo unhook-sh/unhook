@@ -76,11 +76,11 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
          * Install deps and format everything
          */
         if ('name' in answers && typeof answers.name === 'string') {
-          // execSync("pnpm dlx sherif@latest --fix", {
+          // execSync("bun dlx sherif@latest --fix", {
           //   stdio: "inherit",
           // });
-          execSync('pnpm i', { stdio: 'inherit' });
-          execSync(`pnpm format:fix packages/${answers.name}/**`);
+          execSync('bun i', { stdio: 'inherit' });
+          execSync(`bun format:fix packages/${answers.name}/**`);
           return 'Package scaffolded';
         }
         return 'Package not scaffolded';

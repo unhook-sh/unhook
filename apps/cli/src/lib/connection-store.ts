@@ -2,6 +2,9 @@ import net from 'node:net';
 import { hostname, platform, release } from 'node:os';
 import { db } from '@unhook/db/client';
 import { Connections } from '@unhook/db/schema';
+import { Tunnels } from '@unhook/db/schema';
+import debug from 'debug';
+import { eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { getProcessIdForPort } from '../utils/get-process-id';
 import { useAuthStore } from './auth';
@@ -9,10 +12,13 @@ import { useCliStore } from './cli-store';
 import { useTunnelStore } from './tunnel-store';
 import { createSelectors } from './zustand-create-selectors';
 
+const log = debug('unhook:cli:connection-store');
+
 interface ConnectionState {
   isLoading: boolean;
   isConnected: boolean;
-  pid: number | null;
+  pid: number | null; // PID is only relevant for local port connections
+  processName: string | null; // Name of the process if available
   lastConnectedAt: Date | null;
   lastDisconnectedAt: Date | null;
   connectionId: string | null;
@@ -21,11 +27,9 @@ interface ConnectionState {
 interface ConnectionActions {
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  setConnectionState: (state: {
-    isConnected: boolean;
-    pid: number | null;
-    connectionId: string | null;
-  }) => Promise<void>;
+  setConnectionState: (
+    state: Partial<ConnectionState> & { isConnected: boolean },
+  ) => Promise<void>;
 }
 
 type ConnectionStore = ConnectionState & ConnectionActions;
@@ -34,6 +38,7 @@ const defaultConnectionState: ConnectionState = {
   isLoading: false,
   isConnected: false,
   pid: null,
+  processName: null,
   lastConnectedAt: null,
   lastDisconnectedAt: null,
   connectionId: null,
@@ -43,11 +48,18 @@ const createConnectionStore = () => {
   let socketRef: net.Socket | null = null;
   let reconnectTimeoutRef: NodeJS.Timeout | undefined;
   let isDestroyedRef = false;
+  let currentFetchAbortController: AbortController | null = null;
 
   return createStore<ConnectionStore>()((set, get) => ({
     ...defaultConnectionState,
 
-    setConnectionState: async ({ isConnected, pid, connectionId }) => {
+    setConnectionState: async ({
+      isConnected,
+      pid,
+      processName,
+      connectionId,
+      ...rest
+    }) => {
       const currentState = get();
       const now = new Date();
       const lastConnectedAt = isConnected ? now : currentState.lastConnectedAt;
@@ -55,108 +67,283 @@ const createConnectionStore = () => {
         ? now
         : currentState.lastDisconnectedAt;
 
+      // Update local state
       set({
+        ...currentState,
+        ...rest,
         isConnected,
-        pid,
+        pid: pid ?? currentState.pid,
+        processName: processName ?? currentState.processName,
         lastConnectedAt,
         lastDisconnectedAt,
-        connectionId,
         isLoading: false,
       });
+
+      // Update tunnel record with connection status and process info
+      const { selectedTunnelId } = useTunnelStore.getState();
+      if (selectedTunnelId) {
+        await db
+          .update(Tunnels)
+          .set({
+            localConnectionStatus: isConnected ? 'connected' : 'disconnected',
+            localConnectionPid: pid ?? null,
+            localConnectionProcessName: processName ?? null,
+            lastLocalConnectionAt: isConnected ? now : undefined,
+            lastLocalDisconnectionAt: !isConnected ? now : undefined,
+          })
+          .where(eq(Tunnels.id, selectedTunnelId));
+      }
     },
 
     connect: async () => {
+      if (isDestroyedRef) return;
+
+      const {
+        ping,
+        port: cliPort,
+        redirect: cliRedirect,
+      } = useCliStore.getState();
+      const pingEnabled = ping !== false;
+      const pingIsUrl = typeof ping === 'string';
+      const pingIsPort = typeof ping === 'number';
+
+      if (!pingEnabled) {
+        log('Connection polling (ping) is disabled.');
+        // Ensure state reflects disconnected if polling is off
+        if (get().isConnected) {
+          await get().setConnectionState({ isConnected: false, pid: null });
+        }
+        return; // Do not attempt connection or schedule reconnect
+      }
+
       const { userId, orgId } = useAuthStore.getState();
-      const { clientId, version, port } = useCliStore.getState();
+      const { clientId, version } = useCliStore.getState();
       const { selectedTunnelId } = useTunnelStore.getState();
 
       if (!userId) {
-        throw new Error('User must be authenticated to connect');
+        log('User must be authenticated to connect');
+        // Optionally schedule a retry or stop
+        return;
       }
 
       if (!selectedTunnelId) {
-        throw new Error('No tunnel selected');
+        log('No tunnel selected');
+        // Optionally schedule a retry or stop
+        return;
       }
 
       set({ isLoading: true });
 
-      // Clean up any existing socket
-      if (socketRef) {
-        socketRef.destroy();
+      // Abort any ongoing fetch request
+      currentFetchAbortController?.abort();
+      currentFetchAbortController = new AbortController();
+      const { signal } = currentFetchAbortController;
+
+      // --- Create DB Connection Record --- (Common logic)
+      let dbConnectionId: string | null = null;
+      try {
+        const result = await db
+          .insert(Connections)
+          .values({
+            tunnelId: selectedTunnelId,
+            ipAddress: 'unknown', // IP address might not be relevant/known
+            clientId,
+            clientVersion: version,
+            clientOs: `${platform()} ${release()}`,
+            clientHostname: hostname(),
+            userId,
+            orgId: orgId ?? 'org_2vCR1xwHHTLxE5m20AYewlc5y2j', // Consider making this required or handling null
+          })
+          .returning();
+
+        if (!result[0]?.id) {
+          throw new Error('Failed to create connection record in DB');
+        }
+        dbConnectionId = result[0].id;
+      } catch (dbError) {
+        log('Error creating connection record:', dbError);
+        // Decide how to handle DB connection failure - maybe still try to connect?
+        // For now, we'll update state as disconnected and schedule a retry.
+        await get().setConnectionState({
+          isConnected: false,
+          pid: null,
+          connectionId: null,
+          isLoading: false,
+        });
+        // Only schedule retry if polling is enabled
+        if (pingEnabled) {
+          reconnectTimeoutRef = setTimeout(get().connect, 5000); // Retry after 5s
+        }
+        return;
+      }
+      // --- End Create DB Connection Record ---
+
+      // Determine the target based on precedence: ping config > CLI args
+      let targetUrl: string | null = null;
+      let targetPort: number | null = null;
+
+      if (pingIsUrl) {
+        targetUrl = ping; // Ping config URL takes highest precedence
+      } else if (pingIsPort) {
+        targetPort = ping; // Ping config port takes next precedence
+      } else if (cliRedirect) {
+        targetUrl = cliRedirect; // CLI redirect URL
+      } else if (cliPort !== undefined) {
+        targetPort = cliPort; // CLI port
+      } else {
+        // Should not happen due to validation, but handle defensively
+        log('Error: No valid target (URL or Port) found for connection check.');
+        await get().setConnectionState({
+          isConnected: false,
+          pid: null,
+          connectionId: dbConnectionId,
+          isLoading: false,
+        });
+        // Schedule retry if ping is enabled (might be a temporary config issue)
+        reconnectTimeoutRef = setTimeout(get().connect, 5000);
+        return;
       }
 
-      socketRef = new net.Socket();
-
-      socketRef.on('connect', async () => {
-        if (!isDestroyedRef) {
-          const foundPid = await getProcessIdForPort(port);
-
-          // Create a new connection record
-          const result = await db
-            .insert(Connections)
-            .values({
-              tunnelId: selectedTunnelId,
-              ipAddress: '127.0.0.1',
-              clientId,
-              clientVersion: version,
-              clientOs: `${platform()} ${release()}`,
-              clientHostname: hostname(),
-              userId,
-              orgId: orgId ?? 'org_2vCR1xwHHTLxE5m20AYewlc5y2j',
-            })
-            .returning();
-
-          if (!result[0]) {
-            throw new Error('Failed to create connection');
+      // --- Perform Check --- //
+      if (targetUrl) {
+        // --- Redirect/URL Check --- //
+        try {
+          // Clean up any old socket if switching from port to redirect
+          if (socketRef) {
+            socketRef.destroy();
+            socketRef = null;
           }
 
-          // Update local connection state
-          await get().setConnectionState({
-            connectionId: result[0].id,
-            isConnected: true,
-            pid: foundPid,
-          });
+          const response = await fetch(targetUrl, { method: 'HEAD', signal });
 
-          socketRef?.destroy(); // Close connection after successful check
+          if (!isDestroyedRef) {
+            if (response.ok) {
+              // Successful HEAD request
+              await get().setConnectionState({
+                isConnected: true,
+                pid: null, // PID not applicable for URL
+                connectionId: dbConnectionId,
+              });
+            } else {
+              // Non-OK response
+              log(
+                `Ping URL check failed: ${response.status} ${response.statusText} (${targetUrl})`,
+              );
+              await get().setConnectionState({
+                isConnected: false,
+                pid: null,
+                connectionId: dbConnectionId,
+              });
+            }
+          }
+        } catch (error) {
+          if (!isDestroyedRef) {
+            if ((error as Error).name !== 'AbortError') {
+              log(`Error checking ping URL (${targetUrl}):`, error);
+            }
+            await get().setConnectionState({
+              isConnected: false,
+              pid: null,
+              connectionId: dbConnectionId,
+            });
+          }
         }
-      });
-
-      socketRef.on('error', async () => {
-        if (!isDestroyedRef) {
-          await get().setConnectionState({
-            isConnected: false,
-            pid: null,
-            connectionId: null,
-          });
+        // --- End Redirect/URL Check --- //
+      } else if (targetPort !== null) {
+        // --- Local Port Check --- //
+        if (socketRef) {
+          socketRef.destroy();
         }
-      });
+        socketRef = new net.Socket();
 
-      // Try to connect with a 1 second timeout
-      socketRef.setTimeout(1000);
-      socketRef.connect(port, 'localhost');
+        socketRef.once('connect', async () => {
+          if (!isDestroyedRef) {
+            const processInfo = await getProcessIdForPort(targetPort);
+            await get().setConnectionState({
+              isConnected: true,
+              pid: processInfo?.pid ?? null,
+              processName: processInfo?.name ?? null,
+              connectionId: dbConnectionId,
+            });
+            socketRef?.destroy(); // Close connection after successful check
+          }
+        });
 
-      // Schedule next check
-      reconnectTimeoutRef = setTimeout(
-        get().connect,
-        get().isConnected ? 5000 : 1000,
-      );
+        socketRef.once('error', async (err) => {
+          if (!isDestroyedRef) {
+            log('Socket connection error:', err.message);
+            await get().setConnectionState({
+              isConnected: false,
+              pid: null,
+              connectionId: dbConnectionId,
+            });
+          }
+        });
+
+        socketRef.once('timeout', async () => {
+          if (!isDestroyedRef) {
+            log('Socket connection timed out');
+            await get().setConnectionState({
+              isConnected: false,
+              pid: null,
+              connectionId: dbConnectionId,
+            });
+            socketRef?.destroy();
+          }
+        });
+
+        // Try to connect with a 1 second timeout
+        socketRef.setTimeout(1000);
+        socketRef.connect(targetPort, 'localhost');
+        // --- End Local Port Check --- //
+      }
+      // --- End Perform Check --- //
+
+      // Schedule next check only if pinging is enabled
+      if (!isDestroyedRef && pingEnabled) {
+        reconnectTimeoutRef = setTimeout(
+          get().connect,
+          get().isConnected ? 5000 : 2000, // Check more frequently if disconnected
+        );
+      }
     },
 
     disconnect: async () => {
       isDestroyedRef = true;
-      if (socketRef) {
-        socketRef.destroy();
-        socketRef = null;
-      }
+      currentFetchAbortController?.abort(); // Abort any ongoing fetch
+
+      // Clear reconnect timer
       if (reconnectTimeoutRef) {
         clearTimeout(reconnectTimeoutRef);
         reconnectTimeoutRef = undefined;
       }
-      await get().setConnectionState({
-        isConnected: false,
-        pid: null,
-        connectionId: null,
-      });
+
+      // Destroy socket connection if it exists
+      if (socketRef) {
+        socketRef.destroy();
+        socketRef = null;
+      }
+
+      // Optionally update the DB connection record status to disconnected
+      const connectionId = get().connectionId;
+      if (connectionId) {
+        try {
+          // Placeholder for DB update logic
+          // await db
+          //   .update(Connections)
+          //   .set({ lastDisconnectedAt: new Date() })
+          //   .where(eq(Connections.id, connectionId));
+          log(`Placeholder: Would update DB for connection ${connectionId}`);
+        } catch (error) {
+          log(
+            `Failed to update connection ${connectionId} status in DB on disconnect:`,
+            error,
+          );
+        }
+      }
+
+      // Reset the store state to default, marking the disconnect time
+      set({ ...defaultConnectionState, lastDisconnectedAt: new Date() });
     },
   }));
 };

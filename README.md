@@ -45,8 +45,8 @@ npm install -g @unhook/cli
 # Using yarn
 yarn global add @unhook/cli
 
-# Using pnpm
-pnpm add -g @unhook/cli
+# Using bun
+bun add -g @unhook/cli
 ```
 
 ### 2. Start the Tunnel

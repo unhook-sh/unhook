@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import type { FC } from 'react';
 import type { RouteProps } from '~/lib/router';
 
-export const ExitPage: FC<RouteProps> = () => {
+export const QuitPage: FC<RouteProps> = () => {
   const app = useApp();
 
   useEffect(() => {

@@ -1,37 +1,45 @@
-import { exec } from 'node:child_process';
 import os from 'node:os';
-import { promisify } from 'node:util';
+import { $ } from 'zx';
 
-const execAsync = promisify(exec);
+interface ProcessInfo {
+  pid: number;
+  name: string;
+}
 
 /**
- * Gets the process ID (PID) of the process listening on the specified port.
+ * Gets the process ID (PID) and name of the process listening on the specified port.
  * Works cross-platform on Windows, macOS, and Linux.
  *
  * @param port - The port number to check
- * @returns The process ID if found, null otherwise
+ * @returns The process info if found, null otherwise
  */
 export async function getProcessIdForPort(
   port: number,
-): Promise<number | null> {
+): Promise<ProcessInfo | null> {
   try {
     const platform = os.platform();
-    let command: string;
+    let pidCommand: string;
+    let processInfoCommand: string;
 
     if (platform === 'win32') {
       // Windows command to get PID
-      command = `netstat -ano | findstr :${port}`;
+      pidCommand = `netstat -ano | findstr :${port}`;
+      processInfoCommand = 'tasklist /FI "PID eq $PID" /FO CSV /NH';
     } else {
       // macOS and Linux command
-      command = `lsof -i :${port} -t`;
+      pidCommand = `lsof -i :${port} -t`;
+      // Get both command name and arguments for better identification
+      processInfoCommand = 'ps -p $PID -o comm=,args=';
     }
 
-    const { stdout } = await execAsync(command);
+    // Get PID first
+    const pidOutput = await $`${pidCommand}`.quiet();
+    const pidStdout = pidOutput.stdout.trim();
 
     if (platform === 'win32') {
       // Parse Windows netstat output which looks like:
       // TCP    0.0.0.0:3000    0.0.0.0:0    LISTENING    1234
-      const lines = stdout.split('\n');
+      const lines = pidStdout.split('\n');
       for (const line of lines) {
         if (!line) continue;
         const parts = line.trim().split(/\s+/);
@@ -44,15 +52,55 @@ export async function getProcessIdForPort(
         if (!portPart.includes(`:${port}`)) continue;
 
         const pid = Number.parseInt(pidPart, 10);
-        return Number.isNaN(pid) ? null : pid;
+        if (Number.isNaN(pid)) continue;
+
+        // Get process name
+        const processOutput =
+          await $`${processInfoCommand.replace('$PID', pid.toString())}`.quiet();
+        const processName =
+          processOutput.stdout.split(',')[0]?.replace(/"/g, '').trim() ??
+          'unknown';
+
+        return {
+          pid,
+          name: processName,
+        };
       }
       return null;
     }
 
     // Parse Unix lsof output
-    const pid = Number.parseInt(stdout.trim(), 10);
-    return Number.isNaN(pid) ? null : pid;
-  } catch {
+    const pid = Number.parseInt(pidStdout, 10);
+    if (Number.isNaN(pid)) return null;
+
+    // Get process name and args
+    const processOutput =
+      await $`${processInfoCommand.replace('$PID', pid.toString())}`.quiet();
+    const processInfo = processOutput.stdout.trim();
+
+    // Extract a human readable name from the process info
+    const [processPath = 'unknown', ...args] = processInfo.split(/\s+/);
+    const executableName = processPath.split('/').pop() || 'unknown';
+
+    // For node processes, try to get the script name
+    if (executableName === 'node') {
+      const scriptName = args
+        .find((arg) => arg.endsWith('.js') || arg.endsWith('.mjs'))
+        ?.split('/')
+        .pop();
+      return {
+        pid,
+        name: scriptName ? `node (${scriptName})` : 'node',
+      };
+    }
+
+    return {
+      pid,
+      name: executableName,
+    };
+  } catch (error) {
+    // Log error for debugging but return null to maintain the function's contract
+    console.error('Error getting process info:', error);
     return null;
   }
 }

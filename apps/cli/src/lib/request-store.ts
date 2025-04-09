@@ -1,12 +1,16 @@
 import { db } from '@unhook/db/client';
 import { Requests, Tunnels } from '@unhook/db/schema';
 import type { RequestType } from '@unhook/db/schema';
+import debug from 'debug';
 import { desc, eq, sql } from 'drizzle-orm';
+import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
 import { useAuthStore } from './auth/store';
 import { useCliStore } from './cli-store';
 import { useConnectionStore } from './connection-store';
 import { createSelectors } from './zustand-create-selectors';
+
+const log = debug('unhook:cli:request-store');
 
 interface RequestState {
   requests: RequestType[];
@@ -22,7 +26,7 @@ interface RequestActions {
   setIsDetailsVisible: (isVisible: boolean) => void;
   initializeSelection: () => void;
   fetchRequests: () => Promise<void>;
-  handlePendingRequest: (request: RequestType) => Promise<void>;
+  handlePendingRequest: (webhookRequest: RequestType) => Promise<void>;
   replayRequest: (request: RequestType) => Promise<void>;
 }
 
@@ -67,35 +71,46 @@ const store = createStore<RequestStore>()((set, get) => ({
       };
     });
   },
-  handlePendingRequest: async (request: RequestType) => {
-    const { port } = useCliStore.getState();
+  handlePendingRequest: async (webhookRequest: RequestType) => {
+    const { port, redirect } = useCliStore.getState();
     const { connectionId } = useConnectionStore.getState();
 
-    if (request.status === 'pending') {
+    if (webhookRequest.status === 'pending') {
       try {
-        const url = `http://localhost:${port}${request.request.url}`;
+        // Determine the base URL based on redirect or port
+        const baseUrl = redirect || `http://localhost:${port}`;
+        // Ensure we don't double up on slashes when joining URLs
+        const url = new URL(webhookRequest.request.url, baseUrl).toString();
 
         // Decode base64 request body if it exists
         let requestBody: string | undefined;
-        if (request.request.body) {
+        if (webhookRequest.request.body) {
           try {
-            requestBody = Buffer.from(request.request.body, 'base64').toString(
-              'utf-8',
-            );
+            requestBody = Buffer.from(
+              webhookRequest.request.body,
+              'base64',
+            ).toString('utf-8');
           } catch {
-            requestBody = request.request.body;
+            requestBody = webhookRequest.request.body;
           }
         }
 
         const startTime = Date.now();
-        const response = await fetch(url, {
-          method: request.request.method,
-          headers: request.request.headers,
+        log('Sending request to %s', url);
+        const response = await undiciRequest(url, {
+          method: webhookRequest.request.method,
+          headers: webhookRequest.request.headers,
           body: requestBody,
+          // @ts-ignore - Undici types don't properly expose these options
+          // dispatcher: {
+          // tls: {
+          // rejectUnauthorized: false,
+          // },
+          // },
         });
 
         // Get response body and encode as base64
-        const responseText = await response.text();
+        const responseText = await response.body.text();
         const responseBodyBase64 = Buffer.from(responseText).toString('base64');
         const responseTimeMs = Date.now() - startTime;
 
@@ -104,25 +119,30 @@ const store = createStore<RequestStore>()((set, get) => ({
           .set({
             status: 'completed',
             response: {
-              status: response.status,
-              headers: Object.fromEntries(response.headers.entries()),
+              status: response.statusCode,
+              headers: Object.fromEntries(
+                Object.entries(response.headers).map(([k, v]) => [
+                  k,
+                  Array.isArray(v) ? v.join(', ') : v || '',
+                ]),
+              ),
               body: responseBodyBase64,
             },
             responseTimeMs,
             completedAt: new Date(),
             connectionId: connectionId ?? undefined,
           })
-          .where(eq(Requests.id, request.id));
+          .where(eq(Requests.id, webhookRequest.id));
 
         // Update tunnel's lastRequestAt
-        if (request.tunnelId) {
+        if (webhookRequest.tunnelId) {
           await db
             .update(Tunnels)
             .set({
               lastRequestAt: new Date(),
               requestCount: sql`${Tunnels.requestCount} + 1`,
             })
-            .where(eq(Tunnels.clientId, request.tunnelId));
+            .where(eq(Tunnels.clientId, webhookRequest.tunnelId));
         }
       } catch (error) {
         console.error('Failed to forward request:', error);
@@ -140,7 +160,7 @@ const store = createStore<RequestStore>()((set, get) => ({
             completedAt: new Date(),
             connectionId: connectionId ?? undefined,
           })
-          .where(eq(Requests.id, request.id));
+          .where(eq(Requests.id, webhookRequest.id));
 
         await get().fetchRequests();
       }
@@ -149,12 +169,13 @@ const store = createStore<RequestStore>()((set, get) => ({
   replayRequest: async (request: RequestType) => {
     const { userId, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
+    const { ping: pingEnabled } = useCliStore.getState();
 
     if (!userId || !orgId) {
       throw new Error('User or org not authenticated');
     }
 
-    if (!connectionId) {
+    if (!connectionId && pingEnabled !== false) {
       throw new Error('Connection not found');
     }
 
@@ -164,7 +185,7 @@ const store = createStore<RequestStore>()((set, get) => ({
       apiKey: request.apiKey,
       userId: userId,
       orgId: orgId,
-      connectionId,
+      connectionId: connectionId ?? undefined,
       request: request.request,
       status: 'pending',
     });

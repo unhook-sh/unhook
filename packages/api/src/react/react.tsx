@@ -66,8 +66,8 @@ export function TRPCReactProvider(props: {
 const getBaseUrl = () => {
   if (typeof globalThis !== 'undefined' && globalThis.location)
     return globalThis.location.origin;
-  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
   if (env.NEXT_PUBLIC_API_URL) return env.NEXT_PUBLIC_API_URL;
+  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
 
   return `http://localhost:${process.env.PORT ?? 3000}`;
 };

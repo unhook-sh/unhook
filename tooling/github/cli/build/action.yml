@@ -72,7 +72,7 @@ runs:
 
         echo "Running build command with BUN_BUILD_TARGET=$BUN_BUILD_TARGET"
         env | grep BUN_BUILD_TARGET
-        pnpm --filter @unhook/cli build
+        bun --filter @unhook/cli build
       env:
         BUN_BUILD_TARGET: "$BUN_TARGET"
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

@@ -28,7 +28,7 @@ jobs:
         uses: ./tooling/github/setup
 
       - name: Format
-        run: pnpm format
+        run: bun format
 
   typecheck:
     runs-on: ubuntu-latest
@@ -39,4 +39,4 @@ jobs:
         uses: ./tooling/github/setup
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: bun typecheck

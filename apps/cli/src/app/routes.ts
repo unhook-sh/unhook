@@ -1,10 +1,12 @@
 import { useAuth } from '~/lib/auth';
 import type { Route } from '~/lib/router';
 import { DebugPage } from './debug/page';
-import { ExitPage } from './exit/page';
+import { HelpPage } from './help/page';
+import { HotkeysPage } from './hotkeys/page';
 import { LoginPage } from './login/page';
 import { LogoutPage } from './logout/page';
 import { MenuPage } from './menu/page';
+import { QuitPage } from './quit/page';
 import { RequestPage } from './requests/[id]/page';
 import { RequestsPage } from './requests/page';
 
@@ -12,13 +14,15 @@ export type AppRoutePath =
   | '/'
   | '/login'
   | '/logout'
-  | '/exit'
+  | '/quit'
   | '/settings'
   | '/requests'
   | '/requests/:id'
   | '/status'
   | '/metrics'
-  | '/debug';
+  | '/debug'
+  | '/hotkeys'
+  | '/help';
 
 export type AppRoute = Route<AppRoutePath>;
 
@@ -85,10 +89,22 @@ const commonRoutes: AppRoute[] = [
     showInMenu: false,
   },
   {
-    path: '/exit',
-    component: ExitPage,
-    label: 'Exit',
-    hotkey: 'e',
+    path: '/hotkeys',
+    component: HotkeysPage,
+    label: 'Hotkeys',
+    hotkey: '?',
+  },
+  {
+    path: '/help',
+    component: HelpPage,
+    label: 'Help',
+    hotkey: 'h',
+  },
+  {
+    path: '/quit',
+    component: QuitPage,
+    label: 'Quit',
+    hotkey: 'q',
   },
 ];
 

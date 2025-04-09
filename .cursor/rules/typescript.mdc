@@ -55,7 +55,7 @@ Performance Optimization
 
 Key Conventions
 
-- Use vitest for testing not jest.
+- Use bun:test for testing not jest.
 - Use date-fns for date formatting.
 - Use 'nuqs' for URL search parameter state management.
 - Use 'plasmo' for chrome extension development.

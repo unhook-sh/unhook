@@ -1,67 +1,17 @@
 import type { RequestType } from '@unhook/db/schema';
-import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
-import { Box, useInput } from 'ink';
+import { Box, measureElement, useInput } from 'ink';
+import type { DOMElement } from 'ink';
 import type { FC } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Table } from '~/components/table';
+import { useDimensions } from '~/hooks/use-dimensions';
+import { useCliStore } from '~/lib/cli-store';
 import { useConnectionStore } from '~/lib/connection-store';
 import { useRequestStore } from '~/lib/request-store';
 import type { RouteProps } from '~/lib/router';
 import { useRouter } from '~/lib/router';
 import { RequestDetails } from './_components/request-details';
-import {
-  RequestTableCell,
-  RequestTableHeader,
-} from './_components/table-cells';
-
-function formatRequestTime(date: Date) {
-  const now = new Date();
-  const diffInMinutes = differenceInMinutes(now, date);
-
-  if (diffInMinutes < 1) {
-    return formatDistanceToNow(date, { addSuffix: true, includeSeconds: true });
-  }
-
-  return format(date, 'MMM d, HH:mm:ss');
-}
-
-function tryDecodeBase64(str: string): string {
-  try {
-    return Buffer.from(str, 'base64').toString('utf-8');
-  } catch {
-    return str;
-  }
-}
-
-export function requestToTableData(request: RequestType, isSelected: boolean) {
-  const decodedBody = request.request.body
-    ? tryDecodeBase64(request.request.body)
-    : null;
-
-  let parsedBody = null;
-  try {
-    parsedBody = decodedBody ? JSON.parse(decodedBody) : null;
-  } catch {
-    parsedBody = null;
-  }
-
-  return {
-    ...request,
-    selected: isSelected ? '→' : '',
-    method: request.request.method,
-    url:
-      request.request.url.length > 35
-        ? `${request.request.url.substring(0, 35)}...`
-        : request.request.url,
-    status: request.status,
-    time: formatRequestTime(new Date(request.createdAt)),
-    id: request.id,
-    isSelected,
-    responseCode: request.response?.status,
-    responseTimeMs: request.responseTimeMs,
-    event: parsedBody?.type ?? null,
-  };
-}
+import { requestColumns } from './_components/table-columns';
 
 export const RequestsPage: FC<RouteProps> = () => {
   const selectedRequestId = useRequestStore.use.selectedRequestId();
@@ -71,6 +21,7 @@ export const RequestsPage: FC<RouteProps> = () => {
   const isDetailsVisible = useRequestStore.use.isDetailsVisible();
   const setIsDetailsVisible = useRequestStore.use.setIsDetailsVisible();
   const isConnected = useConnectionStore.use.isConnected();
+  const pingEnabled = useCliStore.use.ping() !== false;
   const [selectedIndex, _setSelectedIndex] = useState(
     requests.findIndex((request) => request.id === selectedRequestId),
   );
@@ -108,35 +59,37 @@ export const RequestsPage: FC<RouteProps> = () => {
   const replayRequest = useRequestStore.use.replayRequest();
   const handleReplay = useCallback(
     (request: RequestType) => {
-      if (!isConnected) {
+      if (!isConnected && pingEnabled) {
         return;
       }
       void replayRequest(request);
     },
-    [replayRequest, isConnected],
+    [replayRequest, isConnected, pingEnabled],
   );
 
-  const tableData = requests.map((request) =>
-    requestToTableData(request, false),
-  );
+  const dimensions = useDimensions();
+  const ref = useRef<DOMElement>(null);
+  const [_containerHeight, setContainerHeight] = useState(0);
+
+  useEffect(() => {
+    if (ref.current) {
+      const height = measureElement(ref.current).height;
+      setContainerHeight(height);
+    }
+  }, []);
 
   return (
-    <Box flexDirection="row">
+    <Box flexDirection="row" ref={ref}>
       <Box width={isDetailsVisible ? '50%' : undefined}>
         <Table
-          data={tableData}
-          columns={[
-            'method',
-            'url',
-            'status',
-            'responseCode',
-            'responseTimeMs',
-            'event',
-            'time',
-          ]}
-          header={RequestTableHeader}
-          cell={RequestTableCell}
+          data={requests}
+          columns={requestColumns}
           initialIndex={selectedIndex}
+          maxHeight={
+            isDetailsVisible
+              ? Math.floor(dimensions.height * 0.8)
+              : dimensions.height - 10
+          }
           onSelectionChange={(index) => {
             const request = requests[index];
             if (request) {
@@ -156,10 +109,13 @@ export const RequestsPage: FC<RouteProps> = () => {
             },
             {
               key: 'r',
-              label: isConnected ? 'Replay' : 'Replay (Not Connected)',
+              label:
+                !isConnected && pingEnabled
+                  ? 'Replay (Not Connected)'
+                  : 'Replay',
               onAction: (_, index) => {
                 const request = requests[index];
-                if (request && isConnected) {
+                if (request && (isConnected || !pingEnabled)) {
                   handleReplay(request);
                 }
               },

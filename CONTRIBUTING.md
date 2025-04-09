@@ -8,7 +8,7 @@ By participating in this project, you are expected to uphold our Code of Conduct
 
 ## Project Structure
 
-This is a monorepo using [Turborepo](https://turbo.build/) and pnpm workspaces. The project is organized into several main components:
+This is a monorepo using [Turborepo](https://turbo.build/) and bun workspaces. The project is organized into several main components:
 
 ```
 unhook/
@@ -34,14 +34,14 @@ unhook/
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (version specified in `.nvmrc`)
-- [pnpm](https://pnpm.io/) (we use this instead of npm or yarn)
+- [bun](https://bun.io/) (we use this instead of npm or yarn)
 - [Git](https://git-scm.com/)
 
 ### Getting Started
 
-1. Install pnpm if you haven't already:
+1. Install bun if you haven't already:
    ```bash
-   npm install -g pnpm
+   npm install -g bun
    ```
 
 2. Clone the repository:
@@ -52,27 +52,27 @@ unhook/
 
 3. Install dependencies:
    ```bash
-   pnpm install
+   bun install
    ```
 
 4. Build all packages:
    ```bash
-   pnpm build
+   bun build
    ```
 
 5. Start development servers:
    ```bash
-   pnpm dev
+   bun dev
    ```
 
 ### Useful Commands
 
-- `pnpm build` - Build all packages
-- `pnpm dev` - Start all development servers
-- `pnpm test` - Run tests across all packages
-- `pnpm lint` - Lint all packages
-- `pnpm clean` - Clean all build outputs
-- `pnpm changeset` - Create a changeset for version management
+- `bun build` - Build all packages
+- `bun dev` - Start all development servers
+- `bun test` - Run tests across all packages
+- `bun lint` - Lint all packages
+- `bun clean` - Clean all build outputs
+- `bun changeset` - Create a changeset for version management
 
 ### Working with Turborepo
 
@@ -81,7 +81,7 @@ We use Turborepo for managing our monorepo. Key concepts:
 - Each package has its own `package.json` with its dependencies
 - Shared configuration lives in the root `turbo.json`
 - Build outputs are cached for faster subsequent builds
-- Workspace dependencies are managed through `pnpm-workspace.yaml`
+- Workspace dependencies are managed through `bun-workspace.yaml`
 
 ## How Can I Contribute?
 
@@ -119,7 +119,7 @@ Please follow these steps to have your contribution considered:
 1. Fork the repository
 2. Create a new branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run the tests (`pnpm test`)
+4. Run the tests (`bun test`)
 5. Commit your changes (`git commit -m 'Add some amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
@@ -153,8 +153,8 @@ Please follow these steps to have your contribution considered:
 
 ## Testing
 
-* Write unit tests for all new code using Vitest
-* Ensure all tests pass before submitting a PR (`pnpm test`)
+* Write unit tests for all new code using bun test
+* Ensure all tests pass before submitting a PR (`bun test`)
 * Include integration tests for new features
 * Follow the existing testing patterns
 * Use meaningful test descriptions
@@ -163,15 +163,15 @@ Please follow these steps to have your contribution considered:
 
 * We use [Biome](https://biomejs.dev/) for formatting and linting
 * Configuration is in the root `biome.json`
-* Run `pnpm format` to format code
-* Run `pnpm lint` to check for style issues
+* Run `bun format` to format code
+* Run `bun lint` to check for style issues
 
 ## Version Management
 
 We use [Changesets](https://github.com/changesets/changesets) for version management:
 
 1. Make your changes
-2. Run `pnpm changeset` to create a changeset
+2. Run `bun changeset` to create a changeset
 3. Follow the prompts to describe your changes
 4. Commit the generated changeset file
 5. Submit your PR

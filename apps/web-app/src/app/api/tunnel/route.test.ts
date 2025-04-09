@@ -1,10 +1,10 @@
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test';
+import type { Mock } from 'bun:test';
 import { NextRequest, NextResponse } from 'next/server';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Mock } from 'vitest';
 import { POST } from './route';
 
 // Mock environment variables
-vi.mock('@t3-oss/env-nextjs', () => ({
+mock.module('@t3-oss/env-nextjs', () => ({
   createEnv: () => ({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
     NEXT_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
@@ -29,7 +29,8 @@ vi.mock('@unhook/db/client', () => ({
 }));
 
 describe('Tunnel Route Handler', () => {
-  let mockFindFirst: Mock;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  let mockFindFirst: Mock<any>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -38,7 +39,8 @@ describe('Tunnel Route Handler', () => {
 
     // Setup mocks
     const { db } = await import('@unhook/db/client');
-    mockFindFirst = db.query.Tunnels.findFirst as Mock;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    mockFindFirst = db.query.Tunnels.findFirst as Mock<any>;
 
     // Default mock responses
     mockFindFirst.mockResolvedValue({

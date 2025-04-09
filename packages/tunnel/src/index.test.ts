@@ -1,4 +1,3 @@
-import http2 from 'node:http2';
 import {
   type Mock,
   afterEach,
@@ -6,44 +5,52 @@ import {
   describe,
   expect,
   it,
-  vi,
-} from 'vitest';
+  mock,
+} from 'bun:test';
+import http2 from 'node:http2';
 import type { TunnelClientOptions } from './index';
 import { startTunnelClient } from './index';
 
 interface MockStream {
-  on: Mock;
-  write: Mock;
-  end: Mock;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  on: Mock<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  write: Mock<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  end: Mock<any>;
 }
 
 interface MockClient {
-  on: Mock;
-  request: Mock;
-  destroy: Mock;
-  close: Mock;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  on: Mock<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  request: Mock<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  destroy: Mock<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  close: Mock<any>;
   destroyed: boolean;
 }
 
 // Mock http2
-vi.mock('node:http2', () => {
+mock.module('node:http2', () => {
   const mockStream: MockStream = {
-    on: vi.fn(),
-    write: vi.fn(),
-    end: vi.fn(),
+    on: mock(),
+    write: mock(),
+    end: mock(),
   };
 
   const mockClient: MockClient = {
-    on: vi.fn(),
-    request: vi.fn(() => mockStream),
-    destroy: vi.fn(),
-    close: vi.fn(),
+    on: mock(),
+    request: mock(() => mockStream),
+    destroy: mock(),
+    close: mock(),
     destroyed: false,
   };
 
   return {
     default: {
-      connect: vi.fn(() => mockClient),
+      connect: mock(() => mockClient),
       constants: {
         HTTP2_HEADER_METHOD: ':method',
         HTTP2_HEADER_PATH: ':path',
@@ -54,7 +61,7 @@ vi.mock('node:http2', () => {
 });
 
 // Mock fetch for local requests
-const mockFetch = vi.fn() as unknown as typeof fetch & ReturnType<typeof vi.fn>;
+const mockFetch = mock() as unknown as typeof fetch & ReturnType<typeof mock>;
 global.fetch = mockFetch;
 
 describe('startTunnelClient', () => {
@@ -77,7 +84,9 @@ describe('startTunnelClient', () => {
 
     expect(http2.connect).toHaveBeenCalledWith('https://tunnel.example.com');
 
-    const client = (http2.connect as Mock).mock.results[0]?.value as MockClient;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const client = (http2.connect as Mock<any>).mock.results[0]
+      ?.value as MockClient;
     expect(client.on).toHaveBeenCalledWith('error', expect.any(Function));
     expect(client.on).toHaveBeenCalledWith('connect', expect.any(Function));
     expect(client.on).toHaveBeenCalledWith('close', expect.any(Function));
@@ -89,10 +98,13 @@ describe('startTunnelClient', () => {
   it('should start request stream with correct headers', () => {
     const stopClient = startTunnelClient(options);
 
-    const client = (http2.connect as Mock).mock.results[0]?.value as MockClient;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const client = (http2.connect as Mock<any>).mock.results[0]
+      ?.value as MockClient;
     const connectHandler = client.on.mock.calls.find(
       (call) => call[0] === 'connect',
-    )?.[1];
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )?.[1] as any;
     if (!connectHandler) throw new Error('Connect handler not found');
 
     // Simulate connection
@@ -111,10 +123,13 @@ describe('startTunnelClient', () => {
   it('should handle incoming requests and forward them to local service', async () => {
     const stopClient = startTunnelClient(options);
 
-    const client = (http2.connect as Mock).mock.results[0]?.value as MockClient;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const client = (http2.connect as Mock<any>).mock.results[0]
+      ?.value as MockClient;
     const connectHandler = client.on.mock.calls.find(
       (call) => call[0] === 'connect',
-    )?.[1];
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )?.[1] as any;
     if (!connectHandler) throw new Error('Connect handler not found');
 
     // Simulate connection
@@ -123,7 +138,8 @@ describe('startTunnelClient', () => {
     const stream = client.request.mock.results[0]?.value as MockStream;
     const dataHandler = stream.on.mock.calls.find(
       (call) => call[0] === 'data',
-    )?.[1];
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )?.[1] as any;
     if (!dataHandler) throw new Error('Data handler not found');
 
     // Mock successful response from local service
@@ -178,10 +194,13 @@ describe('startTunnelClient', () => {
   it('should handle errors from local service', async () => {
     const stopClient = startTunnelClient(options);
 
-    const client = (http2.connect as Mock).mock.results[0]?.value as MockClient;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const client = (http2.connect as Mock<any>).mock.results[0]
+      ?.value as MockClient;
     const connectHandler = client.on.mock.calls.find(
       (call) => call[0] === 'connect',
-    )?.[1];
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )?.[1] as any;
     if (!connectHandler) throw new Error('Connect handler not found');
 
     // Simulate connection
@@ -190,7 +209,8 @@ describe('startTunnelClient', () => {
     const stream = client.request.mock.results[0]?.value as MockStream;
     const dataHandler = stream.on.mock.calls.find(
       (call) => call[0] === 'data',
-    )?.[1];
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )?.[1] as any;
     if (!dataHandler) throw new Error('Data handler not found');
 
     // Mock failed response from local service
@@ -238,10 +258,13 @@ describe('startTunnelClient', () => {
 
     const stopClient = startTunnelClient(options);
 
-    const client = (http2.connect as Mock).mock.results[0]?.value as MockClient;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const client = (http2.connect as Mock<any>).mock.results[0]
+      ?.value as MockClient;
     const errorHandler = client.on.mock.calls.find(
       (call) => call[0] === 'error',
-    )?.[1];
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    )?.[1] as any;
     if (!errorHandler) throw new Error('Error handler not found');
 
     // Simulate connection error
@@ -259,7 +282,9 @@ describe('startTunnelClient', () => {
   it('should cleanup resources on stop', () => {
     const stopClient = startTunnelClient(options);
 
-    const client = (http2.connect as Mock).mock.results[0]?.value as MockClient;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const client = (http2.connect as Mock<any>).mock.results[0]
+      ?.value as MockClient;
     const stream = client.request.mock.results[0]?.value as MockStream;
     if (!stream) throw new Error('Stream not found');
 

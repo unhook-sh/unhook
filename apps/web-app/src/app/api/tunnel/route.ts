@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
       orgId: tunnel.orgId,
       request,
       status: 'pending',
-      originalRequestedAt: new Date(),
+      timestamp: new Date(),
     });
 
     return new NextResponse('Webhook received', { status: 202 });

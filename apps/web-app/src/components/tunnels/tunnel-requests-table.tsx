@@ -59,7 +59,7 @@ export function TunnelRequestsTable({
               tunnelId,
               apiKey: 'pk_test_123',
               status,
-              originalRequestedAt: timestamp,
+              timestamp,
               createdAt: timestamp,
               userId: 'user_123',
               orgId: 'org_123',
@@ -92,7 +92,7 @@ export function TunnelRequestsTable({
                     }
                   : null,
               responseTimeMs: Math.floor(Math.random() * 1000),
-            };
+            } satisfies RequestType;
           },
         );
 

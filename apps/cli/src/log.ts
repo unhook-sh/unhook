@@ -3,7 +3,7 @@ import { file } from 'bun';
 import { debug as originalDebug } from 'debug';
 
 // Create a BunFile and FileSink for logging
-const logFile = file('hook.log');
+const logFile = file('unhook.log');
 const logWriter = logFile.writer();
 
 export function enableDebug(namespace: string) {
@@ -26,13 +26,15 @@ export const debug = (namespace: string) => {
     // Log to console using debug
     originalLog(formatter, ...formattedArgs);
 
-    // Write to file using FileSink
-    try {
-      logWriter.write(
-        `${namespace}: ${formatter} ${formattedArgs.join(' ')}\n`,
-      );
-    } catch (error) {
-      console.error('Failed to write log to file:', error);
+    if (originalLog.enabled) {
+      // Write to file using FileSink
+      try {
+        logWriter.write(
+          `${namespace}: ${formatter} ${formattedArgs.join(' ')}\n`,
+        );
+      } catch (error) {
+        console.error('Failed to write log to file:', error);
+      }
     }
   };
 };

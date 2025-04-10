@@ -65,3 +65,5 @@ certificates/
 *.cer
 *.crt
 *.txt
+
+unhook.log

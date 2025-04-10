@@ -5,6 +5,10 @@ import { Text } from 'ink';
 import { Spinner } from '~/components/spinner';
 import type { ColumnDef } from '~/components/table/types';
 
+function getSelectedColor(isSelected: boolean, defaultColor = 'gray'): string {
+  return isSelected ? 'white' : defaultColor;
+}
+
 function formatRequestTime(date: Date) {
   const now = new Date();
   const diffInMinutes = differenceInMinutes(now, date);
@@ -53,7 +57,7 @@ const serviceConfig = {
   },
   svix: {
     verificationWindowMs: 300 * 1000, // 300 seconds
-    userAgentPattern: /^Svix\//i,
+    userAgentPattern: /^Svix-Webhooks\//i,
   },
   slack: {
     verificationWindowMs: 600 * 1000, // 600 seconds
@@ -67,7 +71,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     header: '',
     minWidth: 3,
     cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'white';
+      const color = getSelectedColor(isSelected);
 
       if (row.status === 'pending') {
         return <Spinner dimColor={!isSelected} bold={isSelected} />;
@@ -123,7 +127,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     header: 'Created',
     minWidth: 20,
     cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'gray';
+      const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(formatRequestTime(new Date(row.createdAt)), width)}
@@ -137,7 +141,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     minWidth: 20,
     // enableHiding: true,
     cell: ({ row, isSelected, width }) => {
-      let color = isSelected ? 'cyan' : 'gray';
+      let color = getSelectedColor(isSelected);
       let expiredText = '-';
 
       try {
@@ -157,18 +161,41 @@ export const requestColumns: ColumnDef<RequestType>[] = [
             requestTime.getTime() + config.verificationWindowMs,
           );
 
-          color =
-            expirationDate > now ? (isSelected ? 'cyan' : 'green') : 'red';
-          expiredText = formatDistanceToNow(expirationDate, {
-            addSuffix: true,
-            includeSeconds: true,
-          });
+          color = expirationDate > now ? 'green' : 'red';
+
+          const diffInMinutes = differenceInMinutes(expirationDate, now);
+          const isInFuture = expirationDate > now;
+
+          if (Math.abs(diffInMinutes) < 60) {
+            // Less than an hour - show minutes/seconds
+            const diffInSeconds = Math.floor(
+              (expirationDate.getTime() - now.getTime()) / 1000,
+            );
+
+            if (Math.abs(diffInSeconds) < 60) {
+              // Less than a minute - show seconds
+              expiredText = `${Math.abs(diffInSeconds)} seconds`;
+            } else {
+              // Minutes
+              expiredText = formatDistanceToNow(expirationDate, {
+                includeSeconds: false,
+              });
+              // Remove the "about" prefix if it exists
+              expiredText = expiredText.replace('about ', '');
+            }
+            // Add the appropriate suffix
+            expiredText = isInFuture
+              ? `in ${expiredText}`
+              : `${expiredText} ago`;
+          } else {
+            // More than an hour - use standard format
+            expiredText = format(expirationDate, 'MMM d, HH:mm:ss');
+          }
         }
       } catch {
         // Do nothing
       }
 
-      color = isSelected && color === 'gray' ? 'cyan' : color;
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(expiredText, width)}
@@ -181,7 +208,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     header: 'Method',
     minWidth: 4,
     cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'white';
+      const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(row.request.method, width)}
@@ -191,10 +218,10 @@ export const requestColumns: ColumnDef<RequestType>[] = [
   },
   {
     id: 'url',
-    header: 'URL',
+    header: 'Endpoint',
     minWidth: 25,
     cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'white';
+      const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(row.request.url, width)}
@@ -207,7 +234,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     header: 'Code',
     minWidth: 4,
     cell: ({ row, isSelected, width }) => {
-      let color = isSelected ? 'cyan' : 'green';
+      let color = getSelectedColor(isSelected, 'green');
       const responseCode = row.response?.status;
 
       if (responseCode && responseCode >= 500) {
@@ -228,11 +255,11 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     },
   },
   {
-    id: 'responseTimeMs',
-    header: 'Time (ms)',
+    id: 'elapsedMs',
+    header: 'Elapsed',
     minWidth: 8,
     cell: ({ row, isSelected, width }) => {
-      let color = isSelected ? 'cyan' : 'white';
+      let color = getSelectedColor(isSelected, 'green');
       const responseTimeMs = row.responseTimeMs;
 
       if (responseTimeMs < 1000) {
@@ -261,7 +288,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     header: 'Event',
     minWidth: 35,
     cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'gray';
+      const color = getSelectedColor(isSelected);
       const decodedBody = row.request.body
         ? tryDecodeBase64(row.request.body)
         : null;
@@ -292,7 +319,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     header: 'Agent',
     minWidth: 25,
     cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'gray';
+      const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(

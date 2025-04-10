@@ -1,10 +1,10 @@
 import { db } from '@unhook/db/client';
 import { Requests, Tunnels } from '@unhook/db/schema';
 import type { RequestType } from '@unhook/db/schema';
-import debug from 'debug';
 import { desc, eq, sql } from 'drizzle-orm';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
+import { debug } from '~/log';
 import { useAuthStore } from './auth/store';
 import { useCliStore } from './cli-store';
 import { useConnectionStore } from './connection-store';
@@ -80,7 +80,7 @@ const store = createStore<RequestStore>()((set, get) => ({
         // Determine the base URL based on redirect or port
         const baseUrl = redirect || `http://localhost:${port}`;
         // Ensure we don't double up on slashes when joining URLs
-        const url = new URL(webhookRequest.request.url, baseUrl).toString();
+        const url = new URL(webhookRequest.request.url, baseUrl);
 
         // Decode base64 request body if it exists
         let requestBody: string | undefined;
@@ -96,10 +96,19 @@ const store = createStore<RequestStore>()((set, get) => ({
         }
 
         const startTime = Date.now();
-        log('Sending request to %s', url);
+        log(
+          'Sending request to',
+          url.toString(),
+          webhookRequest.request.method,
+          requestBody,
+          JSON.stringify(webhookRequest.request.headers),
+        );
+
+        const { host, ...headers } = webhookRequest.request.headers;
+
         const response = await undiciRequest(url, {
           method: webhookRequest.request.method,
-          headers: webhookRequest.request.headers,
+          headers,
           body: requestBody,
           // @ts-ignore - Undici types don't properly expose these options
           // dispatcher: {

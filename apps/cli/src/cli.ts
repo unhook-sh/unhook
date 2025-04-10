@@ -4,11 +4,11 @@ import { join } from 'node:path';
 import { createId } from '@unhook/id';
 import { startTunnelClient } from '@unhook/tunnel';
 import { loadConfig } from '@unhook/tunnel/config';
-import debug from 'debug';
 import dedent from 'dedent-js';
 import pc from 'picocolors';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { debug, enableDebug } from '~/log';
 
 const log = debug('unhook:cli');
 const pkg = JSON.parse(
@@ -54,7 +54,7 @@ async function main() {
 
   // Enable debug logging if requested
   if (argv.debug) {
-    debug.enable('tunnel:*');
+    enableDebug('tunnel:*');
     log('Debug logging enabled');
   }
 

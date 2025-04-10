@@ -1,6 +1,8 @@
 import type { RequestType } from '@unhook/db/schema';
 import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
+import figureSet from 'figures';
 import { Text } from 'ink';
+import { Spinner } from '~/components/spinner';
 import type { ColumnDef } from '~/components/table/types';
 
 function formatRequestTime(date: Date) {
@@ -42,17 +44,51 @@ function getNestedField(
 export const requestColumns: ColumnDef<RequestType>[] = [
   {
     id: 'status',
-    header: 'Status',
-    minWidth: 7,
+    header: '',
+    minWidth: 3,
     cell: ({ row, isSelected, width }) => {
-      let color = isSelected ? 'cyan' : 'white';
+      const color = isSelected ? 'cyan' : 'white';
 
       if (row.status === 'pending') {
-        color = 'yellow';
-      } else if (row.status === 'completed') {
-        color = 'green';
-      } else if (row.status === 'failed') {
-        color = 'red';
+        return <Spinner dimColor={!isSelected} bold={isSelected} />;
+      }
+
+      if (
+        row.status === 'completed' &&
+        row.response &&
+        row.response.status >= 200 &&
+        row.response.status < 300
+      ) {
+        return (
+          <Text color="green" dimColor={!isSelected} bold={isSelected}>
+            {figureSet.circleFilled}
+          </Text>
+        );
+      }
+
+      if (
+        row.response &&
+        row.response.status >= 400 &&
+        row.response.status < 500
+      ) {
+        return (
+          <Text color="yellow" dimColor={!isSelected} bold={isSelected}>
+            {figureSet.circle}
+          </Text>
+        );
+      }
+
+      if (
+        row.status === 'failed' ||
+        (row.status === 'completed' &&
+          row.response &&
+          (row.response.status < 200 || row.response.status >= 300))
+      ) {
+        return (
+          <Text color="red" dimColor={!isSelected} bold={isSelected}>
+            {figureSet.circle}
+          </Text>
+        );
       }
 
       return (
@@ -62,6 +98,91 @@ export const requestColumns: ColumnDef<RequestType>[] = [
       );
     },
   },
+  {
+    id: 'time',
+    header: 'Created',
+    minWidth: 20,
+    cell: ({ row, isSelected, width }) => {
+      const color = isSelected ? 'cyan' : 'gray';
+      return (
+        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+          {truncateText(formatRequestTime(new Date(row.createdAt)), width)}
+        </Text>
+      );
+    },
+  },
+  // {
+  //   id: 'expired',
+  //   header: 'Expires',
+  //   minWidth: 20,
+  //   enableHiding: true,
+  //   cell: ({ row, isSelected, width }) => {
+  //     let color = isSelected ? 'cyan' : 'gray';
+  //     const decodedBody = row.request.body
+  //       ? tryDecodeBase64(row.request.body)
+  //       : null;
+  //     let expiredText = '-';
+
+  //     try {
+  //       const knownHeaderNames = ['svix-timestamp', 'stripe-signature'];
+  //       const knownBodyNames = ['expired', 'expires'];
+
+  //       // First check headers
+  //       for (const name of knownHeaderNames) {
+  //         const value = row.request.headers[name];
+  //         if (value && typeof value === 'string') {
+  //           let timestamp: number | null = null;
+
+  //           if (name === 'stripe-signature') {
+  //             const match = value?.match(/t=(\d+)/);
+  //             if (match?.[1]) {
+  //               timestamp = Number.parseInt(match[1], 10);
+  //             }
+  //           } else {
+  //             timestamp = Number.parseInt(value, 10);
+  //           }
+
+  //           if (!Number.isNaN(timestamp) && timestamp !== null) {
+  //             const expirationDate = new Date(timestamp * 1000);
+  //             const now = new Date();
+  //             color =
+  //               expirationDate > now ? (isSelected ? 'cyan' : 'green') : 'gray';
+  //             expiredText = formatDistanceToNow(expirationDate, {
+  //               addSuffix: true,
+  //               includeSeconds: true,
+  //             });
+  //           }
+  //           break;
+  //         }
+  //       }
+
+  //       // If not found in headers, check body
+  //       if (expiredText === '-' && decodedBody) {
+  //         const parsedBody = JSON.parse(decodedBody);
+  //         for (const name of knownBodyNames) {
+  //           const value = getNestedField(parsedBody, name);
+  //           if (typeof value === 'string') {
+  //             expiredText = value;
+  //             break;
+  //           }
+  //         }
+  //       }
+  //     } catch {
+  //       // Do nothing
+  //     }
+  //     color = isSelected && color === 'gray' ? 'cyan' : color;
+  //     return (
+  //       <Text
+  //         color={color}
+  //         dimColor={!isSelected && color === 'gray'}
+  //         bold={isSelected}
+  //       >
+  //         {truncateText(expiredText, width)}
+  //       </Text>
+  //     );
+  //   },
+  // },
+
   {
     id: 'method',
     header: 'Method',
@@ -115,15 +236,15 @@ export const requestColumns: ColumnDef<RequestType>[] = [
   },
   {
     id: 'responseTimeMs',
-    header: 'Time',
-    minWidth: 6,
+    header: 'Time (ms)',
+    minWidth: 8,
     cell: ({ row, isSelected, width }) => {
       let color = isSelected ? 'cyan' : 'white';
       const responseTimeMs = row.responseTimeMs;
 
-      if (responseTimeMs < 500) {
+      if (responseTimeMs < 1000) {
         color = 'green';
-      } else if (responseTimeMs < 1000) {
+      } else if (responseTimeMs < 3000) {
         color = 'yellow';
       } else {
         color = 'red';
@@ -137,7 +258,7 @@ export const requestColumns: ColumnDef<RequestType>[] = [
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {responseTimeMs === 0 || responseTimeMs === undefined
             ? '-'
-            : truncateText(`${responseTimeMs}ms`, width)}
+            : truncateText(responseTimeMs.toString(), width)}
         </Text>
       );
     },
@@ -185,19 +306,6 @@ export const requestColumns: ColumnDef<RequestType>[] = [
             row.request.headers['user-agent']?.split(' ')[0] ?? '',
             width,
           )}
-        </Text>
-      );
-    },
-  },
-  {
-    id: 'time',
-    header: 'Created',
-    minWidth: 15,
-    cell: ({ row, isSelected, width }) => {
-      const color = isSelected ? 'cyan' : 'gray';
-      return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(formatRequestTime(new Date(row.createdAt)), width)}
         </Text>
       );
     },

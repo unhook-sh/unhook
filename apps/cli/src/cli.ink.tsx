@@ -3,17 +3,22 @@ import { join } from 'node:path';
 import { sql } from '@unhook/db/client';
 import { createId } from '@unhook/id';
 import { loadConfig } from '@unhook/tunnel';
-import debug from 'debug';
 import { render } from 'ink';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { Layout } from './app/layout';
+import { debug, enableDebug } from './log';
+import { initializeLogger } from './log';
 import type { PageProps, PagePropsExclusive } from './types';
 
 const log = debug('unhook:cli');
+
 const pkg = JSON.parse(
   readFileSync(join(__dirname, '../package.json'), 'utf-8'),
 ) as { version: string };
+
+// Initialize the logger
+initializeLogger();
 
 // Setup React DevTools
 try {
@@ -186,7 +191,7 @@ async function main() {
 
   // Enable debug logging if requested
   if (layoutProps.debug) {
-    debug.enable('unhook:*');
+    enableDebug('unhook:*');
     log('Debug logging enabled');
   }
 

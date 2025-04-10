@@ -8,9 +8,13 @@ import type { LiteralUnion } from 'type-fest';
 export function Spinner({
   type = 'dots',
   color,
+  dimColor = false,
+  bold = false,
 }: {
   type?: SpinnerName;
   color?: LiteralUnion<ForegroundColorName, string>;
+  dimColor?: boolean;
+  bold?: boolean;
 }) {
   const [frame, setFrame] = useState(0);
   const spinner = spinners[type];
@@ -28,5 +32,9 @@ export function Spinner({
     };
   }, [spinner]);
 
-  return <Text color={color}>{spinner.frames[frame]}</Text>;
+  return (
+    <Text color={color} dimColor={dimColor} bold={bold}>
+      {spinner.frames[frame]}
+    </Text>
+  );
 }

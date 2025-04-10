@@ -222,17 +222,19 @@ export function Table<T extends ScalarDict>({
       rowIndex?: number;
     }) => (
       <Box flexDirection="row">
-        {columns.map((column, colIndex) => (
-          <React.Fragment key={`${column.id}-${rowIndex}`}>
-            {renderCell({
-              column,
-              row,
-              isHeader,
-              colIndex,
-              rowIndex,
-            })}
-          </React.Fragment>
-        ))}
+        {columns
+          .filter((column) => !column.enableHiding)
+          .map((column, colIndex) => (
+            <React.Fragment key={`${column.id}-${rowIndex}`}>
+              {renderCell({
+                column,
+                row,
+                isHeader,
+                colIndex,
+                rowIndex,
+              })}
+            </React.Fragment>
+          ))}
       </Box>
     ),
     [columns, renderCell],
@@ -241,18 +243,20 @@ export function Table<T extends ScalarDict>({
   const renderBorder = React.useCallback(() => {
     return (
       <Box flexDirection="row">
-        {columns.map((column, index) => (
-          <React.Fragment key={`border-${column.id}`}>
-            <Box width={columnWidths[column.id] || 0}>
-              <Text dimColor>
-                {figures.line.repeat(columnWidths[column.id] || 0)}
-              </Text>
-            </Box>
-            {index < columns.length - 1 && (
-              <Text dimColor>{figures.lineUpDownLeftRight}</Text>
-            )}
-          </React.Fragment>
-        ))}
+        {columns
+          .filter((column) => !column.enableHiding)
+          .map((column, index) => (
+            <React.Fragment key={`border-${column.id}`}>
+              <Box width={columnWidths[column.id] || 0}>
+                <Text dimColor>
+                  {figures.line.repeat(columnWidths[column.id] || 0)}
+                </Text>
+              </Box>
+              {index < columns.length - 1 && (
+                <Text dimColor>{figures.lineUpDownLeftRight}</Text>
+              )}
+            </React.Fragment>
+          ))}
       </Box>
     );
   }, [columns, columnWidths]);

@@ -323,6 +323,10 @@ export const Requests = pgTable('requests', {
     enum: ['pending', 'completed', 'failed'],
   }).notNull(),
   failedReason: text('failedReason'),
+  timestamp: timestamp('timestamp', {
+    mode: 'date',
+    withTimezone: true,
+  }).notNull(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,

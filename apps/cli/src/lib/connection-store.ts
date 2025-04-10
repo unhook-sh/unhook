@@ -142,6 +142,7 @@ const createConnectionStore = () => {
       // --- Create DB Connection Record --- (Common logic)
       let dbConnectionId: string | null = null;
       try {
+        log('Attempting to create a database connection record');
         const result = await db
           .insert(Connections)
           .values({
@@ -159,6 +160,7 @@ const createConnectionStore = () => {
         if (!result[0]?.id) {
           throw new Error('Failed to create connection record in DB');
         }
+        log('Database connection record created with ID:', result[0].id);
         dbConnectionId = result[0].id;
       } catch (dbError) {
         log('Error creating connection record:', dbError);
@@ -222,7 +224,7 @@ const createConnectionStore = () => {
               await get().setConnectionState({
                 isConnected: true,
                 pid: null, // PID not applicable for URL
-                connectionId: dbConnectionId,
+                connectionId: dbConnectionId, // Ensure connectionId is set
               });
             } else {
               // Non-OK response
@@ -232,7 +234,7 @@ const createConnectionStore = () => {
               await get().setConnectionState({
                 isConnected: false,
                 pid: null,
-                connectionId: dbConnectionId,
+                connectionId: dbConnectionId, // Ensure connectionId is set
               });
             }
           }

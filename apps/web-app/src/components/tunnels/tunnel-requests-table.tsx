@@ -59,6 +59,7 @@ export function TunnelRequestsTable({
               tunnelId,
               apiKey: 'pk_test_123',
               status,
+              originalRequestedAt: timestamp,
               createdAt: timestamp,
               userId: 'user_123',
               orgId: 'org_123',

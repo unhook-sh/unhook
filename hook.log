@@ -1,4 +1,2813 @@
 unhook:cli: Setting up React DevTools connection... 
 unhook:cli: Connecting to React DevTools... 
 unhook:cli: React DevTools connection setup complete 
-unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/propelauth POST {"email":"yzhang@example.org","email_confirmed":false,"event_type":"user.created","picture_url":"https://img.propelauth.com/868526c3-26d9-469e-ac2d-a543aaeb6c26.png","user_id":"34c3e20b-4c96-f461-de1c-4e79a6f2854b"} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Los_Angeles","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fpropelauth","user-agent":"Svix-Webhooks/1.62.0 (sender-9YMgn; +https://www.svix.com/http-sender/)","x-vercel-proxied-for":"50.112.21.217","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744245411","x-clerk-auth-message":"","x-real-ip":"50.112.21.217","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfQnIyMThtUXo4ZXZncVI5Y25pMUJCU0VlMXg4SyIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDI0NTExMSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQyNDYwMzEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6ImRnZHN4LTE3NDQyNDUxMTE2MTItYTI4OGJlNmZlMDZjIiwiZW52IjoicHJvZHVjdGlvbiJ9.mbne__DpG3XLex3_3zkUCXhZX5T0CfmYba-CYWZXKps\"}","x-vercel-ip-country-region":"OR","x-vercel-ip-postal-code":"97818","svix-timestamp":"1744245111","x-vercel-ja4-digest":"t13d311100_e8f1e7e78f70_d41ae481755e","x-vercel-ip-as-number":"16509","accept":"*/*","x-vercel-forwarded-for":"50.112.21.217","content-length":"215","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=50.112.21.217;host=unhook.sh;proto=https;sig=0QmVhcmVyIGZjYTJiMDU2Yzg0YTVlOTc0Y2IxZGI5ODI3YTJjZWUyNDI0MmEwOGE0MmNmMjMyYWI2ZmEwZTI2MWMxN2IwN2U=;exp=1744245411","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","svix-id":"msg_2vVzcsCq5qHOOSh0Zquhx6ct2M7","x-vercel-ip-city":"Boardman","x-vercel-proxy-signature":"Bearer fca2b056c84a5e974cb1db9827a2cee24242a08a42cf232ab6fa0e261c17b07e","x-forwarded-port":"443","svix-signature":"v1,foaflSZQwdpO5/aQGIgE6SbC6Qf6ptT9EP4g7TXOhLw=","content-type":"application/json","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-mvca3zj5a-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-119.705","date":"Thu, 10 Apr 2025 00:31:51 GMT","x-vercel-ip-latitude":"45.8401","x-forwarded-for":"50.112.21.217","x-vercel-id":"pdx1::dgdsx-1744245111612-a288be6fe06c","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrq2aJ9nPVgmtSabsyfOE",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305982,
+  "data": {
+    "object": {
+      "id": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+      "object": "subscription",
+      "application": null,
+      "application_fee_percent": null,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null
+      },
+      "billing_cycle_anchor": 1744305978,
+      "billing_cycle_anchor_config": null,
+      "cancel_at": null,
+      "cancel_at_period_end": false,
+      "canceled_at": null,
+      "cancellation_details": {
+        "comment": null,
+        "feedback": null,
+        "reason": null
+      },
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "customer": "cus_S6c5IPtytuIodg",
+      "days_until_due": null,
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "ended_at": null,
+      "invoice_settings": {
+        "account_tax_ids": null,
+        "issuer": {
+          "type": "self"
+        }
+      },
+      "items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "si_S6c5zBXVgs67yz",
+            "object": "subscription_item",
+            "created": 1744305979,
+            "current_period_end": 1746897978,
+            "current_period_start": 1744305978,
+            "discounts": [
+
+            ],
+            "metadata": {
+            },
+            "plan": {
+              "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+              "object": "plan",
+              "active": true,
+              "amount": 1500,
+              "amount_decimal": "1500",
+              "billing_scheme": "per_unit",
+              "created": 1744305978,
+              "currency": "usd",
+              "interval": "month",
+              "interval_count": 1,
+              "livemode": false,
+              "metadata": {
+              },
+              "meter": null,
+              "nickname": null,
+              "product": "prod_S6c5NdRM14n6yU",
+              "tiers_mode": null,
+              "transform_usage": null,
+              "trial_period_days": null,
+              "usage_type": "licensed"
+            },
+            "price": {
+              "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1744305978,
+              "currency": "usd",
+              "custom_unit_amount": null,
+              "livemode": false,
+              "lookup_key": null,
+              "metadata": {
+              },
+              "nickname": null,
+              "product": "prod_S6c5NdRM14n6yU",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "tiers_mode": null,
+              "transform_quantity": null,
+              "type": "recurring",
+              "unit_amount": 1500,
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+            "tax_rates": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/subscription_items?subscription=sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+      },
+      "latest_invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "livemode": false,
+      "metadata": {
+        "foo": "bar"
+      },
+      "next_pending_invoice_item_invoice": null,
+      "on_behalf_of": null,
+      "pause_collection": null,
+      "payment_settings": {
+        "payment_method_options": null,
+        "payment_method_types": null,
+        "save_default_payment_method": "off"
+      },
+      "pending_invoice_item_interval": null,
+      "pending_setup_intent": null,
+      "pending_update": null,
+      "plan": {
+        "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+        "object": "plan",
+        "active": true,
+        "amount": 1500,
+        "amount_decimal": "1500",
+        "billing_scheme": "per_unit",
+        "created": 1744305978,
+        "currency": "usd",
+        "interval": "month",
+        "interval_count": 1,
+        "livemode": false,
+        "metadata": {
+        },
+        "meter": null,
+        "nickname": null,
+        "product": "prod_S6c5NdRM14n6yU",
+        "tiers_mode": null,
+        "transform_usage": null,
+        "trial_period_days": null,
+        "usage_type": "licensed"
+      },
+      "quantity": 1,
+      "schedule": null,
+      "start_date": 1744305978,
+      "status": "active",
+      "test_clock": null,
+      "transfer_data": null,
+      "trial_end": null,
+      "trial_settings": {
+        "end_behavior": {
+          "missing_payment_method": "create_invoice"
+        }
+      },
+      "trial_start": null
+    },
+    "previous_attributes": {
+      "metadata": {
+        "foo": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_FBRXllBKJG4CLp",
+    "idempotency_key": "cdf78c2f-6c5b-4ea2-bd55-7ffb66319984"
+  },
+  "type": "customer.subscription.updated"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306282","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MiwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDIsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Ing3c3J2LTE3NDQzMDU5ODI3MTgtMWI4NDZkZTlhMmNhIiwiZW52IjoicHJvZHVjdGlvbiJ9.FrD3ZuzA0dkzavryoeBY2DlR9Ye4KSfcJV7Zwn2oiiY\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"5332","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIDdiNDY1NTA2ZGNhMjRjYjMxOTJmN2RlYmVhY2E5ZTYyN2MwOWYwM2I4OTM2ZGYyY2IyNzIyOTVjOTQxNjAyYzc=;exp=1744306282","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer 7b465506dca24cb3192f7debeaca9e627c09f03b8936df2cb272295c941602c7","x-forwarded-port":"443","stripe-signature":"t=1744305982,v1=128cb56f3834c7a261bcf9082348dceecabe2e57f8baaae11e519554bd22f66f,v0=202805304a045ec1a52ee44302659b732bc60a3a037a98acd57263a91b82d384","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:22 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::x7srv-1744305982718-1b846de9a2ca","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+rUU5Iiq"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_dHuc5ua9LqG1nS",
+    "idempotency_key": "stripe-node-retry-e4994f14-9a77-4914-aa11-b630845b9870"
+  },
+  "type": "billing_portal.session.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Chicago","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.130.192.231","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744305205","x-clerk-auth-message":"","x-real-ip":"3.130.192.231","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNDkwNSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDU4MjUsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InRndDlsLTE3NDQzMDQ5MDU4NTgtZTUxNGFlMGZkYzQyIiwiZW52IjoicHJvZHVjdGlvbiJ9.a4XgWJquhu0QRHi3tOoGMf1-a7jWkIJr3lkGX4dlFiE\"}","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.130.192.231","content-length":"950","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.130.192.231;host=unhook.sh;proto=https;sig=0QmVhcmVyIDc4ZDBlMjBjNTQxZWU0OTFkY2QzMDgyYzkwOTI3NDRkOWJhMWI5ZDU4ZTBlMGUwMTZiZWRkYzE2NWQ0MzIyOGM=;exp=1744305205","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-proxy-signature":"Bearer 78d0e20c541ee491dcd3082c9092744d9ba1b9d58e0e0e016beddc165d43228c","x-forwarded-port":"443","stripe-signature":"t=1744304905,v1=8c9050264f438b73de75a0522a407a45414ad2b518bb1f564afe9bdf38b50cf4,v0=e933ace4b61fd6417b59c0109f2456622fd8248161cb13af090e48588c218d51","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-97.822","date":"Thu, 10 Apr 2025 17:08:25 GMT","x-vercel-ip-latitude":"37.751","x-forwarded-for":"3.130.192.231","x-vercel-id":"cle1::tgt9l-1744304905858-e514ae0fdc42","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOb12aJ9nPVgmtVFHy9oYv",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744304939,
+  "data": {
+    "object": {
+      "id": "bps_1RCOb12aJ9nPVgmtryUeWGp4",
+      "object": "billing_portal.session",
+      "configuration": "bpc_1RBn7t2aJ9nPVgmte0oaJXze",
+      "created": 1744304939,
+      "customer": "cus_S5WY2IX7T5mya1",
+      "flow": null,
+      "livemode": false,
+      "locale": null,
+      "on_behalf_of": null,
+      "return_url": "http://localhost:3000/7299cc17-d858-42b1-a392-0f096b8551a5/project123/env123/settings/billing",
+      "url": "https://billing.stripe.com/p/session/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmJvdmJnMVVIdGFnOVVBRWpyaTJlbUt0WkpRN0160100pwfuZcgv"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_tCvn9qFHCGGlHo",
+    "idempotency_key": "stripe-node-retry-7d688cce-fcb7-4b53-af00-6ee6a1cb0e41"
+  },
+  "type": "billing_portal.session.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Chicago","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.130.192.231","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744305239","x-clerk-auth-message":"","x-real-ip":"3.130.192.231","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNDkzOSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDU4NTksIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Im5ocjltLTE3NDQzMDQ5Mzk2ODQtMTNkYmVkNjAwY2U1IiwiZW52IjoicHJvZHVjdGlvbiJ9.OXPGkPk9gYaYcev-9M3HS8UVQ2A_cF0DaYy26yAiTvs\"}","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.130.192.231","content-length":"950","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.130.192.231;host=unhook.sh;proto=https;sig=0QmVhcmVyIDMwMDI3YjVjNmY1NTE2OTJmODlkNGI1ZGRkMjUwYWUzYzg2NGUwMGQ4MmQyZTJkYmVhNmJkOWY5YTZlZWNmZGQ=;exp=1744305239","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-proxy-signature":"Bearer 30027b5c6f551692f89d4b5ddd250ae3c864e00d82d2e2dbea6bd9f9a6eecfdd","x-forwarded-port":"443","stripe-signature":"t=1744304939,v1=c4a687f91cc14b50560e451a7031297555bf768ce1b386df9f0ca91659c70b2c,v0=9c2660ef39934cda337ed01b5817de1da6f54f36a9e949f8ee7b55db10aeb426","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-97.822","date":"Thu, 10 Apr 2025 17:08:59 GMT","x-vercel-ip-latitude":"37.751","x-forwarded-for":"3.130.192.231","x-vercel-id":"cle1::nhr9m-1744304939684-13dbed600ce5","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOj42aJ9nPVgmtyQjOvVUU",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305438,
+  "data": {
+    "object": {
+      "id": "bps_1RCOj42aJ9nPVgmt4zQTLzgL",
+      "object": "billing_portal.session",
+      "configuration": "bpc_1RBn7t2aJ9nPVgmte0oaJXze",
+      "created": 1744305438,
+      "customer": "cus_S5WY2IX7T5mya1",
+      "flow": null,
+      "livemode": false,
+      "locale": null,
+      "on_behalf_of": null,
+      "return_url": "http://localhost:3000/7299cc17-d858-42b1-a392-0f096b8551a5/project123/env123/settings/billing",
+      "url": "https://billing.stripe.com/p/session/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmJ3RGR0cEhKQ0VnT01TWTJHTWpYRU1iTXhzaGw101002ubFXzsH"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_sZeDozg9PpUJJR",
+    "idempotency_key": "stripe-node-retry-7324d3e5-2ade-4f60-8128-bece80590f5d"
+  },
+  "type": "billing_portal.session.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744305738","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTQzOCwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDYzNTgsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Ijc1dnBsLTE3NDQzMDU0Mzg5MjMtZjhjNjM2ZGMyNTBmIiwiZW52IjoicHJvZHVjdGlvbiJ9.eLLrUQ6Ag0xWZb2UBio3vAJBQWWfFNW_ZA2Qc7O4ZmY\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"950","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIGVlYmE1OWQ2ZDM4ZDQ1ODQ5ZDc4ZjcxYzQ0NzIyMjIyODZiNDZlYThmODQxNmE4YzdjMDkyNjMyMzg1Y2EwMGM=;exp=1744305738","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer eeba59d6d38d45849d78f71c4472222286b46ea8f8416a8c7c092632385ca00c","x-forwarded-port":"443","stripe-signature":"t=1744305438,v1=758c89bb2eee6ecf1ef45be285bb21731661f67b4f8e4ef75fcd7ec85f0dbe78,v0=a9e8ecd6744a1e27fffec642d0a0cfa0e2493599081369f217b79b91d7180100","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:17:18 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::75vpl-1744305438923-f8c636dc250f","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:tabs: TabList: rightArrow 1 response
+unhook:tabs: store: setActiveTabIndex response  1
+unhook:request-details: handleTabChange response
+unhook:tabs: TabList: rightArrow 0 request
+unhook:tabs: store: setActiveTabIndex request response 0
+unhook:request-details: handleTabChange request
+unhook:tabs: TabList: leftArrow -1 
+unhook:tabs: store: setActiveTabIndex  request -1
+unhook:tabs: TabList: rightArrow 0 request
+unhook:tabs: store: setActiveTabIndex request  0
+unhook:request-details: handleTabChange request
+unhook:tabs: TabList: rightArrow 1 response
+unhook:tabs: store: setActiveTabIndex response request 1
+unhook:request-details: handleTabChange response
+unhook:tabs: TabList: rightArrow 0 request
+unhook:tabs: store: setActiveTabIndex request response 0
+unhook:request-details: handleTabChange request
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOp62aJ9nPVgmtsGc78mcm",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305812,
+  "data": {
+    "object": {
+      "id": "cus_S6c3k5awbvquta",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1744305812,
+      "currency": null,
+      "default_source": null,
+      "delinquent": false,
+      "description": "(created by Stripe CLI)",
+      "discount": null,
+      "email": null,
+      "invoice_prefix": "570D52A9",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_1RCOp62aJ9nPVgmtzZGPDkrD",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "name": null,
+      "next_invoice_sequence": 1,
+      "phone": null,
+      "preferred_locales": [
+
+      ],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_Oz2WBhuqz8D8eF",
+    "idempotency_key": "f904979e-446d-48db-88ba-bdea33fb6012"
+  },
+  "type": "customer.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306112","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxMywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzMsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Ijl4OGN6LTE3NDQzMDU4MTI5OTktNjZiYTUyZmE3MjU2IiwiZW52IjoicHJvZHVjdGlvbiJ9.i3XxP1NLFKY8TT68AGhxFRUjhbMIH-RnyWsL08GRQGU\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"1134","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIGRkMzEyMDkyM2NiMDVhMzBiZTZjZGQ4MzE0YTllOGE5NmE4ZWI0ZWU1ZDdiYjAyN2FmNjRjNDkzMDFkOTJiY2M=;exp=1744306112","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer dd3120923cb05a30be6cdd8314a9e8a96a8eb4ee5d7bb027af64c49301d92bcc","x-forwarded-port":"443","stripe-signature":"t=1744305812,v1=c73d66b6eb2a22e8d6677be3f0f1a4d71b25cf79e5b3b6434a28826a683d81ed,v0=abc6fee78966d9f118e75670c01e11c8c65fd0f77233a4bffafea83668169631","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:23:33 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::9x8cz-1744305812999-66ba52fa7256","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOp62aJ9nPVgmtbjhdC6Vt",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305812,
+  "data": {
+    "object": {
+      "id": "pm_1RCOp62aJ9nPVgmtzZGPDkrD",
+      "object": "payment_method",
+      "allow_redisplay": "unspecified",
+      "billing_details": {
+        "address": {
+          "city": null,
+          "country": null,
+          "line1": null,
+          "line2": null,
+          "postal_code": null,
+          "state": null
+        },
+        "email": null,
+        "name": null,
+        "phone": null
+      },
+      "card": {
+        "brand": "visa",
+        "checks": {
+          "address_line1_check": null,
+          "address_postal_code_check": null,
+          "cvc_check": "pass"
+        },
+        "country": "US",
+        "display_brand": "visa",
+        "exp_month": 4,
+        "exp_year": 2026,
+        "fingerprint": "XTrABonvizYQtHjj",
+        "funding": "credit",
+        "generated_from": null,
+        "last4": "4242",
+        "networks": {
+          "available": [
+            "visa"
+          ],
+          "preferred": null
+        },
+        "regulated_status": "unregulated",
+        "three_d_secure_usage": {
+          "supported": true
+        },
+        "wallet": null
+      },
+      "created": 1744305812,
+      "customer": "cus_S6c3k5awbvquta",
+      "livemode": false,
+      "metadata": {
+      },
+      "type": "card"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_Oz2WBhuqz8D8eF",
+    "idempotency_key": "f904979e-446d-48db-88ba-bdea33fb6012"
+  },
+  "type": "payment_method.attached"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Chicago","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.130.192.231","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306112","x-clerk-auth-message":"","x-real-ip":"3.130.192.231","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxMiwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzIsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InFxdGw2LTE3NDQzMDU4MTI5MDYtM2UzZWQwZTJiZTVjIiwiZW52IjoicHJvZHVjdGlvbiJ9.lBSGPQDWRlIwRW7IxsSYUy1N8gnTMMBAGIeC7k3BKN8\"}","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.130.192.231","content-length":"1602","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.130.192.231;host=unhook.sh;proto=https;sig=0QmVhcmVyIDM0NTdkOGQwZjRlNTJiZmZlZmQyNWMwY2NhNTkzZWM3ZDEzNDNiNzQ0YTZhY2ViOWMzNDFmN2YyMzYyMDE5ZDU=;exp=1744306112","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-proxy-signature":"Bearer 3457d8d0f4e52bffefd25c0cca593ec7d1343b744a6aceb9c341f7f2362019d5","x-forwarded-port":"443","stripe-signature":"t=1744305812,v1=1970626f8bd7f120444ff86686d384fb84a2d9e8b8552993600bf783c5870a8d,v0=15fef34307f8c45f34657ad5100dc9b6a23f61fac1e1644c669a8e643804b87c","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-97.822","date":"Thu, 10 Apr 2025 17:23:32 GMT","x-vercel-ip-latitude":"37.751","x-forwarded-for":"3.130.192.231","x-vercel-id":"cle1::qqtl6-1744305812906-3e3ed0e2be5c","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpA2aJ9nPVgmt7WHMzAH0",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305815,
+  "data": {
+    "object": {
+      "id": "cus_S6c3k5awbvquta",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1744305812,
+      "currency": "usd",
+      "default_source": null,
+      "delinquent": false,
+      "description": "(created by Stripe CLI)",
+      "discount": null,
+      "email": null,
+      "invoice_prefix": "570D52A9",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_1RCOp62aJ9nPVgmtzZGPDkrD",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "name": null,
+      "next_invoice_sequence": 2,
+      "phone": null,
+      "preferred_locales": [
+
+      ],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    },
+    "previous_attributes": {
+      "currency": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_9mlfUxowMsnCPc",
+    "idempotency_key": "d9f4df06-77f1-46fc-9303-95d4db2f1bb6"
+  },
+  "type": "customer.updated"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306116","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxNiwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzYsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Imh0cXFxLTE3NDQzMDU4MTY3NTMtM2Y0OGRjNTlmZTljIiwiZW52IjoicHJvZHVjdGlvbiJ9.MFtDDk04nY3Q9ECSUoHMbaheU-Q7q0Z7uv8rF4_WoaY\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"1194","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIDhlYzk0YjMwYjJlZjc4OGIzMWFkNTAwYTVkY2Q1NWY2OTkyNDFlMWEwZjgyNTk2MDFhMjE0NzNiMGQ4YWIyOTI=;exp=1744306116","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer 8ec94b30b2ef788b31ad500a5dcd55f699241e1a0f8259601a21473b0d8ab292","x-forwarded-port":"443","stripe-signature":"t=1744305816,v1=bc12eacf97e3ce9918f219421737214c99103e167afe2317072961592322615f,v0=b0b4974a0d423159574ab352546b8ef8adcf9e614c6c1d4dce974600b87322f7","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:23:36 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::htqqq-1744305816753-3f48dc59fe9c","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpA2aJ9nPVgmtG4VS5QUm",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305816,
+  "data": {
+    "object": {
+      "id": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+      "object": "subscription",
+      "application": null,
+      "application_fee_percent": null,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null
+      },
+      "billing_cycle_anchor": 1744305813,
+      "billing_cycle_anchor_config": null,
+      "cancel_at": null,
+      "cancel_at_period_end": false,
+      "canceled_at": null,
+      "cancellation_details": {
+        "comment": null,
+        "feedback": null,
+        "reason": null
+      },
+      "collection_method": "charge_automatically",
+      "created": 1744305813,
+      "currency": "usd",
+      "customer": "cus_S6c3k5awbvquta",
+      "days_until_due": null,
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "ended_at": null,
+      "invoice_settings": {
+        "account_tax_ids": null,
+        "issuer": {
+          "type": "self"
+        }
+      },
+      "items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "si_S6c3bxY4znumdk",
+            "object": "subscription_item",
+            "created": 1744305814,
+            "current_period_end": 1746897813,
+            "current_period_start": 1744305813,
+            "discounts": [
+
+            ],
+            "metadata": {
+            },
+            "plan": {
+              "id": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+              "object": "plan",
+              "active": true,
+              "amount": 1500,
+              "amount_decimal": "1500",
+              "billing_scheme": "per_unit",
+              "created": 1744305813,
+              "currency": "usd",
+              "interval": "month",
+              "interval_count": 1,
+              "livemode": false,
+              "metadata": {
+              },
+              "meter": null,
+              "nickname": null,
+              "product": "prod_S6c3ZDRQ6LiZvQ",
+              "tiers_mode": null,
+              "transform_usage": null,
+              "trial_period_days": null,
+              "usage_type": "licensed"
+            },
+            "price": {
+              "id": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1744305813,
+              "currency": "usd",
+              "custom_unit_amount": null,
+              "livemode": false,
+              "lookup_key": null,
+              "metadata": {
+              },
+              "nickname": null,
+              "product": "prod_S6c3ZDRQ6LiZvQ",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "tiers_mode": null,
+              "transform_quantity": null,
+              "type": "recurring",
+              "unit_amount": 1500,
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+            "tax_rates": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/subscription_items?subscription=sub_1RCOp72aJ9nPVgmto2YW8Gkb"
+      },
+      "latest_invoice": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+      "livemode": false,
+      "metadata": {
+      },
+      "next_pending_invoice_item_invoice": null,
+      "on_behalf_of": null,
+      "pause_collection": null,
+      "payment_settings": {
+        "payment_method_options": null,
+        "payment_method_types": null,
+        "save_default_payment_method": "off"
+      },
+      "pending_invoice_item_interval": null,
+      "pending_setup_intent": null,
+      "pending_update": null,
+      "plan": {
+        "id": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+        "object": "plan",
+        "active": true,
+        "amount": 1500,
+        "amount_decimal": "1500",
+        "billing_scheme": "per_unit",
+        "created": 1744305813,
+        "currency": "usd",
+        "interval": "month",
+        "interval_count": 1,
+        "livemode": false,
+        "metadata": {
+        },
+        "meter": null,
+        "nickname": null,
+        "product": "prod_S6c3ZDRQ6LiZvQ",
+        "tiers_mode": null,
+        "transform_usage": null,
+        "trial_period_days": null,
+        "usage_type": "licensed"
+      },
+      "quantity": 1,
+      "schedule": null,
+      "start_date": 1744305813,
+      "status": "active",
+      "test_clock": null,
+      "transfer_data": null,
+      "trial_end": null,
+      "trial_settings": {
+        "end_behavior": {
+          "missing_payment_method": "create_invoice"
+        }
+      },
+      "trial_start": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_9mlfUxowMsnCPc",
+    "idempotency_key": "d9f4df06-77f1-46fc-9303-95d4db2f1bb6"
+  },
+  "type": "customer.subscription.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306116","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxNiwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzYsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InNoZHg2LTE3NDQzMDU4MTY5MTItM2FjNjI5ZTQwOGFiIiwiZW52IjoicHJvZHVjdGlvbiJ9.AqlC0HHO04riV-tIraLUe2BN_fnRgHtZ9qubAZXsM6E\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"5227","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIDhlYzk0YjMwYjJlZjc4OGIzMWFkNTAwYTVkY2Q1NWY2OTkyNDFlMWEwZjgyNTk2MDFhMjE0NzNiMGQ4YWIyOTI=;exp=1744306116","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer 8ec94b30b2ef788b31ad500a5dcd55f699241e1a0f8259601a21473b0d8ab292","x-forwarded-port":"443","stripe-signature":"t=1744305816,v1=1ce8b8323eaf05c042557aae05094cd3da0b0244564c6fc525d1179b5b4596f1,v0=19fdc49c1137e101aefc8241ce033c416c9c76851a81a1f64408b96cd5034ce8","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:23:36 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::shdx6-1744305816912-3ac629e408ab","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpA2aJ9nPVgmt0PPs2Rc1",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305816,
+  "data": {
+    "object": {
+      "id": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305813,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c3k5awbvquta",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305813,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNg02004HlPpYLQ?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNg02004HlPpYLQ/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOp72aJ9nPVgmt4knCepNc",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+                "subscription_item": "si_S6c3bxY4znumdk"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897813,
+              "start": 1744305813
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+                "product": "prod_S6c3ZDRQ6LiZvQ"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOp72aJ9nPVgmtETqlOj1W/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "570D52A9-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305813,
+      "period_start": 1744305813,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305813,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305813,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_9mlfUxowMsnCPc",
+    "idempotency_key": "d9f4df06-77f1-46fc-9303-95d4db2f1bb6"
+  },
+  "type": "invoice.finalized"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.18.12.63","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306117","x-clerk-auth-message":"","x-real-ip":"3.18.12.63","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxNywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzcsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6IndoejVqLTE3NDQzMDU4MTcxMjMtOWNlZWY5ZDdiNGNmIiwiZW52IjoicHJvZHVjdGlvbiJ9.Ig9FDfsxjadWxH0OCRwXOg_C1Vl22zLNpjWpA7jjYaQ\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.18.12.63","content-length":"5249","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.18.12.63;host=unhook.sh;proto=https;sig=0QmVhcmVyIGM5Y2E4MjUxYWJiZTFmMzBlNTcyNGYwNDIwOWVlMjQ3OWU3MWJkNjI2NzYzY2FhNmUyNzg4NmVmMTE1YzkxOGU=;exp=1744306117","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer c9ca8251abbe1f30e5724f04209ee2479e71bd626763caa6e27886ef115c918e","x-forwarded-port":"443","stripe-signature":"t=1744305817,v1=7a3d7168ef4d02f27dca6119d987a4d65bfe7292c9b9871b38f387c56093c6e6,v0=31daa419c172fa18f18d8d29868f835ab7a25dd35a472ce80bfb37e89a5c695b","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:23:37 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"3.18.12.63","x-vercel-id":"cle1::whz5j-1744305817123-9ceef9d7b4cf","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpA2aJ9nPVgmtUJXjRHul",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305816,
+  "data": {
+    "object": {
+      "id": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305813,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c3k5awbvquta",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305813,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNg02004HlPpYLQ?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNg02004HlPpYLQ/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOp72aJ9nPVgmt4knCepNc",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+                "subscription_item": "si_S6c3bxY4znumdk"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897813,
+              "start": 1744305813
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+                "product": "prod_S6c3ZDRQ6LiZvQ"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOp72aJ9nPVgmtETqlOj1W/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "570D52A9-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305813,
+      "period_start": 1744305813,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305813,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305813,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_9mlfUxowMsnCPc",
+    "idempotency_key": "d9f4df06-77f1-46fc-9303-95d4db2f1bb6"
+  },
+  "type": "invoice.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Chicago","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.130.192.231","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306117","x-clerk-auth-message":"","x-real-ip":"3.130.192.231","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxNywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzcsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6ImdkZHBiLTE3NDQzMDU4MTcwOTItMGE5YmY4ODU0ODc0IiwiZW52IjoicHJvZHVjdGlvbiJ9.-rtfiXB3HDeYTG9dGet3jadTM4_OBiK8MnjTyIUhk40\"}","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.130.192.231","content-length":"5247","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.130.192.231;host=unhook.sh;proto=https;sig=0QmVhcmVyIDdmMDU5MDE4NDUyYTE0ZGM4OTM4MjFhNzIzNTJhYTM1Y2QyNjFhMDAxNTllYTJjYjkxMTVkNjUwNDU5YTRlZDc=;exp=1744306117","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-proxy-signature":"Bearer 7f059018452a14dc893821a72352aa35cd261a00159ea2cb9115d650459a4ed7","x-forwarded-port":"443","stripe-signature":"t=1744305816,v1=2d4a39a501303e533e2828eb819add12147350322d322f2dcf0b6b7161aac853,v0=b5f4a5ac44e8d64c6ecc295e81dd907beba3aa7d6e4b29db80412c785cebd879","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-97.822","date":"Thu, 10 Apr 2025 17:23:37 GMT","x-vercel-ip-latitude":"37.751","x-forwarded-for":"3.130.192.231","x-vercel-id":"cle1::gddpb-1744305817092-0a9bf8854874","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpA2aJ9nPVgmtYuvxScrE",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305816,
+  "data": {
+    "object": {
+      "id": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305813,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c3k5awbvquta",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305813,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNg02004HlPpYLQ?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNg02004HlPpYLQ/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOp72aJ9nPVgmt4knCepNc",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+                "subscription_item": "si_S6c3bxY4znumdk"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897813,
+              "start": 1744305813
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+                "product": "prod_S6c3ZDRQ6LiZvQ"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOp72aJ9nPVgmtETqlOj1W/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "570D52A9-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305813,
+      "period_start": 1744305813,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305813,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305813,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_9mlfUxowMsnCPc",
+    "idempotency_key": "d9f4df06-77f1-46fc-9303-95d4db2f1bb6"
+  },
+  "type": "invoice.paid"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.18.12.63","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306117","x-clerk-auth-message":"","x-real-ip":"3.18.12.63","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxNywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzcsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InFwbnAyLTE3NDQzMDU4MTcxNDgtM2EwY2Y3ZWNiOGI2IiwiZW52IjoicHJvZHVjdGlvbiJ9.4iDnKCVoSBVhAqllvJLhjf7YwFjzkMHqFMHVdqnwbnw\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.18.12.63","content-length":"5244","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.18.12.63;host=unhook.sh;proto=https;sig=0QmVhcmVyIGM5Y2E4MjUxYWJiZTFmMzBlNTcyNGYwNDIwOWVlMjQ3OWU3MWJkNjI2NzYzY2FhNmUyNzg4NmVmMTE1YzkxOGU=;exp=1744306117","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer c9ca8251abbe1f30e5724f04209ee2479e71bd626763caa6e27886ef115c918e","x-forwarded-port":"443","stripe-signature":"t=1744305817,v1=61045d03b0e4e718b0f5c027afc82ec9db75c0a220176db4fef9cee84e964588,v0=996f65c793defafd37e3a98f0f8624de807b9e1a4c8e0a2a5b58591f9c5f43cd","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:23:37 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"3.18.12.63","x-vercel-id":"cle1::qpnp2-1744305817148-3a0cf7ecb8b6","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpB2aJ9nPVgmtLfj5RfQo",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305817,
+  "data": {
+    "object": {
+      "id": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+      "object": "subscription",
+      "application": null,
+      "application_fee_percent": null,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null
+      },
+      "billing_cycle_anchor": 1744305813,
+      "billing_cycle_anchor_config": null,
+      "cancel_at": null,
+      "cancel_at_period_end": false,
+      "canceled_at": null,
+      "cancellation_details": {
+        "comment": null,
+        "feedback": null,
+        "reason": null
+      },
+      "collection_method": "charge_automatically",
+      "created": 1744305813,
+      "currency": "usd",
+      "customer": "cus_S6c3k5awbvquta",
+      "days_until_due": null,
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "ended_at": null,
+      "invoice_settings": {
+        "account_tax_ids": null,
+        "issuer": {
+          "type": "self"
+        }
+      },
+      "items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "si_S6c3bxY4znumdk",
+            "object": "subscription_item",
+            "created": 1744305814,
+            "current_period_end": 1746897813,
+            "current_period_start": 1744305813,
+            "discounts": [
+
+            ],
+            "metadata": {
+            },
+            "plan": {
+              "id": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+              "object": "plan",
+              "active": true,
+              "amount": 1500,
+              "amount_decimal": "1500",
+              "billing_scheme": "per_unit",
+              "created": 1744305813,
+              "currency": "usd",
+              "interval": "month",
+              "interval_count": 1,
+              "livemode": false,
+              "metadata": {
+              },
+              "meter": null,
+              "nickname": null,
+              "product": "prod_S6c3ZDRQ6LiZvQ",
+              "tiers_mode": null,
+              "transform_usage": null,
+              "trial_period_days": null,
+              "usage_type": "licensed"
+            },
+            "price": {
+              "id": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1744305813,
+              "currency": "usd",
+              "custom_unit_amount": null,
+              "livemode": false,
+              "lookup_key": null,
+              "metadata": {
+              },
+              "nickname": null,
+              "product": "prod_S6c3ZDRQ6LiZvQ",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "tiers_mode": null,
+              "transform_quantity": null,
+              "type": "recurring",
+              "unit_amount": 1500,
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+            "tax_rates": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/subscription_items?subscription=sub_1RCOp72aJ9nPVgmto2YW8Gkb"
+      },
+      "latest_invoice": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+      "livemode": false,
+      "metadata": {
+        "foo": "bar"
+      },
+      "next_pending_invoice_item_invoice": null,
+      "on_behalf_of": null,
+      "pause_collection": null,
+      "payment_settings": {
+        "payment_method_options": null,
+        "payment_method_types": null,
+        "save_default_payment_method": "off"
+      },
+      "pending_invoice_item_interval": null,
+      "pending_setup_intent": null,
+      "pending_update": null,
+      "plan": {
+        "id": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+        "object": "plan",
+        "active": true,
+        "amount": 1500,
+        "amount_decimal": "1500",
+        "billing_scheme": "per_unit",
+        "created": 1744305813,
+        "currency": "usd",
+        "interval": "month",
+        "interval_count": 1,
+        "livemode": false,
+        "metadata": {
+        },
+        "meter": null,
+        "nickname": null,
+        "product": "prod_S6c3ZDRQ6LiZvQ",
+        "tiers_mode": null,
+        "transform_usage": null,
+        "trial_period_days": null,
+        "usage_type": "licensed"
+      },
+      "quantity": 1,
+      "schedule": null,
+      "start_date": 1744305813,
+      "status": "active",
+      "test_clock": null,
+      "transfer_data": null,
+      "trial_end": null,
+      "trial_settings": {
+        "end_behavior": {
+          "missing_payment_method": "create_invoice"
+        }
+      },
+      "trial_start": null
+    },
+    "previous_attributes": {
+      "metadata": {
+        "foo": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_DzhMGg7EPI7G3H",
+    "idempotency_key": "6bc4d8fe-737e-4cd8-9ce5-37a66bec335b"
+  },
+  "type": "customer.subscription.updated"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Chicago","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.130.192.231","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306117","x-clerk-auth-message":"","x-real-ip":"3.130.192.231","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxNywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzcsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6IjlobHRkLTE3NDQzMDU4MTc3NTYtMDYxMjEzZTAzMWFkIiwiZW52IjoicHJvZHVjdGlvbiJ9.pDH2QxpObs5H4Vlpl--3-FgckPgGIdiFdDb3vxw4CHU\"}","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.130.192.231","content-length":"5332","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.130.192.231;host=unhook.sh;proto=https;sig=0QmVhcmVyIDdmMDU5MDE4NDUyYTE0ZGM4OTM4MjFhNzIzNTJhYTM1Y2QyNjFhMDAxNTllYTJjYjkxMTVkNjUwNDU5YTRlZDc=;exp=1744306117","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-proxy-signature":"Bearer 7f059018452a14dc893821a72352aa35cd261a00159ea2cb9115d650459a4ed7","x-forwarded-port":"443","stripe-signature":"t=1744305817,v1=eadd9e0d8c0df830f655e7e727cd8666b5a02bf9c8ceee563611ed04126c6018,v0=d87ae75b49265ceb7b5aee3ce1d3423ee127afb2beec1776b454de5ee407dfd7","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-97.822","date":"Thu, 10 Apr 2025 17:23:37 GMT","x-vercel-ip-latitude":"37.751","x-forwarded-for":"3.130.192.231","x-vercel-id":"cle1::9hltd-1744305817756-061213e031ad","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOpB2aJ9nPVgmtqhEAWQPB",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305816,
+  "data": {
+    "object": {
+      "id": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305813,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c3k5awbvquta",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305813,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNw0200TJwO1OlL?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmMzZXZvb0Q4aGFHSTdoSWttSFZLRHVZclZqYVJ3LDEzNDg0NjYxNw0200TJwO1OlL/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOp72aJ9nPVgmt4knCepNc",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOp72aJ9nPVgmtETqlOj1W",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb",
+                "subscription_item": "si_S6c3bxY4znumdk"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897813,
+              "start": 1744305813
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOp72aJ9nPVgmtIXNALHSc",
+                "product": "prod_S6c3ZDRQ6LiZvQ"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOp72aJ9nPVgmtETqlOj1W/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "570D52A9-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOp72aJ9nPVgmto2YW8Gkb"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305813,
+      "period_start": 1744305813,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305813,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305813,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_9mlfUxowMsnCPc",
+    "idempotency_key": "d9f4df06-77f1-46fc-9303-95d4db2f1bb6"
+  },
+  "type": "invoice.payment_succeeded"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.18.12.63","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306117","x-clerk-auth-message":"","x-real-ip":"3.18.12.63","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTgxOCwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY3MzgsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InM4eDVkLTE3NDQzMDU4MTcyMTctNmQxMWRkMzI4OWJmIiwiZW52IjoicHJvZHVjdGlvbiJ9.C8hBfcZ6JisV_QqUtIPhZ2rkUBTJkcWHNpWpO2Ybq7E\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.18.12.63","content-length":"5257","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.18.12.63;host=unhook.sh;proto=https;sig=0QmVhcmVyIGM5Y2E4MjUxYWJiZTFmMzBlNTcyNGYwNDIwOWVlMjQ3OWU3MWJkNjI2NzYzY2FhNmUyNzg4NmVmMTE1YzkxOGU=;exp=1744306117","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer c9ca8251abbe1f30e5724f04209ee2479e71bd626763caa6e27886ef115c918e","x-forwarded-port":"443","stripe-signature":"t=1744305817,v1=b425c2652667670b352b7111bdf64b1fef428b9c6d21882b731a793fadc532fd,v0=c240df5b7077f9649c5892084571e5e64f64e87a95178f6ad9ed829794d2402a","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:23:38 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"3.18.12.63","x-vercel-id":"cle1::s8x5d-1744305817217-6d11dd3289bf","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrl2aJ9nPVgmtXjqoZgI5",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305977,
+  "data": {
+    "object": {
+      "id": "cus_S6c5IPtytuIodg",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1744305976,
+      "currency": null,
+      "default_source": null,
+      "delinquent": false,
+      "description": "(created by Stripe CLI)",
+      "discount": null,
+      "email": null,
+      "invoice_prefix": "51EA1AAE",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_1RCOrk2aJ9nPVgmt6itfDtk9",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "name": null,
+      "next_invoice_sequence": 1,
+      "phone": null,
+      "preferred_locales": [
+
+      ],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_WlO5oUGZK1wLpq",
+    "idempotency_key": "d259a7a4-f302-4d41-9109-26d69bab9f9d"
+  },
+  "type": "customer.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306277","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk3NywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY4OTcsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InZnbjVyLTE3NDQzMDU5Nzc3MTMtOWYyYjBjN2YwOTcyIiwiZW52IjoicHJvZHVjdGlvbiJ9.Qpzf21GXJe6OmBkYy_IOtEO_iAaFDepElbGwUaR1ZlQ\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"1134","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIDc3NDFmYzkxNWU0ZWEwZmYwNWNkMjk0NjM5ZTMzMDFiYjc3YzMwMmQyY2NmMTI4Y2JjNDUxZWNmMWVlM2Y5ZmQ=;exp=1744306277","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer 7741fc915e4ea0ff05cd294639e3301bb77c302d2ccf128cbc451ecf1ee3f9fd","x-forwarded-port":"443","stripe-signature":"t=1744305977,v1=a3daa274336ef936aac49020b363c98f796d447c2f6fae3e8f1b03248ffb7eff,v0=d094e54037c779742a120254089125fb4c38f853035a4e4b1e8c38734ed815d6","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:17 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::vgn5r-1744305977713-9f2b0c7f0972","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrl2aJ9nPVgmtiJlAd287",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305977,
+  "data": {
+    "object": {
+      "id": "pm_1RCOrk2aJ9nPVgmt6itfDtk9",
+      "object": "payment_method",
+      "allow_redisplay": "unspecified",
+      "billing_details": {
+        "address": {
+          "city": null,
+          "country": null,
+          "line1": null,
+          "line2": null,
+          "postal_code": null,
+          "state": null
+        },
+        "email": null,
+        "name": null,
+        "phone": null
+      },
+      "card": {
+        "brand": "visa",
+        "checks": {
+          "address_line1_check": null,
+          "address_postal_code_check": null,
+          "cvc_check": "pass"
+        },
+        "country": "US",
+        "display_brand": "visa",
+        "exp_month": 4,
+        "exp_year": 2026,
+        "fingerprint": "XTrABonvizYQtHjj",
+        "funding": "credit",
+        "generated_from": null,
+        "last4": "4242",
+        "networks": {
+          "available": [
+            "visa"
+          ],
+          "preferred": null
+        },
+        "regulated_status": "unregulated",
+        "three_d_secure_usage": {
+          "supported": true
+        },
+        "wallet": null
+      },
+      "created": 1744305976,
+      "customer": "cus_S6c5IPtytuIodg",
+      "livemode": false,
+      "metadata": {
+      },
+      "type": "card"
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_WlO5oUGZK1wLpq",
+    "idempotency_key": "d259a7a4-f302-4d41-9109-26d69bab9f9d"
+  },
+  "type": "payment_method.attached"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306277","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk3NywicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY4OTcsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InE4dDhmLTE3NDQzMDU5Nzc2NTctMjZmYTMyNmI1NDMzIiwiZW52IjoicHJvZHVjdGlvbiJ9.OrnC-ao6FIS-ct8cEc-nxC9PSJ9CDBbVuWyGP26_Zcs\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"1602","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIDc3NDFmYzkxNWU0ZWEwZmYwNWNkMjk0NjM5ZTMzMDFiYjc3YzMwMmQyY2NmMTI4Y2JjNDUxZWNmMWVlM2Y5ZmQ=;exp=1744306277","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer 7741fc915e4ea0ff05cd294639e3301bb77c302d2ccf128cbc451ecf1ee3f9fd","x-forwarded-port":"443","stripe-signature":"t=1744305977,v1=3b603691026b3dac790147cb8a0320dbe310f1884a9893df03f624c20d727bb0,v0=ee653501e2affcb937805bb6a2f18ed3f430145bb6565a5ee3d0c56eab33c467","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:17 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::q8t8f-1744305977657-26fa326b5433","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrp2aJ9nPVgmtrEws3VST",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305980,
+  "data": {
+    "object": {
+      "id": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+      "object": "subscription",
+      "application": null,
+      "application_fee_percent": null,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null
+      },
+      "billing_cycle_anchor": 1744305978,
+      "billing_cycle_anchor_config": null,
+      "cancel_at": null,
+      "cancel_at_period_end": false,
+      "canceled_at": null,
+      "cancellation_details": {
+        "comment": null,
+        "feedback": null,
+        "reason": null
+      },
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "customer": "cus_S6c5IPtytuIodg",
+      "days_until_due": null,
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "ended_at": null,
+      "invoice_settings": {
+        "account_tax_ids": null,
+        "issuer": {
+          "type": "self"
+        }
+      },
+      "items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "si_S6c5zBXVgs67yz",
+            "object": "subscription_item",
+            "created": 1744305979,
+            "current_period_end": 1746897978,
+            "current_period_start": 1744305978,
+            "discounts": [
+
+            ],
+            "metadata": {
+            },
+            "plan": {
+              "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+              "object": "plan",
+              "active": true,
+              "amount": 1500,
+              "amount_decimal": "1500",
+              "billing_scheme": "per_unit",
+              "created": 1744305978,
+              "currency": "usd",
+              "interval": "month",
+              "interval_count": 1,
+              "livemode": false,
+              "metadata": {
+              },
+              "meter": null,
+              "nickname": null,
+              "product": "prod_S6c5NdRM14n6yU",
+              "tiers_mode": null,
+              "transform_usage": null,
+              "trial_period_days": null,
+              "usage_type": "licensed"
+            },
+            "price": {
+              "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1744305978,
+              "currency": "usd",
+              "custom_unit_amount": null,
+              "livemode": false,
+              "lookup_key": null,
+              "metadata": {
+              },
+              "nickname": null,
+              "product": "prod_S6c5NdRM14n6yU",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "tiers_mode": null,
+              "transform_quantity": null,
+              "type": "recurring",
+              "unit_amount": 1500,
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+            "tax_rates": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/subscription_items?subscription=sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+      },
+      "latest_invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "livemode": false,
+      "metadata": {
+      },
+      "next_pending_invoice_item_invoice": null,
+      "on_behalf_of": null,
+      "pause_collection": null,
+      "payment_settings": {
+        "payment_method_options": null,
+        "payment_method_types": null,
+        "save_default_payment_method": "off"
+      },
+      "pending_invoice_item_interval": null,
+      "pending_setup_intent": null,
+      "pending_update": null,
+      "plan": {
+        "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+        "object": "plan",
+        "active": true,
+        "amount": 1500,
+        "amount_decimal": "1500",
+        "billing_scheme": "per_unit",
+        "created": 1744305978,
+        "currency": "usd",
+        "interval": "month",
+        "interval_count": 1,
+        "livemode": false,
+        "metadata": {
+        },
+        "meter": null,
+        "nickname": null,
+        "product": "prod_S6c5NdRM14n6yU",
+        "tiers_mode": null,
+        "transform_usage": null,
+        "trial_period_days": null,
+        "usage_type": "licensed"
+      },
+      "quantity": 1,
+      "schedule": null,
+      "start_date": 1744305978,
+      "status": "active",
+      "test_clock": null,
+      "transfer_data": null,
+      "trial_end": null,
+      "trial_settings": {
+        "end_behavior": {
+          "missing_payment_method": "create_invoice"
+        }
+      },
+      "trial_start": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_83pO7dvBoFigW7",
+    "idempotency_key": "c429d027-5138-4cc9-b811-6f17fb5fb34c"
+  },
+  "type": "customer.subscription.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306281","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6ImZ4MnR0LTE3NDQzMDU5ODEzNTQtZGI5Yjc4MDljZDE3IiwiZW52IjoicHJvZHVjdGlvbiJ9.vIc42njG22VJxAzuMHYfEcYyNvHjtNx13Fk5xpCyPFI\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"5227","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIGRiMWZiZWIwNWNiYWU5MGY2MDc4OGQ2NjhlZTllODJiMTVhNDU0YzA5MTk0Yzc0OTk2M2IzZmU2OWRmYjQyNDA=;exp=1744306281","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer db1fbeb05cbae90f60788d668ee9e82b15a454c09194c749963b3fe69dfb4240","x-forwarded-port":"443","stripe-signature":"t=1744305981,v1=356f6ce0f4345dbf872e9de51d367ce3a16fb79fb4156bceba71e5cc82af5e3d,v0=4fd55baabe79f4208450b455bc15f6374e64b40dbe7e3047e11bba4fbe6aa790","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:21 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::fx2tt-1744305981354-db9b7809cd17","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrp2aJ9nPVgmtsugQbyDF",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305980,
+  "data": {
+    "object": {
+      "id": "cus_S6c5IPtytuIodg",
+      "object": "customer",
+      "address": null,
+      "balance": 0,
+      "created": 1744305976,
+      "currency": "usd",
+      "default_source": null,
+      "delinquent": false,
+      "description": "(created by Stripe CLI)",
+      "discount": null,
+      "email": null,
+      "invoice_prefix": "51EA1AAE",
+      "invoice_settings": {
+        "custom_fields": null,
+        "default_payment_method": "pm_1RCOrk2aJ9nPVgmt6itfDtk9",
+        "footer": null,
+        "rendering_options": null
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "name": null,
+      "next_invoice_sequence": 2,
+      "phone": null,
+      "preferred_locales": [
+
+      ],
+      "shipping": null,
+      "tax_exempt": "none",
+      "test_clock": null
+    },
+    "previous_attributes": {
+      "currency": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_83pO7dvBoFigW7",
+    "idempotency_key": "c429d027-5138-4cc9-b811-6f17fb5fb34c"
+  },
+  "type": "customer.updated"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.18.12.63","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306281","x-clerk-auth-message":"","x-real-ip":"3.18.12.63","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InI0anBtLTE3NDQzMDU5ODEyNDktNDY3ZGQ3MTkyOTk0IiwiZW52IjoicHJvZHVjdGlvbiJ9.C85wC5Qp5u0qLS1a_F6EdwiQNupCJpRhHz2olSjgUPo\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.18.12.63","content-length":"1194","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.18.12.63;host=unhook.sh;proto=https;sig=0QmVhcmVyIGQzYWRhODQyN2Q4NTVjMDAwZTc1MTE2MzYzZGExYWZlZjY4NzM0NTJlMzRmNmRkYmVmMGM0NzA1YmEyNzMzOTk=;exp=1744306281","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer d3ada8427d855c000e75116363da1afef6873452e34f6ddbef0c4705ba273399","x-forwarded-port":"443","stripe-signature":"t=1744305981,v1=21dcec51260981aebbcc84209af5f4094d691285cf95548861ca184690f240d5,v0=28573629c84fba9bb9f2b4e530571c7832187072bfe4988223942257bf804858","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:21 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"3.18.12.63","x-vercel-id":"cle1::r4jpm-1744305981249-467dd7192994","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrp2aJ9nPVgmtbMyVnxHM",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305980,
+  "data": {
+    "object": {
+      "id": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c5IPtytuIodg",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305978,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOrm2aJ9nPVgmtioqB3zLm",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+                "subscription_item": "si_S6c5zBXVgs67yz"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897978,
+              "start": 1744305978
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+                "product": "prod_S6c5NdRM14n6yU"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOrm2aJ9nPVgmtmUkCKYZO/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "51EA1AAE-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305978,
+      "period_start": 1744305978,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305978,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305978,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_83pO7dvBoFigW7",
+    "idempotency_key": "c429d027-5138-4cc9-b811-6f17fb5fb34c"
+  },
+  "type": "invoice.finalized"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306281","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InBmamc5LTE3NDQzMDU5ODE2NTQtOTcyYzdjMDBlZDYwIiwiZW52IjoicHJvZHVjdGlvbiJ9.fm-NTOfAElcy0jRzJju1Xog47MIgC0XdDToLhbdTTqA\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"5249","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIGRiMWZiZWIwNWNiYWU5MGY2MDc4OGQ2NjhlZTllODJiMTVhNDU0YzA5MTk0Yzc0OTk2M2IzZmU2OWRmYjQyNDA=;exp=1744306281","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer db1fbeb05cbae90f60788d668ee9e82b15a454c09194c749963b3fe69dfb4240","x-forwarded-port":"443","stripe-signature":"t=1744305981,v1=2dd556cc005b716ea96ea93b99cabfaa8ecf4744e383a1f6fc3d8af469f81ff2,v0=a3d06731d5aad304df9978cc74f7fd38f9c4cf540c6682da1901655b8700440b","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:21 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::pfjg9-1744305981654-972c7c00ed60","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrp2aJ9nPVgmt4xPrt5kE",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305980,
+  "data": {
+    "object": {
+      "id": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c5IPtytuIodg",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305978,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOrm2aJ9nPVgmtioqB3zLm",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+                "subscription_item": "si_S6c5zBXVgs67yz"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897978,
+              "start": 1744305978
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+                "product": "prod_S6c5NdRM14n6yU"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOrm2aJ9nPVgmtmUkCKYZO/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "51EA1AAE-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305978,
+      "period_start": 1744305978,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305978,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305978,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_83pO7dvBoFigW7",
+    "idempotency_key": "c429d027-5138-4cc9-b811-6f17fb5fb34c"
+  },
+  "type": "invoice.created"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/Chicago","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.130.192.231","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306281","x-clerk-auth-message":"","x-real-ip":"3.130.192.231","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6ImxqdnNzLTE3NDQzMDU5ODE1NzgtZDA2OThmZjhkMGUxIiwiZW52IjoicHJvZHVjdGlvbiJ9.oa5SjwFi4YmO4-7vZbto1mFOKJ14qAm8ACNZmgqOtzw\"}","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.130.192.231","content-length":"5247","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.130.192.231;host=unhook.sh;proto=https;sig=0QmVhcmVyIDViNmY2ZGZmOTNhMGJiZTQ0OTM3NzU2NzM0OTAyNzJlNDNlOWE1MjAwNjFhYjRmYTUzMjNmZTVjZmMyYzVkMjI=;exp=1744306281","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-proxy-signature":"Bearer 5b6f6dff93a0bbe4493775673490272e43e9a520061ab4fa5323fe5cfc2c5d22","x-forwarded-port":"443","stripe-signature":"t=1744305981,v1=8c5dc819c756fa0251b279c6cab6d8241708b4213e1bae624b8c0ef31e0dc66a,v0=0f486c56b1ed851cdd367046669a188a3d88d2731e09a33d1764b8e8fa19bc22","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-97.822","date":"Thu, 10 Apr 2025 17:26:21 GMT","x-vercel-ip-latitude":"37.751","x-forwarded-for":"3.130.192.231","x-vercel-id":"cle1::ljvss-1744305981578-d0698ff8d0e1","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrp2aJ9nPVgmt4Fx8uHjB",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305980,
+  "data": {
+    "object": {
+      "id": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c5IPtytuIodg",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305978,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOrm2aJ9nPVgmtioqB3zLm",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+                "subscription_item": "si_S6c5zBXVgs67yz"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897978,
+              "start": 1744305978
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+                "product": "prod_S6c5NdRM14n6yU"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOrm2aJ9nPVgmtmUkCKYZO/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "51EA1AAE-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305978,
+      "period_start": 1744305978,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305978,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305978,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_83pO7dvBoFigW7",
+    "idempotency_key": "c429d027-5138-4cc9-b811-6f17fb5fb34c"
+  },
+  "type": "invoice.payment_succeeded"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306281","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6InNjaDk0LTE3NDQzMDU5ODE3ODUtNjI2YTY1NmIzMGNiIiwiZW52IjoicHJvZHVjdGlvbiJ9.GGevqLwKrItY8A76tQExIuhnJKKNaaIwXWxZIVdAfgE\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"5257","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIGRiMWZiZWIwNWNiYWU5MGY2MDc4OGQ2NjhlZTllODJiMTVhNDU0YzA5MTk0Yzc0OTk2M2IzZmU2OWRmYjQyNDA=;exp=1744306281","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer db1fbeb05cbae90f60788d668ee9e82b15a454c09194c749963b3fe69dfb4240","x-forwarded-port":"443","stripe-signature":"t=1744305981,v1=a30232f1a3639c4fd7b11fc48f69bd68b959ba96c191caffc9cac8a35bae886c,v0=e5fdbba0bc33acda93928cd9c77d6969343dbda2a39d3949666ea3755096f641","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:21 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::sch94-1744305981785-626a656b30cb","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrp2aJ9nPVgmtboBRrIeW",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305980,
+  "data": {
+    "object": {
+      "id": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "object": "invoice",
+      "account_country": "US",
+      "account_name": "dev",
+      "account_tax_ids": null,
+      "amount_due": 1500,
+      "amount_overpaid": 0,
+      "amount_paid": 1500,
+      "amount_remaining": 0,
+      "amount_shipping": 0,
+      "application": null,
+      "attempt_count": 1,
+      "attempted": true,
+      "auto_advance": false,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null,
+        "status": null
+      },
+      "automatically_finalizes_at": null,
+      "billing_reason": "subscription_create",
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "custom_fields": null,
+      "customer": "cus_S6c5IPtytuIodg",
+      "customer_address": null,
+      "customer_email": null,
+      "customer_name": null,
+      "customer_phone": null,
+      "customer_shipping": null,
+      "customer_tax_exempt": "none",
+      "customer_tax_ids": [
+
+      ],
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "due_date": null,
+      "effective_at": 1744305978,
+      "ending_balance": 0,
+      "footer": null,
+      "from_invoice": null,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY?s=ap",
+      "invoice_pdf": "https://pay.stripe.com/invoice/acct_1RBLP62aJ9nPVgmt/test_YWNjdF8xUkJMUDYyYUo5blBWZ210LF9TNmM1S1RKVmFsZXE5MlFWY2NjOW9vWnQ2bDVmYmt1LDEzNDg0Njc4MQ0200D7EplAOY/pdf?s=ap",
+      "issuer": {
+        "type": "self"
+      },
+      "last_finalization_error": null,
+      "latest_revision": null,
+      "lines": {
+        "object": "list",
+        "data": [
+          {
+            "id": "il_1RCOrm2aJ9nPVgmtioqB3zLm",
+            "object": "line_item",
+            "amount": 1500,
+            "currency": "usd",
+            "description": "1 × myproduct (at $15.00 / month)",
+            "discount_amounts": [
+
+            ],
+            "discountable": true,
+            "discounts": [
+
+            ],
+            "invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+            "livemode": false,
+            "metadata": {
+            },
+            "parent": {
+              "invoice_item_details": null,
+              "subscription_item_details": {
+                "invoice_item": null,
+                "proration": false,
+                "proration_details": {
+                  "credited_items": null
+                },
+                "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+                "subscription_item": "si_S6c5zBXVgs67yz"
+              },
+              "type": "subscription_item_details"
+            },
+            "period": {
+              "end": 1746897978,
+              "start": 1744305978
+            },
+            "pretax_credit_amounts": [
+
+            ],
+            "pricing": {
+              "price_details": {
+                "price": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+                "product": "prod_S6c5NdRM14n6yU"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "taxes": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/invoices/in_1RCOrm2aJ9nPVgmtmUkCKYZO/lines"
+      },
+      "livemode": false,
+      "metadata": {
+      },
+      "next_payment_attempt": null,
+      "number": "51EA1AAE-0001",
+      "on_behalf_of": null,
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+          },
+          "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+        },
+        "type": "subscription_details"
+      },
+      "payment_settings": {
+        "default_mandate": null,
+        "payment_method_options": null,
+        "payment_method_types": null
+      },
+      "period_end": 1744305978,
+      "period_start": 1744305978,
+      "post_payment_credit_notes_amount": 0,
+      "pre_payment_credit_notes_amount": 0,
+      "receipt_number": null,
+      "rendering": null,
+      "shipping_cost": null,
+      "shipping_details": null,
+      "starting_balance": 0,
+      "statement_descriptor": null,
+      "status": "paid",
+      "status_transitions": {
+        "finalized_at": 1744305978,
+        "marked_uncollectible_at": null,
+        "paid_at": 1744305978,
+        "voided_at": null
+      },
+      "subtotal": 1500,
+      "subtotal_excluding_tax": 1500,
+      "test_clock": null,
+      "total": 1500,
+      "total_discount_amounts": [
+
+      ],
+      "total_excluding_tax": 1500,
+      "total_pretax_credit_amounts": [
+
+      ],
+      "total_taxes": [
+
+      ],
+      "webhooks_delivered_at": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_83pO7dvBoFigW7",
+    "idempotency_key": "c429d027-5138-4cc9-b811-6f17fb5fb34c"
+  },
+  "type": "invoice.paid"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"3.18.12.63","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306281","x-clerk-auth-message":"","x-real-ip":"3.18.12.63","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MSwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDEsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Ijk5d2ZiLTE3NDQzMDU5ODE3ODgtM2E3OGVlZDg2YjU1IiwiZW52IjoicHJvZHVjdGlvbiJ9.3IsalZEn3kgDNjt7y7Ak3M9q3bot3cSe1yAmF7zkdEg\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"3.18.12.63","content-length":"5244","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=3.18.12.63;host=unhook.sh;proto=https;sig=0QmVhcmVyIGQzYWRhODQyN2Q4NTVjMDAwZTc1MTE2MzYzZGExYWZlZjY4NzM0NTJlMzRmNmRkYmVmMGM0NzA1YmEyNzMzOTk=;exp=1744306281","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer d3ada8427d855c000e75116363da1afef6873452e34f6ddbef0c4705ba273399","x-forwarded-port":"443","stripe-signature":"t=1744305981,v1=f2256fc140e3261421bde92f9d4a0ba25d1bd270306d0d77ee44f336b0670d18,v0=71dc8d749d3cd349015e7f03687137bb4b94026a4c3648527f56a958296f27f3","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:21 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"3.18.12.63","x-vercel-id":"cle1::99wfb-1744305981788-3a78eed86b55","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}
+unhook:cli:request-store: Sending request to https://o2em3sulde.execute-api.us-east-1.amazonaws.com/v1/webhooks/stripe POST {
+  "id": "evt_1RCOrq2aJ9nPVgmtSabsyfOE",
+  "object": "event",
+  "api_version": "2025-03-31.basil",
+  "created": 1744305982,
+  "data": {
+    "object": {
+      "id": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+      "object": "subscription",
+      "application": null,
+      "application_fee_percent": null,
+      "automatic_tax": {
+        "disabled_reason": null,
+        "enabled": false,
+        "liability": null
+      },
+      "billing_cycle_anchor": 1744305978,
+      "billing_cycle_anchor_config": null,
+      "cancel_at": null,
+      "cancel_at_period_end": false,
+      "canceled_at": null,
+      "cancellation_details": {
+        "comment": null,
+        "feedback": null,
+        "reason": null
+      },
+      "collection_method": "charge_automatically",
+      "created": 1744305978,
+      "currency": "usd",
+      "customer": "cus_S6c5IPtytuIodg",
+      "days_until_due": null,
+      "default_payment_method": null,
+      "default_source": null,
+      "default_tax_rates": [
+
+      ],
+      "description": null,
+      "discounts": [
+
+      ],
+      "ended_at": null,
+      "invoice_settings": {
+        "account_tax_ids": null,
+        "issuer": {
+          "type": "self"
+        }
+      },
+      "items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "si_S6c5zBXVgs67yz",
+            "object": "subscription_item",
+            "created": 1744305979,
+            "current_period_end": 1746897978,
+            "current_period_start": 1744305978,
+            "discounts": [
+
+            ],
+            "metadata": {
+            },
+            "plan": {
+              "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+              "object": "plan",
+              "active": true,
+              "amount": 1500,
+              "amount_decimal": "1500",
+              "billing_scheme": "per_unit",
+              "created": 1744305978,
+              "currency": "usd",
+              "interval": "month",
+              "interval_count": 1,
+              "livemode": false,
+              "metadata": {
+              },
+              "meter": null,
+              "nickname": null,
+              "product": "prod_S6c5NdRM14n6yU",
+              "tiers_mode": null,
+              "transform_usage": null,
+              "trial_period_days": null,
+              "usage_type": "licensed"
+            },
+            "price": {
+              "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1744305978,
+              "currency": "usd",
+              "custom_unit_amount": null,
+              "livemode": false,
+              "lookup_key": null,
+              "metadata": {
+              },
+              "nickname": null,
+              "product": "prod_S6c5NdRM14n6yU",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "tiers_mode": null,
+              "transform_quantity": null,
+              "type": "recurring",
+              "unit_amount": 1500,
+              "unit_amount_decimal": "1500"
+            },
+            "quantity": 1,
+            "subscription": "sub_1RCOrm2aJ9nPVgmtOEfH5B2n",
+            "tax_rates": [
+
+            ]
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/subscription_items?subscription=sub_1RCOrm2aJ9nPVgmtOEfH5B2n"
+      },
+      "latest_invoice": "in_1RCOrm2aJ9nPVgmtmUkCKYZO",
+      "livemode": false,
+      "metadata": {
+        "foo": "bar"
+      },
+      "next_pending_invoice_item_invoice": null,
+      "on_behalf_of": null,
+      "pause_collection": null,
+      "payment_settings": {
+        "payment_method_options": null,
+        "payment_method_types": null,
+        "save_default_payment_method": "off"
+      },
+      "pending_invoice_item_interval": null,
+      "pending_setup_intent": null,
+      "pending_update": null,
+      "plan": {
+        "id": "price_1RCOrm2aJ9nPVgmt6vYmGtk1",
+        "object": "plan",
+        "active": true,
+        "amount": 1500,
+        "amount_decimal": "1500",
+        "billing_scheme": "per_unit",
+        "created": 1744305978,
+        "currency": "usd",
+        "interval": "month",
+        "interval_count": 1,
+        "livemode": false,
+        "metadata": {
+        },
+        "meter": null,
+        "nickname": null,
+        "product": "prod_S6c5NdRM14n6yU",
+        "tiers_mode": null,
+        "transform_usage": null,
+        "trial_period_days": null,
+        "usage_type": "licensed"
+      },
+      "quantity": 1,
+      "schedule": null,
+      "start_date": 1744305978,
+      "status": "active",
+      "test_clock": null,
+      "transfer_data": null,
+      "trial_end": null,
+      "trial_settings": {
+        "end_behavior": {
+          "missing_payment_method": "create_invoice"
+        }
+      },
+      "trial_start": null
+    },
+    "previous_attributes": {
+      "metadata": {
+        "foo": null
+      }
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": {
+    "id": "req_FBRXllBKJG4CLp",
+    "idempotency_key": "cdf78c2f-6c5b-4ea2-bd55-7ffb66319984"
+  },
+  "type": "customer.subscription.updated"
+} {"host":"unhook.sh","x-vercel-ip-timezone":"America/New_York","x-vercel-ip-country":"US","x-vercel-internal-ingress-bucket":"bucket0","x-clerk-clerk-url":"https://unhook.sh/api/tunnel?key=pk_123&endpoint=v1%2Fwebhooks%2Fstripe","cache-control":"no-cache","user-agent":"Stripe/1.0 (+https://stripe.com/docs/webhooks)","x-vercel-proxied-for":"52.15.183.38","x-vercel-internal-bot-check":"pass","x-clerk-auth-token":"","x-clerk-auth-reason":"dev-browser-missing","x-vercel-proxy-signature-ts":"1744306282","x-clerk-auth-message":"","x-real-ip":"52.15.183.38","x-vercel-sc-headers":"{\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXBsb3ltZW50SWQiOiJkcGxfSFJMd0xDckNTWXo5WXoxZ05pMmFOMWtvUERRQiIsInVubGltaXRlZCI6ZmFsc2UsInBsYW4iOiJwcm8iLCJkb21haW4iOiJ1bmhvb2suc2giLCJibG9jayI6ZmFsc2UsImlhdCI6MTc0NDMwNTk4MiwicHJvamVjdElkIjoicHJqX1N0MXoyV1BDQjdPQlNJQUhVaHNMNUlKQ09pMW0iLCJleHAiOjE3NDQzMDY5MDIsIm93bmVySWQiOiJ0ZWFtX1d4WW5lNFlyYWtFd1JTeXpVdklFVnRKNSIsInJlcXVlc3RJZCI6Ing3c3J2LTE3NDQzMDU5ODI3MTgtMWI4NDZkZTlhMmNhIiwiZW52IjoicHJvZHVjdGlvbiJ9.FrD3ZuzA0dkzavryoeBY2DlR9Ye4KSfcJV7Zwn2oiiY\"}","x-vercel-ip-country-region":"OH","x-vercel-ip-postal-code":"43215","x-vercel-ja4-digest":"t13d311200_e8f1e7e78f70_550dd089df7a","x-vercel-ip-as-number":"16509","accept":"*/*; q=0.5, application/xml","x-vercel-forwarded-for":"52.15.183.38","content-length":"5332","x-clerk-auth-status":"signed-out","connection":"close","forwarded":"for=52.15.183.38;host=unhook.sh;proto=https;sig=0QmVhcmVyIDdiNDY1NTA2ZGNhMjRjYjMxOTJmN2RlYmVhY2E5ZTYyN2MwOWYwM2I4OTM2ZGYyY2IyNzIyOTVjOTQxNjAyYzc=;exp=1744306282","x-vercel-ip-continent":"NA","x-matched-path":"/api/tunnel","x-clerk-auth-signature":"","x-vercel-ip-city":"Columbus","x-vercel-proxy-signature":"Bearer 7b465506dca24cb3192f7debeaca9e627c09f03b8936df2cb272295c941602c7","x-forwarded-port":"443","stripe-signature":"t=1744305982,v1=128cb56f3834c7a261bcf9082348dceecabe2e57f8baaae11e519554bd22f66f,v0=202805304a045ec1a52ee44302659b732bc60a3a037a98acd57263a91b82d384","content-type":"application/json; charset=utf-8","x-vercel-sc-basepath":"","x-vercel-deployment-url":"unhook-d1q494key-seawatts-projects.vercel.app","accept-encoding":"gzip","x-forwarded-host":"unhook.sh","x-vercel-ip-longitude":"-83.0061","date":"Thu, 10 Apr 2025 17:26:22 GMT","x-vercel-ip-latitude":"39.9625","x-forwarded-for":"52.15.183.38","x-vercel-id":"cle1::x7srv-1744305982718-1b846de9a2ca","x-forwarded-proto":"https","x-vercel-sc-host":"iad1.suspense-cache.vercel-infra.com"}

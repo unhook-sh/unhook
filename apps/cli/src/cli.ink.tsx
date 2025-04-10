@@ -203,7 +203,7 @@ async function main() {
   try {
     const { waitUntilExit } = render(
       <Layout {...layoutProps} />, // Spread the correctly typed props
-      { debug: false },
+      { debug: layoutProps.debug },
     );
 
     await waitUntilExit();

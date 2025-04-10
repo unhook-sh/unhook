@@ -1,4 +1,3 @@
-import {} from 'node:os';
 import { TRPCReactProvider } from '@unhook/api/client';
 import { Box, Text, useInput } from 'ink';
 import { type FC, useEffect } from 'react';
@@ -99,12 +98,10 @@ function AppConfigProvider({
 
 function AppContent() {
   const dimensions = useDimensions();
-  const _clientId = useCliStore.use.clientId();
   const isConnected = useConnectionStore.use.isConnected();
   const connect = useConnectionStore.use.connect();
   const isAuthenticated = useAuthStore.use.isAuthenticated();
   const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
-  const _apiKey = useCliStore.use.apiKey();
   const pingEnabled = useCliStore.use.ping() !== false;
 
   useEffect(() => {
@@ -112,8 +109,6 @@ function AppContent() {
       connect();
     }
   }, [isConnected, selectedTunnelId, connect, isAuthenticated, pingEnabled]);
-
-  const _webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${selectedTunnelId}`;
 
   return (
     <Box
@@ -123,28 +118,6 @@ function AppContent() {
       minHeight={dimensions.height}
       // height={dimensions.height}
     >
-      {/* <Box marginBottom={1}>
-        <Ascii
-          text="Unhook"
-          width={dimensions.width}
-          font="ANSI Shadow"
-          color="gray"
-        />
-      </Box>
-      <Box marginBottom={1} flexDirection="column">
-        <Text dimColor>Client: {clientId}</Text>
-        <Text dimColor>Tunnel: {selectedTunnelId}</Text>
-        <Text dimColor>Api Key: {apiKey}</Text>
-        <Text dimColor>Webhook URL: {webhookUrl}</Text>
-        <Text dimColor>
-          Platform: {platform()} {release()}
-        </Text>
-        <Text dimColor>Hostname: {hostname()}</Text>
-      </Box>
-      <Box marginBottom={1}>
-        <ConnectionStatus />
-      </Box> */}
-
       <RouteRenderer />
 
       {/* {currentPath !== '/hotkeys' && (

@@ -1,3 +1,4 @@
+import { inspect } from 'node:util';
 import { file } from 'bun';
 import { debug as originalDebug } from 'debug';
 
@@ -15,12 +16,21 @@ export const debug = (namespace: string) => {
 
   // Logger function that logs to both console and file
   return (formatter: string, ...args: unknown[]) => {
+    // Format objects using inspect for better readability
+    const formattedArgs = args.map((arg) =>
+      typeof arg === 'object'
+        ? inspect(arg, { depth: null, colors: false })
+        : arg,
+    );
+
     // Log to console using debug
-    originalLog(formatter, ...args);
+    originalLog(formatter, ...formattedArgs);
 
     // Write to file using FileSink
     try {
-      logWriter.write(`${namespace}: ${formatter} ${args.join(' ')}\n`);
+      logWriter.write(
+        `${namespace}: ${formatter} ${formattedArgs.join(' ')}\n`,
+      );
     } catch (error) {
       console.error('Failed to write log to file:', error);
     }

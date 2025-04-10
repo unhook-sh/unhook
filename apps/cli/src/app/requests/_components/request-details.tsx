@@ -1,8 +1,13 @@
 import type { RequestType } from '@unhook/db/schema';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
+import { useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/tabs';
 import { useRequestStore } from '~/lib/request-store';
+import { debug } from '~/log';
+
+const log = debug('unhook:request-details');
 
 function tryDecodeBase64(str: string): string {
   try {
@@ -33,6 +38,13 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
   const request =
     propRequest ?? requests.find((r) => r.id === selectedRequestId);
 
+  const [activeTabName, setActiveTabName] = useState('request');
+
+  function handleTabChange(name: string) {
+    log('handleTabChange', name);
+    setActiveTabName(name);
+  }
+
   if (!request) {
     return (
       <Box>
@@ -49,88 +61,68 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
     : null;
 
   const formattedRequestBody = requestBody ? tryParseJson(requestBody) : null;
-  const _formattedResponseBody = responseBody
+  const formattedResponseBody = responseBody
     ? tryParseJson(responseBody)
     : null;
 
   return (
-    <Box width="100%" paddingLeft={2} flexDirection="column">
-      {/* Request Info */}
-      <Box flexDirection="column">
-        <Box>
-          <Text bold color="cyan">
-            {request.request.method}{' '}
-          </Text>
-          <Text>{request.request.url}</Text>
-        </Box>
-        <Box>
-          <Text dimColor>
-            Size: {request.request.size} bytes • IP: {request.request.clientIp}{' '}
-            • {new Date(request.request.timestamp).toLocaleString()}
-          </Text>
-        </Box>
-        {request.response && (
-          <Box>
-            <Text dimColor>Status: </Text>
-            <Text color={request.response.status >= 400 ? 'red' : 'green'}>
-              {request.response.status}
-            </Text>
-            <Text dimColor> • Response Time: {request.responseTimeMs}ms</Text>
-          </Box>
-        )}
-      </Box>
+    <Box>
+      <Tabs onChange={handleTabChange} defaultValue="request">
+        <TabsList>
+          <TabsTrigger value="request">Request</TabsTrigger>
+          <TabsTrigger value="response">Response</TabsTrigger>
+        </TabsList>
 
-      {/* Request Headers */}
-      <Box flexDirection="column">
-        <Text bold color="blue">
-          Request Headers
-        </Text>
-        {Object.entries(request.request.headers).map(([key, value]) => (
-          <Box key={key} marginLeft={2}>
-            <Text>{key}: </Text>
-            <Text dimColor>{value}</Text>
-          </Box>
-        ))}
-      </Box>
-
-      {/* Request Body */}
-      <Box flexDirection="column" marginTop={2}>
-        <Text bold color="blue">
-          Request Body
-        </Text>
-        <Box marginLeft={2}>
-          {formattedRequestBody && (
-            <SyntaxHighlight code={formattedRequestBody} language="json" />
-          )}
-        </Box>
-      </Box>
-
-      {/* Response Headers */}
-      {request.response && (
-        <Box flexDirection="column" marginTop={2}>
-          <Text bold color="blue">
-            Response Headers
-          </Text>
-          {Object.entries(request.response.headers).map(([key, value]) => (
-            <Box key={key} marginLeft={2}>
-              <Text>{key}: </Text>
-              <Text dimColor>{value}</Text>
+        <TabsContent value="request">
+          <Box flexDirection="row">
+            <Box width="50%" flexDirection="column">
+              <Text bold color="cyan">
+                {request.request.method}{' '}
+              </Text>
+              <Text>{request.request.url}</Text>
+              <Box>
+                <Text dimColor>
+                  Size: {request.request.size} bytes • IP:{' '}
+                  {request.request.clientIp} •{' '}
+                  {new Date(request.request.timestamp).toLocaleString()}
+                </Text>
+              </Box>
+              <Box flexDirection="column">
+                {Object.entries(request.request.headers).map(([key, value]) => (
+                  <Box key={key} marginLeft={2}>
+                    <Text>{key}: </Text>
+                    <Text dimColor>{value}</Text>
+                  </Box>
+                ))}
+              </Box>
             </Box>
-          ))}
-        </Box>
-      )}
-
-      {/* Response Body */}
-      {/* {formattedResponseBody && (
-        <Box flexDirection="column" marginTop={2}>
-          <Text bold color="blue">
-            Response Body
-          </Text>
-          <Box marginLeft={2}>
-            <SyntaxHighlight code={formattedResponseBody} language="json" />
+            <Box width="50%" flexDirection="column">
+              {formattedRequestBody && (
+                <SyntaxHighlight code={formattedRequestBody} language="json" />
+              )}
+            </Box>
           </Box>
-        </Box>
-      )} */}
+        </TabsContent>
+        <TabsContent value="response">
+          <Box flexDirection="row">
+            <Box width="50%" flexDirection="column">
+              {Object.entries(request.response?.headers || {}).map(
+                ([key, value]) => (
+                  <Box key={key} marginLeft={2}>
+                    <Text>{key}: </Text>
+                    <Text dimColor>{value}</Text>
+                  </Box>
+                ),
+              )}
+            </Box>
+            <Box width="50%" flexDirection="column">
+              {formattedResponseBody && (
+                <SyntaxHighlight code={formattedResponseBody} language="json" />
+              )}
+            </Box>
+          </Box>
+        </TabsContent>
+      </Tabs>
 
       {request.status === 'failed' && (
         <Box flexDirection="column" marginTop={2}>

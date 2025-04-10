@@ -188,6 +188,9 @@ const store = createStore<RequestStore>()((set, get) => ({
       throw new Error('Connection not found');
     }
 
+    // Get the original webhook timestamp from the request being replayed
+    const timestamp = request.timestamp || request.createdAt;
+
     // Insert the new request
     await db.insert(Requests).values({
       tunnelId: request.tunnelId,
@@ -197,6 +200,7 @@ const store = createStore<RequestStore>()((set, get) => ({
       connectionId: connectionId ?? undefined,
       request: request.request,
       status: 'pending',
+      timestamp,
     });
 
     // Update tunnel's requestCount

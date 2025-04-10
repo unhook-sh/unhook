@@ -41,6 +41,26 @@ function getNestedField(
     ) as string | null;
 }
 
+// Service configuration for webhook verification windows
+const serviceConfig = {
+  stripe: {
+    verificationWindowMs: 300 * 1000, // 300 seconds
+    userAgentPattern: /^Stripe\//i,
+  },
+  clerk: {
+    verificationWindowMs: 300 * 1000, // 300 seconds
+    userAgentPattern: /^Clerk\//i,
+  },
+  svix: {
+    verificationWindowMs: 300 * 1000, // 300 seconds
+    userAgentPattern: /^Svix\//i,
+  },
+  slack: {
+    verificationWindowMs: 600 * 1000, // 600 seconds
+    userAgentPattern: /^Slack\//i,
+  },
+};
+
 export const requestColumns: ColumnDef<RequestType>[] = [
   {
     id: 'status',
@@ -111,78 +131,51 @@ export const requestColumns: ColumnDef<RequestType>[] = [
       );
     },
   },
-  // {
-  //   id: 'expired',
-  //   header: 'Expires',
-  //   minWidth: 20,
-  //   enableHiding: true,
-  //   cell: ({ row, isSelected, width }) => {
-  //     let color = isSelected ? 'cyan' : 'gray';
-  //     const decodedBody = row.request.body
-  //       ? tryDecodeBase64(row.request.body)
-  //       : null;
-  //     let expiredText = '-';
+  {
+    id: 'expired',
+    header: 'Expires',
+    minWidth: 20,
+    // enableHiding: true,
+    cell: ({ row, isSelected, width }) => {
+      let color = isSelected ? 'cyan' : 'gray';
+      let expiredText = '-';
 
-  //     try {
-  //       const knownHeaderNames = ['svix-timestamp', 'stripe-signature'];
-  //       const knownBodyNames = ['expired', 'expires'];
+      try {
+        const userAgent = row.request.headers['user-agent'] || '';
+        // Use webhook timestamp if available, otherwise fall back to createdAt
+        const requestTime = new Date(row.timestamp || row.createdAt);
+        const now = new Date();
 
-  //       // First check headers
-  //       for (const name of knownHeaderNames) {
-  //         const value = row.request.headers[name];
-  //         if (value && typeof value === 'string') {
-  //           let timestamp: number | null = null;
+        // Find matching service from user agent
+        const service = Object.entries(serviceConfig).find(([_, config]) =>
+          config.userAgentPattern.test(userAgent),
+        );
 
-  //           if (name === 'stripe-signature') {
-  //             const match = value?.match(/t=(\d+)/);
-  //             if (match?.[1]) {
-  //               timestamp = Number.parseInt(match[1], 10);
-  //             }
-  //           } else {
-  //             timestamp = Number.parseInt(value, 10);
-  //           }
+        if (service) {
+          const [_serviceName, config] = service;
+          const expirationDate = new Date(
+            requestTime.getTime() + config.verificationWindowMs,
+          );
 
-  //           if (!Number.isNaN(timestamp) && timestamp !== null) {
-  //             const expirationDate = new Date(timestamp * 1000);
-  //             const now = new Date();
-  //             color =
-  //               expirationDate > now ? (isSelected ? 'cyan' : 'green') : 'gray';
-  //             expiredText = formatDistanceToNow(expirationDate, {
-  //               addSuffix: true,
-  //               includeSeconds: true,
-  //             });
-  //           }
-  //           break;
-  //         }
-  //       }
+          color =
+            expirationDate > now ? (isSelected ? 'cyan' : 'green') : 'red';
+          expiredText = formatDistanceToNow(expirationDate, {
+            addSuffix: true,
+            includeSeconds: true,
+          });
+        }
+      } catch {
+        // Do nothing
+      }
 
-  //       // If not found in headers, check body
-  //       if (expiredText === '-' && decodedBody) {
-  //         const parsedBody = JSON.parse(decodedBody);
-  //         for (const name of knownBodyNames) {
-  //           const value = getNestedField(parsedBody, name);
-  //           if (typeof value === 'string') {
-  //             expiredText = value;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     } catch {
-  //       // Do nothing
-  //     }
-  //     color = isSelected && color === 'gray' ? 'cyan' : color;
-  //     return (
-  //       <Text
-  //         color={color}
-  //         dimColor={!isSelected && color === 'gray'}
-  //         bold={isSelected}
-  //       >
-  //         {truncateText(expiredText, width)}
-  //       </Text>
-  //     );
-  //   },
-  // },
-
+      color = isSelected && color === 'gray' ? 'cyan' : color;
+      return (
+        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+          {truncateText(expiredText, width)}
+        </Text>
+      );
+    },
+  },
   {
     id: 'method',
     header: 'Method',

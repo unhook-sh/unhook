@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/clerk(.*)',
   '/api/tunnel',
   '/api/tunnel(.*)',
+  '/api/mock-consumer(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

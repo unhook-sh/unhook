@@ -4,20 +4,20 @@
     "": {
       "name": "@unhook/root",
       "devDependencies": {
-        "@biomejs/biome": "1.9.4",
-        "@changesets/changelog-github": "0.5.1",
-        "@changesets/cli": "2.28.1",
-        "@commitlint/cli": "19.8.0",
-        "@turbo/gen": "2.5.0",
-        "@types/bun": "1.2.9",
+        "@biomejs/biome": "latest",
+        "@changesets/changelog-github": "latest",
+        "@changesets/cli": "latest",
+        "@commitlint/cli": "latest",
+        "@turbo/gen": "latest",
+        "@types/bun": "latest",
         "@unhook/commitlint-config": "workspace:*",
-        "bun": "1.2.9",
-        "checkly": "5.2.0",
-        "knip": "5.48.0",
-        "lefthook": "1.11.8",
-        "turbo": "2.5.0",
-        "typescript": "5.8.3",
-        "vitest": "3.1.1",
+        "bun": "latest",
+        "checkly": "latest",
+        "knip": "latest",
+        "lefthook": "latest",
+        "turbo": "latest",
+        "typescript": "latest",
+        "vitest": "latest",
       },
     },
     "apps/cli": {
@@ -2507,7 +2507,7 @@
 
     "kleur": ["kleur@4.1.5", "", {}, "sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ=="],
 
-    "knip": ["knip@5.48.0", "", { "dependencies": { "@nodelib/fs.walk": "^1.2.3", "easy-table": "1.2.0", "enhanced-resolve": "^5.18.1", "fast-glob": "^3.3.3", "jiti": "^2.4.2", "js-yaml": "^4.1.0", "minimist": "^1.2.8", "picocolors": "^1.1.0", "picomatch": "^4.0.1", "pretty-ms": "^9.0.0", "smol-toml": "^1.3.1", "strip-json-comments": "5.0.1", "zod": "^3.22.4", "zod-validation-error": "^3.0.3" }, "peerDependencies": { "@types/node": ">=18", "typescript": ">=5.0.4" }, "bin": { "knip": "bin/knip.js", "knip-bun": "bin/knip-bun.js" } }, "sha512-aXiNYFf+09G5At8PALVHV+9xsKTjw2TNaA3S7Gh5rCeaOyZH6sKkvA8chX8+9If13rxMQiJ9sY0QuMblvnGsmQ=="],
+    "knip": ["knip@5.50.2", "", { "dependencies": { "@nodelib/fs.walk": "^1.2.3", "easy-table": "1.2.0", "enhanced-resolve": "^5.18.1", "fast-glob": "^3.3.3", "jiti": "^2.4.2", "js-yaml": "^4.1.0", "minimist": "^1.2.8", "picocolors": "^1.1.0", "picomatch": "^4.0.1", "pretty-ms": "^9.0.0", "smol-toml": "^1.3.1", "strip-json-comments": "5.0.1", "zod": "^3.22.4", "zod-validation-error": "^3.0.3" }, "peerDependencies": { "@types/node": ">=18", "typescript": ">=5.0.4" }, "bin": { "knip": "bin/knip.js", "knip-bun": "bin/knip-bun.js" } }, "sha512-TGpfeeSMlaRd5wUkcb4HsVGSiQrE289LZF9qtW2TLHkAZbB2rM53wVQbXSf1KjOvJfBSZYSyYQ6q79lufrwsPw=="],
 
     "konva": ["konva@9.3.20", "", {}, "sha512-7XPD/YtgfzC8b1c7z0hhY5TF1IO/pBYNa29zMTA2PeBaqI0n5YplUeo4JRuRcljeAF8lWtW65jePZZF7064c8w=="],
 

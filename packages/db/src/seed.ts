@@ -4,6 +4,7 @@ import { seed } from 'drizzle-seed';
 import { db } from './client';
 import {
   Connections,
+  Events,
   OrgMembers,
   Orgs,
   Requests,
@@ -19,6 +20,7 @@ await db.delete(OrgMembers);
 await db.delete(Tunnels);
 await db.delete(Requests);
 await db.delete(Connections);
+await db.delete(Events);
 
 await seed(db, {
   Orgs,
@@ -27,6 +29,7 @@ await seed(db, {
   Tunnels,
   Requests,
   Connections,
+  Events,
 }).refine((funcs) => ({
   OrgMembers: {
     columns: {
@@ -77,20 +80,10 @@ await seed(db, {
             maxRequestBodySize: 1048576,
             maxResponseBodySize: 1048576,
           },
-          headers: {
-            allowList: [
-              'Authorization',
-              'Content-Type',
-              'Svix-Id',
-              'Svix-Timestamp',
-              'Svix-Signature',
-            ],
-            blockList: ['Cookie', 'Set-Cookie'],
-            sensitiveHeaders: ['Authorization'],
-          },
+          headers: {},
           requests: {
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedPaths: ['/api/webhooks/.*'],
+            allowedPaths: ['/.*'],
             blockedPaths: [],
             maxRequestsPerMinute: 100,
           },
@@ -98,6 +91,28 @@ await seed(db, {
       }),
     },
     count: 1,
+  },
+  Events: {
+    count: 5,
+    columns: {
+      originalRequest: funcs.default({
+        defaultValue: {
+          id: 'req_123',
+          size: 100,
+          url: '/api/webhooks/clerk',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+          },
+          body: '{"name": "John Doe"}',
+          clientIp: '127.0.0.1',
+          timestamp: Date.now(),
+          contentType: 'application/json',
+        },
+      }),
+    },
   },
   Requests: {
     columns: {

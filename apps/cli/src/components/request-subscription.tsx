@@ -44,5 +44,25 @@ export function RequestSubscription() {
     table: 'requests',
   });
 
+  useSubscription({
+    event: '*',
+    onDelete: () => {
+      void fetchRequests();
+    },
+    onError: (error) => {
+      console.error('Subscription error:', error);
+    },
+    onInsert: async () => {
+      await fetchRequests();
+    },
+    onStatusChange: (_newStatus) => {
+      // console.log('Subscription status:', newStatus);
+    },
+    onUpdate: () => {
+      void fetchRequests();
+    },
+    table: 'events',
+  });
+
   return null;
 }

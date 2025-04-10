@@ -1,6 +1,9 @@
 import { db } from '@unhook/db/client';
-import { Requests, Tunnels } from '@unhook/db/schema';
-import type { RequestType } from '@unhook/db/schema';
+import { Events, Requests, Tunnels } from '@unhook/db/schema';
+import type {
+  RequestType as BaseRequestType,
+  EventType,
+} from '@unhook/db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
@@ -12,22 +15,26 @@ import { createSelectors } from './zustand-create-selectors';
 
 const log = debug('unhook:cli:request-store');
 
+// Extend RequestType to include event data
+export interface RequestWithEvent extends BaseRequestType {
+  event?: EventType | null;
+  [key: string]: string | number | boolean | object | null | undefined; // More specific index signature
+}
+
 interface RequestState {
-  requests: RequestType[];
+  requests: RequestWithEvent[];
   selectedRequestId: string | null;
   isLoading: boolean;
-  isDetailsVisible: boolean;
 }
 
 interface RequestActions {
-  setRequests: (requests: RequestType[]) => void;
+  setRequests: (requests: RequestWithEvent[]) => void;
   setSelectedRequestId: (id: string | null) => void;
   setIsLoading: (isLoading: boolean) => void;
-  setIsDetailsVisible: (isVisible: boolean) => void;
   initializeSelection: () => void;
   fetchRequests: () => Promise<void>;
-  handlePendingRequest: (webhookRequest: RequestType) => Promise<void>;
-  replayRequest: (request: RequestType) => Promise<void>;
+  handlePendingRequest: (webhookRequest: RequestWithEvent) => Promise<void>;
+  replayRequest: (request: RequestWithEvent) => Promise<void>;
 }
 
 type RequestStore = RequestState & RequestActions;
@@ -36,7 +43,6 @@ const defaultRequestState: RequestState = {
   requests: [],
   selectedRequestId: null,
   isLoading: true,
-  isDetailsVisible: false,
 };
 
 const store = createStore<RequestStore>()((set, get) => ({
@@ -46,7 +52,6 @@ const store = createStore<RequestStore>()((set, get) => ({
   },
   setSelectedRequestId: (id) => set({ selectedRequestId: id }),
   setIsLoading: (isLoading) => set({ isLoading }),
-  setIsDetailsVisible: (isVisible) => set({ isDetailsVisible: isVisible }),
   initializeSelection: () => {
     const { selectedRequestId, requests } = get();
     if (!selectedRequestId && requests.length > 0) {
@@ -54,8 +59,12 @@ const store = createStore<RequestStore>()((set, get) => ({
     }
   },
   fetchRequests: async () => {
+    // Fetch requests with their associated events
     const requests = await db.query.Requests.findMany({
       orderBy: [desc(Requests.createdAt)],
+      with: {
+        event: true,
+      },
     });
 
     set((state) => {
@@ -71,7 +80,7 @@ const store = createStore<RequestStore>()((set, get) => ({
       };
     });
   },
-  handlePendingRequest: async (webhookRequest: RequestType) => {
+  handlePendingRequest: async (webhookRequest: RequestWithEvent) => {
     const { port, redirect } = useCliStore.getState();
     const { connectionId } = useConnectionStore.getState();
 
@@ -143,6 +152,17 @@ const store = createStore<RequestStore>()((set, get) => ({
           })
           .where(eq(Requests.id, webhookRequest.id));
 
+        // If this request is part of an event, update the event status
+        if (webhookRequest.eventId) {
+          await db
+            .update(Events)
+            .set({
+              status: 'completed',
+              updatedAt: new Date(),
+            })
+            .where(eq(Events.id, webhookRequest.eventId));
+        }
+
         // Update tunnel's lastRequestAt
         if (webhookRequest.tunnelId) {
           await db
@@ -171,11 +191,54 @@ const store = createStore<RequestStore>()((set, get) => ({
           })
           .where(eq(Requests.id, webhookRequest.id));
 
+        // If this request is part of an event, check if we should retry or mark as failed
+        if (webhookRequest.eventId) {
+          const event = await db.query.Events.findFirst({
+            where: eq(Events.id, webhookRequest.eventId),
+          });
+
+          if (event) {
+            if (event.retryCount < event.maxRetries) {
+              // Update event for retry
+              await db
+                .update(Events)
+                .set({
+                  status: 'processing',
+                  retryCount: event.retryCount + 1,
+                  updatedAt: new Date(),
+                })
+                .where(eq(Events.id, event.id));
+
+              // Create a new retry request
+              await db.insert(Requests).values({
+                tunnelId: webhookRequest.tunnelId,
+                eventId: event.id,
+                apiKey: webhookRequest.apiKey,
+                userId: webhookRequest.userId,
+                orgId: webhookRequest.orgId,
+                request: event.originalRequest,
+                status: 'pending',
+                timestamp: new Date(),
+              });
+            } else {
+              // Mark event as failed if max retries reached
+              await db
+                .update(Events)
+                .set({
+                  status: 'failed',
+                  failedReason: `Max retries (${event.maxRetries}) reached. Last error: ${failedReason}`,
+                  updatedAt: new Date(),
+                })
+                .where(eq(Events.id, event.id));
+            }
+          }
+        }
+
         await get().fetchRequests();
       }
     }
   },
-  replayRequest: async (request: RequestType) => {
+  replayRequest: async (request: RequestWithEvent) => {
     const { userId, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
     const { ping: pingEnabled } = useCliStore.getState();
@@ -191,9 +254,29 @@ const store = createStore<RequestStore>()((set, get) => ({
     // Get the original webhook timestamp from the request being replayed
     const timestamp = request.timestamp || request.createdAt;
 
-    // Insert the new request
+    // If the request is part of an event, increment its retry count
+    if (request.eventId) {
+      const event = await db.query.Events.findFirst({
+        where: eq(Events.id, request.eventId),
+      });
+
+      if (event) {
+        // Update event status and retry count
+        await db
+          .update(Events)
+          .set({
+            status: 'processing',
+            retryCount: event.retryCount + 1,
+            updatedAt: new Date(),
+          })
+          .where(eq(Events.id, event.id));
+      }
+    }
+
+    // Insert the new request, maintaining the event relationship if it exists
     await db.insert(Requests).values({
       tunnelId: request.tunnelId,
+      eventId: request.eventId, // Keep the original event association
       apiKey: request.apiKey,
       userId: userId,
       orgId: orgId,

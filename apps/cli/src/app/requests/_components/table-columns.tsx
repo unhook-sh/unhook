@@ -1,9 +1,9 @@
-import type { RequestType } from '@unhook/db/schema';
 import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
 import figureSet from 'figures';
 import { Text } from 'ink';
 import { Spinner } from '~/components/spinner';
 import type { ColumnDef } from '~/components/table/types';
+import type { RequestWithEvent } from '~/lib/request-store';
 
 function getSelectedColor(isSelected: boolean, defaultColor = 'gray'): string {
   return isSelected ? 'white' : defaultColor;
@@ -45,6 +45,7 @@ function getNestedField(
     ) as string | null;
 }
 
+const knownEventTypeNames = ['event', 'type', 'event_type', 'eventType'];
 // Service configuration for webhook verification windows
 const serviceConfig = {
   stripe: {
@@ -63,9 +64,13 @@ const serviceConfig = {
     verificationWindowMs: 600 * 1000, // 600 seconds
     userAgentPattern: /^Slack\//i,
   },
+  unhook: {
+    verificationWindowMs: 300 * 1000, // 300 seconds
+    userAgentPattern: /^Unhook.*/i,
+  },
 };
 
-export const requestColumns: ColumnDef<RequestType>[] = [
+export const requestColumns: ColumnDef<RequestWithEvent>[] = [
   {
     id: 'status',
     header: '',
@@ -128,9 +133,38 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     minWidth: 20,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor(isSelected);
+      const now = new Date();
+      const requestTime = new Date(row.createdAt);
+      let timeText: string;
+
+      const diffInMinutes = differenceInMinutes(now, requestTime);
+
+      if (Math.abs(diffInMinutes) < 60) {
+        // Less than an hour - show minutes/seconds
+        const diffInSeconds = Math.floor(
+          (now.getTime() - requestTime.getTime()) / 1000,
+        );
+
+        if (Math.abs(diffInSeconds) < 60) {
+          // Less than a minute - show seconds
+          timeText = `${Math.abs(diffInSeconds)} seconds ago`;
+        } else {
+          // Minutes
+          timeText = formatDistanceToNow(requestTime, {
+            includeSeconds: false,
+          });
+          // Remove the "about" prefix if it exists
+          timeText = timeText.replace('about ', '');
+          timeText = `${timeText} ago`;
+        }
+      } else {
+        // More than an hour - use standard format
+        timeText = format(requestTime, 'MMM d, HH:mm:ss');
+      }
+
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(formatRequestTime(new Date(row.createdAt)), width)}
+          {truncateText(timeText, width)}
         </Text>
       );
     },
@@ -139,7 +173,6 @@ export const requestColumns: ColumnDef<RequestType>[] = [
     id: 'expired',
     header: 'Expires',
     minWidth: 20,
-    // enableHiding: true,
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor(isSelected);
       let expiredText = '-';
@@ -294,7 +327,6 @@ export const requestColumns: ColumnDef<RequestType>[] = [
         : null;
       let event = null;
       try {
-        const knownEventTypeNames = ['event', 'type', 'event_type'];
         const parsedBody = decodedBody ? JSON.parse(decodedBody) : null;
 
         for (const name of knownEventTypeNames) {

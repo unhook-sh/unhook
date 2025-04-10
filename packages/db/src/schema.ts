@@ -7,7 +7,6 @@ import {
   pgTable,
   text,
   timestamp,
-  unique,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
@@ -21,12 +20,25 @@ export const localConnectionStatusEnum = pgEnum('localConnectionStatus', [
   'connected',
   'disconnected',
 ]);
+export const eventStatusEnum = pgEnum('eventStatus', [
+  'pending',
+  'processing',
+  'completed',
+  'failed',
+]);
+export const requestStatusEnum = pgEnum('requestStatus', [
+  'pending',
+  'completed',
+  'failed',
+]);
 
 export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
 export const TunnelStatusType = z.enum(tunnelStatusEnum.enumValues).Enum;
 export const LocalConnectionStatusType = z.enum(
   localConnectionStatusEnum.enumValues,
 ).Enum;
+export const EventStatusType = z.enum(eventStatusEnum.enumValues).Enum;
+export const RequestStatusType = z.enum(requestStatusEnum.enumValues).Enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
@@ -48,18 +60,11 @@ export const Users = pgTable('user', {
 });
 
 export const UsersRelations = relations(Users, ({ many }) => ({
-  orgMembers: many(OrgMembers, {
-    relationName: 'user',
-  }),
-  tunnels: many(Tunnels, {
-    relationName: 'user',
-  }),
-  connections: many(Connections, {
-    relationName: 'user',
-  }),
-  requests: many(Requests, {
-    relationName: 'user',
-  }),
+  orgMembers: many(OrgMembers),
+  tunnels: many(Tunnels),
+  connections: many(Connections),
+  requests: many(Requests),
+  events: many(Events),
 }));
 
 export type UserType = typeof Users.$inferSelect;
@@ -76,7 +81,6 @@ export const CreateUserSchema = createInsertSchema(Users, {
 });
 
 export const Orgs = pgTable('orgs', {
-  // batch: varchar("batch", { length: 50 }),
   clerkOrgId: text('clerkOrgId'),
   createdAt: timestamp('createdAt', {
     mode: 'date',
@@ -118,42 +122,31 @@ export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
 }));
 
 // Company Members Table
-export const OrgMembers = pgTable(
-  'orgMembers',
-  {
-    createdAt: timestamp('createdAt', {
-      mode: 'date',
-      withTimezone: true,
-    }).defaultNow(),
-    createdByUserId: varchar('createdByUserId')
-      .references(() => Users.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'member' }))
-      .notNull()
-      .primaryKey(),
-    orgId: varchar('orgId')
-      .references(() => Orgs.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    role: userRoleEnum('role').default('user').notNull(),
-    updatedAt: timestamp('updatedAt', {
-      mode: 'date',
-      withTimezone: true,
-    }).$onUpdateFn(() => new Date()),
-    userId: varchar('userId')
-      .references(() => Users.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-  },
-  (table) => ({
-    orgUserUnique: unique().on(table.orgId, table.userId),
-  }),
-);
+export const OrgMembers = pgTable('orgMembers', {
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).defaultNow(),
+  createdByUserId: varchar('createdByUserId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'member' }))
+    .notNull()
+    .primaryKey(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  role: userRoleEnum('role').default('user').notNull(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+});
 
 export type OrgMembersType = typeof OrgMembers.$inferSelect & {
   user?: UserType;
@@ -169,11 +162,6 @@ export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
   org: one(Orgs, {
     fields: [OrgMembers.orgId],
     references: [Orgs.id],
-  }),
-  user: one(Users, {
-    fields: [OrgMembers.userId],
-    references: [Users.id],
-    relationName: 'user',
   }),
 }));
 
@@ -199,6 +187,7 @@ export type TunnelConfig = {
     allowedPaths?: string[]; // Only allow specific paths/patterns
     blockedPaths?: string[]; // Block specific paths/patterns
     maxRequestsPerMinute?: number; // Rate limiting
+    maxRetries?: number; // Maximum number of retries for failed requests
   };
 };
 
@@ -301,9 +290,9 @@ export interface ResponsePayload {
   body?: string;
 }
 
-export const Requests = pgTable('requests', {
+export const Events = pgTable('events', {
   id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'wr' }))
+    .$defaultFn(() => createId({ prefix: 'evt' }))
     .notNull()
     .primaryKey(),
   tunnelId: varchar('tunnelId', { length: 128 })
@@ -311,6 +300,73 @@ export const Requests = pgTable('requests', {
       onDelete: 'cascade',
     })
     .notNull(),
+  // Original request payload that created this event
+  originalRequest: json('originalRequest').$type<RequestPayload>().notNull(),
+  // Number of retry attempts made
+  retryCount: integer('retryCount').notNull().default(0),
+  // Maximum number of retries allowed
+  maxRetries: integer('maxRetries').notNull().default(3),
+  // Current status of the event
+  status: eventStatusEnum('status').notNull().default('pending'),
+  // If failed, store the reason
+  failedReason: text('failedReason'),
+  timestamp: timestamp('timestamp', {
+    mode: 'date',
+    withTimezone: true,
+  }).notNull(),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+  userId: varchar('userId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+});
+
+export type EventType = typeof Events.$inferSelect;
+
+export const EventsRelations = relations(Events, ({ one, many }) => ({
+  tunnel: one(Tunnels, {
+    fields: [Events.tunnelId],
+    references: [Tunnels.id],
+  }),
+  user: one(Users, {
+    fields: [Events.userId],
+    references: [Users.id],
+  }),
+  org: one(Orgs, {
+    fields: [Events.orgId],
+    references: [Orgs.id],
+  }),
+  requests: many(Requests),
+}));
+
+export const Requests = pgTable('requests', {
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'req' }))
+    .notNull()
+    .primaryKey(),
+  tunnelId: varchar('tunnelId', { length: 128 })
+    .references(() => Tunnels.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  eventId: varchar('eventId', { length: 128 }).references(() => Events.id, {
+    onDelete: 'cascade',
+  }),
   apiKey: text('apiKey').notNull(),
   connectionId: varchar('connectionId', { length: 128 }).references(
     () => Connections.id,
@@ -319,9 +375,7 @@ export const Requests = pgTable('requests', {
     },
   ),
   request: json('request').notNull().$type<RequestPayload>(),
-  status: varchar('status', {
-    enum: ['pending', 'completed', 'failed'],
-  }).notNull(),
+  status: requestStatusEnum('status').notNull(),
   failedReason: text('failedReason'),
   timestamp: timestamp('timestamp', {
     mode: 'date',
@@ -367,6 +421,10 @@ export const RequestsRelations = relations(Requests, ({ one }) => ({
   connection: one(Connections, {
     fields: [Requests.connectionId],
     references: [Connections.id],
+  }),
+  event: one(Events, {
+    fields: [Requests.eventId],
+    references: [Events.id],
   }),
 }));
 

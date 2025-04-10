@@ -1,6 +1,8 @@
 import { useAuth } from '~/lib/auth';
 import type { Route } from '~/lib/router';
 import { DebugPage } from './debug/page';
+import { CreateEventPage } from './events/create/page';
+import { EventsPage } from './events/page';
 import { HelpPage } from './help/page';
 import { HotkeysPage } from './hotkeys/page';
 import { LoginPage } from './login/page';
@@ -22,7 +24,10 @@ export type AppRoutePath =
   | '/metrics'
   | '/debug'
   | '/hotkeys'
-  | '/help';
+  | '/help'
+  | '/events'
+  | '/events/create'
+  | '/events/:id';
 
 export type AppRoute = Route<AppRoutePath>;
 
@@ -64,6 +69,18 @@ const authenticatedRoutes: AppRoute[] = [
   //   label: 'View Metrics',
   //   hotkey: 'm',
   // },
+  {
+    path: '/events',
+    component: EventsPage,
+    label: 'Events',
+    hotkey: 'e',
+  },
+  {
+    path: '/events/create',
+    component: CreateEventPage,
+    label: 'Create Event',
+    hotkey: 'c',
+  },
   {
     path: '/logout',
     component: LogoutPage,

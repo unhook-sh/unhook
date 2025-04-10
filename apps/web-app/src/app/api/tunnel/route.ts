@@ -1,5 +1,5 @@
 import { db } from '@unhook/db/client';
-import { Requests, Tunnels } from '@unhook/db/schema';
+import { Events, Requests, Tunnels } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
 import { filterHeaders } from '@unhook/tunnel';
 import { and, eq } from 'drizzle-orm';
@@ -27,12 +27,13 @@ function sanitizePath(path: string): string {
 
 export async function POST(req: NextRequest) {
   const apiKey =
-    req.headers.get('x-api-key') ?? req.nextUrl.searchParams.get('key');
+    req.headers.get('x-unhook-api-key') ?? req.nextUrl.searchParams.get('key');
   if (!apiKey) {
     return new NextResponse('API key required', { status: 401 });
   }
   const endpoint =
-    req.headers.get('x-endpoint') ?? req.nextUrl.searchParams.get('endpoint');
+    req.headers.get('x-unhook-endpoint') ??
+    req.nextUrl.searchParams.get('endpoint');
   if (!endpoint) {
     return new NextResponse('Endpoint required', { status: 401 });
   }
@@ -112,9 +113,30 @@ export async function POST(req: NextRequest) {
       clientIp: req.headers.get('x-forwarded-for') ?? 'unknown',
     };
 
+    // Create an event for this webhook
+    const [event] = await db
+      .insert(Events)
+      .values({
+        tunnelId: tunnel.id,
+        userId: tunnel.userId,
+        orgId: tunnel.orgId,
+        originalRequest: request,
+        status: 'pending',
+        retryCount: 0,
+        maxRetries: config.requests.maxRetries ?? 3,
+        timestamp: new Date(),
+      })
+      .returning();
+
+    if (!event) {
+      return new NextResponse('Failed to create event', { status: 500 });
+    }
+
+    // Create the initial request associated with this event
     await db.insert(Requests).values({
       id: request.id,
       tunnelId: tunnel.id,
+      eventId: event.id, // Associate with the event
       apiKey,
       userId: tunnel.userId,
       orgId: tunnel.orgId,

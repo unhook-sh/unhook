@@ -116,7 +116,6 @@ function AppContent() {
       flexDirection="column"
       // HACK to fix flickering https://github.com/vadimdemedes/ink/issues/450#issuecomment-1836274483
       minHeight={dimensions.height}
-      // height={dimensions.height}
     >
       <RouteRenderer />
 

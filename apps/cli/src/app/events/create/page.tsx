@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { useState } from 'react';
 import type { AppRoutePath } from '~/app/routes';
 import { SelectInput } from '~/components/select-input';
+import { env } from '~/env';
 import { useCliStore } from '~/lib/cli-store';
 import type { RouteProps } from '~/lib/router';
 import { useRouter } from '~/lib/router';
@@ -16,7 +17,7 @@ async function sendWebhook(params: {
   status?: number;
 }) {
   const { apiKey, fixture } = params;
-  const baseUrl = 'http://localhost:3002';
+  const baseUrl = env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/tunnel`, {
     method: 'POST',
     headers: {
@@ -49,7 +50,6 @@ export const CreateEventPage: FC<RouteProps> = () => {
     'selecting',
   );
   const [error, setError] = useState<string | null>(null);
-  const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
   const apiKey = useCliStore.use.apiKey();
   const { navigate } = useRouter<AppRoutePath>();
 

@@ -1,4 +1,5 @@
 import { useAuth } from '~/lib/auth';
+import { useCliStore } from '~/lib/cli-store';
 import type { Route } from '~/lib/router';
 import { DebugPage } from './debug/page';
 import { CreateEventPage } from './events/create/page';
@@ -41,7 +42,7 @@ const authenticatedRoutes: AppRoute[] = [
   {
     path: '/requests',
     component: RequestsPage,
-    label: 'Requests',
+    label: 'Events',
     hotkey: 'r',
   },
   {
@@ -58,22 +59,11 @@ const authenticatedRoutes: AppRoute[] = [
   //   hotkey: 's',
   // },
   {
-    path: '/debug',
-    component: DebugPage,
-    label: 'Debug Info',
-    hotkey: 'd',
-  },
-  // {
-  //   path: '/metrics',
-  //   component: () => null, // TODO: Implement metrics page
-  //   label: 'View Metrics',
-  //   hotkey: 'm',
-  // },
-  {
     path: '/events',
     component: EventsPage,
     label: 'Events',
     hotkey: 'e',
+    showInMenu: false,
   },
   {
     path: '/events/create',
@@ -88,6 +78,13 @@ const authenticatedRoutes: AppRoute[] = [
     hotkey: 'l',
   },
 ];
+
+const debugRoute: AppRoute = {
+  path: '/debug',
+  component: DebugPage,
+  label: 'Debug Info',
+  hotkey: 'd',
+};
 
 const unauthenticatedRoutes: AppRoute[] = [
   {
@@ -109,12 +106,14 @@ const commonRoutes: AppRoute[] = [
     path: '/hotkeys',
     component: HotkeysPage,
     label: 'Hotkeys',
+    showInMenu: false,
     hotkey: '?',
   },
   {
     path: '/help',
     component: HelpPage,
     label: 'Help',
+    showInMenu: false,
     hotkey: 'h',
   },
   {
@@ -127,8 +126,11 @@ const commonRoutes: AppRoute[] = [
 
 export function useRoutes() {
   const { isSignedIn } = useAuth();
+  const isDebug = useCliStore.use.debug();
+
   const routes = [
     ...(isSignedIn ? authenticatedRoutes : unauthenticatedRoutes),
+    ...(isSignedIn && isDebug ? [debugRoute] : []),
     ...commonRoutes,
   ];
 

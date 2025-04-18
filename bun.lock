@@ -293,9 +293,11 @@
       "name": "@unhook/logger",
       "version": "0.1.0",
       "dependencies": {
+        "bun": "1.2.10",
         "debug": "4.4.0",
       },
       "devDependencies": {
+        "@types/bun": "1.2.10",
         "@types/debug": "4.1.12",
         "typescript": "5.8.3",
       },

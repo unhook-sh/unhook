@@ -1,0 +1,96 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Unhook",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "configuration",
+              "providers"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": ["cli", "architecture", "essentials/data-model"]
+          },
+          {
+            "group": "Development",
+            "pages": ["contributing"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API Documentation",
+            "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "Endpoint Examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/webhook"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Github",
+          "href": "https://github.com/unhook-sh",
+          "icon": "github"
+        },
+        {
+          "anchor": "Changelog",
+          "href": "https://github.com/unhook-sh/unhook/releases",
+          "icon": "newspaper"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://discord.gg/qRZzTCK6MZ",
+          "icon": "discord"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:chris.watts.t@gmail.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://unhook.sh/dashboard"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/unhook-sh"
+    }
+  }
+}

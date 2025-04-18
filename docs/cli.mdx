@@ -1,0 +1,200 @@
+---
+title: 'CLI Reference'
+description: 'Command line interface for Unhook'
+---
+
+## Installation
+
+Install the Unhook CLI globally using your preferred package manager:
+
+<CodeGroup>
+
+```bash homebrew
+brew install unhook
+```
+
+```bash npm
+npm install -g @unhook/cli
+```
+
+```bash yarn
+yarn global add @unhook/cli
+```
+
+```bash pnpm
+pnpm add -g @unhook/cli
+```
+
+```bash bun
+bun add -g @unhook/cli
+```
+
+</CodeGroup>
+
+## Basic Usage
+
+Start the tunnel to begin receiving webhooks:
+
+```bash
+unhook --port 3000
+```
+
+This will:
+1. Create a secure tunnel to your local server
+2. Generate a webhook URL in the format: `https://unhook.sh/t_123?e=YOUR_ENDPOINT`
+3. Start forwarding webhooks to your local port
+
+## Command Reference
+
+### Core Commands
+
+```bash
+# Start tunnel with basic configuration
+unhook --port 3000
+
+# Start tunnel with custom client ID
+unhook --port 3000 --client-id dev-1
+
+# Enable debug logging
+unhook --port 3000 --debug
+
+# Redirect to remote URL instead of local port
+unhook --redirect https://api.example.com
+```
+
+### Command Line Options
+
+| Option | Alias | Description | Required | Default |
+|--------|-------|-------------|----------|---------|
+| `--port` | `-p` | Local service port | Yes* | - |
+| `--tunnel-id` | `-t` | Tunnel ID | Yes* | - |
+| `--client-id` | `-c` | Unique client ID | No | Auto-generated |
+| `--redirect` | `-r` | Redirect URL | Yes* | - |
+| `--debug` | `-d` | Enable debug logs | No | `false` |
+| `--ping` | - | Health check config | No | `true` |
+| `--help` | `-h` | Show help | No | - |
+| `--version` | `-v` | Show version | No | - |
+
+\* Either `--port` or `--redirect` must be provided, but not both.
+
+## Interactive UI
+
+The CLI includes an interactive terminal UI that shows:
+
+- Connection status
+- Webhook activity
+- Error messages
+- Debug information (when enabled)
+
+<Frame>
+  <img src="/images/cli-ui.png" alt="CLI UI" />
+</Frame>
+
+### UI Elements
+
+- **Status Bar**: Shows connection status and client ID
+- **Activity Log**: Real-time webhook request log
+- **Debug Panel**: Detailed debug information (visible with `--debug`)
+- **Error Messages**: Highlighted in red for visibility
+
+## Health Checks
+
+The `--ping` option configures connection health monitoring:
+
+```bash
+# Disable health checks
+unhook --port 3000 --ping false
+
+# Check specific port
+unhook --port 3000 --ping 3001
+
+# Check specific URL
+unhook --port 3000 --ping https://api.example.com/health
+```
+
+## Environment Variables
+
+All CLI options can be set via environment variables:
+
+```bash
+# Core settings
+TUNNEL_PORT=3000
+TUNNEL_API_KEY=your_api_key
+TUNNEL_CLIENT_ID=dev-1
+TUNNEL_DEBUG=true
+
+# Advanced settings
+TUNNEL_REDIRECT=https://api.example.com
+TUNNEL_PING=true
+```
+
+## Exit Codes
+
+The CLI uses the following exit codes:
+
+| Code | Description |
+|------|-------------|
+| 0 | Success |
+| 1 | General error |
+| 2 | Invalid configuration |
+| 3 | Network error |
+| 4 | Authentication error |
+
+## Debugging
+
+Enable debug logging for detailed information:
+
+```bash
+# Via command line
+unhook --port 3000 --debug
+
+# Via environment variable
+TUNNEL_DEBUG=true unhook --port 3000
+```
+
+Debug output includes:
+- Connection events
+- Webhook request details
+- Configuration loading
+- Error stack traces
+
+## Examples
+
+### Basic Development Setup
+
+```bash
+# Start tunnel on default port
+unhook --port 3000 --tunnel-id your_tunnel_id
+```
+
+### Team Development
+
+```bash
+# Developer 1
+unhook --port 3000 --client-id dev1 --tunnel-id team_tunnel_id
+
+# Developer 2
+unhook --port 3000 --client-id dev2 --tunnel-id team_tunnel_id
+```
+
+### Production Redirect
+
+```bash
+# Redirect to production API
+unhook --redirect https://api.production.com --tunnel-id prod_tunnel_id
+```
+
+### Custom Health Checks
+
+```bash
+# Check specific health endpoint
+unhook --port 3000 --ping https://localhost:3000/health
+```
+
+## Best Practices
+
+1. **Use Client IDs**: Always specify a meaningful client ID in team environments
+2. **Enable Debug Logging**: Use `--debug` when troubleshooting issues
+3. **Health Checks**: Configure appropriate health checks for your setup
+4. **Environment Variables**: Use env vars for sensitive information
+5. **Configuration Files**: Use config files for consistent settings

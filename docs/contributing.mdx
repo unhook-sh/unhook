@@ -1,0 +1,229 @@
+---
+title: 'Contributing'
+description: 'Contribute to Unhook and run it locally'
+---
+
+<Info>
+  **Prerequisites**:
+  - Node.js (version 18 or higher)
+  - Git
+  - A webhook provider account (Stripe, GitHub, etc.) for testing
+</Info>
+
+## Local Development Setup
+
+### Clone the Repository
+
+First, clone the Unhook repository and install dependencies:
+
+<CodeGroup>
+
+```bash npm
+git clone https://github.com/unhook-sh/unhook.git
+cd unhook
+npm install
+```
+
+```bash yarn
+git clone https://github.com/unhook-sh/unhook.git
+cd unhook
+yarn install
+```
+
+```bash pnpm
+git clone https://github.com/unhook-sh/unhook.git
+cd unhook
+pnpm install
+```
+
+</CodeGroup>
+
+### Start the Development Server
+
+Run the development server locally:
+
+```bash
+npm run dev
+```
+
+This will start:
+- The CLI tunnel service on port 3000
+- The web dashboard on port 3001
+- The webhook processing service on port 3002
+
+## Project Structure
+
+```plaintext
+unhook/
+├── packages/
+│   ├── cli/          # Command line interface
+│   ├── core/         # Core webhook processing logic
+│   ├── dashboard/    # Web dashboard (Next.js)
+│   └── shared/       # Shared utilities and types
+├── examples/         # Example integrations
+└── docs/            # Documentation
+```
+
+## Development Workflow
+
+### Running Tests
+
+We use Jest for testing. Run the test suite with:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests for a specific package
+npm test -- packages/cli
+```
+
+### Linting and Formatting
+
+We use ESLint and Prettier to maintain code quality:
+
+```bash
+# Run linter
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+```
+
+## Building Locally
+
+To build all packages:
+
+```bash
+npm run build
+```
+
+To build a specific package:
+
+```bash
+npm run build --workspace=@unhook/cli
+```
+
+## Running Examples
+
+We provide example integrations in the `examples/` directory. To run an example:
+
+```bash
+# Navigate to an example
+cd examples/stripe-webhook
+
+# Install dependencies
+npm install
+
+# Start the example
+npm run dev
+```
+
+## Debugging
+
+### CLI Debugging
+
+Run the CLI with debug logging:
+
+```bash
+# Using npm
+npm run dev:cli -- --debug
+
+# Direct binary
+./packages/cli/bin/run --debug
+```
+
+### Dashboard Debugging
+
+The dashboard includes React Developer Tools and runs in development mode by default:
+
+```bash
+# Start dashboard in development mode
+npm run dev:dashboard
+```
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="Error: Port already in use">
+    If port 3000, 3001, or 3002 is already in use, you can specify different ports:
+
+    ```bash
+    # For CLI
+    npm run dev:cli -- --port 4000
+
+    # For dashboard
+    PORT=4001 npm run dev:dashboard
+
+    # For webhook service
+    WEBHOOK_PORT=4002 npm run dev:service
+    ```
+  </Accordion>
+
+  <Accordion title="Error: Invalid API Key">
+    During development, you can use test API keys:
+    ```bash
+    # Test mode
+    npm run dev:cli -- --tunnel-id t_test_123
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Run tests: `npm test`
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to your branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+### Contribution Guidelines
+
+- Follow the existing code style
+- Add tests for new features
+- Update documentation for changes
+- Keep commits focused and atomic
+- Write clear commit messages
+
+## Next Steps
+
+<CardGroup>
+  <Card
+    title="Architecture"
+    icon="diagram-project"
+    href="/architecture"
+  >
+    Learn about Unhook's internal architecture
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference"
+  >
+    Explore the internal APIs
+  </Card>
+  <Card
+    title="Testing Guide"
+    icon="vial"
+    href="/testing"
+  >
+    Learn how to test your changes
+  </Card>
+  <Card
+    title="Provider Development"
+    icon="plug"
+    href="/provider-dev"
+  >
+    Create integrations for new webhook providers
+  </Card>
+</CardGroup>

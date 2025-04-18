@@ -1,0 +1,136 @@
+---
+title: 'Quickstart'
+description: 'Get started with Unhook in under 5 minutes'
+---
+
+## Quick Start Steps
+
+<Steps>
+  <Step title="Installation">
+    - Install Unhook using your preferred package manager:
+    ```bash
+    brew install unhook
+    npm install -g @unhook/cli
+    yarn global add @unhook/cli
+    pnpm add -g @unhook/cli
+    bun add -g @unhook/cli
+    deno install @unhook/cli
+    ```
+  </Step>
+  <Step title="Start Your Tunnel">
+    - Start the tunnel to begin receiving webhooks:
+    ```bash
+    unhook --port 3000
+    ```
+    - This will create a secure tunnel to your local server and provide you with a webhook URL.
+  </Step>
+  <Step title="Configure Your Webhook Provider">
+    - Set up your webhook provider (e.g., Stripe, GitHub, Clerk) with the provided Unhook URL.
+    - Example for Stripe:
+    ```bash
+    https://unhook.sh/t_123?e=api/webhooks/stripe
+    ```
+  </Step>
+  <Step title="Advanced Configuration">
+    - Customize your setup with options like custom client ID and debug mode.
+    - Example:
+    ```bash
+    unhook --port 3000 --client-id your-name --debug
+    ```
+  </Step>
+</Steps>
+
+## Configure Your Webhook Provider
+
+### Stripe
+
+1. Go to your [Stripe Dashboard](https://dashboard.stripe.com/webhooks)
+2. Click "Add Endpoint"
+3. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=api/webhooks/stripe
+```
+
+### GitHub
+
+1. Go to your repository settings
+2. Navigate to "Webhooks"
+3. Click "Add webhook"
+4. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=api/webhooks/github
+```
+
+### Clerk
+
+1. Go to your [Clerk Dashboard](https://dashboard.clerk.dev)
+2. Navigate to "Webhooks"
+3. Click "Add Endpoint"
+4. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=api/webhooks/clerk
+```
+
+## Advanced Configuration
+
+### Custom Client ID
+
+When working in a team, you can specify a custom client ID to identify your instance:
+
+```bash
+unhook --port 3000 --client-id your-name
+```
+
+### Debug Mode
+
+Enable debug logging for more detailed information:
+
+```bash
+unhook --port 3000 --debug
+```
+
+### Configuration File
+
+Create an `unhook.config.js` file in your project root for persistent configuration:
+
+```javascript
+module.exports = {
+  port: 3000,
+  clientId: 'your-name',
+  debug: false,
+  // Add other configuration options
+}
+```
+
+## Next Steps
+
+<CardGroup>
+  <Card
+    title="Team Setup"
+    icon="users"
+    href="/team-setup"
+  >
+    Learn how to configure Unhook for your entire team
+  </Card>
+  <Card
+    title="Dashboard"
+    icon="gauge"
+    href="/dashboard"
+  >
+    Monitor and debug your webhooks in real-time
+  </Card>
+  <Card
+    title="Provider Guides"
+    icon="plug"
+    href="/providers"
+  >
+    Detailed setup guides for all supported webhook providers
+  </Card>
+  <Card
+    title="Security"
+    icon="shield"
+    href="/security"
+  >
+    Learn about Unhook's security features and best practices
+  </Card>
+</CardGroup>

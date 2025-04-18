@@ -1,0 +1,156 @@
+---
+title: 'Webhook Providers'
+description: 'Set up Unhook with popular webhook providers'
+---
+
+## Stripe
+
+### Setup
+
+1. Go to your [Stripe Dashboard](https://dashboard.stripe.com/webhooks)
+2. Click "Add Endpoint"
+3. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=stripe
+```
+4. Select the events you want to receive
+5. Save the endpoint
+
+### Local Development
+
+```bash
+# Start Unhook
+unhook --port 3000
+
+# Configure your application
+STRIPE_WEBHOOK_URL=https://unhook.sh/t_123?e=stripe
+```
+
+### Event Types
+
+Stripe sends webhook events for various actions. Common events include:
+- `payment_intent.succeeded`
+- `customer.subscription.created`
+- `invoice.paid`
+
+## GitHub
+
+### Setup
+
+1. Go to your repository settings
+2. Navigate to "Webhooks"
+3. Click "Add webhook"
+4. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=github
+```
+5. Choose your events
+6. Set content type to `application/json`
+7. Save the webhook
+
+### Local Development
+
+```bash
+# Start Unhook
+unhook --port 3000
+
+# Configure your application
+GITHUB_WEBHOOK_URL=https://unhook.sh/t_123?e=github
+```
+
+### Event Types
+
+GitHub sends webhook events for repository actions like:
+- `push`
+- `pull_request`
+- `issues`
+
+## Clerk
+
+### Setup
+
+1. Go to your [Clerk Dashboard](https://dashboard.clerk.dev)
+2. Navigate to "Webhooks"
+3. Click "Add Endpoint"
+4. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=clerk
+```
+5. Select webhook events
+6. Save the endpoint
+
+### Local Development
+
+```bash
+# Start Unhook
+unhook --port 3000
+
+# Configure your application
+CLERK_WEBHOOK_URL=https://unhook.sh/t_123?e=clerk
+```
+
+### Event Types
+
+Clerk sends webhook events for user actions:
+- `user.created`
+- `user.updated`
+- `session.created`
+
+## Slack
+
+### Setup
+
+1. Go to your [Slack App Settings](https://api.slack.com/apps)
+2. Select your app
+3. Click "Event Subscriptions"
+4. Enter your Unhook URL:
+```bash
+https://unhook.sh/t_123?e=slack
+```
+5. Subscribe to bot events
+6. Save changes
+
+### Local Development
+
+```bash
+# Start Unhook
+unhook --port 3000
+
+# Configure your application
+SLACK_WEBHOOK_URL=https://unhook.sh/t_123?e=slack
+```
+
+### Event Types
+
+Slack sends webhook events for:
+- `message.channels`
+- `app_mention`
+- `reaction_added`
+
+## Custom Providers
+
+### Generic Setup
+
+For any webhook provider:
+
+1. Use the Unhook URL format:
+```bash
+https://unhook.sh/t_123?e=YOUR_ENDPOINT
+```
+
+2. Start Unhook locally:
+```bash
+unhook --port 3000
+```
+
+3. Configure your application:
+```bash
+WEBHOOK_URL=https://unhook.sh/t_123?e=YOUR_ENDPOINT
+```
+
+### Best Practices
+
+1. Use meaningful endpoint names
+2. Validate webhook signatures when available
+3. Handle retries appropriately
+4. Log webhook events for debugging

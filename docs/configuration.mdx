@@ -1,0 +1,160 @@
+---
+title: 'Configuration'
+description: 'Configure Unhook for your development environment'
+---
+
+## Configuration File
+
+Unhook supports multiple configuration file formats. Create any of these files in your project root:
+
+```plaintext
+.tunnelrc
+.tunnelrc.json
+.tunnelrc.yaml
+.tunnelrc.yml
+.tunnelrc.js
+.tunnelrc.cjs
+tunnel.config.js
+tunnel.config.cjs
+tunnel.config.json
+tunnel.config.yaml
+tunnel.config.yml
+```
+
+### Configuration Options
+
+```typescript
+interface TunnelConfig {
+  // Port to forward webhooks to (1-65535)
+  port?: number;
+
+  // Your Unhook API key
+  tunnelId?: string;
+
+  // Custom client identifier
+  clientId?: string;
+
+  // Enable debug logging
+  debug?: boolean;
+
+  // URL to redirect webhooks to (alternative to port)
+  redirect?: string;
+
+  // Connection health check configuration
+  ping?: boolean | string | number;
+}
+```
+
+### Example Configurations
+
+<CodeGroup>
+
+```javascript JavaScript
+// tunnel.config.js
+module.exports = {
+  port: 3000,
+  tunnelId: 'your_tunnel_id',
+  clientId: 'dev-machine-1',
+  debug: true,
+  ping: true
+}
+```
+
+```json JSON
+{
+  "port": 3000,
+  "tunnelId": "your_tunnel_id",
+  "clientId": "dev-machine-1",
+  "debug": true,
+  "ping": true
+}
+```
+
+```yaml YAML
+port: 3000
+tunnelId: your_tunnel_id
+clientId: dev-machine-1
+debug: true
+ping: true
+```
+
+</CodeGroup>
+
+### Environment Variables
+
+All configuration options can be set via environment variables:
+
+```bash
+TUNNEL_PORT=3000
+TUNNEL_TUNNEL_ID=your_tunnel_id
+TUNNEL_CLIENT_ID=dev-machine-1
+TUNNEL_DEBUG=true
+TUNNEL_REDIRECT=https://api.example.com
+TUNNEL_PING=true
+```
+
+## CLI Options
+
+All configuration options can also be set via command line arguments:
+
+```bash
+unhook --port 3000 \
+       --tunnel-id your_tunnel_id \
+       --client-id dev-machine-1 \
+       --debug \
+       --ping true
+```
+
+### Available Options
+
+| Option | Alias | Description | Default |
+|--------|-------|-------------|---------|
+| `--port` | `-p` | Local service port | From config |
+| `--tunnel-id` | `-t` | Tunnel ID | From config |
+| `--client-id` | `-c` | Unique client ID | Auto-generated |
+| `--redirect` | `-r` | Redirect URL | From config |
+| `--debug` | `-d` | Enable debug logs | `false` |
+| `--ping` | - | Health check config | `true` |
+
+### Configuration Priority
+
+1. Command line arguments (highest priority)
+2. Environment variables
+3. Configuration file
+4. Default values (lowest priority)
+
+## Advanced Configuration
+
+### Health Checks
+
+The `ping` option supports multiple formats:
+
+```typescript
+// Disable health checks
+ping: false
+
+// Enable with default settings
+ping: true
+
+// Check specific port
+ping: 3000
+
+// Check specific URL
+ping: "https://api.example.com/health"
+```
+
+### Port vs Redirect
+
+You must specify either `port` or `redirect`, but not both:
+
+```javascript
+// Forward to local port
+{
+  port: 3000
+}
+
+// Redirect to remote URL
+{
+  redirect: "https://api.example.com"
+}
+```

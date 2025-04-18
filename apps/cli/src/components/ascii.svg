@@ -1,0 +1,16 @@
+<svg width="500" height="150" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .shadow {
+      font-family: 'Courier New', monospace;
+      font-size: 80px;
+      fill: #888888; /* Default color */
+      text-shadow: 2px 2px 0 #444444; /* Shadow effect */
+    }
+  </style>
+  <text x="10" y="100" class="shadow">U</text>
+  <text x="70" y="100" class="shadow">N</text>
+  <text x="130" y="100" class="shadow">H</text>
+  <text x="190" y="100" class="shadow">O</text>
+  <text x="250" y="100" class="shadow">O</text>
+  <text x="310" y="100" class="shadow">K</text>
+</svg>

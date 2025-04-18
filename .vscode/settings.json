@@ -40,5 +40,6 @@
     ["twx\\.[^`]+\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
     ["twx\\(.*?\\).*?\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
-  "cSpell.words": ["Omni", "openai"]
+  "cSpell.words": ["Omni", "openai"],
+  "svg.preview.background": "transparent"
 }

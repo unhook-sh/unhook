@@ -1,10 +1,11 @@
 // Define the base properties common to all page props
 interface PagePropsBase {
-  apiKey: string;
+  tunnelId: string;
   clientId: string;
   debug: boolean;
   version: string;
   ping: boolean | string | number;
+  telemetry?: boolean;
 }
 
 // Define the mutually exclusive properties for port/redirect

@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "@happy-dom/global-registrator": "17.4.4",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.3.0",
+    "@unhook/tsconfig": "workspace:*",
+    "typescript": "5.8.3"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/index.ts",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "license": "MIT",
+  "name": "@unhook/tooling-testing",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf .turbo node_modules dist",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

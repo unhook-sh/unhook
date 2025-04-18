@@ -6,13 +6,13 @@ import type { TunnelClientOptions } from './types';
 import { log } from './utils/logger';
 
 export class ConnectionManager {
-  private readonly apiKey: string;
+  private readonly tunnelId: string;
   private readonly metadata?: TunnelClientOptions['metadata'];
   private pingInterval?: NodeJS.Timeout;
   private isStopped = false;
 
   constructor(options: TunnelClientOptions) {
-    this.apiKey = options.apiKey;
+    this.tunnelId = options.tunnelId;
     this.metadata = options.metadata;
   }
 
@@ -23,11 +23,11 @@ export class ConnectionManager {
     try {
       // Get tunnel info first
       const tunnel = await db.query.Tunnels.findFirst({
-        where: eq(Tunnels.apiKey, this.apiKey),
+        where: eq(Tunnels.id, this.tunnelId),
       });
 
       if (!tunnel) {
-        throw new Error(`Tunnel not found for apiKey: ${this.apiKey}`);
+        throw new Error(`Tunnel not found for tunnelId: ${this.tunnelId}`);
       }
 
       // Create connection record
@@ -74,7 +74,7 @@ export class ConnectionManager {
     try {
       // Get tunnel info first
       const tunnel = await db.query.Tunnels.findFirst({
-        where: eq(Tunnels.apiKey, this.apiKey),
+        where: eq(Tunnels.id, this.tunnelId),
       });
 
       if (!tunnel) return;
@@ -118,7 +118,7 @@ export class ConnectionManager {
 
     try {
       const tunnel = await db.query.Tunnels.findFirst({
-        where: eq(Tunnels.apiKey, this.apiKey),
+        where: eq(Tunnels.id, this.tunnelId),
       });
 
       if (!tunnel) return;

@@ -10,8 +10,8 @@ const nextConfig = {
     '@unhook/api',
     '@unhook/db',
     '@unhook/ui',
-    '@unhook/validators',
     '@unhook/tunnel',
+    '@unhook/zustand',
   ],
 };
 

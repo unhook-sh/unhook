@@ -64,7 +64,7 @@ await seed(db, {
   },
   Tunnels: {
     columns: {
-      apiKey: funcs.default({ defaultValue: 'pk_123' }),
+      id: funcs.default({ defaultValue: 't_internal' }),
       clientId: funcs.default({ defaultValue: 'cl_123' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
@@ -130,9 +130,9 @@ await seed(db, {
           headers: {
             'Content-Type': 'application/json',
             'User-Agent':
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+              'Stripe/1.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
           },
-          body: '{"name": "John Doe"}',
+          body: '{"event": "user.created", "data": {"id": "user_123"}}',
           clientIp: '127.0.0.1',
           timestamp: Date.now(),
           contentType: 'application/json',
@@ -153,7 +153,7 @@ await seed(db, {
       }),
       responseTimeMs: funcs.int({ maxValue: 10000, minValue: 0 }),
     },
-    count: 10,
+    count: 100,
   },
   Connections: {
     columns: {

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test';
 import type { Mock } from 'bun:test';
 import { NextRequest, NextResponse } from 'next/server';
-import { POST } from './route';
+import { POST } from './[tunnelId]/route';
 
 // Mock environment variables
 mock.module('@t3-oss/env-nextjs', () => ({
@@ -92,7 +92,9 @@ describe('Tunnel Route Handler', () => {
   describe('API Key and Endpoint Authentication', () => {
     it('should return 401 if no API key is provided', async () => {
       const req = new NextRequest('http://localhost:3000/api/tunnel');
-      const response = await POST(req);
+      const response = await POST(req, {
+        params: Promise.resolve({ tunnelId: 'tun_123' }),
+      });
 
       expect(response).toBeInstanceOf(NextResponse);
       expect(response.status).toBe(401);
@@ -105,7 +107,9 @@ describe('Tunnel Route Handler', () => {
           'x-api-key': 'test-api-key',
         },
       });
-      const response = await POST(req);
+      const response = await POST(req, {
+        params: Promise.resolve({ tunnelId: 'tun_123' }),
+      });
 
       expect(response.status).toBe(401);
       expect(await response.text()).toBe('Endpoint required');
@@ -118,7 +122,9 @@ describe('Tunnel Route Handler', () => {
           method: 'POST',
         },
       );
-      const response = await POST(req);
+      const response = await POST(req, {
+        params: Promise.resolve({ tunnelId: 'tun_123' }),
+      });
       expect(response.status).toBe(202);
       expect(await response.text()).toBe('Webhook received');
       expect(mockFindFirst).toHaveBeenCalledWith({
@@ -136,7 +142,9 @@ describe('Tunnel Route Handler', () => {
           },
         },
       );
-      const response = await POST(req);
+      const response = await POST(req, {
+        params: Promise.resolve({ tunnelId: 'tun_123' }),
+      });
       expect(response.status).toBe(202);
       expect(await response.text()).toBe('Webhook received');
       expect(mockFindFirst).toHaveBeenCalledWith({
@@ -154,7 +162,9 @@ describe('Tunnel Route Handler', () => {
           },
         },
       );
-      const response = await POST(req);
+      const response = await POST(req, {
+        params: Promise.resolve({ tunnelId: 'tun_123' }),
+      });
       expect(response.status).toBe(202);
       expect(await response.text()).toBe('Webhook received');
       expect(mockFindFirst).toHaveBeenCalledWith({
@@ -173,7 +183,9 @@ describe('Tunnel Route Handler', () => {
           },
         },
       );
-      const response = await POST(req);
+      const response = await POST(req, {
+        params: Promise.resolve({ tunnelId: 'tun_123' }),
+      });
       expect(response.status).toBe(202);
       expect(await response.text()).toBe('Webhook received');
     });
@@ -188,7 +200,9 @@ describe('Tunnel Route Handler', () => {
         'x-endpoint': 'test/123',
       },
     });
-    const response = await POST(req);
+    const response = await POST(req, {
+      params: Promise.resolve({ tunnelId: 'tun_123' }),
+    });
 
     expect(response.status).toBe(401);
     expect(await response.text()).toBe('Invalid API key');
@@ -202,7 +216,9 @@ describe('Tunnel Route Handler', () => {
         'x-endpoint': 'test/123',
       },
     });
-    const response = await POST(req);
+    const response = await POST(req, {
+      params: Promise.resolve({ tunnelId: 'tun_123' }),
+    });
     expect(response.status).toBe(405);
     expect(await response.text()).toBe('Method not allowed');
   });
@@ -215,7 +231,9 @@ describe('Tunnel Route Handler', () => {
         'x-endpoint': 'admin/123',
       },
     });
-    const response = await POST(req);
+    const response = await POST(req, {
+      params: Promise.resolve({ tunnelId: 'tun_123' }),
+    });
     expect(response.status).toBe(403);
     expect(await response.text()).toBe('Path not allowed');
   });
@@ -228,7 +246,9 @@ describe('Tunnel Route Handler', () => {
         'x-endpoint': 'other/123',
       },
     });
-    const response = await POST(req);
+    const response = await POST(req, {
+      params: Promise.resolve({ tunnelId: 'tun_123' }),
+    });
     expect(response.status).toBe(403);
     expect(await response.text()).toBe('Path not allowed');
   });
@@ -244,7 +264,9 @@ describe('Tunnel Route Handler', () => {
       body: JSON.stringify({ test: 'data' }),
     });
 
-    const response = await POST(req);
+    const response = await POST(req, {
+      params: Promise.resolve({ tunnelId: 'tun_123' }),
+    });
     expect(response.status).toBe(202);
     expect(await response.text()).toBe('Webhook received');
     expect(mockValues).toHaveBeenCalledWith(
@@ -273,7 +295,9 @@ describe('Tunnel Route Handler', () => {
       },
     });
 
-    const response = await POST(req);
+    const response = await POST(req, {
+      params: Promise.resolve({ tunnelId: 'tun_123' }),
+    });
     expect(response.status).toBe(500);
     expect(await response.text()).toBe('Internal server error');
     expect(console.error).toHaveBeenCalledWith(

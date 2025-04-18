@@ -3,12 +3,13 @@ import type { DOMElement } from 'ink';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Table } from '~/components/table';
-import { useCliStore } from '~/lib/cli-store';
-import { useConnectionStore } from '~/lib/connection-store';
-import type { RequestWithEvent } from '~/lib/request-store';
-import { useRequestStore } from '~/lib/request-store';
-import type { RouteProps } from '~/lib/router';
-import { useRouter } from '~/lib/router';
+import { capture } from '~/lib/posthog';
+import { useCliStore } from '~/stores/cli-store';
+import { useConnectionStore } from '~/stores/connection-store';
+import type { RequestWithEvent } from '~/stores/request-store';
+import { useRequestStore } from '~/stores/request-store';
+import { useRouterStore } from '~/stores/router-store';
+import type { RouteProps } from '~/stores/router-store';
 import { requestColumns } from './_components/table-columns';
 
 export const RequestsPage: FC<RouteProps> = () => {
@@ -16,12 +17,13 @@ export const RequestsPage: FC<RouteProps> = () => {
   const setSelectedRequestId = useRequestStore.use.setSelectedRequestId();
   const requests = useRequestStore.use.requests();
   const _isLoading = useRequestStore.use.isLoading();
+  const totalCount = useRequestStore.use.totalCount();
   const isConnected = useConnectionStore.use.isConnected();
   const pingEnabled = useCliStore.use.ping() !== false;
   const [selectedIndex, _setSelectedIndex] = useState(
     requests.findIndex((request) => request.id === selectedRequestId),
   );
-  const { navigate } = useRouter();
+  const navigate = useRouterStore.use.navigate();
   const [, forceUpdate] = useState({});
 
   // Add timer effect to update the page every second
@@ -36,7 +38,7 @@ export const RequestsPage: FC<RouteProps> = () => {
   const handleViewDetails = useCallback(
     (request: RequestWithEvent) => {
       setSelectedRequestId(request.id);
-      navigate(`/requests/${request.id}`);
+      navigate('/requests/:id', { id: request.id });
     },
     [setSelectedRequestId, navigate],
   );
@@ -65,6 +67,7 @@ export const RequestsPage: FC<RouteProps> = () => {
   return (
     <Box flexDirection="row" ref={ref}>
       <Table<RequestWithEvent>
+        totalCount={totalCount}
         data={requests}
         columns={requestColumns}
         initialIndex={selectedIndex}
@@ -80,6 +83,14 @@ export const RequestsPage: FC<RouteProps> = () => {
             label: 'View Details',
             onAction: (_, index) => {
               const request = requests[index];
+              capture({
+                event: 'hotkey_pressed',
+                properties: {
+                  hotkey: 'return',
+                  hokeyName: 'View Details',
+                  requestId: request?.id,
+                },
+              });
               if (request) {
                 handleViewDetails(request);
               }
@@ -91,6 +102,14 @@ export const RequestsPage: FC<RouteProps> = () => {
               !isConnected && pingEnabled ? 'Replay (Not Connected)' : 'Replay',
             onAction: (_, index) => {
               const request = requests[index];
+              capture({
+                event: 'hotkey_pressed',
+                properties: {
+                  hotkey: 'r',
+                  hokeyName: 'Replay',
+                  requestId: request?.id,
+                },
+              });
               if (request && (isConnected || !pingEnabled)) {
                 handleReplay(request);
               }

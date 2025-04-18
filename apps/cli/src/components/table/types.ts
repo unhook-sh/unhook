@@ -75,8 +75,14 @@ export interface TableProps<T extends ScalarDict> {
   actions?: TableAction<T>[];
   /** Items per page */
   itemsPerPage?: number;
+  /** Maximum height of the table in rows */
+  maxHeight?: number;
   /** Key mapping for navigation */
   keyMapping?: KeyMapping;
+  /** Unique identifier for persisting table state */
+  storeId?: string;
+  /** Total count of items (for pagination when data is a subset) */
+  totalCount?: number;
 }
 
 export interface PaginationState<T extends ScalarDict> {

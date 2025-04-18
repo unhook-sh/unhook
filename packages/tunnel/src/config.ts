@@ -4,26 +4,23 @@ import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 
 const CONFIG_FILES = [
-  '.tunnelrc',
-  '.tunnelrc.json',
-  '.tunnelrc.yaml',
-  '.tunnelrc.yml',
-  '.tunnelrc.js',
-  '.tunnelrc.cjs',
-  'tunnel.config.js',
-  'tunnel.config.cjs',
-  'tunnel.config.json',
-  'tunnel.config.yaml',
-  'tunnel.config.yml',
+  'unhook.config.yml',
+  'unhook.config.js',
+  'unhook.config.cjs',
+  'unhook.config.ts',
+  'unhook.config.json',
+  'unhook.config.yaml',
+  'unhook.config.yml',
 ];
 
 // Base schema defines the shape without the cross-field validation
 const baseConfigSchema = z.object({
   port: z.number().min(1).max(65535).optional(),
-  apiKey: z.string().optional(),
+  tunnelId: z.string().optional(),
   clientId: z.string().optional(),
   debug: z.boolean().optional(),
   redirect: z.string().url().optional(),
+  telemetry: z.boolean().optional(),
   ping: z
     .union([z.boolean(), z.string().url(), z.number().min(1).max(65535)])
     .optional(),
@@ -62,9 +59,9 @@ function loadEnvVars(): Partial<TunnelConfig> {
     }
   }
 
-  // API_KEY
-  if (process.env.TUNNEL_API_KEY) {
-    config.apiKey = process.env.TUNNEL_API_KEY;
+  // TUNNEL_ID
+  if (process.env.TUNNEL_ID) {
+    config.tunnelId = process.env.TUNNEL_ID;
   }
 
   // CLIENT_ID
@@ -120,6 +117,14 @@ function loadEnvVars(): Partial<TunnelConfig> {
     }
   }
 
+  // TELEMETRY
+  const telemetry = process.env.TUNNEL_TELEMETRY?.toLowerCase();
+  if (telemetry === 'true' || telemetry === '1' || telemetry === 'yes') {
+    config.telemetry = true;
+  } else if (telemetry === 'false' || telemetry === '0' || telemetry === 'no') {
+    config.telemetry = false;
+  }
+
   return config;
 }
 
@@ -148,14 +153,18 @@ export async function loadConfig(cwd = process.cwd()): Promise<TunnelConfig> {
   let fileConfig: TunnelConfig = {};
   if (configPath) {
     try {
-      if (configPath.endsWith('.js') || configPath.endsWith('.cjs')) {
+      if (
+        configPath.endsWith('.js') ||
+        configPath.endsWith('.cjs') ||
+        configPath.endsWith('.ts')
+      ) {
         fileConfig = await loadJsConfig(configPath);
       } else if (configPath.endsWith('.json')) {
         fileConfig = loadJsonConfig(configPath);
       } else if (configPath.endsWith('.yaml') || configPath.endsWith('.yml')) {
         fileConfig = loadYamlConfig(configPath);
       } else {
-        // Assume JSON for .tunnelrc
+        // Assume JSON for .unhook
         fileConfig = loadJsonConfig(configPath);
       }
 
@@ -177,6 +186,7 @@ export async function loadConfig(cwd = process.cwd()): Promise<TunnelConfig> {
 
   return {
     ping: true, // Default ping to true
+    telemetry: true, // Default telemetry to true
     ...mergedConfig,
   };
 }

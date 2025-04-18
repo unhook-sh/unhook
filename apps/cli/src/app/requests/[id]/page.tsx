@@ -1,7 +1,7 @@
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
-import { useRequestStore } from '~/lib/request-store';
-import type { RouteProps } from '~/lib/router';
+import { useRequestStore } from '~/stores/request-store';
+import type { RouteProps } from '~/stores/router-store';
 import { RequestDetails } from '../_components/request-details';
 
 export const RequestPage: FC<RouteProps> = ({ params }) => {

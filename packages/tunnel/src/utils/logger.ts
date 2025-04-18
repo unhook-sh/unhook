@@ -1,9 +1,9 @@
-import debug from 'debug';
+import { debug } from '@unhook/logger';
 
 // Create debuggers for different concerns
 export const log = {
   main: debug('unhook:main'),
-  request: debug('unhook:request'),
-  response: debug('unhook:response'),
-  error: debug('unhook:error'),
+  request: debug('unhook:lib:request'),
+  response: debug('unhook:lib:response'),
+  error: debug('unhook:lib:error'),
 } as const;

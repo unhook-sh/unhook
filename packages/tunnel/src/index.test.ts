@@ -67,7 +67,7 @@ global.fetch = mockFetch;
 describe('startTunnelClient', () => {
   const options = {
     port: 3000,
-    apiKey: 'test-api-key',
+    tunnelId: 'test-tunnel-id',
   } satisfies TunnelClientOptions;
 
   beforeEach(() => {

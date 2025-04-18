@@ -25,7 +25,7 @@ export interface TunnelClientOptions {
   /**
    * API key for authentication with the tunnel server.
    */
-  apiKey: string;
+  tunnelId: string;
   /**
    * Metadata about the tunnel client connection.
    */
@@ -44,7 +44,6 @@ export interface TunnelClientOptions {
 export interface WebhookRecord {
   id: string;
   tunnelId: string;
-  apiKey: string;
   userId: string;
   orgId: string;
   status: string;

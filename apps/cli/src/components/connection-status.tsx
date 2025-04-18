@@ -1,7 +1,7 @@
 import figures from 'figures';
 import { Box, Text } from 'ink';
-import { useCliStore } from '~/lib/cli-store';
-import { useConnectionStore } from '~/lib/connection-store';
+import { useCliStore } from '~/stores/cli-store';
+import { useConnectionStore } from '~/stores/connection-store';
 import { Spinner } from './spinner';
 
 export function ConnectionStatus() {

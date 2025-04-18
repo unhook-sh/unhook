@@ -5,7 +5,9 @@ export function Scrollbar() {
   const currentPage = useTableStore.use.currentPage();
   const pageSize = useTableStore.use.pageSize();
   const data = useTableStore.use.data();
-  const totalPages = Math.ceil(data.length / pageSize);
+  const totalCount = useTableStore.use.totalCount?.() ?? undefined;
+  const total = totalCount ?? data.length;
+  const totalPages = Math.ceil(total / pageSize);
   const thumbHeight = Math.max(1, Math.floor(pageSize / totalPages));
 
   // When on last page, ensure thumb is at bottom

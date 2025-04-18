@@ -59,19 +59,19 @@ This will create a secure tunnel to your local server and provide you with a web
 
 ```
 # Full parameter names
-https://unhook.sh/h?key=YOUR_PUBLIC_KEY&endpoint=YOUR_ENDPOINT
+https://unhook.sh/t_123?endpoint=YOUR_ENDPOINT
 
 # Shorthand parameters (k=key, e=endpoint)
-https://unhook.sh/h?k=YOUR_PUBLIC_KEY&e=YOUR_ENDPOINT
+https://unhook.sh/t_123?e=YOUR_ENDPOINT
 ```
 
 For example:
 ```bash
 # Using full parameter names
-https://unhook.sh/h?key=pk_123&endpoint=api/webhooks/stripe
+https://unhook.sh/t_123?endpoint=api/webhooks/stripe
 
 # Using shorthand
-https://unhook.sh/h?k=pk_123&e=api/webhooks/stripe
+https://unhook.sh/t_123?e=api/webhooks/stripe
 ```
 
 Components of the URL:
@@ -85,16 +85,16 @@ Use either URL format in your webhook provider's settings:
 #### Stripe
 ```bash
 # Full parameters
-https://unhook.sh/h?key=pk_123&endpoint=api/webhooks/stripe
+https://unhook.sh/t_123?endpoint=api/webhooks/stripe
 
 # Shorthand
-https://unhook.sh/h?k=pk_123&e=api/webhooks/stripe
+https://unhook.sh/t_123?e=api/webhooks/stripe
 ```
 
 #### GitHub
 ```bash
 # GitHub webhook endpoint
-https://unhook.sh/h?key=pk_123&endpoint=api/webhooks/github
+https://unhook.sh/t_123?endpoint=api/webhooks/github
 ```
 
 ## Usage Examples
@@ -119,7 +119,7 @@ Create an `unhook.config.js` file in your project root:
 ```javascript
 module.exports = {
   port: 3000,
-  apiKey: 'your-api-key',
+  tunnelId: 'your-tunnel-id',
   debug: false,
   // Add other configuration options
 }
@@ -133,7 +133,7 @@ Unhook simplifies webhook testing for teams by sharing the same webhook URL:
 
 ```bash
 # Webhook URL (shared across the team)
-https://unhook.sh/h?k=pk_team_123&e=api/webhooks/stripe
+https://unhook.sh/t_123?e=api/webhooks/stripe
 
 # Developer 1
 unhook --port 3000 --client-id dev1
@@ -192,6 +192,29 @@ Unhook takes security seriously:
 - API keys are required for authentication
 - No data is stored on our servers
 - Open source and auditable
+
+## Authentication
+
+Unhook securely manages authentication state locally:
+
+- Authentication tokens are stored securely in your home directory at `~/.unhook/auth-storage.json`
+- No sensitive data is ever transmitted to our servers
+- The auth store manages:
+  - Authentication state
+  - User tokens
+  - Organization ID
+  - Basic user info (first name, last name)
+
+The local storage ensures:
+- Persistent sessions between CLI restarts
+- Secure token management
+- No need to re-authenticate frequently
+- Team and organization context preservation
+
+To clear auth data:
+```bash
+rm ~/.unhook/auth-storage.json
+```
 
 ## Contributing
 

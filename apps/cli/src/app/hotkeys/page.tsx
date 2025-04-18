@@ -1,6 +1,6 @@
 import { Box, Text } from 'ink';
-import { useRouter } from '~/lib/router';
-import type { AppRoute, AppRoutePath } from '../routes';
+import { useRouterStore } from '~/stores/router-store';
+import type { AppRoute } from '../routes';
 
 interface HotkeyInfo {
   key: string;
@@ -25,7 +25,7 @@ const NAVIGATION_HOTKEYS: HotkeyInfo[] = [
 ];
 
 export function HotkeysPage() {
-  const { routes } = useRouter<AppRoutePath>();
+  const routes = useRouterStore.use.routes();
   const menuHotkeys = routes
     .filter((route): route is AppRoute & { hotkey: string } =>
       Boolean(route.hotkey && route.showInMenu !== false),

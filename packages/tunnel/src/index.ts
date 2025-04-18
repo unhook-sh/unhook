@@ -13,12 +13,12 @@ export type { TunnelClientOptions } from './types';
  * Forwards requests to the local service and updates the response.
  */
 export function startTunnelClient(options: TunnelClientOptions): () => void {
-  const { port, apiKey, metadata } = options;
+  const { port, tunnelId, metadata } = options;
   let isStopped = false;
 
   log.main('Initializing tunnel client with options:', {
     port,
-    apiKey,
+    tunnelId,
     metadata,
   });
 
@@ -42,8 +42,8 @@ export function startTunnelClient(options: TunnelClientOptions): () => void {
       {
         event: 'INSERT',
         schema: 'public',
-        table: 'webhookRequests',
-        filter: `apiKey=eq.${apiKey}`,
+        table: 'requests',
+        filter: `id=eq.${tunnelId}`,
       },
       webhookHandler.handleRequest.bind(webhookHandler),
     )

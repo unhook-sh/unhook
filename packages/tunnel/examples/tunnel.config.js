@@ -23,11 +23,11 @@ const config = {
   // Can also be set via TUNNEL_PORT environment variable
   port: 3000,
 
-  // API key for authentication with the tunnel server
+  // Tunnel ID for authentication with the tunnel server
   // Can also be set via:
-  // - TUNNEL_API_KEY environment variable
-  // - --api-key command line flag
-  apiKey: 'your-api-key-here',
+  // - TUNNEL_TUNNEL_ID environment variable
+  // - --tunnel-id command line flag
+  tunnelId: 't_2vCR1xwHHTLxE5m20AYewlc5y2j',
 
   // Optional: Unique client identifier
   // Can also be set via TUNNEL_CLIENT_ID environment variable

@@ -1,12 +1,12 @@
+import { debug } from '@unhook/logger';
+import { createSelectors } from '@unhook/zustand';
 import { Box, Text, type TextProps, useInput } from 'ink';
 import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { createStore } from 'zustand';
 import { useDimensions } from '~/hooks/use-dimensions';
-import { createSelectors } from '~/lib/zustand-create-selectors';
-import { debug } from '~/log';
 
-const log = debug('unhook:tabs');
+const log = debug('unhook:cli:tabs');
 
 export type TabsTriggerProps = {
   value: string;

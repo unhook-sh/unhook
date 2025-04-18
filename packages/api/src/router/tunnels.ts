@@ -38,7 +38,7 @@ export const tunnelsRouter = createTRPCRouter({
 
       const isConnected = await kv.hexists(
         'tunnel:clients',
-        `${firstTunnel.apiKey}:${firstTunnel.clientId}`,
+        `${firstTunnel.id}:${firstTunnel.clientId}`,
       );
 
       return {
@@ -58,12 +58,9 @@ export const tunnelsRouter = createTRPCRouter({
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
       if (!ctx.auth.userId) throw new Error('User ID is required');
 
-      const apiKey = crypto.randomUUID();
-
       const [tunnel] = await ctx.db
         .insert(Tunnels)
         .values({
-          apiKey,
           clientId: input.clientId,
           port: input.port,
           status: 'active',
@@ -73,7 +70,7 @@ export const tunnelsRouter = createTRPCRouter({
         .returning();
 
       // Add API key to valid keys set
-      await kv.sadd('tunnel:api_keys', apiKey);
+      await kv.sadd('tunnel:ids', tunnel?.id);
 
       return tunnel;
     }),
@@ -90,7 +87,7 @@ export const tunnelsRouter = createTRPCRouter({
 
       if (tunnel) {
         // Remove API key from valid keys set
-        await kv.srem('tunnel:api_keys', tunnel.apiKey);
+        await kv.srem('tunnel:id', tunnel.id);
       }
 
       return tunnel;

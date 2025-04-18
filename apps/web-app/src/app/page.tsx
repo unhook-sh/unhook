@@ -1,4 +1,5 @@
 import { H1, P } from '@unhook/ui/custom/typography';
+import ModernFlowDiagram from './test';
 export default async function Page() {
   return (
     <main className="container py-16">
@@ -9,6 +10,7 @@ export default async function Page() {
             Unhook is a tool for building webhooks.
           </P>
         </div>
+        <ModernFlowDiagram />
 
         {/* <Suspense fallback={<MapsSkeleton />}> */}
         {/* <HydrationBoundary></HydrationBoundary> */}

@@ -1,22 +1,25 @@
-import { useAuth } from '~/lib/auth';
-import { useCliStore } from '~/lib/cli-store';
-import type { Route } from '~/lib/router';
+import { useAuth } from '~/hooks/use-auth';
+import { useCliStore } from '~/stores/cli-store';
+import type { Route } from '~/stores/router-store';
 import { DebugPage } from './debug/page';
-import { CreateEventPage } from './events/create/page';
-import { EventsPage } from './events/page';
+import { CreateEventLayout } from './events/create/layout';
+import { EventsLayout } from './events/layout';
 import { HelpPage } from './help/page';
 import { HotkeysPage } from './hotkeys/page';
-import { LoginPage } from './login/page';
+import { LoginLayout } from './login/layout';
 import { LogoutPage } from './logout/page';
-import { MenuPage } from './menu/page';
+import { MenuLayout } from './menu/layout';
+import { NotFoundPage } from './not-found/page';
 import { QuitPage } from './quit/page';
-import { RequestPage } from './requests/[id]/page';
-import { RequestsPage } from './requests/page';
+import { RequestsLayout } from './requests/layout';
+import { UnauthorizedPage } from './unauthorized/page';
 
 export type AppRoutePath =
   | '/'
   | '/login'
   | '/logout'
+  | '/unauthorized'
+  | '/not-found'
   | '/quit'
   | '/settings'
   | '/requests'
@@ -30,6 +33,9 @@ export type AppRoutePath =
   | '/events/create'
   | '/events/:id';
 
+// Type for static routes (no parameters)
+export type StaticAppRoutePath = Exclude<AppRoutePath, `${string}:${string}`>;
+
 export type AppRoute = Route<AppRoutePath>;
 
 const authenticatedRoutes: AppRoute[] = [
@@ -41,13 +47,13 @@ const authenticatedRoutes: AppRoute[] = [
   // },
   {
     path: '/requests',
-    component: RequestsPage,
+    component: RequestsLayout,
     label: 'Events',
     hotkey: 'r',
   },
   {
     path: '/requests/:id',
-    component: RequestPage,
+    component: RequestsLayout,
     label: 'Request Details',
     pattern: /^\/requests\/(?<id>[^/]+)$/,
     showInMenu: false,
@@ -60,14 +66,14 @@ const authenticatedRoutes: AppRoute[] = [
   // },
   {
     path: '/events',
-    component: EventsPage,
+    component: EventsLayout,
     label: 'Events',
     hotkey: 'e',
     showInMenu: false,
   },
   {
     path: '/events/create',
-    component: CreateEventPage,
+    component: CreateEventLayout,
     label: 'Create Event',
     hotkey: 'c',
   },
@@ -89,7 +95,7 @@ const debugRoute: AppRoute = {
 const unauthenticatedRoutes: AppRoute[] = [
   {
     path: '/login',
-    component: LoginPage,
+    component: LoginLayout,
     label: 'Login',
     hotkey: 'l',
   },
@@ -98,7 +104,7 @@ const unauthenticatedRoutes: AppRoute[] = [
 const commonRoutes: AppRoute[] = [
   {
     path: '/',
-    component: MenuPage,
+    component: MenuLayout,
     label: 'Menu',
     showInMenu: false,
   },
@@ -121,6 +127,18 @@ const commonRoutes: AppRoute[] = [
     component: QuitPage,
     label: 'Quit',
     hotkey: 'q',
+  },
+  {
+    path: '/unauthorized',
+    component: UnauthorizedPage,
+    label: 'Unauthorized',
+    showInMenu: false,
+  },
+  {
+    path: '/not-found',
+    component: NotFoundPage,
+    label: 'Not Found',
+    showInMenu: false,
   },
 ];
 

@@ -2,7 +2,7 @@ import { arch, cpus, freemem, totalmem, type, uptime } from 'node:os';
 import { env } from 'node:process';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
-import type { RouteProps } from '~/lib/router';
+import type { RouteProps } from '~/stores/router-store';
 
 export const DebugPage: FC<RouteProps> = () => {
   const cpuInfo = cpus();

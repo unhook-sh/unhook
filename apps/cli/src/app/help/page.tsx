@@ -1,6 +1,6 @@
 import { Box, Text } from 'ink';
-import { useCliStore } from '~/lib/cli-store';
-import { useTunnelStore } from '~/lib/tunnel-store';
+import { useCliStore } from '~/stores/cli-store';
+import { useTunnelStore } from '~/stores/tunnel-store';
 
 export function HelpPage() {
   const selectedTunnelId = useTunnelStore.use.selectedTunnelId();

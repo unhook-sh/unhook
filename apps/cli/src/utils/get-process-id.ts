@@ -1,5 +1,8 @@
 import os from 'node:os';
+import { debug } from '@unhook/logger';
 import { $ } from 'zx';
+
+const log = debug('unhook:cli:get-process-id');
 
 interface ProcessInfo {
   pid: number;
@@ -100,7 +103,7 @@ export async function getProcessIdForPort(
     };
   } catch (error) {
     // Log error for debugging but return null to maintain the function's contract
-    console.error('Error getting process info:', error);
+    log('Error getting process info:', error);
     return null;
   }
 }

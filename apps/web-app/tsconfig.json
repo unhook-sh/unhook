@@ -5,7 +5,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "@unhook/ui/*": ["../../packages/ui/src/*"],
-      "@unhook/analytics/*": ["../../packages/analytics/src/*"]
+      "@unhook/analytics/*": ["../../packages/analytics/src/*"],
+      "@unhook/zustand/*": ["../../packages/zustand/src/*"]
     },
     "plugins": [{ "name": "next" }],
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"

@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  index,
   integer,
   json,
   pgEnum,
@@ -197,7 +199,6 @@ export const Tunnels = pgTable('tunnels', {
     .notNull()
     .primaryKey(),
   clientId: text('clientId').notNull(),
-  apiKey: text('apiKey').notNull(),
   port: integer('port').notNull(),
   lastConnectionAt: timestamp('lastConnectionAt', {
     mode: 'date',
@@ -290,51 +291,68 @@ export interface ResponsePayload {
   body?: string;
 }
 
-export const Events = pgTable('events', {
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'evt' }))
-    .notNull()
-    .primaryKey(),
-  tunnelId: varchar('tunnelId', { length: 128 })
-    .references(() => Tunnels.id, {
-      onDelete: 'cascade',
+export const Events = pgTable(
+  'events',
+  {
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'evt' }))
+      .notNull()
+      .primaryKey(),
+    tunnelId: varchar('tunnelId', { length: 128 })
+      .references(() => Tunnels.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    // Original request payload that created this event
+    originalRequest: json('originalRequest').$type<RequestPayload>().notNull(),
+    // Number of retry attempts made
+    retryCount: integer('retryCount').notNull().default(0),
+    // Maximum number of retries allowed
+    maxRetries: integer('maxRetries').notNull().default(3),
+    // Current status of the event
+    status: eventStatusEnum('status').notNull().default('pending'),
+    apiKey: text('apiKey'),
+    // If failed, store the reason
+    failedReason: text('failedReason'),
+    timestamp: timestamp('timestamp', {
+      mode: 'date',
+      withTimezone: true,
+    }).notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
     })
-    .notNull(),
-  // Original request payload that created this event
-  originalRequest: json('originalRequest').$type<RequestPayload>().notNull(),
-  // Number of retry attempts made
-  retryCount: integer('retryCount').notNull().default(0),
-  // Maximum number of retries allowed
-  maxRetries: integer('maxRetries').notNull().default(3),
-  // Current status of the event
-  status: eventStatusEnum('status').notNull().default('pending'),
-  // If failed, store the reason
-  failedReason: text('failedReason'),
-  timestamp: timestamp('timestamp', {
-    mode: 'date',
-    withTimezone: true,
-  }).notNull(),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).$onUpdateFn(() => new Date()),
-  userId: varchar('userId')
-    .references(() => Users.id, {
-      onDelete: 'cascade',
-    })
-    .notNull(),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull(),
-});
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).$onUpdateFn(() => new Date()),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+  },
+  (table) => [
+    // Composite indexes for common access patterns
+    index('events_org_status_timestamp_idx').on(
+      table.orgId,
+      table.status,
+      table.timestamp,
+    ),
+    index('events_tunnel_status_idx').on(table.tunnelId, table.status),
+    // Partial index for pending events that need processing
+    index('events_pending_idx')
+      .on(table.timestamp)
+      .where(sql`${table.status} = 'pending'`),
+  ],
+);
 
 export type EventType = typeof Events.$inferSelect;
 
@@ -354,56 +372,82 @@ export const EventsRelations = relations(Events, ({ one, many }) => ({
   requests: many(Requests),
 }));
 
-export const Requests = pgTable('requests', {
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'req' }))
-    .notNull()
-    .primaryKey(),
-  tunnelId: varchar('tunnelId', { length: 128 })
-    .references(() => Tunnels.id, {
+export const Requests = pgTable(
+  'requests',
+  {
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'req' }))
+      .notNull()
+      .primaryKey(),
+    tunnelId: varchar('tunnelId', { length: 128 })
+      .references(() => Tunnels.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    eventId: varchar('eventId', { length: 128 }).references(() => Events.id, {
       onDelete: 'cascade',
+    }),
+    apiKey: text('apiKey'),
+    connectionId: varchar('connectionId', { length: 128 }).references(
+      () => Connections.id,
+      {
+        onDelete: 'cascade',
+      },
+    ),
+    request: json('request').notNull().$type<RequestPayload>(),
+    status: requestStatusEnum('status').notNull(),
+    failedReason: text('failedReason'),
+    timestamp: timestamp('timestamp', {
+      mode: 'date',
+      withTimezone: true,
+    }).notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
     })
-    .notNull(),
-  eventId: varchar('eventId', { length: 128 }).references(() => Events.id, {
-    onDelete: 'cascade',
-  }),
-  apiKey: text('apiKey').notNull(),
-  connectionId: varchar('connectionId', { length: 128 }).references(
-    () => Connections.id,
-    {
-      onDelete: 'cascade',
-    },
-  ),
-  request: json('request').notNull().$type<RequestPayload>(),
-  status: requestStatusEnum('status').notNull(),
-  failedReason: text('failedReason'),
-  timestamp: timestamp('timestamp', {
-    mode: 'date',
-    withTimezone: true,
-  }).notNull(),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-  completedAt: timestamp('completedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
-  response: json('response').$type<ResponsePayload>(),
-  responseTimeMs: integer('responseTimeMs').notNull().default(0),
-  userId: varchar('userId')
-    .references(() => Users.id, {
-      onDelete: 'cascade',
-    })
-    .notNull(),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull(),
-});
+      .notNull()
+      .defaultNow(),
+    completedAt: timestamp('completedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    response: json('response').$type<ResponsePayload>(),
+    responseTimeMs: integer('responseTimeMs').notNull().default(0),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+  },
+  (table) => [
+    // Foreign key indexes
+    index('requests_tunnel_id_idx').on(table.tunnelId),
+    index('requests_event_id_idx').on(table.eventId),
+    // Composite indexes for common access patterns
+    index('requests_org_status_timestamp_idx').on(
+      table.orgId,
+      table.status,
+      table.timestamp,
+    ),
+    index('requests_connection_timestamp_idx').on(
+      table.connectionId,
+      table.timestamp,
+    ),
+    // Partial index for slow requests
+    index('requests_slow_idx')
+      .on(table.timestamp)
+      .where(sql`${table.responseTimeMs} > 1000`),
+    // Partial index for pending requests
+    index('requests_pending_idx')
+      .on(table.timestamp)
+      .where(sql`${table.status} = 'pending'`),
+  ],
+);
 
 export const RequestsRelations = relations(Requests, ({ one }) => ({
   tunnel: one(Tunnels, {
@@ -430,48 +474,61 @@ export const RequestsRelations = relations(Requests, ({ one }) => ({
 
 export type RequestType = typeof Requests.$inferSelect;
 
-export const Connections = pgTable('connections', {
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'c' }))
-    .notNull()
-    .primaryKey(),
-  tunnelId: varchar('tunnelId', { length: 128 })
-    .references(() => Tunnels.id, {
-      onDelete: 'cascade',
+export const Connections = pgTable(
+  'connections',
+  {
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'c' }))
+      .notNull()
+      .primaryKey(),
+    tunnelId: varchar('tunnelId', { length: 128 })
+      .references(() => Tunnels.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    ipAddress: text('ipAddress').notNull(),
+    clientId: text('clientId').notNull(),
+    clientVersion: text('clientVersion'),
+    clientOs: text('clientOs'),
+    clientHostname: text('clientHostname'),
+    connectedAt: timestamp('connectedAt', {
+      mode: 'date',
+      withTimezone: true,
     })
-    .notNull(),
-  ipAddress: text('ipAddress').notNull(),
-  clientId: text('clientId').notNull(),
-  clientVersion: text('clientVersion'),
-  clientOs: text('clientOs'),
-  clientHostname: text('clientHostname'),
-  connectedAt: timestamp('connectedAt', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-  disconnectedAt: timestamp('disconnectedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
-  lastPingAt: timestamp('lastPingAt', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-  userId: varchar('userId')
-    .references(() => Users.id, {
-      onDelete: 'cascade',
+      .notNull()
+      .defaultNow(),
+    disconnectedAt: timestamp('disconnectedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    lastPingAt: timestamp('lastPingAt', {
+      mode: 'date',
+      withTimezone: true,
     })
-    .notNull(),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull(),
-});
+      .notNull()
+      .defaultNow(),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+  },
+  (table) => [
+    // Composite index for org-based queries
+    index('connections_org_status_idx').on(
+      table.orgId,
+      table.disconnectedAt,
+      table.lastPingAt,
+    ),
+    // Simple index for client version analysis
+    index('connections_client_version_idx').on(table.clientVersion),
+  ],
+);
 
 export type ConnectionType = typeof Connections.$inferSelect;
 

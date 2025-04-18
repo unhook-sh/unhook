@@ -1,6 +1,7 @@
 import figures from 'figures';
 import { Box, Text, useInput } from 'ink';
 import { type ReactNode, useState } from 'react';
+import { capture } from '~/lib/posthog';
 
 interface KeyMapping {
   up?: string[];
@@ -44,6 +45,16 @@ export const SelectInput = <T extends string = string>({
     // Check for item hotkeys first
     const hotkeyItem = items.find((item) => item.hotkey === input);
     if (hotkeyItem) {
+      capture({
+        event: 'hotkey_pressed',
+        properties: {
+          hotkey: input,
+          hotkeyName:
+            typeof hotkeyItem.label === 'string' ? hotkeyItem.label : 'Unknown',
+          itemValue: hotkeyItem.value,
+          source: 'select_input',
+        },
+      });
       onSelect(hotkeyItem);
       return;
     }
@@ -59,16 +70,47 @@ export const SelectInput = <T extends string = string>({
       : keyMapping.select?.includes(input);
 
     if (isUpKey) {
+      capture({
+        event: 'navigation_key_pressed',
+        properties: {
+          key: input || 'up',
+          direction: 'up',
+          currentIndex: selectedIndex,
+          source: 'select_input',
+        },
+      });
       setSelectedIndex((prevIndex) =>
         prevIndex > 0 ? prevIndex - 1 : prevIndex,
       );
     } else if (isDownKey) {
+      capture({
+        event: 'navigation_key_pressed',
+        properties: {
+          key: input || 'down',
+          direction: 'down',
+          currentIndex: selectedIndex,
+          source: 'select_input',
+        },
+      });
       setSelectedIndex((prevIndex) =>
         prevIndex < items.length - 1 ? prevIndex + 1 : prevIndex,
       );
     } else if (isSelectKey) {
       const selectedItem = items[selectedIndex];
       if (selectedItem) {
+        capture({
+          event: 'hotkey_pressed',
+          properties: {
+            hotkey: 'return',
+            hotkeyName: 'Select',
+            itemValue: selectedItem.value,
+            itemLabel:
+              typeof selectedItem.label === 'string'
+                ? selectedItem.label
+                : 'Unknown',
+            source: 'select_input',
+          },
+        });
         onSelect(selectedItem);
       }
     }

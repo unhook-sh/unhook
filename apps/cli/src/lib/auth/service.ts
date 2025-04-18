@@ -1,28 +1,31 @@
 import { randomBytes } from 'node:crypto';
 import { createServer } from 'node:http';
-import type { SignInResource } from '@clerk/types';
+import type { UserResource } from '@clerk/types';
 import open from 'open';
+import { env } from '../../env';
+import { useAuthStore } from '../../stores/auth-store';
 import { createClerkClient } from './clerk';
-import { useAuthStore } from './store';
-import { getAuthSuccessTemplate } from './templates/get-template';
 
 interface AuthConfig {
   webAppUrl: string;
   clientPort: number;
 }
 
+export type AuthResult = {
+  token: string;
+  userId: string;
+  orgId: string;
+};
+
+export type DecoratedAuthResult = { user: UserResource } & AuthResult;
+
 export class AuthService {
   private server: ReturnType<typeof createServer> | null = null;
   private stateToken: string | null = null;
-  private resolveAuth:
-    | ((value: {
-        token: string;
-        userId: string;
-        orgId?: string | null;
-      }) => void)
-    | null = null;
+  private resolveAuth: ((value: AuthResult) => void) | null = null;
   private rejectAuth: ((reason: Error) => void) | null = null;
   public authUrl: string | null = null;
+  private isAuthenticating = false;
 
   constructor(private config: AuthConfig) {}
 
@@ -30,77 +33,94 @@ export class AuthService {
     return randomBytes(32).toString('hex');
   }
 
-  private startServer(): Promise<{
-    token: string;
-    userId: string;
-    orgId?: string | null;
-  }> {
+  private startServer(): Promise<AuthResult> {
     return new Promise((resolve, reject) => {
       this.resolveAuth = resolve;
       this.rejectAuth = reject;
 
-      this.server = createServer(async (req, res) => {
-        if (!req.url) {
-          res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.end('Invalid request');
-          this.rejectAuth?.(new Error('Invalid request URL'));
-          return;
-        }
+      // Create server only if it doesn't exist already
+      if (!this.server) {
+        this.server = createServer(async (req, res) => {
+          if (!req.url) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid request');
+            this.rejectAuth?.(new Error('Invalid request URL'));
+            return;
+          }
 
-        const url = new URL(
-          req.url,
-          `http://localhost:${this.config.clientPort}`,
-        );
-        const state = url.searchParams.get('state');
-        const token = url.searchParams.get('token');
-        const userId = url.searchParams.get('userId');
-        const orgId = url.searchParams.get('orgId');
-        const error = url.searchParams.get('error');
+          const url = new URL(
+            req.url,
+            `http://localhost:${this.config.clientPort}`,
+          );
+          const state = url.searchParams.get('state');
+          const token = url.searchParams.get('token');
+          const userId = url.searchParams.get('userId');
+          const orgId = url.searchParams.get('orgId');
+          const error = url.searchParams.get('error');
 
-        // Set CORS headers
-        res.setHeader('Access-Control-Allow-Origin', this.config.webAppUrl);
-        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+          // Set CORS headers
+          res.setHeader('Access-Control-Allow-Origin', this.config.webAppUrl);
+          res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-        // Handle preflight request
-        if (req.method === 'OPTIONS') {
-          res.writeHead(204);
+          // Handle preflight request
+          if (req.method === 'OPTIONS') {
+            res.writeHead(204);
+            res.end();
+            return;
+          }
+
+          if (error) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Authentication failed');
+            this.rejectAuth?.(new Error(error));
+            return;
+          }
+
+          if (!state || !token || !userId || state !== this.stateToken) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid request');
+            this.rejectAuth?.(new Error('Invalid authentication response'));
+            return;
+          }
+
+          // Redirect to success page instead of rendering template
+          const successUrl = `${env.NEXT_PUBLIC_API_URL}/cli-token/success`;
+          res.writeHead(302, { Location: successUrl });
           res.end();
-          return;
-        }
 
-        if (error) {
-          res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.end('Authentication failed');
-          this.rejectAuth?.(new Error(error));
-          return;
-        }
+          if (!userId) {
+            this.rejectAuth?.(new Error('User ID is required'));
+            return;
+          }
 
-        if (!state || !token || !userId || state !== this.stateToken) {
-          res.writeHead(400, { 'Content-Type': 'text/plain' });
-          res.end('Invalid request');
-          this.rejectAuth?.(new Error('Invalid authentication response'));
-          return;
-        }
+          if (!token) {
+            this.rejectAuth?.(new Error('Token is required'));
+            return;
+          }
 
-        try {
-          const html = await getAuthSuccessTemplate();
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(html);
-        } catch (error) {
-          console.error('Failed to read success template:', error);
-          res.writeHead(200, { 'Content-Type': 'text/plain' });
-          res.end('Authentication successful! You can close this window.');
-        }
+          if (!orgId) {
+            this.rejectAuth?.(new Error('Organization ID is required'));
+            return;
+          }
 
-        this.resolveAuth?.({
-          token,
-          userId,
-          orgId,
+          this.resolveAuth?.({
+            token,
+            userId,
+            orgId,
+          });
         });
-      });
 
-      this.server.listen(this.config.clientPort);
+        this.server.on('error', (err) => {
+          this.rejectAuth?.(new Error(`Server error: ${err.message}`));
+          this.isAuthenticating = false;
+          this.stopServer();
+        });
+
+        this.server.listen(this.config.clientPort, () => {
+          // Server started successfully
+        });
+      }
     });
   }
 
@@ -109,16 +129,18 @@ export class AuthService {
       this.server.close();
       this.server = null;
     }
+    this.resolveAuth = null;
+    this.rejectAuth = null;
   }
 
-  async authenticate(): Promise<{
-    token: string;
-    userId: string;
-    firstName?: string;
-    lastName?: string;
-    orgId?: string | null;
-  }> {
+  async authenticate(): Promise<DecoratedAuthResult> {
+    // Prevent multiple authentication attempts
+    if (this.isAuthenticating) {
+      throw new Error('Authentication already in progress');
+    }
+
     try {
+      this.isAuthenticating = true;
       this.stateToken = this.generateStateToken();
       const authUrl = new URL('/cli-token', this.config.webAppUrl);
       authUrl.searchParams.set(
@@ -140,31 +162,36 @@ export class AuthService {
       const result = await authPromise;
 
       const clerk = await createClerkClient();
-      let signInResponse: SignInResource | undefined;
 
       if (!clerk.isSignedIn) {
-        signInResponse = await clerk.client?.signIn.create({
+        await clerk.client?.signIn.create({
           strategy: 'ticket',
           ticket: result.token,
         });
       }
 
-      const token = await clerk.session?.getToken();
+      const token = await clerk.session?.getToken({ template: 'supabase' });
 
       if (!token) {
         throw new Error('Failed to get token');
       }
 
+      const user = clerk.user;
+
+      if (!user) {
+        throw new Error('Failed to get user');
+      }
+
       return {
+        user,
         token,
         userId: result.userId,
-        firstName: signInResponse?.userData.firstName,
-        lastName: signInResponse?.userData.lastName,
         orgId: result.orgId,
       };
     } finally {
       this.stopServer();
       this.authUrl = null;
+      this.isAuthenticating = false;
     }
   }
 
@@ -172,16 +199,24 @@ export class AuthService {
     return this.authUrl;
   }
 
+  isAuthenticated(): boolean {
+    return useAuthStore.getState().isAuthenticated;
+  }
+
+  isInProgress(): boolean {
+    return this.isAuthenticating;
+  }
+
   logout(): void {
     this.stopServer();
     this.authUrl = null;
     this.stateToken = null;
+    this.isAuthenticating = false;
 
     // Clear auth store state
     useAuthStore.setState({
       isAuthenticated: false,
-      token: null,
-      userId: null,
+      user: null,
       isLoading: false,
     });
   }

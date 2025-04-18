@@ -1,5 +1,5 @@
-// @ts-check
 import withBundleAnalyzer from '@next/bundle-analyzer';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // compiler: {
@@ -39,4 +39,9 @@ const withPlugins = [
     : null,
 ].filter((plugin) => plugin !== null);
 
-export default withPlugins.reduce((acc, plugin) => plugin(acc), nextConfig);
+const configWithPlugins = withPlugins.reduce(
+  (acc, plugin) => plugin(acc),
+  nextConfig,
+);
+
+export default configWithPlugins;

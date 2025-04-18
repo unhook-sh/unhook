@@ -1,13 +1,13 @@
 import type { RequestType } from '@unhook/db/schema';
+import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
 import { useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/tabs';
-import { useRequestStore } from '~/lib/request-store';
-import { debug } from '~/log';
+import { useRequestStore } from '~/stores/request-store';
 
-const log = debug('unhook:request-details');
+const log = debug('unhook:cli:request-details');
 
 function tryDecodeBase64(str: string): string {
   try {

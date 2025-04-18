@@ -1,22 +1,19 @@
 import { hostname, platform, release } from 'node:os';
 import { Box, Text } from 'ink';
-import { type FC, useEffect } from 'react';
+import type { FC } from 'react';
 import { Ascii } from '~/components/ascii';
 import { SelectInput } from '~/components/select-input';
 import { useDimensions } from '~/hooks/use-dimensions';
-import { useAuthStore } from '~/lib/auth/store';
-import { useCliStore } from '~/lib/cli-store';
-import { useConnectionStore } from '~/lib/connection-store';
-import { useRouter } from '~/lib/router';
-import type { RouteProps } from '~/lib/router';
-import { useTunnelStore } from '~/lib/tunnel-store';
+import { useCliStore } from '~/stores/cli-store';
+import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
+import type { RouteProps } from '~/stores/router-store';
 import type { AppRoutePath } from '../routes';
 
 import { ConnectionStatus } from '~/components/connection-status';
 import { useRoutes } from '../routes';
 
 export const MenuPage: FC<RouteProps> = () => {
-  const { navigate } = useRouter<AppRoutePath>();
+  const navigate = useRouterStore.use.navigate();
   const routes = useRoutes();
 
   const menuItems = routes
@@ -26,27 +23,22 @@ export const MenuPage: FC<RouteProps> = () => {
       hotkey: route.hotkey,
       showInMenu: route.showInMenu ?? true,
     }))
-    .filter((item) => item.showInMenu);
+    .filter((item) => item.showInMenu && !item.value.includes(':')) as Array<{
+    label: string;
+    value: StaticRoutePath<AppRoutePath>;
+    hotkey: string | undefined;
+    showInMenu: boolean;
+  }>;
 
   const dimensions = useDimensions();
   const clientId = useCliStore.use.clientId();
-  const isConnected = useConnectionStore.use.isConnected();
-  const connect = useConnectionStore.use.connect();
-  const isAuthenticated = useAuthStore.use.isAuthenticated();
-  const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
-  const apiKey = useCliStore.use.apiKey();
-  const pingEnabled = useCliStore.use.ping() !== false;
+  const version = useCliStore.use.version();
+  const tunnelId = useCliStore.use.tunnelId();
 
-  useEffect(() => {
-    if (!isConnected && selectedTunnelId && isAuthenticated && pingEnabled) {
-      connect();
-    }
-  }, [isConnected, selectedTunnelId, connect, isAuthenticated, pingEnabled]);
-
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${selectedTunnelId}`;
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${tunnelId}`;
 
   return (
-    <>
+    <Box flexDirection="column">
       <Box marginBottom={1}>
         <Ascii
           text="Unhook"
@@ -56,9 +48,9 @@ export const MenuPage: FC<RouteProps> = () => {
         />
       </Box>
       <Box marginBottom={1} flexDirection="column">
+        <Text dimColor>Version: {version}</Text>
         <Text dimColor>Client: {clientId}</Text>
-        <Text dimColor>Tunnel: {selectedTunnelId}</Text>
-        <Text dimColor>Api Key: {apiKey}</Text>
+        <Text dimColor>Tunnel: {tunnelId}</Text>
         <Text dimColor>Webhook URL: {webhookUrl}</Text>
         <Text dimColor>
           Platform: {platform()} {release()}
@@ -70,11 +62,11 @@ export const MenuPage: FC<RouteProps> = () => {
       </Box>
 
       <Box flexDirection="column">
-        <SelectInput<AppRoutePath>
+        <SelectInput<StaticRoutePath<AppRoutePath>>
           items={menuItems}
           onSelect={(item) => navigate(item.value)}
         />
       </Box>
-    </>
+    </Box>
   );
 };

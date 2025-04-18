@@ -3,7 +3,7 @@ import figureSet from 'figures';
 import { Text } from 'ink';
 import { Spinner } from '~/components/spinner';
 import type { ColumnDef } from '~/components/table/types';
-import type { RequestWithEvent } from '~/lib/request-store';
+import type { RequestWithEvent } from '~/stores/request-store';
 
 function getSelectedColor(isSelected: boolean, defaultColor = 'gray'): string {
   return isSelected ? 'white' : defaultColor;

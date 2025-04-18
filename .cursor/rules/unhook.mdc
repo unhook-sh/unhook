@@ -21,6 +21,8 @@ We are developing a modern webhook development tool that enables teams to easily
 - **Ensures security** with end-to-end encryption and API key authentication.
 - **Supports extensibility** for various webhook providers (Stripe, GitHub, Clerk, etc.).
 
+Website: https://unhook.sh
+
 ## Core Requirements
 
 1. **Webhook Routing Module:**
@@ -29,8 +31,8 @@ We are developing a modern webhook development tool that enables teams to easily
    - Handle connection management and session tracking.
 
 2. **URL Management:**
-   - Generate and manage webhook URLs with format: `https://unhook.sh/h?k=KEY&e=ENDPOINT`
-   - Support both full (`key`, `endpoint`) and shorthand (`k`, `e`) URL parameters.
+   - Generate and manage webhook URLs with format: `https://unhook.sh/t_123&e=ENDPOINT`
+   - Support both full (`endpoint`) and shorthand (`e`) URL parameters.
    - Validate and process incoming webhook requests.
 
 3. **Team Collaboration:**

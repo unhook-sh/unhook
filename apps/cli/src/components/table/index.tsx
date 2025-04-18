@@ -1,6 +1,6 @@
 import figures from 'figures';
 import { Box, Text } from 'ink';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDimensions } from '~/hooks/use-dimensions';
 import { calculateColumnWidths, padContent } from './column-utils';
 import { ActionBar } from './components/action-bar';
@@ -36,6 +36,8 @@ interface TableProps<T extends ScalarDict> {
   itemsPerPage?: number;
   /** Maximum height of the table in rows */
   maxHeight?: number;
+  /** Total count of rows */
+  totalCount?: number;
   /** Key mapping for navigation */
   keyMapping?: KeyMapping;
   /** Unique identifier for persisting table state */
@@ -51,6 +53,7 @@ export function Table<T extends ScalarDict>({
   actions = [],
   itemsPerPage,
   maxHeight,
+  totalCount,
   keyMapping = {
     up: ['k', 'up'],
     down: ['j', 'down', ' '],
@@ -65,31 +68,27 @@ export function Table<T extends ScalarDict>({
   },
 }: TableProps<T>) {
   const dimensions = useDimensions();
+  // Account for:
+  // - 1 line for top border
+  // - 1 line for header
+  // - 1 line for header border
+  // - 1 line for bottom border
+  // - 1 line for action bar
+  // - 1 line for pagination info (if needed)
+  // TODO: Calcuate this using measureElement instead
+  const heightOfReservedLines = 5;
+  const calculatedMaxHeight = useMemo(
+    () => (maxHeight ?? dimensions.height) - heightOfReservedLines,
+    [maxHeight, dimensions.height],
+  );
 
   // Calculate initial page size
   const initialPageSize = React.useMemo(() => {
     if (itemsPerPage) return itemsPerPage;
 
-    // Account for:
-    // - 1 line for top border
-    // - 1 line for header
-    // - 1 line for header border
-    // - 1 line for bottom border
-    // - 1 line for action bar
-    // - 1 line for pagination info (if needed)
-    const reservedLines = 5;
-
-    // Calculate available height
-    let availableHeight = dimensions.height - reservedLines;
-
-    // If maxHeight is specified, use it as a cap
-    if (maxHeight) {
-      availableHeight = Math.min(availableHeight, maxHeight);
-    }
-
     // Ensure we have at least 1 row
-    return Math.max(1, availableHeight);
-  }, [dimensions.height, itemsPerPage, maxHeight]);
+    return Math.max(calculatedMaxHeight, calculatedMaxHeight);
+  }, [calculatedMaxHeight, itemsPerPage]);
 
   // Initialize table data
   const initializeTable = useTableStore.use.initializeTable();
@@ -100,8 +99,8 @@ export function Table<T extends ScalarDict>({
 
   // Initialize table with data and settings
   useEffect(() => {
-    initializeTable(data, initialIndex, initialPageSize);
-  }, [data, initialIndex, initialPageSize, initializeTable]);
+    initializeTable(data, initialIndex, initialPageSize, totalCount);
+  }, [data, initialIndex, initialPageSize, initializeTable, totalCount]);
 
   // Handle selection changes
   useEffect(() => {
@@ -262,8 +261,13 @@ export function Table<T extends ScalarDict>({
   }, [columns, columnWidths]);
 
   return (
-    <Box flexDirection="column">
-      <Box borderColor="blue" borderStyle="round" flexDirection="row">
+    <Box flexDirection="column" height={maxHeight}>
+      <Box
+        borderColor="blue"
+        borderStyle="round"
+        flexDirection="row"
+        height={calculatedMaxHeight}
+      >
         <Box flexDirection="column" width="100%">
           {renderRow({ row: {} as T, isHeader: true })}
           <Box>{renderBorder()}</Box>
@@ -287,7 +291,9 @@ export function Table<T extends ScalarDict>({
               })}
             </Box>
 
-            {Math.ceil(data.length / pageSize) > 1 && <Scrollbar />}
+            {Math.ceil((totalCount ?? data.length) / pageSize) > 1 && (
+              <Scrollbar />
+            )}
           </Box>
         </Box>
       </Box>

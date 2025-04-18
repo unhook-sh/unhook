@@ -1,5 +1,6 @@
 import { Clerk } from '@clerk/clerk-js/headless';
-import { useAuthStore } from './store';
+import { env } from '~/env';
+import { useAuthStore } from '../../stores/auth-store';
 
 global.window = global.window || {};
 
@@ -43,5 +44,5 @@ const clerkFactory = (options: { publishableKey: string }) => {
 };
 
 export const createClerkClient = clerkFactory({
-  publishableKey: 'pk_test_Y2xldmVyLXN0YXJmaXNoLTc2LmNsZXJrLmFjY291bnRzLmRldiQ',
+  publishableKey: env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 });

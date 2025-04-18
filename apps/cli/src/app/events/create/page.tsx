@@ -1,28 +1,26 @@
 import { Box, Text, useInput } from 'ink';
 import type { FC } from 'react';
 import { useState } from 'react';
-import type { AppRoutePath } from '~/app/routes';
 import { SelectInput } from '~/components/select-input';
 import { env } from '~/env';
-import { useCliStore } from '~/lib/cli-store';
-import type { RouteProps } from '~/lib/router';
-import { useRouter } from '~/lib/router';
-import { useTunnelStore } from '~/lib/tunnel-store';
+import { capture } from '~/lib/posthog';
+import { useCliStore } from '~/stores/cli-store';
+import { type RouteProps, useRouterStore } from '~/stores/router-store';
 import { fixtures } from './fixtures';
 import type { EventFixture } from './fixtures/types';
 
 async function sendWebhook(params: {
-  apiKey: string;
+  tunnelId: string;
   fixture: EventFixture;
   status?: number;
 }) {
-  const { apiKey, fixture } = params;
+  const { tunnelId, fixture } = params;
   const baseUrl = env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/tunnel`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-unhook-api-key': apiKey,
+      'x-unhook-tunnel-id': tunnelId,
       'x-unhook-endpoint': `api/mock-consumer?status=${params.status ?? 200}`,
       'User-Agent': `UnhookMock/${fixture.provider}`,
     },
@@ -50,8 +48,8 @@ export const CreateEventPage: FC<RouteProps> = () => {
     'selecting',
   );
   const [error, setError] = useState<string | null>(null);
-  const apiKey = useCliStore.use.apiKey();
-  const { navigate } = useRouter<AppRoutePath>();
+  const tunnelId = useCliStore.use.tunnelId();
+  const navigate = useRouterStore.use.navigate();
 
   const menuItems = fixtures.map((fixture) => ({
     label: `${fixture.provider} - ${fixture.body.eventType}`,
@@ -65,30 +63,76 @@ export const CreateEventPage: FC<RouteProps> = () => {
       (f) => f.provider === provider && f.body.eventType === eventType,
     );
     setSelectedFixture(fixture ?? null);
+
+    capture({
+      event: 'event_fixture_selected',
+      properties: {
+        provider,
+        eventType,
+        tunnelId,
+        fixtureFound: !!fixture,
+      },
+    });
   };
 
   const createEventAndRequest = async () => {
-    if (!selectedFixture || !apiKey) {
-      setError('Missing required data to create event');
+    if (!selectedFixture || !tunnelId) {
+      const errorMessage = 'Missing required data to create event';
+      setError(errorMessage);
+      capture({
+        event: 'event_creation_error',
+        properties: {
+          error: errorMessage,
+          tunnelId,
+          hasSelectedFixture: !!selectedFixture,
+        },
+      });
       return;
     }
 
     try {
       setStatus('creating');
+      capture({
+        event: 'event_creation_started',
+        properties: {
+          provider: selectedFixture.provider,
+          eventType: selectedFixture.body.eventType,
+          tunnelId,
+        },
+      });
 
       await sendWebhook({
-        apiKey,
+        tunnelId,
         fixture: selectedFixture,
       });
 
       setStatus('done');
+      capture({
+        event: 'event_creation_success',
+        properties: {
+          provider: selectedFixture.provider,
+          eventType: selectedFixture.body.eventType,
+          tunnelId,
+        },
+      });
 
       setTimeout(() => {
         navigate('/requests');
       }, 500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create event');
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to create event';
+      setError(errorMessage);
       setStatus('selecting');
+      capture({
+        event: 'event_creation_error',
+        properties: {
+          error: errorMessage,
+          provider: selectedFixture.provider,
+          eventType: selectedFixture.body.eventType,
+          tunnelId,
+        },
+      });
     }
   };
 

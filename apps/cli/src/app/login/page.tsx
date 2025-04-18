@@ -103,7 +103,7 @@ export const LoginPage: FC<RouteProps> = () => {
   ]);
 
   // Handle retry with Enter key
-  useInput((input, key) => {
+  useInput((_input, key) => {
     if (authState === 'failed' && key.return) {
       setError(null);
       setAuthState('ready');

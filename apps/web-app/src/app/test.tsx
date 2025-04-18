@@ -14,7 +14,7 @@ interface MainBoxProps {
   };
 }
 
-const MainBox = ({ icon, title, id, initialAnimation }: MainBoxProps) => {
+const MainBox = ({ icon, title, initialAnimation }: MainBoxProps) => {
   const [isHovering, setIsHovering] = useState(false);
   const glowClasses =
     'absolute inset-0 rounded-3xl bg-emerald-400/10 blur-xl transition-all duration-300';

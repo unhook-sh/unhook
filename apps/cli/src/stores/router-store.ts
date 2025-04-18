@@ -10,12 +10,11 @@ export interface RouteProps {
 }
 
 // Type to extract dynamic parameters from a path
-export type ExtractRouteParams<T> =
-  T extends `${infer Start}:${infer Param}/${infer Rest}`
-    ? Param | ExtractRouteParams<Rest>
-    : T extends `${infer Start}:${infer Param}`
-      ? Param
-      : never;
+export type ExtractRouteParams<T> = T extends `:${infer Param}/${infer Rest}`
+  ? Param | ExtractRouteParams<Rest>
+  : T extends `:${infer Param}`
+    ? Param
+    : never;
 
 // Type for static routes (no parameters)
 export type StaticRoutePath<T extends string> = Exclude<

@@ -9,17 +9,6 @@ function getSelectedColor(isSelected: boolean, defaultColor = 'gray'): string {
   return isSelected ? 'white' : defaultColor;
 }
 
-function formatRequestTime(date: Date) {
-  const now = new Date();
-  const diffInMinutes = differenceInMinutes(now, date);
-
-  if (diffInMinutes < 1) {
-    return formatDistanceToNow(date, { addSuffix: true, includeSeconds: true });
-  }
-
-  return format(date, 'MMM d, HH:mm:ss');
-}
-
 function tryDecodeBase64(str: string): string {
   try {
     return Buffer.from(str, 'base64').toString('utf-8');

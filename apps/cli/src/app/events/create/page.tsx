@@ -136,7 +136,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
     }
   };
 
-  useInput((input, key) => {
+  useInput((_input, key) => {
     if (key.return && selectedFixture && status === 'selecting') {
       createEventAndRequest();
     }

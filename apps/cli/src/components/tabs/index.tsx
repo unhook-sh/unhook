@@ -48,7 +48,7 @@ const store = createStore<TabsState>()((set, get) => ({
     }
   },
   setDirection: (direction: 'row' | 'column') => set({ direction }),
-  onChangeHandler: (tab: string) => () => {}, // Default to first tab
+  onChangeHandler: (_tab: string) => () => {}, // Default to first tab
   setOnChangeHandler: (onChangeHandler: (tab: string) => void) =>
     set({ onChangeHandler }),
   setTabValues: (values: string[]) => set({ tabValues: values }),
@@ -58,7 +58,6 @@ const useTabsStore = createSelectors(store);
 
 export function Tabs({
   children,
-  defaultValue,
   direction = 'row',
   onChange,
 }: {
@@ -68,13 +67,13 @@ export function Tabs({
   onChange: (tab: string) => void;
 }) {
   const dimensions = useDimensions();
-  const initialized = useRef(false);
+  const _initialized = useRef(false);
 
   const setOnChangeHandler = useTabsStore.use.setOnChangeHandler();
   const setDirection = useTabsStore.use.setDirection();
   const setTabValues = useTabsStore.use.setTabValues();
-  const setDefaultTab = useTabsStore.use.setDefaultTab();
-  const setActiveTabIndex = useTabsStore.use.setActiveTabIndex();
+  const _setDefaultTab = useTabsStore.use.setDefaultTab();
+  const _setActiveTabIndex = useTabsStore.use.setActiveTabIndex();
 
   useEffect(() => {
     setDirection(direction);
@@ -101,7 +100,7 @@ export function Tabs({
     //   }
     //   initialized.current = true;
     // }
-  }, [children, defaultValue, setDefaultTab, setActiveTabIndex, setTabValues]);
+  }, [children, setTabValues]);
 
   return (
     <Box
@@ -122,7 +121,7 @@ export function TabsList({
   const setActiveTabIndex = useTabsStore.use.setActiveTabIndex();
   const tabValues = useTabsStore.use.tabValues();
 
-  useInput((input, key) => {
+  useInput((_input, key) => {
     if (key.leftArrow) {
       const newIndex = (activeTabIndex - 1) % children.length;
       log('TabList: leftArrow', newIndex, tabValues[newIndex]);

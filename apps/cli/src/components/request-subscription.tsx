@@ -26,7 +26,7 @@ export const RequestSubscription = memo(function RequestSubscription() {
       onError: (error: Error) => {
         log('Request subscription error:', error);
       },
-      onInsert: async (payload: Tables<'requests'>) => {
+      onInsert: async (_payload: Tables<'requests'>) => {
         log('Request inserted');
         if (subscriptionMounted.current && !unmountingRef.current) {
           fetchRequests();
@@ -47,7 +47,7 @@ export const RequestSubscription = memo(function RequestSubscription() {
     [fetchRequests],
   );
 
-  const eventCallbacks = useMemo(
+  const _eventCallbacks = useMemo(
     () => ({
       onDelete: () => {
         log('Event deleted');

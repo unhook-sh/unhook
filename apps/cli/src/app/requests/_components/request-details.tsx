@@ -38,7 +38,7 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
   const request =
     propRequest ?? requests.find((r) => r.id === selectedRequestId);
 
-  const [activeTabName, setActiveTabName] = useState('request');
+  const [_activeTabName, setActiveTabName] = useState('request');
 
   function handleTabChange(name: string) {
     log('handleTabChange', name);

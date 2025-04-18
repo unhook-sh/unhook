@@ -96,7 +96,7 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       }, 1000);
       setGKeyTimeout(timeout);
     },
-    [numberBuffer, gKeyTimeout, currentPage, pageSize],
+    [numberBuffer, gKeyTimeout, currentPage],
   );
 
   const handleNumberNavigation = useCallback(() => {

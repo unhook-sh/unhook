@@ -14,7 +14,7 @@ const log = debug('unhook:cli:auth-store');
 const AUTH_STORAGE_BASE_PATH = path.join(os.homedir(), '.unhook');
 
 // Fetch the JWKS URL for Clerk
-const CLERK_JWKS_URL = 'https://api.clerk.dev/v1/jwks';
+const _CLERK_JWKS_URL = 'https://api.clerk.dev/v1/jwks';
 
 interface AuthState {
   isAuthenticated: boolean;

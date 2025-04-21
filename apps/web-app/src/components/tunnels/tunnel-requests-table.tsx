@@ -70,18 +70,19 @@ export function TunnelRequestsTable({
                 method: ['GET', 'POST', 'PUT', 'DELETE'][
                   Math.floor(Math.random() * 4)
                 ] as string,
-                url: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
-                  Math.floor(Math.random() * 4)
-                ] as string,
+
                 headers: {
                   'content-type': 'application/json',
                   'user-agent': 'Svix-Webhooks/1.62.0',
                 },
                 size: Math.floor(Math.random() * 1000),
-                timestamp: timestamp.getTime(),
                 contentType: 'application/json',
                 clientIp: '127.0.0.1',
               },
+              from: '*',
+              to: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
+                Math.floor(Math.random() * 4)
+              ] as string,
               failedReason: status === 'failed' ? 'Connection error' : null,
               completedAt: status === 'completed' ? new Date() : null,
               response:
@@ -205,7 +206,7 @@ export function TunnelRequestsTable({
                       </Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs truncate max-w-[300px]">
-                      {request.request.url}
+                      {new URL(request.to).pathname}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

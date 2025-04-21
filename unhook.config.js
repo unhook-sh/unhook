@@ -19,18 +19,12 @@
  * @type {import('@unhook/cli').TunnelConfig}
  */
 const config = {
-  // Port of the local service to forward traffic to
-  // Can also be set via TUNNEL_PORT environment variable
-  // port: 3002,
-
   // API key for authentication with the tunnel server
   // Can also be set via:
   // - TUNNEL_ID environment variable
   // - --tunnel-id command line flag
   tunnelId: 't_internal',
 
-  // ping: 'https://o2em3sulde.execute-api.us-east-1.amazonaws.com/_debug/ping',
-  ping: false,
   telemetry: true,
 
   // Optional: Unique client identifier
@@ -38,12 +32,39 @@ const config = {
   // Default: auto-generated
   clientId: 'my-app',
 
-  redirect: 'https://o2em3sulde.execute-api.us-east-1.amazonaws.com',
-
   // Optional: Enable debug logging
   // Can also be set via TUNNEL_DEBUG environment variable
   // Default: false
   debug: false,
+  from: [
+    {
+      name: 'Stripe',
+      agent: {
+        type: 'header',
+        key: 'x-stripe-agent',
+        value: 'Stripe',
+      },
+      timestamp: {
+        type: 'header',
+        key: 'x-stripe-timestamp',
+        value: 'Stripe',
+      },
+      verification: {
+        type: 'header',
+        key: 'x-stripe-verification',
+        value: 'Stripe',
+      },
+      secret: 'ws_secret', // process.env.STRIPE_WEBHOOK_SECRET
+      defaultTimeout: 10000,
+    },
+  ],
+  forward: [
+    {
+      from: 'Stripe',
+      to: new URL('https://stripe.com'),
+      ping: true,
+    },
+  ],
 };
 
 export default config;

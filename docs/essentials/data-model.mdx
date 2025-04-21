@@ -76,8 +76,8 @@ The primary entity that manages webhook routing and configuration.
     };
     requests: {
       allowedMethods?: string[];  // Only allow specific HTTP methods
-      allowedPaths?: string[];    // Only allow specific paths
-      blockedPaths?: string[];    // Block specific paths
+      allowedFrom?: string[];    // Only allow specific paths
+      blockedFrom?: string[];    // Block specific paths
       maxRequestsPerMinute?: number;
       maxRetries?: number;
     };

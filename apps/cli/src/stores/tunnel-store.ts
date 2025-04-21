@@ -155,7 +155,7 @@ const store = createStore<TunnelStore>()((set, get) => ({
     }
 
     await db.insert(Tunnels).values({
-      clientId,
+      clientId: clientId || 'default',
       port,
       userId: user.id,
       orgId: orgId ?? 'FIXME',

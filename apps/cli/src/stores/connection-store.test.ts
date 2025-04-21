@@ -104,24 +104,27 @@ describe('useConnectionStore', () => {
       setIsLoading: vi.fn(),
     });
     vi.mocked(useCliStore.getState).mockReturnValue({
-      port: 3000,
-      redirect: undefined,
       tunnelId: 'test-tunnel-id',
       clientId: 'test-client-id',
       debug: false,
       version: '1.0.0',
-      ping: false,
-      argSources: {},
       telemetry: true,
-      setPort: vi.fn(),
+      argSources: {},
+      forward: [],
+      from: [],
       setDebug: vi.fn(),
       setTunnelId: vi.fn(),
       setClientId: vi.fn(),
-      setRedirect: vi.fn(),
       setVersion: vi.fn(),
-      setPing: vi.fn(),
       setCliArgs: vi.fn(),
       setTelemetry: vi.fn(),
+      getForward: () => [],
+      getFrom: () => [],
+      getTunnelId: () => 'test-tunnel-id',
+      getClientId: () => 'test-client-id',
+      getDebug: () => false,
+      getTelemetry: () => true,
+      getVersion: () => '1.0.0',
     });
     vi.mocked(useTunnelStore.getState).mockReturnValue({
       selectedTunnelId: 'test-tunnel-id',
@@ -158,12 +161,9 @@ describe('useConnectionStore', () => {
 
   it('should initialize with default state', () => {
     const state = useConnectionStore.getState();
-    expect(state.isConnected).toBe(false);
+    expect(state.isAnyConnected).toBe(false);
     expect(state.isLoading).toBe(false);
-    expect(state.pid).toBeNull();
     expect(state.connectionId).toBeNull();
-    expect(state.lastConnectedAt).toBeNull();
-    expect(state.lastDisconnectedAt).toBeNull();
   });
 
   describe('Port Connection', () => {
@@ -190,11 +190,9 @@ describe('useConnectionStore', () => {
       await connectPromise;
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(true);
+      expect(state.isAnyConnected).toBe(true);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBe(12345);
       expect(state.connectionId).toBe('new-conn-id');
-      expect(state.lastConnectedAt).toBeInstanceOf(Date);
       expect(mockDbReturning).toHaveBeenCalled();
       expect(mockNetSocket.connect).toHaveBeenCalledWith(3000, 'localhost');
       expect(mockNetSocket.destroy).toHaveBeenCalled();
@@ -217,11 +215,9 @@ describe('useConnectionStore', () => {
       await connectPromise;
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(false);
+      expect(state.isAnyConnected).toBe(false);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBeNull();
       expect(state.connectionId).toBe('new-conn-id');
-      expect(state.lastDisconnectedAt).toBeInstanceOf(Date);
     });
 
     it('should handle socket connection timeout', async () => {
@@ -244,36 +240,36 @@ describe('useConnectionStore', () => {
       await connectPromise;
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(false);
+      expect(state.isAnyConnected).toBe(false);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBeNull();
       expect(state.connectionId).toBe('new-conn-id');
-      expect(state.lastDisconnectedAt).toBeInstanceOf(Date);
-      expect(mockNetSocket.destroy).toHaveBeenCalled();
     });
   });
 
   describe('Redirect Connection', () => {
     beforeEach(() => {
       vi.mocked(useCliStore.getState).mockReturnValue({
-        port: undefined,
-        redirect: 'https://example.com/redirect',
         tunnelId: 'test-tunnel-id',
         clientId: 'test-client-id',
         debug: false,
         version: '1.0.0',
-        ping: false,
-        argSources: {},
         telemetry: true,
-        setPort: vi.fn(),
+        argSources: {},
+        forward: [],
+        from: [],
         setDebug: vi.fn(),
         setTunnelId: vi.fn(),
         setClientId: vi.fn(),
-        setRedirect: vi.fn(),
         setVersion: vi.fn(),
-        setPing: vi.fn(),
         setCliArgs: vi.fn(),
         setTelemetry: vi.fn(),
+        getForward: () => [],
+        getFrom: () => [],
+        getTunnelId: () => 'test-tunnel-id',
+        getClientId: () => 'test-client-id',
+        getDebug: () => false,
+        getTelemetry: () => true,
+        getVersion: () => '1.0.0',
       });
     });
 
@@ -286,11 +282,9 @@ describe('useConnectionStore', () => {
       await connectPromise;
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(true);
+      expect(state.isAnyConnected).toBe(true);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBeNull();
       expect(state.connectionId).toBe('new-conn-id');
-      expect(state.lastConnectedAt).toBeInstanceOf(Date);
       expect(mockDbReturning).toHaveBeenCalled();
       expect(fetch).toHaveBeenCalledWith('https://example.com/redirect', {
         method: 'HEAD',
@@ -307,11 +301,9 @@ describe('useConnectionStore', () => {
       await connect();
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(false);
+      expect(state.isAnyConnected).toBe(false);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBeNull();
       expect(state.connectionId).toBe('new-conn-id');
-      expect(state.lastDisconnectedAt).toBeInstanceOf(Date);
       expect(fetch).toHaveBeenCalledTimes(1);
     });
 
@@ -326,11 +318,9 @@ describe('useConnectionStore', () => {
       await connect();
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(false);
+      expect(state.isAnyConnected).toBe(false);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBeNull();
       expect(state.connectionId).toBe('new-conn-id');
-      expect(state.lastDisconnectedAt).toBeInstanceOf(Date);
       expect(fetch).toHaveBeenCalledTimes(1);
     });
   });
@@ -351,19 +341,14 @@ describe('useConnectionStore', () => {
       await connect();
       await vi.advanceTimersByTimeAsync(100);
 
-      expect(useConnectionStore.getState().isConnected).toBe(true);
-      const connectTime = useConnectionStore.getState().lastConnectedAt;
+      expect(useConnectionStore.getState().isAnyConnected).toBe(true);
 
       await disconnect();
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(false);
+      expect(state.isAnyConnected).toBe(false);
       expect(state.isLoading).toBe(false);
-      expect(state.pid).toBeNull();
       expect(state.connectionId).toBeNull();
-      expect(state.lastConnectedAt).toBeNull();
-      expect(state.lastDisconnectedAt).toBeInstanceOf(Date);
-      expect(state.lastDisconnectedAt).not.toEqual(connectTime);
       expect(mockNetSocket.destroy).toHaveBeenCalledTimes(2);
     });
 
@@ -371,7 +356,7 @@ describe('useConnectionStore', () => {
       const { connect, disconnect } = useConnectionStore.getState();
       await connect();
       await vi.advanceTimersByTimeAsync(100);
-      expect(useConnectionStore.getState().isConnected).toBe(true);
+      expect(useConnectionStore.getState().isAnyConnected).toBe(true);
 
       const initialTimers = vi.getTimerCount();
       expect(initialTimers).toBeGreaterThan(0);
@@ -402,7 +387,7 @@ describe('useConnectionStore', () => {
       const { connect } = useConnectionStore.getState();
       await connect();
 
-      expect(useConnectionStore.getState().isConnected).toBe(false);
+      expect(useConnectionStore.getState().isAnyConnected).toBe(false);
       expect(useConnectionStore.getState().isLoading).toBe(false);
       expect(mockDbReturning).not.toHaveBeenCalled();
       expect(mockNetSocket.connect).not.toHaveBeenCalled();
@@ -432,7 +417,7 @@ describe('useConnectionStore', () => {
       const { connect } = useConnectionStore.getState();
       await connect();
 
-      expect(useConnectionStore.getState().isConnected).toBe(false);
+      expect(useConnectionStore.getState().isAnyConnected).toBe(false);
       expect(useConnectionStore.getState().isLoading).toBe(false);
       expect(mockDbReturning).not.toHaveBeenCalled();
       expect(mockNetSocket.connect).not.toHaveBeenCalled();
@@ -447,10 +432,9 @@ describe('useConnectionStore', () => {
       await connect();
 
       const state = useConnectionStore.getState();
-      expect(state.isConnected).toBe(false);
+      expect(state.isAnyConnected).toBe(false);
       expect(state.isLoading).toBe(false);
       expect(state.connectionId).toBeNull();
-      expect(state.lastDisconnectedAt).toBeInstanceOf(Date);
       expect(vi.getTimerCount()).toBeGreaterThan(0);
     });
   });

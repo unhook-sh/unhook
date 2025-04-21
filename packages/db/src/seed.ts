@@ -83,8 +83,8 @@ await seed(db, {
           headers: {},
           requests: {
             allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedPaths: ['/.*'],
-            blockedPaths: [],
+            allowedFrom: ['/.*'],
+            blockedFrom: [],
             maxRequestsPerMinute: 100,
           },
         },

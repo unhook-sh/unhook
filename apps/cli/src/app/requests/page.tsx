@@ -4,8 +4,6 @@ import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Table } from '~/components/table';
 import { capture } from '~/lib/posthog';
-import { useCliStore } from '~/stores/cli-store';
-import { useConnectionStore } from '~/stores/connection-store';
 import type { RequestWithEvent } from '~/stores/request-store';
 import { useRequestStore } from '~/stores/request-store';
 import { useRouterStore } from '~/stores/router-store';
@@ -16,10 +14,7 @@ export const RequestsPage: FC<RouteProps> = () => {
   const selectedRequestId = useRequestStore.use.selectedRequestId();
   const setSelectedRequestId = useRequestStore.use.setSelectedRequestId();
   const requests = useRequestStore.use.requests();
-  const _isLoading = useRequestStore.use.isLoading();
   const totalCount = useRequestStore.use.totalCount();
-  const isConnected = useConnectionStore.use.isConnected();
-  const pingEnabled = useCliStore.use.ping() !== false;
   const [selectedIndex, _setSelectedIndex] = useState(
     requests.findIndex((request) => request.id === selectedRequestId),
   );
@@ -46,12 +41,9 @@ export const RequestsPage: FC<RouteProps> = () => {
   const replayRequest = useRequestStore.use.replayRequest();
   const handleReplay = useCallback(
     (request: RequestWithEvent) => {
-      if (!isConnected && pingEnabled) {
-        return;
-      }
       void replayRequest(request);
     },
-    [replayRequest, isConnected, pingEnabled],
+    [replayRequest],
   );
 
   const ref = useRef<DOMElement>(null);
@@ -98,8 +90,7 @@ export const RequestsPage: FC<RouteProps> = () => {
           },
           {
             key: 'r',
-            label:
-              !isConnected && pingEnabled ? 'Replay (Not Connected)' : 'Replay',
+            label: 'Replay',
             onAction: (_, index) => {
               const request = requests[index];
               capture({
@@ -110,7 +101,7 @@ export const RequestsPage: FC<RouteProps> = () => {
                   requestId: request?.id,
                 },
               });
-              if (request && (isConnected || !pingEnabled)) {
+              if (request) {
                 handleReplay(request);
               }
             },

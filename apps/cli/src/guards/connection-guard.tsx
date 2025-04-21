@@ -13,7 +13,7 @@ interface ConnectionGuardProps extends PropsWithChildren {
  * Component that renders its children only when the connection is established
  */
 export function Connected({ children, fallback }: ConnectionGuardProps) {
-  const isConnected = useConnectionStore.use.isConnected();
+  const isConnected = useConnectionStore.use.isAnyConnected();
   const isLoading = useConnectionStore.use.isLoading();
 
   if (isLoading) {
@@ -33,7 +33,7 @@ export function Connected({ children, fallback }: ConnectionGuardProps) {
  * Component that renders its children only when not connected
  */
 export function Disconnected({ children, fallback }: ConnectionGuardProps) {
-  const isConnected = useConnectionStore.use.isConnected();
+  const isConnected = useConnectionStore.use.isAnyConnected();
   const isLoading = useConnectionStore.use.isLoading();
 
   if (isLoading) {
@@ -62,7 +62,7 @@ export function ConnectionGuard({
    */
   disconnectedComponent: React.ReactNode;
 }) {
-  const isConnected = useConnectionStore.use.isConnected();
+  const isConnected = useConnectionStore.use.isAnyConnected();
   const isLoading = useConnectionStore.use.isLoading();
 
   if (isLoading) {

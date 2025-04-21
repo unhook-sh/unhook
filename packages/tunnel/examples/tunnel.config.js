@@ -19,10 +19,6 @@
  * @type {import('@unhook/tunnel/config').TunnelConfig}
  */
 const config = {
-  // Port of the local service to forward traffic to
-  // Can also be set via TUNNEL_PORT environment variable
-  port: 3000,
-
   // Tunnel ID for authentication with the tunnel server
   // Can also be set via:
   // - TUNNEL_TUNNEL_ID environment variable
@@ -38,6 +34,13 @@ const config = {
   // Can also be set via TUNNEL_DEBUG environment variable
   // Default: false
   debug: false,
+
+  forward: [
+    {
+      from: 'clerk',
+      to: new URL('http://localhost:3000/api/webhooks/clerk'),
+    },
+  ],
 };
 
 export default config;

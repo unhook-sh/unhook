@@ -31,7 +31,7 @@ export const MenuPage: FC<RouteProps> = () => {
   }>;
 
   const dimensions = useDimensions();
-  const clientId = useCliStore.use.clientId();
+  const clientId = useCliStore.use.clientId?.();
   const version = useCliStore.use.version();
   const tunnelId = useCliStore.use.tunnelId();
 

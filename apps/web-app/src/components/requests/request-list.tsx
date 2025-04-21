@@ -96,9 +96,9 @@ function RequestRow({ request, onClick, isSelected }: RequestRowProps) {
           {request.request.method} {request.response?.status}
         </Badge>
       </div>
-      <div className="truncate font-mono">{request.request.url}</div>
+      <div className="truncate font-mono">{new URL(request.to).pathname}</div>
       <div className="truncate font-mono">{request.request.method}</div>
-      <div className="truncate">{request.request.url}</div>
+      <div className="truncate">{new URL(request.to).pathname}</div>
     </div>
   );
 }

@@ -15,33 +15,46 @@ import { useTunnelStore } from './tunnel-store';
 
 const log = debug('unhook:cli:connection-store');
 
-interface ConnectionState {
-  isLoading: boolean;
+interface RuleConnectionState {
   isConnected: boolean;
-  pid: number | null; // PID is only relevant for local port connections
-  processName: string | null; // Name of the process if available
+  pid: number | null;
+  processName: string | null;
   lastConnectedAt: Date | null;
   lastDisconnectedAt: Date | null;
+}
+
+interface ConnectionState {
+  isLoading: boolean;
+  ruleStates: Record<string, RuleConnectionState>;
   connectionId: string | null;
 }
 
 interface ConnectionActions {
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  setConnectionState: (
-    state: Partial<ConnectionState> & { isConnected: boolean },
+  setRuleConnectionState: (
+    ruleId: string,
+    state: Partial<RuleConnectionState>,
   ) => Promise<void>;
 }
 
-type ConnectionStore = ConnectionState & ConnectionActions;
+type ConnectionStore = ConnectionState &
+  ConnectionActions & {
+    isAnyConnected: boolean;
+    isAllConnected: boolean;
+  };
 
-const defaultConnectionState: ConnectionState = {
-  isLoading: false,
+const defaultRuleState: RuleConnectionState = {
   isConnected: false,
   pid: null,
   processName: null,
   lastConnectedAt: null,
   lastDisconnectedAt: null,
+};
+
+const defaultConnectionState: ConnectionState = {
+  isLoading: false,
+  ruleStates: {},
   connectionId: null,
 };
 
@@ -54,54 +67,87 @@ const createConnectionStore = () => {
   return createStore<ConnectionStore>()((set, get) => ({
     ...defaultConnectionState,
 
-    setConnectionState: async ({
-      isConnected,
-      pid,
-      processName,
-      connectionId,
-      ...rest
-    }) => {
+    // Calculated properties
+    get isAnyConnected() {
+      const ruleStates = get().ruleStates;
+      return Object.values(ruleStates).some((state) => state.isConnected);
+    },
+
+    get isAllConnected() {
+      const ruleStates = get().ruleStates;
+      const states = Object.values(ruleStates);
+      return states.length > 0 && states.every((state) => state.isConnected);
+    },
+
+    setRuleConnectionState: async (
+      ruleId: string,
+      newState: Partial<RuleConnectionState>,
+    ) => {
       const currentState = get();
       const now = new Date();
-      const lastConnectedAt = isConnected ? now : currentState.lastConnectedAt;
-      const lastDisconnectedAt = !isConnected
-        ? now
-        : currentState.lastDisconnectedAt;
+      const currentRuleState = currentState.ruleStates[ruleId] || {
+        ...defaultRuleState,
+      };
+
+      const updatedRuleState = {
+        ...currentRuleState,
+        ...newState,
+        lastConnectedAt: newState.isConnected
+          ? now
+          : currentRuleState.lastConnectedAt,
+        lastDisconnectedAt:
+          newState.isConnected === false
+            ? now
+            : currentRuleState.lastDisconnectedAt,
+      };
 
       capture({
-        event: isConnected ? 'connection_established' : 'connection_lost',
+        event: updatedRuleState.isConnected
+          ? 'rule_connection_established'
+          : 'rule_connection_lost',
         properties: {
-          pid,
-          processName,
-          connectionId,
-          lastConnectedAt: lastConnectedAt?.toISOString(),
-          lastDisconnectedAt: lastDisconnectedAt?.toISOString(),
+          ruleId,
+          pid: updatedRuleState.pid,
+          processName: updatedRuleState.processName,
+          connectionId: currentState.connectionId,
+          lastConnectedAt: updatedRuleState.lastConnectedAt?.toISOString(),
+          lastDisconnectedAt:
+            updatedRuleState.lastDisconnectedAt?.toISOString(),
         },
       });
 
       // Update local state
       set({
         ...currentState,
-        ...rest,
-        isConnected,
-        pid: pid ?? currentState.pid,
-        processName: processName ?? currentState.processName,
-        lastConnectedAt,
-        lastDisconnectedAt,
+        ruleStates: {
+          ...currentState.ruleStates,
+          [ruleId]: updatedRuleState,
+        },
         isLoading: false,
       });
 
-      // Update tunnel record with connection status and process info
+      // Update tunnel record with connection status
       const { selectedTunnelId } = useTunnelStore.getState();
       if (selectedTunnelId) {
+        const isAnyConnected = Object.values({
+          ...currentState.ruleStates,
+          [ruleId]: updatedRuleState,
+        }).some((state) => state.isConnected);
+
         await db
           .update(Tunnels)
           .set({
-            localConnectionStatus: isConnected ? 'connected' : 'disconnected',
-            localConnectionPid: pid ?? null,
-            localConnectionProcessName: processName ?? null,
-            lastLocalConnectionAt: isConnected ? now : undefined,
-            lastLocalDisconnectionAt: !isConnected ? now : undefined,
+            localConnectionStatus: isAnyConnected
+              ? 'connected'
+              : 'disconnected',
+            localConnectionPid: updatedRuleState.pid ?? null,
+            localConnectionProcessName: updatedRuleState.processName ?? null,
+            lastLocalConnectionAt: updatedRuleState.isConnected
+              ? now
+              : undefined,
+            lastLocalDisconnectionAt: !updatedRuleState.isConnected
+              ? now
+              : undefined,
           })
           .where(eq(Tunnels.id, selectedTunnelId));
       }
@@ -110,34 +156,29 @@ const createConnectionStore = () => {
     connect: async () => {
       if (isDestroyedRef) return;
 
-      const {
-        ping,
-        port: cliPort,
-        redirect: cliRedirect,
-      } = useCliStore.getState();
-      const pingEnabled = ping !== false;
-      const pingIsUrl = typeof ping === 'string';
-      const pingIsPort = typeof ping === 'number';
+      const { getForward } = useCliStore.getState();
       const { user, orgId } = useAuthStore.getState();
+      const forwardRules = getForward();
+
+      // If no forward rules have ping enabled, treat as disabled
+      const pingEnabled = forwardRules.some((rule) => rule.ping !== false);
 
       capture({
         event: 'connection_attempt',
         properties: {
           pingEnabled,
-          pingIsUrl,
-          pingIsPort,
-          targetUrl: pingIsUrl ? ping : cliRedirect,
-          targetPort: pingIsPort ? ping : cliPort,
+          forwardRulesCount: forwardRules.length,
         },
       });
 
       if (!pingEnabled) {
-        log('Connection polling (ping) is disabled.');
-        // Ensure state reflects disconnected if polling is off
-        if (get().isConnected) {
-          await get().setConnectionState({ isConnected: false, pid: null });
-        }
-        return; // Do not attempt connection or schedule reconnect
+        log('Connection polling (ping) is disabled for all forward rules.');
+        // Clear all rule states if polling is off
+        set((state) => ({
+          ...state,
+          ruleStates: {},
+        }));
+        return;
       }
 
       const { clientId, version } = useCliStore.getState();
@@ -145,13 +186,16 @@ const createConnectionStore = () => {
 
       if (!user?.id) {
         log('User must be authenticated to connect');
-        // Optionally schedule a retry or stop
         return;
       }
 
       if (!selectedTunnelId) {
         log('No tunnel selected');
-        // Optionally schedule a retry or stop
+        return;
+      }
+
+      if (!orgId) {
+        log('No organization selected');
         return;
       }
 
@@ -162,7 +206,7 @@ const createConnectionStore = () => {
       currentFetchAbortController = new AbortController();
       const { signal } = currentFetchAbortController;
 
-      // --- Create DB Connection Record --- (Common logic)
+      // Create DB Connection Record
       let dbConnectionId: string | null = null;
       try {
         log('Attempting to create a database connection record');
@@ -170,13 +214,15 @@ const createConnectionStore = () => {
           .insert(Connections)
           .values({
             tunnelId: selectedTunnelId,
-            ipAddress: 'unknown', // IP address might not be relevant/known
-            clientId,
+            ipAddress: 'unknown',
+            clientId: clientId ?? '',
             clientVersion: version,
             clientOs: `${platform()} ${release()}`,
             clientHostname: hostname(),
             userId: user.id,
-            orgId: orgId ?? 'org_2vCR1xwHHTLxE5m20AYewlc5y2j', // Consider making this required or handling null
+            orgId,
+            connectedAt: new Date(),
+            lastPingAt: new Date(),
           })
           .returning();
 
@@ -185,150 +231,123 @@ const createConnectionStore = () => {
         }
         log('Database connection record created with ID:', result[0].id);
         dbConnectionId = result[0].id;
+        set({ connectionId: dbConnectionId });
       } catch (dbError) {
         log('Error creating connection record:', dbError);
-        // Decide how to handle DB connection failure - maybe still try to connect?
-        // For now, we'll update state as disconnected and schedule a retry.
-        await get().setConnectionState({
-          isConnected: false,
-          pid: null,
-          connectionId: null,
-          isLoading: false,
-        });
-        // Only schedule retry if polling is enabled
+        set({ isLoading: false });
         if (pingEnabled) {
-          reconnectTimeoutRef = setTimeout(get().connect, 5000); // Retry after 5s
+          reconnectTimeoutRef = setTimeout(get().connect, 5000);
         }
         return;
       }
-      // --- End Create DB Connection Record ---
 
-      // Determine the target based on precedence: ping config > CLI args
-      let targetUrl: string | null = null;
-      let targetPort: number | null = null;
+      // Check each forward rule that has ping enabled
+      for (const rule of forwardRules) {
+        if (rule.ping === false) continue;
 
-      if (pingIsUrl) {
-        targetUrl = ping; // Ping config URL takes highest precedence
-      } else if (pingIsPort) {
-        targetPort = ping; // Ping config port takes next precedence
-      } else if (cliRedirect) {
-        targetUrl = cliRedirect; // CLI redirect URL
-      } else if (cliPort !== undefined) {
-        targetPort = cliPort; // CLI port
-      } else {
-        // Should not happen due to validation, but handle defensively
-        log('Error: No valid target (URL or Port) found for connection check.');
-        await get().setConnectionState({
-          isConnected: false,
-          pid: null,
-          connectionId: dbConnectionId,
-          isLoading: false,
-        });
-        // Schedule retry if ping is enabled (might be a temporary config issue)
-        reconnectTimeoutRef = setTimeout(get().connect, 5000);
-        return;
-      }
+        // Generate a stable ID for the rule based on from/to
+        const ruleId = `${String(rule.from ?? '')}-${typeof rule.to === 'string' ? rule.to : rule.to.hostname}`;
 
-      // --- Perform Check --- //
-      if (targetUrl) {
-        // --- Redirect/URL Check --- //
-        try {
-          // Clean up any old socket if switching from port to redirect
+        // Ensure we have a valid URL string for the target
+        const targetUrl =
+          typeof rule.to === 'string'
+            ? rule.to
+            : rule.to instanceof URL
+              ? rule.to.toString()
+              : `${rule.to.protocol || 'http'}://${rule.to.hostname}${rule.to.port ? `:${rule.to.port}` : ''}${rule.to.pathname || ''}`;
+
+        // Ensure we have a valid URL string for ping
+        const pingUrl =
+          typeof rule.ping === 'string' || rule.ping instanceof URL
+            ? rule.ping.toString()
+            : typeof rule.ping === 'object' && rule.ping !== null
+              ? `${rule.ping.protocol || 'http'}://${rule.ping.hostname}${rule.ping.port ? `:${rule.ping.port}` : ''}${rule.ping.pathname || ''}`
+              : targetUrl;
+
+        // Extract port from URL if it's a localhost URL
+        const localhostMatch = pingUrl.match(
+          /^https?:\/\/(localhost|127\.0\.0\.1)(?::(\d+))?/,
+        );
+
+        if (localhostMatch) {
+          const port = Number.parseInt(localhostMatch[2] || '80', 10);
+
           if (socketRef) {
             socketRef.destroy();
-            socketRef = null;
           }
+          socketRef = new net.Socket();
 
-          const response = await fetch(targetUrl, { method: 'HEAD', signal });
+          try {
+            await new Promise<void>((resolve, reject) => {
+              if (!socketRef) {
+                reject(new Error('Socket not initialized'));
+                return;
+              }
 
-          if (!isDestroyedRef) {
-            if (response.ok) {
-              // Successful HEAD request
-              await get().setConnectionState({
-                isConnected: true,
-                pid: null, // PID not applicable for URL
-                connectionId: dbConnectionId, // Ensure connectionId is set
+              socketRef.once('connect', async () => {
+                const processInfo = await getProcessIdForPort(port);
+                await get().setRuleConnectionState(ruleId, {
+                  isConnected: true,
+                  pid: processInfo?.pid ?? null,
+                  processName: processInfo?.name ?? null,
+                });
+                resolve();
+                if (socketRef) socketRef.destroy();
               });
-            } else {
-              // Non-OK response
+
+              socketRef.once('error', (err) => {
+                log(`Socket connection error for port ${port}:`, err.message);
+                reject(err);
+              });
+
+              socketRef.once('timeout', () => {
+                log(`Socket connection timed out for port ${port}`);
+                reject(new Error('Connection timeout'));
+              });
+
+              socketRef.setTimeout(1000);
+              socketRef.connect(port, 'localhost');
+            });
+          } catch (error) {
+            log(`Failed to connect to localhost:${port}:`, error);
+            await get().setRuleConnectionState(ruleId, {
+              isConnected: false,
+              pid: null,
+              processName: null,
+            });
+          }
+        } else {
+          try {
+            const response = await fetch(pingUrl, { method: 'HEAD', signal });
+            await get().setRuleConnectionState(ruleId, {
+              isConnected: response.ok,
+              pid: null,
+              processName: null,
+            });
+
+            if (!response.ok) {
               log(
-                `Ping URL check failed: ${response.status} ${response.statusText} (${targetUrl})`,
+                `Ping URL check failed: ${response.status} ${response.statusText} (${pingUrl})`,
               );
-              await get().setConnectionState({
-                isConnected: false,
-                pid: null,
-                connectionId: dbConnectionId, // Ensure connectionId is set
-              });
             }
-          }
-        } catch (error) {
-          if (!isDestroyedRef) {
+          } catch (error) {
             if ((error as Error).name !== 'AbortError') {
-              log(`Error checking ping URL (${targetUrl}):`, error);
+              log(`Error checking ping URL (${pingUrl}):`, error);
             }
-            await get().setConnectionState({
+            await get().setRuleConnectionState(ruleId, {
               isConnected: false,
               pid: null,
-              connectionId: dbConnectionId,
+              processName: null,
             });
           }
         }
-        // --- End Redirect/URL Check --- //
-      } else if (targetPort !== null) {
-        // --- Local Port Check --- //
-        if (socketRef) {
-          socketRef.destroy();
-        }
-        socketRef = new net.Socket();
-
-        socketRef.once('connect', async () => {
-          if (!isDestroyedRef) {
-            const processInfo = await getProcessIdForPort(targetPort);
-            await get().setConnectionState({
-              isConnected: true,
-              pid: processInfo?.pid ?? null,
-              processName: processInfo?.name ?? null,
-              connectionId: dbConnectionId,
-            });
-            socketRef?.destroy(); // Close connection after successful check
-          }
-        });
-
-        socketRef.once('error', async (err) => {
-          if (!isDestroyedRef) {
-            log('Socket connection error:', err.message);
-            await get().setConnectionState({
-              isConnected: false,
-              pid: null,
-              connectionId: dbConnectionId,
-            });
-          }
-        });
-
-        socketRef.once('timeout', async () => {
-          if (!isDestroyedRef) {
-            log('Socket connection timed out');
-            await get().setConnectionState({
-              isConnected: false,
-              pid: null,
-              connectionId: dbConnectionId,
-            });
-            socketRef?.destroy();
-          }
-        });
-
-        // Try to connect with a 1 second timeout
-        socketRef.setTimeout(1000);
-        socketRef.connect(targetPort, 'localhost');
-        // --- End Local Port Check --- //
       }
-      // --- End Perform Check --- //
 
       // Schedule next check only if pinging is enabled
       if (!isDestroyedRef && pingEnabled) {
         reconnectTimeoutRef = setTimeout(
           get().connect,
-          get().isConnected ? 5000 : 2000, // Check more frequently if disconnected
+          get().isAnyConnected ? 5000 : 2000, // Check more frequently if disconnected
         );
       }
     },
@@ -343,10 +362,9 @@ const createConnectionStore = () => {
         event: 'connection_disconnect',
         properties: {
           connectionId: currentState.connectionId,
-          wasConnected: currentState.isConnected,
-          pid: currentState.pid,
-          processName: currentState.processName,
-          lastConnectedAt: currentState.lastConnectedAt?.toISOString(),
+          wasAnyConnected: currentState.isAnyConnected,
+          wasAllConnected: currentState.isAllConnected,
+          ruleStates: currentState.ruleStates,
         },
       });
 
@@ -362,16 +380,14 @@ const createConnectionStore = () => {
         socketRef = null;
       }
 
-      // Optionally update the DB connection record status to disconnected
-      const connectionId = get().connectionId;
+      // Update the DB connection record status to disconnected
+      const connectionId = currentState.connectionId;
       if (connectionId) {
         try {
-          // Placeholder for DB update logic
-          // await db
-          //   .update(Connections)
-          //   .set({ lastDisconnectedAt: new Date() })
-          //   .where(eq(Connections.id, connectionId));
-          log(`Placeholder: Would update DB for connection ${connectionId}`);
+          await db
+            .update(Connections)
+            .set({ disconnectedAt: new Date() })
+            .where(eq(Connections.id, connectionId));
         } catch (error) {
           log(
             `Failed to update connection ${connectionId} status in DB on disconnect:`,
@@ -380,8 +396,20 @@ const createConnectionStore = () => {
         }
       }
 
-      // Reset the store state to default, marking the disconnect time
-      set({ ...defaultConnectionState, lastDisconnectedAt: new Date() });
+      // Reset the store state to default
+      set({
+        ...defaultConnectionState,
+        ruleStates: Object.fromEntries(
+          Object.entries(currentState.ruleStates).map(([ruleId, state]) => [
+            ruleId,
+            {
+              ...state,
+              isConnected: false,
+              lastDisconnectedAt: new Date(),
+            },
+          ]),
+        ),
+      });
     },
   }));
 };

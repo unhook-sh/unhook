@@ -58,7 +58,9 @@ export function RequestView() {
 
   const filteredRequests = requests.filter(
     (request) =>
-      request.request?.url?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      new URL(request.to).pathname
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       request.request?.method
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()),

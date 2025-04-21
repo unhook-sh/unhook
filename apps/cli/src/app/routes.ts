@@ -144,7 +144,7 @@ const commonRoutes: AppRoute[] = [
 
 export function useRoutes() {
   const { isSignedIn } = useAuth();
-  const isDebug = useCliStore.use.debug();
+  const isDebug = useCliStore.use.debug?.();
 
   const routes = [
     ...(isSignedIn ? authenticatedRoutes : unauthenticatedRoutes),

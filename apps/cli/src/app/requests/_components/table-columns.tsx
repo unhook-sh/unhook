@@ -246,7 +246,7 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
       const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(row.request.url, width)}
+          {truncateText(new URL(row.to).pathname, width)}
         </Text>
       );
     },

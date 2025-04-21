@@ -186,8 +186,8 @@ export type TunnelConfig = {
   // Request Filtering
   requests: {
     allowedMethods?: string[]; // Only allow specific HTTP methods
-    allowedPaths?: string[]; // Only allow specific paths/patterns
-    blockedPaths?: string[]; // Block specific paths/patterns
+    allowedFrom?: string[]; // Only allow specific paths/patterns
+    blockedFrom?: string[]; // Block specific paths/patterns
     maxRequestsPerMinute?: number; // Rate limiting
     maxRetries?: number; // Maximum number of retries for failed requests
   };
@@ -276,11 +276,9 @@ export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
 export interface RequestPayload {
   id: string;
   method: string;
-  url: string;
   headers: Record<string, string>;
   size: number;
   body?: string;
-  timestamp: number;
   contentType: string;
   clientIp: string;
 }
@@ -305,6 +303,7 @@ export const Events = pgTable(
       .notNull(),
     // Original request payload that created this event
     originalRequest: json('originalRequest').$type<RequestPayload>().notNull(),
+    from: text('from').notNull().default('*'),
     // Number of retry attempts made
     retryCount: integer('retryCount').notNull().default(0),
     // Maximum number of retries allowed
@@ -395,6 +394,8 @@ export const Requests = pgTable(
       },
     ),
     request: json('request').notNull().$type<RequestPayload>(),
+    from: text('from').notNull().default('*'),
+    to: text('to').notNull(),
     status: requestStatusEnum('status').notNull(),
     failedReason: text('failedReason'),
     timestamp: timestamp('timestamp', {

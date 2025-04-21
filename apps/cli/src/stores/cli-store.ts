@@ -1,71 +1,61 @@
+import type { TunnelConfig } from '@unhook/tunnel/config';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
 
-// Define the base properties common to all configurations
-interface CliStateBase {
-  debug: boolean;
-  tunnelId: string;
-  clientId: string;
-  version: string;
-  ping: boolean | string | number;
-  telemetry: boolean;
-  argSources: Record<string, 'cli' | 'config'>; // Track source of each argument
-}
-
-// Define the mutually exclusive properties
-type CliStateExclusive =
-  | { port: number; redirect?: never } // Port is provided, redirect is not
-  | { port?: never; redirect: string }; // Redirect is provided, port is not
-
 // Combine base and exclusive properties into the final state type
-export type CliState = CliStateBase & CliStateExclusive;
+export type CliState = TunnelConfig & {
+  version: string;
+  argSources: Record<string, 'cli' | 'config'>;
+};
 
 interface CliActions {
-  setPort: (port?: number) => void;
   setDebug: (debug: boolean) => void;
   setTunnelId: (tunnelId: string) => void;
   setClientId: (clientId: string) => void;
-  setRedirect: (redirect?: string) => void;
   setVersion: (version: string) => void;
-  setPing: (ping: boolean | string | number) => void;
   setTelemetry: (telemetry: boolean) => void;
   setCliArgs: (args: Partial<CliState>) => void;
+  // Getters for TunnelConfig fields
+  getForward: () => NonNullable<TunnelConfig['forward']>;
+  getFrom: () => NonNullable<TunnelConfig['from']>;
+  getTunnelId: () => string;
+  getClientId: () => string | undefined;
+  getDebug: () => boolean;
+  getTelemetry: () => boolean;
+  getVersion: () => string;
 }
 
-// type CliStore = CliState & CliActions;
-// Combine state and actions using intersection for Zustand
 type CliStore = CliState & CliActions;
 
-// Default state represents the initial state *before* args are parsed.
-// It needs default values for base properties but doesn't enforce the exclusive part yet.
-// We use a Partial<CliState> and cast where needed, acknowledging validation happens externally.
-const defaultCliState: Partial<CliStateBase> & {
-  port?: number;
-  redirect?: string;
-} = {
-  port: undefined,
-  debug: false, // Provide a default boolean
-  tunnelId: '', // Provide default string
-  clientId: '', // Provide default string
-  redirect: undefined,
-  version: '', // Provide default string
-  ping: true, // Default ping to true
-  telemetry: true, // Default telemetry to true
-  argSources: {}, // Initialize empty argument sources
+const defaultCliState: Partial<CliState> = {
+  debug: false,
+  tunnelId: '',
+  clientId: '',
+  version: '',
+  telemetry: true,
+  argSources: {},
+  from: [],
+  forward: [],
 };
 
-const store = createStore<CliStore>()((set) => ({
-  ...(defaultCliState as CliState), // Initial state needs assertion due to union type
+const store = createStore<CliStore>()((set, get) => ({
+  ...(defaultCliState as CliState),
 
   // Individual setters remain simple
-  setPort: (port) => set({ port }),
-  setDebug: (debug) => set({ debug }),
-  setTunnelId: (tunnelId) => set({ tunnelId }),
-  setClientId: (clientId) => set({ clientId }),
-  setRedirect: (redirect) => set({ redirect }),
-  setVersion: (version) => set({ version }),
-  setPing: (ping) => set({ ping }),
-  setTelemetry: (telemetry) => set({ telemetry }),
+  setDebug: (debug) => set((state) => ({ ...state, debug })),
+  setTunnelId: (tunnelId) => set((state) => ({ ...state, tunnelId })),
+  setClientId: (clientId) => set((state) => ({ ...state, clientId })),
+  setVersion: (version) => set((state) => ({ ...state, version })),
+  setTelemetry: (telemetry) => set((state) => ({ ...state, telemetry })),
+
+  // Getters for TunnelConfig fields
+  getForward: () => get().forward,
+  getFrom: () => get().from ?? [],
+  getTunnelId: () => get().tunnelId,
+  getClientId: () => get().clientId,
+  getDebug: () => get().debug ?? false,
+  getTelemetry: () => get().telemetry ?? true,
+  getVersion: () => get().version,
 
   // setCliArgs needs to carefully merge while respecting the union type.
   // Since input `args` comes from validated sources (yargs/loadConfig),
@@ -81,17 +71,6 @@ const store = createStore<CliStore>()((set) => ({
         }
       }
       newState.argSources = argSources;
-
-      // Ensure mutual exclusion is maintained after merge
-      if (args.port !== undefined) {
-        newState.redirect = undefined;
-        argSources.redirect = undefined as unknown as 'cli' | 'config';
-      }
-      if (args.redirect !== undefined) {
-        newState.port = undefined;
-        argSources.port = undefined as unknown as 'cli' | 'config';
-      }
-      // Assert the final type conforms to CliState
       return newState as CliState;
     }),
 }));

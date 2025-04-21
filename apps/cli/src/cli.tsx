@@ -24,45 +24,36 @@ const log = debug('unhook:cli');
 
 async function main() {
   try {
-    const { props, exclusiveProps } = await parseArgs();
+    const config = await parseArgs();
 
-    const {
-      port,
-      tunnelId,
-      clientId,
-      redirect,
-      debug,
-      version,
-      ping,
-      argSources,
-    } = useCliStore.getState();
+    const { tunnelId, clientId, debug, version, argSources } =
+      useCliStore.getState();
 
     capture({
       event: 'cli_loaded',
       properties: {
-        port,
         tunnelId,
         clientId,
-        redirect,
         debug,
         version,
-        ping,
         argSources,
       },
     });
 
-    await setupDebug({ isDebugEnabled: props.debug });
+    await setupDebug({ isDebugEnabled: debug ?? false });
     setupProcessHandlers();
 
     log('Starting CLI ', {
-      tunnelId: props.tunnelId,
-      ...exclusiveProps,
+      tunnelId,
+      clientId,
+      debug,
+      version,
+      argSources,
     });
 
-    const { waitUntilExit } = render(
-      <Layout {...props} {...exclusiveProps} />,
-      { debug: props.debug },
-    );
+    const { waitUntilExit } = render(<Layout {...config} />, {
+      debug: config.debug,
+    });
 
     await waitUntilExit();
     await cleanup();

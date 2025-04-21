@@ -108,8 +108,8 @@ interface TunnelConfig {
   };
   requests: {
     allowedMethods?: string[];
-    allowedPaths?: string[];
-    blockedPaths?: string[];
+    allowedFrom?: string[];
+    blockedFrom?: string[];
     maxRequestsPerMinute?: number;
     maxRetries?: number;
   };

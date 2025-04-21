@@ -20,7 +20,7 @@ const log = debug('unhook:cli:request-store');
 // Extend RequestType to include event data
 export interface RequestWithEvent extends BaseRequestType {
   event?: EventType | null;
-  [key: string]: string | number | boolean | object | null | undefined; // More specific index signature
+  [key: string]: string | number | boolean | object | null | undefined;
 }
 
 interface RequestState {
@@ -116,8 +116,40 @@ const store = createStore<RequestStore>()((set, get) => ({
   },
   handlePendingRequest: async (webhookRequest: RequestWithEvent) => {
     log(`Handling pending request: ${webhookRequest.id}`);
-    const { port, redirect } = useCliStore.getState();
+    const { forward } = useCliStore.getState();
     const { connectionId } = useConnectionStore.getState();
+
+    // Find the matching forward rule for this request
+    const matchingRule = forward.find(
+      (rule) => rule.from === '*' || rule.from === webhookRequest.from,
+    );
+
+    if (!matchingRule) {
+      log(`No matching forward rule found for source: ${webhookRequest.from}`);
+      throw new Error(
+        `No forward rule found for source: ${webhookRequest.from}`,
+      );
+    }
+
+    // Get the destination URL from the rule
+    let destinationUrl: URL;
+    if (matchingRule.to instanceof URL) {
+      destinationUrl = matchingRule.to;
+    } else if (typeof matchingRule.to === 'string') {
+      destinationUrl = new URL(matchingRule.to);
+    } else {
+      // Handle remotePattern
+      const {
+        protocol = 'http',
+        hostname,
+        port,
+        pathname = '',
+        search = '',
+      } = matchingRule.to;
+      destinationUrl = new URL(
+        `${protocol}://${hostname}${port ? `:${port}` : ''}${pathname}${search}`,
+      );
+    }
 
     capture({
       event: 'webhook_request_received',
@@ -127,17 +159,14 @@ const store = createStore<RequestStore>()((set, get) => ({
         eventId: webhookRequest.eventId,
         method: webhookRequest.request.method,
         connectionId,
-        hasRedirect: !!redirect,
-        port,
+        source: webhookRequest.from,
+        destination: destinationUrl.toString(),
       },
     });
 
     if (webhookRequest.status === 'pending') {
       try {
-        // Determine the base URL based on redirect or port
-        const baseUrl = redirect || `http://localhost:${port}`;
-        const url = new URL(webhookRequest.request.url, baseUrl);
-        log(`Forwarding request to: ${url.toString()}`);
+        log(`Forwarding request to: ${destinationUrl.toString()}`);
 
         // Decode base64 request body if it exists
         let requestBody: string | undefined;
@@ -156,12 +185,12 @@ const store = createStore<RequestStore>()((set, get) => ({
 
         const startTime = Date.now();
         log(
-          `Sending request: method=${webhookRequest.request.method}, url=${url.toString()}, headers=${inspect(webhookRequest.request.headers)}`,
+          `Sending request: method=${webhookRequest.request.method}, url=${destinationUrl.toString()}, headers=${inspect(webhookRequest.request.headers)}`,
         );
 
         const { host, ...headers } = webhookRequest.request.headers;
 
-        const response = await undiciRequest(url, {
+        const response = await undiciRequest(destinationUrl, {
           method: webhookRequest.request.method,
           headers,
           body: requestBody,
@@ -290,6 +319,8 @@ const store = createStore<RequestStore>()((set, get) => ({
                 apiKey: webhookRequest.apiKey,
                 userId: webhookRequest.userId,
                 orgId: webhookRequest.orgId,
+                from: event.from,
+                to: destinationUrl.toString(),
                 request: event.originalRequest,
                 status: 'pending',
                 timestamp: new Date(),
@@ -318,7 +349,20 @@ const store = createStore<RequestStore>()((set, get) => ({
     log(`Replaying request: ${request.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
-    const { ping: pingEnabled } = useCliStore.getState();
+    const { forward } = useCliStore.getState();
+
+    // Find the matching forward rule
+    const matchingRule = forward.find(
+      (rule) => rule.from === '*' || rule.from === request.from,
+    );
+
+    if (!matchingRule) {
+      throw new Error(`No forward rule found for source: ${request.from}`);
+    }
+
+    // Check if ping is enabled for this rule
+    const pingEnabled = matchingRule.ping !== false;
+
     capture({
       event: 'webhook_request_replay',
       properties: {
@@ -329,6 +373,7 @@ const store = createStore<RequestStore>()((set, get) => ({
         connectionId,
         pingEnabled,
         isEventRetry: !!request.eventId,
+        source: request.from,
       },
     });
 
@@ -337,7 +382,7 @@ const store = createStore<RequestStore>()((set, get) => ({
       throw new Error('User or org not authenticated');
     }
 
-    if (!connectionId && pingEnabled !== false) {
+    if (!connectionId && pingEnabled) {
       log('Connection error: no active connection');
       throw new Error('Connection not found');
     }
@@ -376,6 +421,13 @@ const store = createStore<RequestStore>()((set, get) => ({
       orgId: orgId,
       connectionId: connectionId ?? undefined,
       request: request.request,
+      from: request.from,
+      to:
+        matchingRule.to instanceof URL
+          ? matchingRule.to.toString()
+          : typeof matchingRule.to === 'string'
+            ? matchingRule.to
+            : `${matchingRule.to.protocol || 'http'}://${matchingRule.to.hostname}${matchingRule.to.port ? `:${matchingRule.to.port}` : ''}${matchingRule.to.pathname || ''}${matchingRule.to.search || ''}`,
       status: 'pending',
       timestamp,
     });

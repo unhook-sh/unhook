@@ -53,8 +53,8 @@ describe('Tunnel Route Handler', () => {
         headers: {},
         requests: {
           allowedMethods: ['GET', 'POST'],
-          allowedPaths: ['/test/.*'],
-          blockedPaths: ['/admin/.*'],
+          allowedFrom: ['/test/.*'],
+          blockedFrom: ['/admin/.*'],
         },
         storage: {
           maxRequestBodySize: 1048576,

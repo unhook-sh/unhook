@@ -79,12 +79,12 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
               <Text bold color="cyan">
                 {request.request.method}{' '}
               </Text>
-              <Text>{request.request.url}</Text>
+              <Text>{new URL(request.to).pathname}</Text>
               <Box>
                 <Text dimColor>
                   Size: {request.request.size} bytes • IP:{' '}
                   {request.request.clientIp} •{' '}
-                  {new Date(request.request.timestamp).toLocaleString()}
+                  {new Date(request.timestamp).toLocaleString()}
                 </Text>
               </Box>
               <Box flexDirection="column">

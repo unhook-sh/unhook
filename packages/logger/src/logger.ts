@@ -1,4 +1,3 @@
-import { format } from 'node:util';
 import type { LogDestination, LogLevel, LogMessage } from './types';
 
 type ConsoleMethod = 'debug' | 'info' | 'warn' | 'error' | 'log';
@@ -20,6 +19,35 @@ const originalConsole: Record<ConsoleMethod, typeof console.log> = {
 };
 
 const isBrowser = typeof window !== 'undefined';
+
+function formatMessage(template: string, ...args: unknown[]): string {
+  let index = 0;
+  return template.replace(/%[sdjoO]/g, (match) => {
+    if (index >= args.length) {
+      return match;
+    }
+    const value = args[index++];
+    switch (match) {
+      case '%s':
+        return String(value);
+      case '%d':
+        return Number(value).toString();
+      case '%j':
+        try {
+          return JSON.stringify(value);
+        } catch {
+          return '[Circular]';
+        }
+      case '%o':
+      case '%O':
+        return typeof value === 'object' && value !== null
+          ? JSON.stringify(value, null, 2)
+          : String(value);
+      default:
+        return match;
+    }
+  });
+}
 
 export class UnhookLogger {
   private enabledNamespaces: Set<string>;
@@ -119,7 +147,7 @@ export class UnhookLogger {
         // Format the message if it's a format string
         const formattedMessage =
           typeof messageArgs[0] === 'string'
-            ? format(...messageArgs)
+            ? formatMessage(messageArgs[0] as string, ...messageArgs.slice(1))
             : messageArgs[0];
 
         // Write to destinations
@@ -128,7 +156,7 @@ export class UnhookLogger {
           namespace,
           typeof formattedMessage === 'string'
             ? formattedMessage
-            : format('%O', formattedMessage),
+            : formatMessage('%O', formattedMessage),
           messageArgs.length > 1
             ? (messageArgs[1] as Record<string, unknown>)
             : undefined,
@@ -184,7 +212,10 @@ export class UnhookLogger {
   debug(namespace: string): (...args: unknown[]) => void {
     return (...args: unknown[]) => {
       if (!this.isNamespaceEnabled(namespace)) return;
-      const message = typeof args[0] === 'string' ? format(...args) : args[0];
+      const message =
+        typeof args[0] === 'string'
+          ? formatMessage(args[0] as string, ...args.slice(1))
+          : args[0];
       console.debug(`[${namespace}]`, message);
     };
   }

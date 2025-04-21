@@ -101,7 +101,13 @@
     "APPLE_PASSWORD",
     "MACOS_CERTIFICATE",
     "MACOS_CERTIFICATE_PWD",
-    "MACOS_IDENTITY"
+    "MACOS_IDENTITY",
+    "POSTHOG_PERSONAL_API_KEY",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT",
+    "NPM_TOKEN",
+    "TURBO_TOKEN",
+    "TURBO_TEAM"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",

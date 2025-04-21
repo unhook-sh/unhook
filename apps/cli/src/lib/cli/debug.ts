@@ -1,4 +1,4 @@
-import { debug, enableDebug } from '@unhook/logger';
+import { debug, defaultLogger } from '@unhook/logger';
 
 const log = debug('unhook:cli');
 
@@ -7,7 +7,7 @@ export async function setupDebug({
 }: { isDebugEnabled: boolean }): Promise<void> {
   if (!isDebugEnabled) return;
 
-  enableDebug('unhook:*');
+  defaultLogger.enableNamespace('unhook:*');
   log('Debug logging enabled');
 
   try {

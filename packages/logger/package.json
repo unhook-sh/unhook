@@ -12,6 +12,14 @@
     ".": {
       "default": "./src/index.ts",
       "types": "./dist/index.d.ts"
+    },
+    "./destinations/rolling-file": {
+      "default": "./src/destinations/rolling-file.ts",
+      "types": "./dist/destinations/rolling-file.d.ts"
+    },
+    "./destinations/console": {
+      "default": "./src/destinations/console.ts",
+      "types": "./dist/destinations/console.d.ts"
     }
   },
   "license": "MIT",

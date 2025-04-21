@@ -53,7 +53,7 @@
   "name": "@unhook/web-app",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "NEXT_PUBLIC_APP_TYPE=nextjs next build",
     "clean": "git clean -xdf .next .turbo node_modules dist",
     "dev": "bun with-env next dev --turbo",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",

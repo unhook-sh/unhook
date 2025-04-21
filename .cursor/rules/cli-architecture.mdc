@@ -1,0 +1,108 @@
+---
+description: Guidelines for building and integrating the Ink-based CLI application with shared packages and web dashboard
+globs:
+alwaysApply: false
+---
+# CLI Architecture Guidelines
+
+## Project Structure
+The CLI application is built using React Ink and follows a modular architecture:
+
+- `apps/cli/` - Main CLI application using React Ink
+- `apps/web-app/` - Next.js web application that integrates with the CLI
+- `packages/` - Shared packages for database, API calls, and common utilities
+
+## Core Development Guidelines
+
+### CLI Components (Ink)
+- Use React Ink components for terminal UI
+- Follow functional component patterns with hooks
+- Keep components small and focused
+- Use `<Box>`, `<Text>`, and other Ink primitives for layout
+- Implement interactive components using `useInput` hook
+- Handle terminal resize events appropriately
+
+### State Management
+- Use React Context for global state when needed
+- Implement command-specific state using hooks
+- Share state between commands using custom hooks
+- Cache CLI state in appropriate storage (filesystem/database)
+
+### Command Structure
+- Place each command in a separate file under `apps/cli/src/commands/`
+- Use consistent command naming: `<noun>-<verb>.ts`
+- Implement command options using a standard parser
+- Provide help text and examples for each command
+- Handle errors gracefully with user-friendly messages
+
+### Shared Package Usage
+- Import database utilities from database package
+- Use API client package for web service communication
+- Share types and interfaces across CLI and web app
+- Keep package dependencies minimal and focused
+
+### Web Integration
+- Implement secure authentication between CLI and web app
+- Use shared API endpoints for data synchronization
+- Maintain consistent data models across platforms
+- Handle offline/online states gracefully
+
+### Testing
+- Write unit tests for commands and components
+- Test terminal output and user interactions
+- Mock external services and database calls
+- Verify cross-platform compatibility
+
+### Performance
+- Optimize startup time for better UX
+- Lazy load commands when possible
+- Cache frequently used data
+- Handle large datasets efficiently
+
+## Best Practices
+
+1. **Command Design:**
+   ```typescript
+   // Command structure example
+   export const MyCommand = () => {
+     const { flags } = useFlags();
+     const { data, error } = useApiCall();
+
+     return (
+       <Box flexDirection="column">
+         <Text>Command Output</Text>
+         {error && <Text color="red">{error}</Text>}
+       </Box>
+     );
+   };
+   ```
+
+2. **Shared Logic:**
+   ```typescript
+   // Custom hook example
+   const useSharedState = () => {
+     const [state, setState] = useState();
+     // Implement shared logic
+     return { state, setState };
+   };
+   ```
+
+3. **Error Handling:**
+   ```typescript
+   try {
+     // Command logic
+   } catch (error) {
+     console.error('Error:', error.message);
+     process.exit(1);
+   }
+   ```
+
+## Integration Points
+
+- CLI authentication flow with web app
+- Data synchronization between platforms
+- Shared configuration management
+- Cross-platform feature parity
+- Error reporting and logging
+
+Remember to maintain consistency between the CLI and web interfaces while leveraging the strengths of each platform.

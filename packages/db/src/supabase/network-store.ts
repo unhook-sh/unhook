@@ -1,3 +1,5 @@
+'use server';
+
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';

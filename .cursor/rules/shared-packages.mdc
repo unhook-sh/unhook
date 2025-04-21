@@ -1,0 +1,101 @@
+---
+description: Standards for developing and consuming shared packages across the CLI and web application
+globs:
+alwaysApply: false
+---
+# Shared Packages Guidelines
+
+## Package Organization
+
+The `packages/` directory contains shared functionality used across the CLI and web application:
+
+- Database utilities
+- API clients
+- Common types and interfaces
+- Shared business logic
+- Configuration management
+
+## Package Development Rules
+
+### Package Structure
+- Each package should have its own:
+  - `package.json` with clear dependencies
+  - TypeScript configuration
+  - Unit tests
+  - Documentation
+  - Clear exports in `index.ts`
+
+### Versioning
+- Use semantic versioning
+- Maintain a changelog
+- Keep breaking changes documented
+- Use changesets for version management
+
+### Dependencies
+- Minimize external dependencies
+- Use peer dependencies when appropriate
+- Keep package sizes small
+- Share common dependencies via workspace
+
+### TypeScript Configuration
+- Maintain strict type checking
+- Export type definitions
+- Use barrel exports in `index.ts`
+- Document public APIs
+
+## Best Practices
+
+### Package Exports
+```typescript
+// index.ts
+export * from './types';
+export * from './constants';
+export { default as MyUtil } from './MyUtil';
+```
+
+### Type Definitions
+```typescript
+// types.ts
+export interface SharedConfig {
+  apiKey: string;
+  environment: 'development' | 'production';
+  debug?: boolean;
+}
+```
+
+### Error Handling
+```typescript
+// errors.ts
+export class CustomError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = 'CustomError';
+  }
+}
+```
+
+## Integration Guidelines
+
+### Using Shared Packages
+- Import only needed functionality
+- Handle package errors appropriately
+- Follow package documentation
+- Contribute improvements back
+
+### Testing
+- Write unit tests for shared code
+- Test integration points
+- Verify cross-package dependencies
+- Test in both CLI and web contexts
+
+### Documentation
+- Maintain README files
+- Document breaking changes
+- Include usage examples
+- Keep API documentation current
+
+Remember to:
+- Keep packages focused and single-purpose
+- Maintain backward compatibility
+- Document all public APIs
+- Test thoroughly before publishing

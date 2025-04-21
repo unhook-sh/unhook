@@ -4,6 +4,7 @@
     "@t3-oss/env-core": "0.12.0",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
+    "@unhook/logger": "workspace:*",
     "@vercel/kv": "3.0.0",
     "debug": "4.4.0",
     "drizzle-orm": "0.41.0",

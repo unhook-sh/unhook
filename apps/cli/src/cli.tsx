@@ -1,4 +1,16 @@
-import { initializeLogger } from '@unhook/logger';
+import { defaultLogger } from '@unhook/logger';
+import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file';
+
+defaultLogger.addDestination(
+  new RollingFileDestination({
+    filepath: '.unhook/logs/unhook.log',
+    createDirectory: true,
+    maxSize: 10 * 1024 * 1024, // 10MB
+    maxFiles: 5,
+    rotationInterval: 60 * 60 * 1000, // 1 hour
+  }),
+);
+
 import { debug } from '@unhook/logger';
 import { render } from 'ink';
 import { Layout } from './app/layout';
@@ -7,9 +19,6 @@ import { setupDebug } from './lib/cli/debug';
 import { cleanup, setupProcessHandlers } from './lib/cli/process';
 import { capture, captureException } from './lib/posthog';
 import { useCliStore } from './stores/cli-store';
-
-// Initialize the logger
-initializeLogger();
 
 const log = debug('unhook:cli');
 

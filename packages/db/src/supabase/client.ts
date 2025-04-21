@@ -1,7 +1,7 @@
 import { useSession } from '@clerk/nextjs';
 import { createBrowserClient } from '@supabase/ssr';
-import { debug } from '@unhook/logger';
 import { useEffect, useMemo } from 'react';
+import { debug } from '@unhook/logger';
 import { env } from '../env.client';
 import type { Database } from './types';
 
@@ -58,9 +58,9 @@ export const createClient = (accessToken: string, url?: string) => {
     supabaseUrl,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
-      // async accessToken() {
-      // return accessToken;
-      // },
+      async accessToken() {
+        return accessToken;
+      },
       realtime: {
         params: {
           eventsPerSecond: 10,

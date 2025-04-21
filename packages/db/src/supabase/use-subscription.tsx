@@ -7,7 +7,6 @@ import type {
   RealtimePostgresChangesPayload,
 } from '@supabase/supabase-js';
 import { REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js';
-import { debug } from '@unhook/logger';
 import {
   type ReactNode,
   createContext,
@@ -18,6 +17,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { debug } from '@unhook/logger';
 import { createClient } from './client';
 import { type NetworkStatus, useNetworkStore } from './network-store';
 import type { TableName, Tables } from './types';

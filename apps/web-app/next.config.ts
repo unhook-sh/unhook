@@ -9,8 +9,10 @@ const nextConfig = {
     '@unhook/analytics',
     '@unhook/api',
     '@unhook/db',
+    '@unhook/id',
     '@unhook/ui',
     '@unhook/tunnel',
+    '@unhook/logger',
   ],
   rewrites: async () => {
     return {

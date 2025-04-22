@@ -8,7 +8,7 @@ export const debug = (namespace: string) => defaultLogger.debug(namespace);
 
 // Export everything else
 export { UnhookLogger };
-export type { LoggerOptions } from './logger';
+export type { LoggerProps } from './logger';
 
 // Enable debug namespaces based on environment variable (similar to debug package)
 if (typeof process !== 'undefined' && process.env.DEBUG) {

@@ -2,7 +2,7 @@ import type { LogDestination, LogLevel, LogMessage } from './types';
 
 type ConsoleMethod = 'debug' | 'info' | 'warn' | 'error' | 'log';
 
-export interface LoggerOptions {
+export interface LoggerProps {
   defaultNamespace?: string;
   enabledNamespaces?: Set<string>;
   useColors?: boolean;
@@ -55,11 +55,11 @@ export class UnhookLogger {
   private useColors: boolean;
   private destinations: Set<LogDestination>;
 
-  constructor(options: LoggerOptions = {}) {
-    this.enabledNamespaces = new Set(options.enabledNamespaces || ['*']);
-    this.defaultNamespace = options.defaultNamespace || 'app';
-    this.useColors = options.useColors ?? isBrowser;
-    this.destinations = new Set(options.destinations || []);
+  constructor(props: LoggerProps = {}) {
+    this.enabledNamespaces = new Set(props.enabledNamespaces || ['*']);
+    this.defaultNamespace = props.defaultNamespace || 'app';
+    this.useColors = props.useColors ?? isBrowser;
+    this.destinations = new Set(props.destinations || []);
 
     // Intercept console methods
     this.interceptConsole();
@@ -216,7 +216,17 @@ export class UnhookLogger {
         typeof args[0] === 'string'
           ? formatMessage(args[0] as string, ...args.slice(1))
           : args[0];
-      console.debug(`[${namespace}]`, message);
+
+      // Extract metadata if present
+      const metadata = args.length > 1 ? args[1] : undefined;
+
+      // // Write to destinations with metadata
+      this.writeToDestinations(
+        'debug',
+        namespace,
+        String(message),
+        metadata as Record<string, unknown>,
+      );
     };
   }
 

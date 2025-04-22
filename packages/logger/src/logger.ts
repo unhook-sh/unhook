@@ -127,8 +127,8 @@ export class UnhookLogger {
       console[method] = (...args: unknown[]) => {
         const firstArg = args[0];
         let namespace = self.defaultNamespace;
-        let messageArgs = args;
-        let message = '';
+        let messageArgs: unknown[] = args;
+        let message: unknown = '';
 
         // Handle [namespace] prefix pattern
         if (typeof firstArg === 'string') {
@@ -139,7 +139,11 @@ export class UnhookLogger {
             messageArgs = [message, ...args.slice(1)];
           } else {
             message = firstArg;
+            messageArgs = args;
           }
+        } else {
+          message = firstArg;
+          messageArgs = args;
         }
 
         if (!self.isNamespaceEnabled(namespace)) return;
@@ -147,19 +151,26 @@ export class UnhookLogger {
         // Format the message if it's a format string
         const formattedMessage =
           typeof messageArgs[0] === 'string'
-            ? formatMessage(messageArgs[0] as string, ...messageArgs.slice(1))
+            ? formatMessage(messageArgs[0], ...messageArgs.slice(1))
             : messageArgs[0];
 
-        // Write to destinations
+        // Write to destinations with all metadata
+        const metadata: Record<string, unknown> = {};
+        messageArgs.slice(1).forEach((arg, index) => {
+          if (arg !== null && typeof arg === 'object') {
+            Object.assign(metadata, arg as Record<string, unknown>);
+          } else {
+            metadata[`arg${index + 1}`] = arg;
+          }
+        });
+
         self.writeToDestinations(
           method === 'log' ? 'info' : (method as LogLevel),
           namespace,
           typeof formattedMessage === 'string'
             ? formattedMessage
             : formatMessage('%O', formattedMessage),
-          messageArgs.length > 1
-            ? (messageArgs[1] as Record<string, unknown>)
-            : undefined,
+          Object.keys(metadata).length > 0 ? metadata : undefined,
         );
 
         const timestamp = new Date().toISOString();
@@ -193,6 +204,7 @@ export class UnhookLogger {
       };
     }
 
+    // TODO: this doesn't work with args ex. console.log('hello', { a: 1 });
     enhanceConsole('debug');
     enhanceConsole('info');
     enhanceConsole('warn');

@@ -7,8 +7,8 @@ import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
+import { getProcessIdForPort } from '~/utils/get-process-id';
 import { capture } from '../lib/posthog';
-import { getProcessIdForPort } from '../utils/get-process-id';
 import { useAuthStore } from './auth-store';
 import { useCliStore } from './cli-store';
 import { useTunnelStore } from './tunnel-store';
@@ -36,6 +36,8 @@ interface ConnectionActions {
     ruleId: string,
     state: Partial<RuleConnectionState>,
   ) => Promise<void>;
+  destroy: () => Promise<void>;
+  reset: () => void;
 }
 
 type ConnectionStore = ConnectionState &
@@ -410,6 +412,38 @@ const createConnectionStore = () => {
           ]),
         ),
       });
+    },
+
+    reset: () => {
+      // Complete reset of the store to initial state
+      set(defaultConnectionState);
+    },
+
+    destroy: async () => {
+      log('Destroying connection store...');
+      isDestroyedRef = true;
+
+      // Clear any pending reconnect timeouts
+      if (reconnectTimeoutRef) {
+        clearTimeout(reconnectTimeoutRef);
+        reconnectTimeoutRef = undefined;
+      }
+
+      // Abort any pending fetch requests
+      if (currentFetchAbortController) {
+        currentFetchAbortController.abort();
+        currentFetchAbortController = null;
+      }
+
+      // Close any open sockets
+      if (socketRef) {
+        socketRef.destroy();
+        socketRef = null;
+      }
+
+      // Reset state
+      set(defaultConnectionState);
+      log('Connection store destroyed');
     },
   }));
 };

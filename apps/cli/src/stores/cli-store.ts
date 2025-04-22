@@ -23,6 +23,7 @@ interface CliActions {
   getDebug: () => boolean;
   getTelemetry: () => boolean;
   getVersion: () => string;
+  reset: () => void;
 }
 
 type CliStore = CliState & CliActions;
@@ -56,6 +57,9 @@ const store = createStore<CliStore>()((set, get) => ({
   getDebug: () => get().debug ?? false,
   getTelemetry: () => get().telemetry ?? true,
   getVersion: () => get().version,
+
+  // Reset method to restore default state
+  reset: () => set(defaultCliState as CliState),
 
   // setCliArgs needs to carefully merge while respecting the union type.
   // Since input `args` comes from validated sources (yargs/loadConfig),

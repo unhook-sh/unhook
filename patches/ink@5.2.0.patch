@@ -22,10 +22,10 @@ index 7b40a138f24d015f76fa303e5f368d7f5455c3d1..b2569730a088330b0048f5d843320210
              if (!(input === 'c' && key.ctrl) || !internal_exitOnCtrlC) {
                  // @ts-expect-error TypeScript types for `batchedUpdates` require an argument, but React's codebase doesn't provide it and it works without it as exepected.
 -                reconciler.batchedUpdates(() => {
-+                // reconciler.batchedUpdates(() => {
++                reconciler.batchedUpdates(() => {
                      inputHandler(input, key);
 -                });
-+                // });
++                });
              }
          };
          internal_eventEmitter?.on('input', handleData);

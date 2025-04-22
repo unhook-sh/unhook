@@ -1,4 +1,5 @@
 import { defaultLogger } from '@unhook/logger';
+import { debug } from '@unhook/logger';
 import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file';
 
 defaultLogger.addDestination(
@@ -11,16 +12,15 @@ defaultLogger.addDestination(
   }),
 );
 
-import { debug } from '@unhook/logger';
+const log = debug('unhook:cli');
+
 import { render } from 'ink';
 import { Layout } from './app/layout';
 import { parseArgs } from './lib/cli/args';
 import { setupDebug } from './lib/cli/debug';
-import { cleanup, setupProcessHandlers } from './lib/cli/process';
+import { setupProcessHandlers } from './lib/cli/process';
 import { capture, captureException } from './lib/posthog';
 import { useCliStore } from './stores/cli-store';
-
-const log = debug('unhook:cli');
 
 async function main() {
   try {
@@ -43,7 +43,7 @@ async function main() {
     await setupDebug({ isDebugEnabled: debug ?? false });
     setupProcessHandlers();
 
-    log('Starting CLI ', {
+    log('Starting CLI', {
       tunnelId,
       clientId,
       debug,
@@ -51,17 +51,22 @@ async function main() {
       argSources,
     });
 
-    const { waitUntilExit } = render(<Layout {...config} />, {
+    const renderInstance = render(<Layout {...config} />, {
       debug: config.debug,
     });
 
-    await waitUntilExit();
-    await cleanup();
+    log('Waiting for CLI to exit...');
+    await renderInstance.waitUntilExit();
+    log('Cleanup after CLI exit...');
+    renderInstance.cleanup();
   } catch (error) {
-    log('Error:', error);
+    log('Global error:', error);
     captureException(error as Error);
-    await cleanup();
-    process.exit(1);
+    setTimeout(() => {
+      process.exit(1);
+    }, 0);
+  } finally {
+    log('Cleanup in finally...');
   }
 }
 

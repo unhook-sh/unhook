@@ -41,6 +41,7 @@ interface RequestActions {
   }) => Promise<void>;
   handlePendingRequest: (webhookRequest: RequestWithEvent) => Promise<void>;
   replayRequest: (request: RequestWithEvent) => Promise<void>;
+  reset: () => void;
 }
 
 type RequestStore = RequestState & RequestActions;
@@ -440,6 +441,10 @@ const store = createStore<RequestStore>()((set, get) => ({
         requestCount: sql`${Tunnels.requestCount} + 1`,
       })
       .where(eq(Tunnels.clientId, request.tunnelId));
+  },
+  reset: () => {
+    log('Resetting request store');
+    set({ requests: [] });
   },
 }));
 

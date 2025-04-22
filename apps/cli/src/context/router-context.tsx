@@ -16,7 +16,6 @@ function NavigationHandler() {
   const goBack = useRouterStore.use.goBack();
   const canGoBack = useRouterStore.use.canGoBack()();
   const navigate = useRouterStore.use.navigate();
-
   useInput((input, key) => {
     if (key.escape && canGoBack) {
       goBack();

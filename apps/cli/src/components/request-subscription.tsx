@@ -2,6 +2,7 @@ import type { Tables } from '@unhook/db';
 import { useSubscription } from '@unhook/db/supabase/client';
 import { debug } from '@unhook/logger';
 import { memo, useEffect, useMemo, useRef } from 'react';
+import { setRequestSubscriptionCleanup } from '../lib/cli/process';
 import { useRequestStore } from '../stores/request-store';
 
 const log = debug('unhook:cli:request-subscription');
@@ -111,6 +112,14 @@ export const RequestSubscription = memo(function RequestSubscription() {
   useEffect(() => {
     subscriptionMounted.current = true;
     unmountingRef.current = false;
+
+    // Register cleanup with process handlers
+    setRequestSubscriptionCleanup(() => {
+      log('Process cleanup triggered, disconnecting subscriptions');
+      unmountingRef.current = true;
+      subscriptionMounted.current = false;
+      unsubscribeRequests();
+    });
 
     return () => {
       log('Component unmounting, disconnecting subscriptions');

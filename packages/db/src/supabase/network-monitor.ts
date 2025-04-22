@@ -102,4 +102,4 @@ export class NetworkMonitor {
 }
 
 // Create a singleton instance
-export const networkMonitor = new NetworkMonitor();
+// export const networkMonitor = new NetworkMonitor();

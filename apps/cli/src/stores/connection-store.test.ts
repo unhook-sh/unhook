@@ -125,6 +125,7 @@ describe('useConnectionStore', () => {
       getDebug: () => false,
       getTelemetry: () => true,
       getVersion: () => '1.0.0',
+      reset: vi.fn(),
     });
     vi.mocked(useTunnelStore.getState).mockReturnValue({
       selectedTunnelId: 'test-tunnel-id',
@@ -270,6 +271,7 @@ describe('useConnectionStore', () => {
         getDebug: () => false,
         getTelemetry: () => true,
         getVersion: () => '1.0.0',
+        reset: vi.fn(),
       });
     });
 

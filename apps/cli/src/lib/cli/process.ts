@@ -1,31 +1,97 @@
-import { sql } from '@unhook/db/client';
 import { debug } from '@unhook/logger';
-import { capture, shutdown } from '../posthog';
+import { useCliStore } from '../../stores/cli-store';
+import { useConnectionStore } from '../../stores/connection-store';
+import { useRequestStore } from '../../stores/request-store';
+import { capture, captureException, shutdown } from '../posthog';
 
 const log = debug('unhook:cli:process');
-export function setupProcessHandlers(): void {
-  const handleTermination = async (signal: string) => {
-    capture({
-      event: 'cli_shutdown',
-      properties: {
-        exitType: signal,
-      },
-    });
-    await shutdown();
-    // Use standard signal exit codes (128 + signal number)
-    const exitCode = signal === 'SIGINT' ? 130 : 143; // 128 + 2 for SIGINT, 128 + 15 for SIGTERM
-    process.exit(exitCode);
-  };
 
-  process.on('SIGINT', () => void handleTermination('SIGINT'));
-  process.on('SIGTERM', () => void handleTermination('SIGTERM'));
+let tunnelClientCleanup: (() => void) | null = null;
+let requestSubscriptionCleanup: (() => void) | undefined;
+
+export function setTunnelClientCleanup(cleanup: () => void) {
+  tunnelClientCleanup = cleanup;
 }
 
-export async function cleanup(): Promise<void> {
-  try {
-    await sql.end();
-  } catch (error) {
-    log('Error closing database connection:', error);
+export function setRequestSubscriptionCleanup(cleanup: () => void) {
+  requestSubscriptionCleanup = cleanup;
+}
+
+function exit(exitCode: number) {
+  setTimeout(() => {
+    process.exit(exitCode);
+  }, 0);
+}
+
+export function setupProcessHandlers(): void {
+  const handleTermination = async (signal: string) => {
+    log(`Received ${signal} signal, starting cleanup...`);
+
+    try {
+      // Capture shutdown event first in case other operations fail
+      capture({
+        event: 'cli_shutdown',
+        properties: {
+          exitType: signal,
+        },
+      });
+
+      // Run cleanup operations
+      await cleanup();
+
+      // Use standard signal exit codes (128 + signal number)
+      const exitCode = signal === 'SIGINT' ? 130 : 143; // 128 + 2 for SIGINT, 128 + 15 for SIGTERM
+      log(`Cleanup complete, exiting with code: ${exitCode}`);
+      exit(exitCode);
+    } catch (error) {
+      log('Error during cleanup:', error);
+      exit(1);
+    }
+  };
+
+  // Ensure we handle the signals synchronously to prevent multiple cleanup attempts
+  let isCleaningUp = false;
+
+  const signalHandler = (signal: string) => {
+    if (isCleaningUp) {
+      log(`Cleanup already in progress, ignoring ${signal} signal`);
+      return;
+    }
+    isCleaningUp = true;
+    void handleTermination(signal);
+  };
+
+  process.on('SIGINT', () => signalHandler('SIGINT'));
+  process.on('SIGTERM', () => signalHandler('SIGTERM'));
+  process.on('uncaughtException', (e) => {
+    log('Uncaught exception:', e.stack);
+    captureException(e);
+    void handleTermination('SIGINT');
+  });
+}
+
+export async function cleanup() {
+  log('Starting cleanup process...');
+
+  if (tunnelClientCleanup) {
+    log('Cleaning up tunnel client...');
+    tunnelClientCleanup();
+    tunnelClientCleanup = null;
   }
+
+  if (requestSubscriptionCleanup) {
+    log('Cleaning up request subscription...');
+    requestSubscriptionCleanup();
+    requestSubscriptionCleanup = undefined;
+  }
+
+  log('Resetting stores...');
+  useConnectionStore.getState().reset();
+  useCliStore.getState().reset();
+  useRequestStore.getState().reset();
+
+  log('Shutting down posthog...');
   await shutdown();
+
+  log('Cleanup complete');
 }

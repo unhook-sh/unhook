@@ -5,8 +5,6 @@
  *
  * Environment Variables:
  * All settings can also be configured using environment variables:
- * - TUNNEL_PORT=3000
- * - TUNNEL_API_KEY=your-api-key-here
  * - TUNNEL_CLIENT_ID=my-app
  * - TUNNEL_DEBUG=true|false|1|0|yes|no
  *

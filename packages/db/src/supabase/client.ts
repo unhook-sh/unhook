@@ -1,7 +1,7 @@
 import { useSession } from '@clerk/nextjs';
 import { createBrowserClient } from '@supabase/ssr';
-import { useEffect, useMemo } from 'react';
 import { debug } from '@unhook/logger';
+import { useEffect, useMemo } from 'react';
 import { env } from '../env.client';
 import type { Database } from './types';
 

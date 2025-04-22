@@ -46,7 +46,7 @@ export const configSchema = z.object({
     .optional(),
   forward: z.array(
     z.object({
-      from: z.string().default('*'),
+      from: z.string().default('*').optional(),
       to: z.union([z.instanceof(URL), z.string().url(), remotePatternSchema]),
       ping: z
         .union([

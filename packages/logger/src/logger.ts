@@ -7,6 +7,7 @@ export interface LoggerProps {
   enabledNamespaces?: Set<string>;
   useColors?: boolean;
   destinations?: LogDestination[];
+  flushInterval?: number;
 }
 
 // Store original console methods
@@ -49,20 +50,90 @@ function formatMessage(template: string, ...args: unknown[]): string {
   });
 }
 
+interface BufferedLogMessage extends LogMessage {
+  sequence: number;
+}
+
 export class UnhookLogger {
   private enabledNamespaces: Set<string>;
   private defaultNamespace: string;
   private useColors: boolean;
   private destinations: Set<LogDestination>;
+  private logBuffer: BufferedLogMessage[] = [];
+  private flushInterval: number;
+  private flushTimer: Timer | null = null;
+  private sequence = 0;
 
   constructor(props: LoggerProps = {}) {
     this.enabledNamespaces = new Set(props.enabledNamespaces || ['*']);
     this.defaultNamespace = props.defaultNamespace || 'app';
     this.useColors = props.useColors ?? isBrowser;
     this.destinations = new Set(props.destinations || []);
+    this.flushInterval = props.flushInterval ?? 100; // Default 100ms
+
+    // Start the flush timer
+    this.startFlushTimer();
 
     // Intercept console methods
     this.interceptConsole();
+  }
+
+  private startFlushTimer(): void {
+    if (this.flushTimer) {
+      clearInterval(this.flushTimer);
+    }
+    this.flushTimer = setInterval(() => {
+      this.flush().catch((error) => {
+        console.error('Failed to flush logs:', error);
+      });
+    }, this.flushInterval);
+  }
+
+  private async flush(): Promise<void> {
+    if (this.logBuffer.length === 0) return;
+
+    // Sort buffer by sequence number to maintain order
+    const sortedBuffer = [...this.logBuffer].sort(
+      (a, b) => a.sequence - b.sequence,
+    );
+    this.logBuffer = [];
+
+    // Process each message in order
+    for (const bufferedMessage of sortedBuffer) {
+      const { sequence, ...message } = bufferedMessage;
+      if (this.destinations.size > 0) {
+        await Promise.all(
+          Array.from(this.destinations).map((destination) =>
+            destination.write(message),
+          ),
+        );
+      }
+    }
+  }
+
+  private writeToDestinations(
+    level: LogLevel,
+    namespace: string,
+    message: string,
+    metadata?: Record<string, unknown>,
+  ): void {
+    const logMessage: BufferedLogMessage = {
+      level,
+      namespace,
+      message,
+      metadata,
+      timestamp: new Date(),
+      sequence: this.sequence++,
+    };
+
+    this.logBuffer.push(logMessage);
+
+    // If buffer gets too large, trigger an immediate flush
+    if (this.logBuffer.length > 1000) {
+      this.flush().catch((error) => {
+        console.error('Failed to flush logs:', error);
+      });
+    }
   }
 
   private getColor(str: string): number {
@@ -97,27 +168,6 @@ export class UnhookLogger {
       }
     }
     return false;
-  }
-
-  private writeToDestinations(
-    level: LogLevel,
-    namespace: string,
-    message: string,
-    metadata?: Record<string, unknown>,
-  ): void {
-    if (this.destinations.size === 0) return;
-
-    const logMessage: LogMessage = {
-      level,
-      namespace,
-      message,
-      metadata,
-      timestamp: new Date(),
-    };
-
-    for (const destination of this.destinations) {
-      destination.write(logMessage);
-    }
   }
 
   private interceptConsole(): void {
@@ -164,6 +214,10 @@ export class UnhookLogger {
           }
         });
 
+        const timestamp = new Date();
+        const prefix = `[${timestamp.toISOString()}] [${namespace}]`;
+
+        // Write to destinations (non-blocking)
         self.writeToDestinations(
           method === 'log' ? 'info' : (method as LogLevel),
           namespace,
@@ -173,9 +227,7 @@ export class UnhookLogger {
           Object.keys(metadata).length > 0 ? metadata : undefined,
         );
 
-        const timestamp = new Date().toISOString();
-        const prefix = `[${timestamp}] [${namespace}]`;
-
+        // Immediately write to console
         if (self.useColors) {
           if (!isBrowser) {
             // Node.js
@@ -204,7 +256,6 @@ export class UnhookLogger {
       };
     }
 
-    // TODO: this doesn't work with args ex. console.log('hello', { a: 1 });
     enhanceConsole('debug');
     enhanceConsole('info');
     enhanceConsole('warn');
@@ -221,8 +272,8 @@ export class UnhookLogger {
   }
 
   // Create a debug function for a specific namespace
-  debug(namespace: string): (...args: unknown[]) => void {
-    return (...args: unknown[]) => {
+  debug(namespace: string): (...args: unknown[]) => Promise<void> {
+    return async (...args: unknown[]) => {
       if (!this.isNamespaceEnabled(namespace)) return;
       const message =
         typeof args[0] === 'string'
@@ -232,7 +283,7 @@ export class UnhookLogger {
       // Extract metadata if present
       const metadata = args.length > 1 ? args[1] : undefined;
 
-      // // Write to destinations with metadata
+      // Write to destinations with metadata
       this.writeToDestinations(
         'debug',
         namespace,
@@ -253,6 +304,16 @@ export class UnhookLogger {
 
   // Restore original console methods
   destroy(): void {
+    if (this.flushTimer) {
+      clearInterval(this.flushTimer);
+      this.flushTimer = null;
+    }
+
+    // Flush any remaining logs
+    this.flush().catch((error) => {
+      console.error('Failed to flush final logs:', error);
+    });
+
     for (const [method, fn] of Object.entries(originalConsole)) {
       console[method as ConsoleMethod] = fn;
     }

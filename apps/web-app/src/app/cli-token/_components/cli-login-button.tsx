@@ -53,7 +53,7 @@ export function CliLoginButton() {
   return (
     <div className="flex flex-col gap-2">
       {!error && (
-        <Button onClick={onLogin} disabled={isPending}>
+        <Button onClick={onLogin} disabled={isPending} autoFocus>
           {isPending ? (
             <>
               <Icons.Spinner size="sm" variant="muted" className="mr-2" />

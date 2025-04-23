@@ -9,13 +9,15 @@ import { useCliStore } from '~/stores/cli-store';
 import { useRouterStore } from '~/stores/router-store';
 
 const log = debug('unhook:cli:posthog');
+const nodeEnv = process.env.NODE_ENV;
+const isProduction = nodeEnv === 'production';
 
 // // Keep a reference to the original PostHog instance
 const posthog = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
   host: env.NEXT_PUBLIC_POSTHOG_HOST,
-  // flushAt: 1, // Flush immediately
-  // defaultOptIn: true,
-  // flushInterval: 0, // Don't wait to flush
+  flushAt: 1, // Flush immediately
+  defaultOptIn: true,
+  flushInterval: 0, // Don't wait to flush
 });
 
 export function capture(
@@ -29,6 +31,10 @@ export function capture(
     return;
   }
   const path = useRouterStore.getState().currentPath;
+
+  if (!isProduction) {
+    return;
+  }
 
   posthog.capture({
     distinctId: event.distinctId ?? userId,
@@ -45,6 +51,10 @@ export function captureException(error: Error) {
   const sessionId = useAuthStore.getState().sessionId;
   const userId = user?.id ?? sessionId;
   const path = useRouterStore.getState().currentPath;
+
+  if (!isProduction) {
+    return;
+  }
 
   posthog.captureException(error, userId, {
     $pathname: path,
@@ -72,7 +82,7 @@ export function PostHogPageView() {
 
   useEffect(() => {
     // Track pageviews
-    if (path && userId) {
+    if (path && userId && isProduction) {
       posthog.capture({
         distinctId: userId,
         event: '$pageview',
@@ -95,7 +105,7 @@ export function PostHogIdentifyUser() {
   const email = user?.primaryEmailAddress?.emailAddress;
 
   useEffect(() => {
-    if (userId) {
+    if (userId && isProduction) {
       posthog.identify({
         distinctId: userId,
         properties: {
@@ -121,13 +131,15 @@ export function PostHogOptIn({
   children,
   telemetry,
 }: PropsWithChildren<{ telemetry?: boolean }>) {
+  const isProduction = nodeEnv === 'production';
+
   useEffect(() => {
-    if (telemetry) {
+    if (telemetry && isProduction) {
       posthog.optIn();
     } else {
       posthog.optOut();
     }
-  }, [telemetry]);
+  }, [telemetry, isProduction]);
 
   return <>{children}</>;
 }

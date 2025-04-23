@@ -13,6 +13,7 @@ import { RouterProvider } from '~/context/router-context';
 import { TunnelProvider } from '~/context/tunnel-context';
 import { env } from '~/env';
 import { SignedIn, TunnelAuthorized } from '~/guards';
+import { useAuth } from '~/hooks/use-auth';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {
   PostHogIdentifyUser,
@@ -41,7 +42,9 @@ function Fallback({ error }: { error: Error }) {
 
 function AppContent() {
   const dimensions = useDimensions();
-  const token = useAuthStore.use.token();
+  const { token } = useAuth();
+  const validateToken = useAuthStore.use.validateToken();
+  const isValidating = useAuthStore.use.isValidatingToken();
 
   useEffect(() => {
     capture({
@@ -52,6 +55,23 @@ function AppContent() {
       },
     });
   }, [dimensions]);
+
+  useEffect(() => {
+    // Validate token on mount
+    log('Validating token on app mount');
+    validateToken().catch((error) => {
+      log('Token validation failed:', error);
+      captureException(error);
+    });
+  }, [validateToken]);
+
+  if (isValidating) {
+    return (
+      <Box>
+        <Text>Validating authentication...</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box

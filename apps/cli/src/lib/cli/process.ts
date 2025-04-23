@@ -1,4 +1,4 @@
-import { debug } from '@unhook/logger';
+import { debug, defaultLogger } from '@unhook/logger';
 import { useCliStore } from '../../stores/cli-store';
 import { useConnectionStore } from '../../stores/connection-store';
 import { useRequestStore } from '../../stores/request-store';
@@ -92,6 +92,10 @@ export async function cleanup() {
 
   log('Shutting down posthog...');
   await shutdown();
+
+  // Destroy logger to flush remaining logs
+  log('Destroying logger...');
+  defaultLogger.destroy();
 
   log('Cleanup complete');
 }

@@ -1,25 +1,18 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 import type { UserResource } from '@clerk/types';
 import { createId } from '@unhook/id';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import jwt from 'jsonwebtoken';
 import { createStore } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { SecureStorage } from '../lib/auth/secure-storage';
 import { capture } from '../lib/posthog';
 
 const log = debug('unhook:cli:auth-store');
-const AUTH_STORAGE_BASE_PATH = path.join(os.homedir(), '.unhook');
-
-// Fetch the JWKS URL for Clerk
-const _CLERK_JWKS_URL = 'https://api.clerk.dev/v1/jwks';
+const secureStorage = new SecureStorage('auth');
 
 interface AuthState {
   isAuthenticated: boolean;
   user: UserResource | null;
-  token: string | null;
   orgId: string | null;
   isLoading: boolean;
   sessionId: string;
@@ -36,6 +29,7 @@ interface AuthActions {
   clearAuth: () => void;
   setIsLoading: (isLoading: boolean) => void;
   validateToken: () => Promise<boolean>;
+  getToken: () => Promise<string | null>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -43,7 +37,6 @@ type AuthStore = AuthState & AuthActions;
 const defaultInitState: AuthState = {
   isAuthenticated: false,
   user: null,
-  token: null,
   orgId: null,
   isLoading: false,
   sessionId: createId({ prefix: 'session' }),
@@ -51,205 +44,173 @@ const defaultInitState: AuthState = {
   isTokenValid: false,
 };
 
-// Create a custom storage that uses the file system
-const fsStorage = {
-  getItem: (name: string): string | null => {
-    const filePath = path.join(AUTH_STORAGE_BASE_PATH, `${name}.json`);
-    try {
-      // Ensure directory exists
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
-      log('Reading auth state from %s', filePath);
-      return fs.existsSync(filePath)
-        ? fs.readFileSync(filePath, 'utf-8')
-        : null;
-    } catch (error) {
-      log('Error reading from storage: %O', error);
-      return null;
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    const filePath = path.join(AUTH_STORAGE_BASE_PATH, `${name}.json`);
-    try {
-      // Ensure directory exists
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
-      log('Writing auth state to %s', filePath);
-      fs.writeFileSync(filePath, value, 'utf-8');
-    } catch (error) {
-      log('Error writing to storage: %O', error);
-    }
-  },
-  removeItem: (name: string): void => {
-    const filePath = path.join(AUTH_STORAGE_BASE_PATH, `${name}.json`);
-    try {
-      if (fs.existsSync(filePath)) {
-        log('Removing auth state from %s', filePath);
-        fs.unlinkSync(filePath);
-      }
-    } catch (error) {
-      log('Error removing from storage: %O', error);
-    }
-  },
-};
-
 // Create and export the store instance
-const store = createStore<AuthStore>()(
-  persist(
-    (set, get) => ({
-      ...defaultInitState,
-      setAuth: (auth: {
-        user: UserResource;
-        token: string;
-        orgId: string;
-      }) => {
-        log(
-          'Setting authentication state: orgId=%s, userId=%s',
-          auth.orgId,
-          auth.user.id,
-        );
-        const currentState = get();
-        if (
-          currentState.token === auth.token &&
-          currentState.user?.id === auth.user.id &&
-          currentState.orgId === auth.orgId
-        ) {
-          log('Auth state unchanged, skipping update');
-          return;
-        }
+const store = createStore<AuthStore>()((set, get) => ({
+  ...defaultInitState,
 
-        capture({
-          event: 'user_authenticated',
-          properties: {
-            userId: auth.user.id,
-            orgId: auth.orgId,
-            email: auth.user.primaryEmailAddress?.emailAddress,
-            isNewAuthentication: !currentState.isAuthenticated,
-            sessionId: currentState.sessionId,
-          },
-        });
+  getToken: async () => {
+    return secureStorage.getItem('token');
+  },
 
-        log(
-          'Updating auth state: isAuthenticated=true, userId=%s, orgId=%s, sessionId=%s',
-          auth.user.id,
-          auth.orgId,
-          currentState.sessionId,
-        );
-        set({
-          isAuthenticated: true,
-          user: auth.user,
-          token: auth.token,
-          orgId: auth.orgId,
+  setAuth: async (auth: {
+    user: UserResource;
+    token: string;
+    orgId: string;
+  }) => {
+    log(
+      'Setting authentication state: orgId=%s, userId=%s',
+      auth.orgId,
+      auth.user.id,
+    );
+
+    const currentToken = await secureStorage.getItem('token');
+    if (
+      currentToken === auth.token &&
+      get().user?.id === auth.user.id &&
+      get().orgId === auth.orgId
+    ) {
+      log('Auth state unchanged, skipping update');
+      return;
+    }
+
+    // Store token securely
+    await secureStorage.setItem('token', auth.token);
+
+    capture({
+      event: 'user_authenticated',
+      properties: {
+        userId: auth.user.id,
+        orgId: auth.orgId,
+        email: auth.user.primaryEmailAddress?.emailAddress,
+        isNewAuthentication: !get().isAuthenticated,
+        sessionId: get().sessionId,
+      },
+    });
+
+    log(
+      'Updating auth state: isAuthenticated=true, userId=%s, orgId=%s, sessionId=%s',
+      auth.user.id,
+      auth.orgId,
+      get().sessionId,
+    );
+
+    set({
+      isAuthenticated: true,
+      user: auth.user,
+      orgId: auth.orgId,
+    });
+
+    // Validate token after setting it
+    log('Initiating token validation after auth update');
+    get()
+      .validateToken()
+      .catch((error) => {
+        log('Token validation failed: %O', error);
+      });
+  },
+
+  clearAuth: async () => {
+    log('Clearing authentication state');
+    const currentState = get();
+    if (!currentState.isAuthenticated && !currentState.user) {
+      log('Auth state already cleared, skipping');
+      return;
+    }
+
+    if (currentState.user?.id) {
+      log(
+        'Logging out user: userId=%s, orgId=%s',
+        currentState.user.id,
+        currentState.orgId,
+      );
+      capture({
+        event: 'user_logged_out',
+        properties: {
+          userId: currentState.user?.id,
+          orgId: currentState.orgId,
+          email: currentState.user?.primaryEmailAddress?.emailAddress,
           sessionId: currentState.sessionId,
-        });
+        },
+      });
+    }
 
-        // Validate token after setting it
-        log('Initiating token validation after auth update');
-        get()
-          .validateToken()
-          .catch((error) => {
-            log('Token validation failed: %O', error);
-          });
-      },
-      clearAuth: () => {
-        log('Clearing authentication state');
-        const currentState = get();
-        if (!currentState.isAuthenticated && !currentState.user) {
-          log('Auth state already cleared, skipping');
-          return;
-        }
+    // Remove token from secure storage
+    await secureStorage.removeItem('token');
 
-        if (currentState.user?.id) {
-          log(
-            'Logging out user: userId=%s, orgId=%s',
-            currentState.user.id,
-            currentState.orgId,
-          );
-          capture({
-            event: 'user_logged_out',
-            properties: {
-              userId: currentState.user?.id,
-              orgId: currentState.orgId,
-              email: currentState.user?.primaryEmailAddress?.emailAddress,
-              sessionId: currentState.sessionId,
-            },
-          });
-        }
+    log('Resetting auth state: sessionId=%s', currentState.sessionId);
+    set({
+      isAuthenticated: false,
+      user: null,
+      orgId: null,
+      isTokenValid: false,
+    });
+  },
 
-        log('Resetting auth state: sessionId=%s', currentState.sessionId);
-        set({
-          isAuthenticated: false,
-          user: null,
-          token: null,
-          orgId: null,
-          isTokenValid: false,
-          sessionId: currentState.sessionId,
-        });
-      },
-      setIsLoading: (isLoading: boolean) => {
-        log('Setting loading state: isLoading=%s', isLoading);
-        const currentState = get();
-        if (currentState.isLoading === isLoading) {
-          log('Loading state unchanged, skipping update');
-          return;
-        }
-        set({ isLoading });
-      },
-      validateToken: async () => {
-        const { token, clearAuth } = get();
-        log('Validating token: hasToken=%s', !!token);
+  setIsLoading: (isLoading: boolean) => {
+    log('Setting loading state: isLoading=%s', isLoading);
+    const currentState = get();
+    if (currentState.isLoading === isLoading) {
+      log('Loading state unchanged, skipping update');
+      return;
+    }
+    set({ isLoading });
+  },
 
-        set({ isValidatingToken: true });
+  validateToken: async () => {
+    const token = await secureStorage.getItem('token');
+    log('Validating token: hasToken=%s', !!token);
 
-        if (!token) {
-          log('No token found, setting isTokenValid=false');
-          set({ isTokenValid: false, isValidatingToken: false });
-          return false;
-        }
+    set({ isValidatingToken: true });
 
-        try {
-          log('Verifying token with jsonwebtoken');
+    if (!token) {
+      log('No token found, setting isTokenValid=false');
+      set({ isTokenValid: false, isValidatingToken: false });
+      return false;
+    }
 
-          // For client-side verification, we should have a mechanism to get the public key
-          // Since we don't have direct access to the private key, we can verify basic properties
-          // This is a simplified version that checks if the token can be decoded
-          // and if basic structural properties are valid
+    try {
+      log('Verifying token with jsonwebtoken');
 
-          // Decode without verification to check the structure and expiration
-          const decoded = jwt.decode(token, { complete: true });
+      // For client-side verification, we should have a mechanism to get the public key
+      // Since we don't have direct access to the private key, we can verify basic properties
+      // This is a simplified version that checks if the token can be decoded
+      // and if basic structural properties are valid
 
-          if (!decoded || typeof decoded !== 'object') {
-            log('Token could not be decoded, logging out');
-            set({ isTokenValid: false, isValidatingToken: false });
-            clearAuth();
-            return false;
-          }
+      // Decode without verification to check the structure and expiration
+      const decoded = jwt.decode(token, { complete: true });
 
-          // Check token expiration
-          const expiryTime = (decoded.payload as jwt.JwtPayload).exp;
-          if (!expiryTime || Date.now() >= expiryTime * 1000) {
-            log('Token is expired, logging out');
-            set({ isTokenValid: false, isValidatingToken: false });
-            clearAuth();
-            return false;
-          }
+      if (!decoded || typeof decoded !== 'object') {
+        log('Token could not be decoded, logging out');
+        set({ isTokenValid: false, isValidatingToken: false });
+        get().clearAuth();
+        return false;
+      }
 
-          log(
-            'Token has valid structure and is not expired, setting isTokenValid=true',
-          );
-          set({ isTokenValid: true, isValidatingToken: false });
-          return true;
-        } catch (error) {
-          log('Error validating token: %O', error);
-          set({ isTokenValid: false, isValidatingToken: false });
-          clearAuth();
-          return false;
-        }
-      },
-    }),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => fsStorage),
-    },
-  ),
-);
+      // Check token expiration
+      const expiryTime = (decoded.payload as jwt.JwtPayload).exp;
+      if (!expiryTime || Date.now() >= expiryTime * 1000) {
+        log('Token is expired, logging out');
+        set({ isTokenValid: false, isValidatingToken: false });
+        get().clearAuth();
+        return false;
+      }
+
+      log(
+        'Token has valid structure and is not expired, setting isTokenValid=true',
+      );
+      set({
+        isTokenValid: true,
+        isValidatingToken: false,
+        isAuthenticated: true,
+      });
+      return true;
+    } catch (error) {
+      log('Error validating token: %O', error);
+      set({ isTokenValid: false, isValidatingToken: false });
+      get().clearAuth();
+      return false;
+    }
+  },
+}));
 
 export const useAuthStore = createSelectors(store);

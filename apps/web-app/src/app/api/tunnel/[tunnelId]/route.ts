@@ -90,10 +90,33 @@ export async function POST(
       ? filterHeaders(Object.fromEntries(req.headers.entries()), config.headers)
       : {};
 
+    // Get the request origin information from various possible headers
+    const requestUrl = req.url;
+    const origin = req.headers.get('origin');
+    const headerReferer =
+      req.headers.get('referer') || req.headers.get('referrer');
+    const propertyReferer = req.referrer; // Next.js Request object's referrer property
+    const referer = propertyReferer || headerReferer;
+    const host = req.headers.get('host');
+
+    // Determine the most likely source URL
+    const sourceUrl = origin || referer || `https://${host}` || requestUrl;
+
+    console.log('Webhook Request Details:', {
+      requestUrl,
+      sourceUrl,
+      origin,
+      headerReferer,
+      propertyReferer,
+      host,
+      headers: JSON.stringify(headers),
+    });
+
     const request: RequestPayload = {
       id: createId({ prefix: 'req' }),
       method: req.method,
       headers,
+      sourceUrl,
       size: body?.length ?? 0,
       body: bodyBase64,
       contentType: req.headers.get('content-type') ?? 'text/plain',
@@ -107,7 +130,7 @@ export async function POST(
         tunnelId: tunnel.id,
         userId: tunnel.userId,
         orgId: tunnel.orgId,
-        originalRequest: request,
+        originRequest: request,
         from,
         status: 'pending',
         retryCount: 0,

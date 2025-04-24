@@ -95,22 +95,27 @@ await seed(db, {
   Events: {
     count: 5,
     columns: {
-      originalRequest: funcs.default({
+      originRequest: funcs.default({
         defaultValue: {
           id: 'req_123',
           size: 100,
-          url: '/api/webhooks/clerk',
+          sourceUrl: 'https://example.com/api/webhooks/clerk',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'User-Agent':
               'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
           },
-          body: '{"name": "John Doe"}',
+          body: Buffer.from(
+            '{"type": "user.created", "data": {"id": "user_123"}}',
+          ).toString('base64'),
           clientIp: '127.0.0.1',
           timestamp: Date.now(),
           contentType: 'application/json',
         },
+      }),
+      from: funcs.valuesFromArray({
+        values: ['stripe', 'clerk'],
       }),
     },
   },
@@ -125,14 +130,16 @@ await seed(db, {
         defaultValue: {
           id: 'req_123',
           size: 100,
-          url: '/api/webhooks/clerk',
+          sourceUrl: 'https://example.com/api/webhooks/clerk',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'User-Agent':
               'Stripe/1.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
           },
-          body: '{"event": "user.created", "data": {"id": "user_123"}}',
+          body: Buffer.from(
+            '{"type": "user.created", "data": {"id": "user_123"}}',
+          ).toString('base64'),
           clientIp: '127.0.0.1',
           timestamp: Date.now(),
           contentType: 'application/json',
@@ -141,7 +148,7 @@ await seed(db, {
       response: funcs.default({
         defaultValue: {
           status: 200,
-          body: 'Hello, world!',
+          body: '{"message": "confirmed"}',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -152,6 +159,16 @@ await seed(db, {
         maxDate: new Date(),
       }),
       responseTimeMs: funcs.int({ maxValue: 10000, minValue: 0 }),
+      from: funcs.valuesFromArray({
+        values: ['stripe', 'clerk', '*'],
+      }),
+      to: funcs.valuesFromArray({
+        values: [
+          'http://localhost:3000/api/webhooks/clerk',
+          'https://example.com/api/webhooks/clerk',
+          '*',
+        ],
+      }),
     },
     count: 100,
   },

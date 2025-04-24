@@ -3,17 +3,15 @@ import { useSubscription } from '@unhook/db/supabase/client';
 import { debug } from '@unhook/logger';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { setRequestSubscriptionCleanup } from '../lib/cli/process';
-import { useRequestStore } from '../stores/request-store';
+import { useEventStore } from '../stores/events-store';
 
-const log = debug('unhook:cli:request-subscription');
+const log = debug('unhook:cli:event-subscription');
 
 // Inner component that handles the actual subscription logic
-export const RequestSubscription = memo(function RequestSubscription() {
-  log('RequestSubscription');
-
+export const EventSubscription = memo(function EventSubscription() {
   const subscriptionMounted = useRef(false);
   const unmountingRef = useRef(false);
-  const fetchRequests = useRequestStore.use.fetchRequests();
+  const fetchEvents = useEventStore.use.fetchEvents();
 
   // Memoize subscription callbacks to prevent unnecessary recreations
   const requestCallbacks = useMemo(
@@ -21,7 +19,7 @@ export const RequestSubscription = memo(function RequestSubscription() {
       onDelete: () => {
         log('Request deleted');
         if (!unmountingRef.current) {
-          fetchRequests();
+          fetchEvents();
         }
       },
       onError: (error: Error) => {
@@ -30,7 +28,7 @@ export const RequestSubscription = memo(function RequestSubscription() {
       onInsert: async (_payload: Tables<'requests'>) => {
         log('Request inserted');
         if (subscriptionMounted.current && !unmountingRef.current) {
-          fetchRequests();
+          fetchEvents();
         }
       },
       onStatusChange: (
@@ -41,19 +39,19 @@ export const RequestSubscription = memo(function RequestSubscription() {
       onUpdate: () => {
         log('Request updated');
         if (!unmountingRef.current) {
-          fetchRequests();
+          fetchEvents();
         }
       },
     }),
-    [fetchRequests],
+    [fetchEvents],
   );
 
-  const _eventCallbacks = useMemo(
+  const eventCallbacks = useMemo(
     () => ({
       onDelete: () => {
         log('Event deleted');
         if (!unmountingRef.current) {
-          fetchRequests();
+          fetchEvents();
         }
       },
       onError: (error: Error) => {
@@ -62,7 +60,7 @@ export const RequestSubscription = memo(function RequestSubscription() {
       onInsert: () => {
         log('Event inserted');
         if (!unmountingRef.current) {
-          fetchRequests();
+          fetchEvents();
         }
       },
       onStatusChange: (
@@ -73,11 +71,11 @@ export const RequestSubscription = memo(function RequestSubscription() {
       onUpdate: () => {
         log('Event updated');
         if (!unmountingRef.current) {
-          fetchRequests();
+          fetchEvents();
         }
       },
     }),
-    [fetchRequests],
+    [fetchEvents],
   );
 
   // Subscribe to requests
@@ -89,24 +87,26 @@ export const RequestSubscription = memo(function RequestSubscription() {
     });
 
   // // Subscribe to events
-  // const { status: eventStatus, unsubscribe: unsubscribeEvents } =
-  //   useSubscription({
-  //     ...eventCallbacks,
-  //     event: '*',
-  //     table: 'events',
-  //   });
+  const { status: eventStatus, unsubscribe: unsubscribeEvents } =
+    useSubscription({
+      ...eventCallbacks,
+      event: '*',
+      table: 'events',
+    });
 
   // Log combined subscription status
   useEffect(() => {
-    const isConnected = requestStatus === 'connected';
+    const isConnected =
+      requestStatus === 'connected' && eventStatus === 'connected';
     if (isConnected) {
       log('All subscriptions connected');
     } else {
       log('Subscription(s) disconnected or connecting', {
         requestStatus,
+        eventStatus,
       });
     }
-  }, [requestStatus]);
+  }, [requestStatus, eventStatus]);
 
   // Track component mount state and cleanup subscriptions on unmount
   useEffect(() => {
@@ -126,9 +126,13 @@ export const RequestSubscription = memo(function RequestSubscription() {
       unmountingRef.current = true;
       subscriptionMounted.current = false;
       unsubscribeRequests();
-      // unsubscribeEvents();
+      unsubscribeEvents();
     };
-  }, [unsubscribeRequests]);
+  }, [unsubscribeRequests, unsubscribeEvents]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   return null;
 });

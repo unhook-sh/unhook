@@ -73,7 +73,7 @@ export const RouterProvider: FC<RouterProviderProps> = ({ children }) => {
 
     if (isAuthenticated && isTokenValid) {
       log('RouterProvider useEffect: authenticated and token valid');
-      navigate('/requests');
+      navigate('/events');
     } else {
       log('RouterProvider useEffect: not authenticated or token invalid');
       navigate('/');

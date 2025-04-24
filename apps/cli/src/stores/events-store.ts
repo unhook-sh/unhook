@@ -4,6 +4,7 @@ import { Events, Requests, Tunnels } from '@unhook/db/schema';
 import type {
   RequestType as BaseRequestType,
   EventType,
+  RequestType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
@@ -23,100 +24,105 @@ export interface RequestWithEvent extends BaseRequestType {
   [key: string]: string | number | boolean | object | null | undefined;
 }
 
-interface RequestState {
-  requests: RequestWithEvent[];
-  selectedRequestId: string | null;
+export interface EventWithRequest extends EventType {
+  requests?: RequestType[];
+  [key: string]: string | number | boolean | object | null | undefined;
+}
+
+interface EventState {
+  events: EventWithRequest[];
+  selectedEventId: string | null;
   isLoading: boolean;
   totalCount: number;
 }
 
-interface RequestActions {
-  setRequests: (requests: RequestWithEvent[]) => void;
-  setSelectedRequestId: (id: string | null) => void;
+interface EventsActions {
+  setEvents: (events: EventWithRequest[]) => void;
+  setSelectedEventId: (id: string | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   initializeSelection: () => void;
-  fetchRequests: (props?: {
+  fetchEvents: (props?: {
     limit?: number;
     offset?: number;
   }) => Promise<void>;
   handlePendingRequest: (webhookRequest: RequestWithEvent) => Promise<void>;
-  replayRequest: (request: RequestWithEvent) => Promise<void>;
+  replayRequest: (event: EventType) => Promise<void>;
   reset: () => void;
 }
 
-type RequestStore = RequestState & RequestActions;
+type EventStore = EventState & EventsActions;
 
-const defaultRequestState: RequestState = {
-  requests: [],
-  selectedRequestId: null,
+const defaultEventState: EventState = {
+  events: [],
+  selectedEventId: null,
   isLoading: true,
   totalCount: 0,
 };
 
-const store = createStore<RequestStore>()((set, get) => ({
-  ...defaultRequestState,
-  setRequests: (requests) => {
-    log(`Setting requests, count: ${requests.length}`);
-    set({ requests });
+const store = createStore<EventStore>()((set, get) => ({
+  ...defaultEventState,
+  setEvents: (events) => {
+    log(`Setting events, count: ${events.length}`);
+    set({ events });
   },
-  setSelectedRequestId: (id) => {
-    log(`Setting selected request ID: ${id}`);
-    set({ selectedRequestId: id });
+  setSelectedEventId: (id) => {
+    log(`Setting selected event ID: ${id}`);
+    set({ selectedEventId: id });
   },
   setIsLoading: (isLoading) => {
     log(`Setting loading state: ${isLoading}`);
     set({ isLoading });
   },
   initializeSelection: () => {
-    const { selectedRequestId, requests } = get();
+    const { selectedEventId, events } = get();
     log(
-      `Initializing selection, current selected ID: ${selectedRequestId}, requests count: ${requests.length}`,
+      `Initializing selection, current selected ID: ${selectedEventId}, events count: ${events.length}`,
     );
-    if (!selectedRequestId && requests.length > 0) {
-      log(`Auto-selecting first request: ${requests[0]?.id}`);
-      set({ selectedRequestId: requests[0]?.id ?? null });
+    if (!selectedEventId && events.length > 0) {
+      log(`Auto-selecting first event: ${events[0]?.id}`);
+      set({ selectedEventId: events[0]?.id ?? null });
     }
   },
-  fetchRequests: async ({
+  fetchEvents: async ({
     limit = 25,
     offset = 0,
   }: { limit?: number; offset?: number } = {}) => {
-    log('Fetching requests from database', { limit, offset });
+    log('Fetching events from database', { limit, offset });
     const { tunnelId } = useCliStore.getState();
     const currentState = get();
 
     try {
       // Fetch requests with their associated events
-      const [totalRequestCount, requests] = await Promise.all([
-        db.select({ count: count() }).from(Requests),
-        db.query.Requests.findMany({
-          orderBy: [desc(Requests.timestamp)],
-          where: eq(Requests.tunnelId, tunnelId),
+      const [totalEventCount, events] = await Promise.all([
+        db.select({ count: count() }).from(Events),
+        db.query.Events.findMany({
+          orderBy: [desc(Events.timestamp)],
+          where: eq(Events.tunnelId, tunnelId),
           with: {
-            event: true,
+            requests: true,
           },
         }),
       ]);
 
-      log(`Fetched ${requests.length} requests`);
+      log(`Fetched ${events.length} events`);
 
       // Batch all state updates together
       set({
-        requests,
-        selectedRequestId:
-          !currentState.selectedRequestId && requests.length > 0
-            ? (requests[0]?.id ?? null)
-            : currentState.selectedRequestId,
+        events,
+        selectedEventId:
+          !currentState.selectedEventId && events.length > 0
+            ? (events[0]?.id ?? null)
+            : currentState.selectedEventId,
         isLoading: false,
-        totalCount: Number(totalRequestCount[0]?.count ?? 0),
+        totalCount: Number(totalEventCount[0]?.count ?? 0),
       });
     } catch (error) {
-      log('Error fetching requests:', error);
+      log('Error fetching events:', error);
       set({ isLoading: false });
     }
   },
   handlePendingRequest: async (webhookRequest: RequestWithEvent) => {
-    log(`Handling pending request: ${webhookRequest.id}`);
+    log(`Handling pending event: ${webhookRequest.id}`);
     const { forward } = useCliStore.getState();
     const { connectionId } = useConnectionStore.getState();
 
@@ -322,7 +328,7 @@ const store = createStore<RequestStore>()((set, get) => ({
                 orgId: webhookRequest.orgId,
                 from: event.from,
                 to: destinationUrl.toString(),
-                request: event.originalRequest,
+                request: event.originRequest,
                 status: 'pending',
                 timestamp: new Date(),
               });
@@ -342,23 +348,23 @@ const store = createStore<RequestStore>()((set, get) => ({
           }
         }
 
-        await get().fetchRequests();
+        await get().fetchEvents();
       }
     }
   },
-  replayRequest: async (request: RequestWithEvent) => {
-    log(`Replaying request: ${request.id}`);
+  replayRequest: async (event: EventType) => {
+    log(`Replaying event: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
     const { forward } = useCliStore.getState();
 
     // Find the matching forward rule
     const matchingRule = forward.find(
-      (rule) => rule.from === '*' || rule.from === request.from,
+      (rule) => rule.from === '*' || rule.from === event.from,
     );
 
     if (!matchingRule) {
-      throw new Error(`No forward rule found for source: ${request.from}`);
+      throw new Error(`No forward rule found for source: ${event.from}`);
     }
 
     // Check if ping is enabled for this rule
@@ -367,14 +373,14 @@ const store = createStore<RequestStore>()((set, get) => ({
     capture({
       event: 'webhook_request_replay',
       properties: {
-        originalRequestId: request.id,
-        tunnelId: request.tunnelId,
-        eventId: request.eventId,
-        method: request.request.method,
+        originalEventId: event.id,
+        tunnelId: event.tunnelId,
+        eventId: event.id,
+        method: event.originRequest.method,
         connectionId,
         pingEnabled,
-        isEventRetry: !!request.eventId,
-        source: request.from,
+        isEventRetry: !!event.retryCount,
+        source: event.from,
       },
     });
 
@@ -388,15 +394,12 @@ const store = createStore<RequestStore>()((set, get) => ({
       throw new Error('Connection not found');
     }
 
-    const timestamp = request.timestamp || request.createdAt;
+    const timestamp = event.timestamp;
     log(`Using timestamp for replay: ${timestamp}`);
 
     // If the request is part of an event, increment its retry count
-    if (request.eventId) {
-      log(`Processing event for replay: ${request.eventId}`);
-      const event = await db.query.Events.findFirst({
-        where: eq(Events.id, request.eventId),
-      });
+    if (event.retryCount) {
+      log(`Processing event for replay: ${event.id}`);
 
       if (event) {
         log(`Updating event retry count: ${event.retryCount + 1}`);
@@ -415,14 +418,14 @@ const store = createStore<RequestStore>()((set, get) => ({
     log('Creating new request for replay');
     // Insert the new request, maintaining the event relationship if it exists
     await db.insert(Requests).values({
-      tunnelId: request.tunnelId,
-      eventId: request.eventId,
-      apiKey: request.apiKey,
+      tunnelId: event.tunnelId,
+      eventId: event.id,
+      apiKey: event.apiKey,
       userId: user.id,
       orgId: orgId,
       connectionId: connectionId ?? undefined,
-      request: request.request,
-      from: request.from,
+      request: event.originRequest,
+      from: event.from,
       to:
         matchingRule.to instanceof URL
           ? matchingRule.to.toString()
@@ -440,12 +443,12 @@ const store = createStore<RequestStore>()((set, get) => ({
       .set({
         requestCount: sql`${Tunnels.requestCount} + 1`,
       })
-      .where(eq(Tunnels.clientId, request.tunnelId));
+      .where(eq(Tunnels.clientId, event.tunnelId));
   },
   reset: () => {
-    log('Resetting request store');
-    set({ requests: [] });
+    log('Resetting event store');
+    set({ events: [] });
   },
 }));
 
-export const useRequestStore = createSelectors(store);
+export const useEventStore = createSelectors(store);

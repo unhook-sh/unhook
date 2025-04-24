@@ -3,7 +3,7 @@ import { Tunnels } from '@unhook/db/schema';
 import type { TunnelType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
-import { and, desc, eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { useAuthStore } from './auth-store';
 import { useCliStore } from './cli-store';
@@ -54,12 +54,13 @@ const store = createStore<TunnelStore>()((set, get) => ({
     const { orgId } = useAuthStore.getState();
 
     log('fetchTunnelById', { id, orgId });
-    if (!orgId) {
-      throw new Error('User must be authenticated to fetch a tunnel');
-    }
+    // if (!orgId) {
+    //   throw new Error('User must be authenticated to fetch a tunnel');
+    // }
 
     const tunnel = await db.query.Tunnels.findFirst({
-      where: and(eq(Tunnels.id, id), eq(Tunnels.orgId, orgId)),
+      where: eq(Tunnels.id, id),
+      // where: and(eq(Tunnels.id, id), eq(Tunnels.orgId, orgId)),
       orderBy: [desc(Tunnels.createdAt)],
     });
 

@@ -1,9 +1,12 @@
+import { debug } from '@unhook/logger';
 import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
 import figureSet from 'figures';
 import { Text } from 'ink';
 import { Spinner } from '~/components/spinner';
 import type { ColumnDef } from '~/components/table/types';
-import type { RequestWithEvent } from '~/stores/request-store';
+import type { EventWithRequest } from '~/stores/events-store';
+
+const log = debug('unhook:cli:events:table-columns');
 
 function getSelectedColor(isSelected: boolean, defaultColor = 'gray'): string {
   return isSelected ? 'white' : defaultColor;
@@ -59,7 +62,7 @@ const serviceConfig = {
   },
 };
 
-export const requestColumns: ColumnDef<RequestWithEvent>[] = [
+export const columns: ColumnDef<EventWithRequest>[] = [
   {
     id: 'status',
     header: '',
@@ -70,12 +73,13 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
       if (row.status === 'pending') {
         return <Spinner dimColor={!isSelected} bold={isSelected} />;
       }
+      const lastResponse = row.requests?.[0]?.response;
 
       if (
         row.status === 'completed' &&
-        row.response &&
-        row.response.status >= 200 &&
-        row.response.status < 300
+        lastResponse &&
+        lastResponse.status >= 200 &&
+        lastResponse.status < 300
       ) {
         return (
           <Text color="green" dimColor={!isSelected} bold={isSelected}>
@@ -85,9 +89,9 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
       }
 
       if (
-        row.response &&
-        row.response.status >= 400 &&
-        row.response.status < 500
+        lastResponse &&
+        lastResponse.status >= 400 &&
+        lastResponse.status < 500
       ) {
         return (
           <Text color="yellow" dimColor={!isSelected} bold={isSelected}>
@@ -99,8 +103,8 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
       if (
         row.status === 'failed' ||
         (row.status === 'completed' &&
-          row.response &&
-          (row.response.status < 200 || row.response.status >= 300))
+          lastResponse &&
+          (lastResponse.status < 200 || lastResponse.status >= 300))
       ) {
         return (
           <Text color="red" dimColor={!isSelected} bold={isSelected}>
@@ -167,7 +171,7 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
       let expiredText = '-';
 
       try {
-        const userAgent = row.request.headers['user-agent'] || '';
+        const userAgent = row.originRequest?.headers['user-agent'] || '';
         // Use webhook timestamp if available, otherwise fall back to createdAt
         const requestTime = new Date(row.timestamp || row.createdAt);
         const now = new Date();
@@ -233,20 +237,40 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
       const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(row.request.method, width)}
+          {truncateText(row.originRequest?.method ?? '', width)}
         </Text>
       );
     },
   },
   {
-    id: 'url',
-    header: 'Endpoint',
+    id: 'from',
+    header: 'From',
     minWidth: 25,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor(isSelected);
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(new URL(row.to).pathname, width)}
+          {truncateText(row.from, width)}
+        </Text>
+      );
+    },
+  },
+  {
+    id: 'to',
+    header: 'To',
+    minWidth: 25,
+    cell: ({ row, isSelected, width }) => {
+      const color = getSelectedColor(isSelected);
+      const lastRequest = row.requests?.[0];
+
+      let to = lastRequest?.to;
+      if (to && to !== '*') {
+        to = new URL(to).pathname;
+      }
+
+      return (
+        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+          {truncateText(to ?? '', width)}
         </Text>
       );
     },
@@ -257,7 +281,7 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
     minWidth: 4,
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor(isSelected, 'green');
-      const responseCode = row.response?.status;
+      const responseCode = row.requests?.[0]?.response?.status;
 
       if (responseCode && responseCode >= 500) {
         color = 'red';
@@ -282,7 +306,7 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
     minWidth: 8,
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor(isSelected, 'green');
-      const responseTimeMs = row.responseTimeMs;
+      const responseTimeMs = row.requests?.[0]?.responseTimeMs ?? 0;
 
       if (responseTimeMs < 1000) {
         color = 'green';
@@ -311,13 +335,15 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
     minWidth: 35,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor(isSelected);
-      const decodedBody = row.request.body
-        ? tryDecodeBase64(row.request.body)
+      const lastRequest = row.requests?.[0];
+      log('last request', lastRequest);
+      const decodedBody = lastRequest?.request.body
+        ? tryDecodeBase64(lastRequest.request.body)
         : null;
       let event = null;
       try {
+        log('parsedBody', decodedBody);
         const parsedBody = decodedBody ? JSON.parse(decodedBody) : null;
-
         for (const name of knownEventTypeNames) {
           const value = getNestedField(parsedBody, name);
           if (typeof value === 'string') {
@@ -325,28 +351,13 @@ export const requestColumns: ColumnDef<RequestWithEvent>[] = [
             break;
           }
         }
-      } catch {
+      } catch (error) {
+        log('Error rendering event table column', error);
         // Do nothing
       }
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(event ?? '', width)}
-        </Text>
-      );
-    },
-  },
-  {
-    id: 'agent',
-    header: 'Agent',
-    minWidth: 25,
-    cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
-      return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(
-            row.request.headers['user-agent']?.split(' ')[0] ?? '',
-            width,
-          )}
         </Text>
       );
     },

@@ -3,25 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createId } from '@unhook/id';
 import { env } from '../env.client';
-import type { Database } from './types';
+import type { EventType } from '../schema';
+import type { Database, Json } from './types';
 import { SubscriptionProvider, useSubscription } from './use-subscription';
 
-type Json = Database['public']['Tables']['events']['Row']['originalRequest'];
-
-// Create a test event record type
-interface TestEvent {
-  id: string;
-  timestamp: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  maxRetries: number;
-  retryCount: number;
-  originalRequest: Json;
-  userId: string;
-  orgId: string;
-  tunnelId: string;
-  apiKey?: string | null;
-  failedReason?: string | null;
-}
+type SupabaseEvent = Database['public']['Tables']['events']['Insert'];
 
 // Test component that uses the subscription hook
 interface TestComponentProps {
@@ -63,7 +49,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
 
   const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
-  let testEvent: TestEvent;
+  let testEvent: EventType;
   let userId: string;
   let orgId: string;
   let tunnelId: string;
@@ -105,11 +91,28 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     // Create a test event
     testEvent = {
       id: createId({ prefix: 'e' }),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
       status: 'pending',
       maxRetries: 3,
       retryCount: 0,
-      originalRequest: { url: 'https://example.com', method: 'POST' },
+      originRequest: {
+        sourceUrl: 'https://example.com',
+        method: 'POST',
+        id: '123',
+        clientIp: '123',
+        contentType: 'application/json',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'test-user-agent',
+        },
+        size: 100,
+        body: 'test-body',
+      },
+      apiKey: 'test-api-key',
+      from: 'test-from',
+      createdAt: new Date(),
+      failedReason: null,
+      updatedAt: null,
       userId,
       orgId,
       tunnelId,
@@ -127,7 +130,14 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     }
 
     // Create the test event
-    const { error } = await supabase.from('events').insert([testEvent]);
+    const supabaseEvent: SupabaseEvent = {
+      ...testEvent,
+      timestamp: testEvent.timestamp.toISOString(),
+      createdAt: testEvent.createdAt.toISOString(),
+      originRequest: testEvent.originRequest as unknown as Json,
+      updatedAt: testEvent.updatedAt?.toISOString() ?? null,
+    };
+    const { error } = await supabase.from('events').insert([supabaseEvent]);
     if (error) {
       throw new Error(`Failed to create test event: ${error.message}`);
     }
@@ -170,13 +180,30 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     await waitForClientInitialization();
 
     // Insert a new event
-    const newEvent: TestEvent = {
+    const newEvent: EventType = {
       id: createId({ prefix: 'e' }),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(),
       status: 'pending',
       maxRetries: 3,
       retryCount: 0,
-      originalRequest: { url: 'https://example.com/test', method: 'GET' },
+      originRequest: {
+        sourceUrl: 'https://example.com/test',
+        method: 'GET',
+        id: '123',
+        clientIp: '123',
+        contentType: 'application/json',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'test-user-agent',
+        },
+        size: 100,
+        body: 'test-body',
+      },
+      apiKey: 'test-api-key',
+      from: 'test-from',
+      createdAt: new Date(),
+      failedReason: null,
+      updatedAt: null,
       userId,
       orgId,
       tunnelId,
@@ -194,7 +221,14 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     }
 
     // Insert the new event
-    const { error } = await supabase.from('events').insert([newEvent]);
+    const supabaseNewEvent: SupabaseEvent = {
+      ...newEvent,
+      timestamp: newEvent.timestamp.toISOString(),
+      createdAt: newEvent.createdAt.toISOString(),
+      originRequest: newEvent.originRequest as unknown as Json,
+      updatedAt: newEvent.updatedAt?.toISOString() ?? null,
+    };
+    const { error } = await supabase.from('events').insert([supabaseNewEvent]);
     if (error) {
       throw new Error(`Failed to create new event: ${error.message}`);
     }

@@ -1,7 +1,7 @@
 import { debug, defaultLogger } from '@unhook/logger';
 import { useCliStore } from '../../stores/cli-store';
 import { useConnectionStore } from '../../stores/connection-store';
-import { useRequestStore } from '../../stores/request-store';
+import { useEventStore } from '../../stores/events-store';
 import { capture, captureException, shutdown } from '../posthog';
 
 const log = debug('unhook:cli:process');
@@ -88,7 +88,7 @@ export async function cleanup() {
   log('Resetting stores...');
   useConnectionStore.getState().reset();
   useCliStore.getState().reset();
-  useRequestStore.getState().reset();
+  useEventStore.getState().reset();
 
   log('Shutting down posthog...');
   await shutdown();

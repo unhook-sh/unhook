@@ -70,7 +70,7 @@ export function TunnelRequestsTable({
                 method: ['GET', 'POST', 'PUT', 'DELETE'][
                   Math.floor(Math.random() * 4)
                 ] as string,
-
+                sourceUrl: 'https://example.com',
                 headers: {
                   'content-type': 'application/json',
                   'user-agent': 'Svix-Webhooks/1.62.0',

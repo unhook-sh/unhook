@@ -120,6 +120,15 @@ export class RollingFileDestination implements LogDestination {
     }
   }
 
+  private async ensureDirectoryExists(): Promise<void> {
+    try {
+      await mkdir(dirname(this.filepath), { recursive: true });
+    } catch (error) {
+      console.error('Failed to create directory:', error);
+      throw error;
+    }
+  }
+
   async write(message: LogMessage): Promise<void> {
     const { level, namespace, message: msg, metadata, timestamp } = message;
     const metadataStr = metadata
@@ -135,7 +144,25 @@ export class RollingFileDestination implements LogDestination {
       await appendFile(this.filepath, formattedMessage);
       this.currentSize += messageSize;
     } catch (error) {
+      // If the error is ENOENT (file or directory doesn't exist), try to recreate the directory and retry
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        error.code === 'ENOENT'
+      ) {
+        try {
+          await this.ensureDirectoryExists();
+          await appendFile(this.filepath, formattedMessage);
+          this.currentSize += messageSize;
+          return;
+        } catch (retryError) {
+          console.error('Failed to recover and write to log file:', retryError);
+          throw retryError;
+        }
+      }
+
       console.error('Failed to write to log file:', error);
+      throw error;
     }
   }
 }

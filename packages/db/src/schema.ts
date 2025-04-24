@@ -276,6 +276,7 @@ export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
 export interface RequestPayload {
   id: string;
   method: string;
+  sourceUrl: string;
   headers: Record<string, string>;
   size: number;
   body?: string;
@@ -302,7 +303,7 @@ export const Events = pgTable(
       })
       .notNull(),
     // Original request payload that created this event
-    originalRequest: json('originalRequest').$type<RequestPayload>().notNull(),
+    originRequest: json('originRequest').$type<RequestPayload>().notNull(),
     from: text('from').notNull().default('*'),
     // Number of retry attempts made
     retryCount: integer('retryCount').notNull().default(0),

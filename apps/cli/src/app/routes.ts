@@ -2,7 +2,8 @@ import { useAuth } from '~/hooks/use-auth';
 import { useCliStore } from '~/stores/cli-store';
 import type { Route } from '~/stores/router-store';
 import { DebugPage } from './debug/page';
-import { CreateEventLayout } from './events/create/layout';
+import { EventLayout } from './events/[id]/layout';
+import { CreateMockEventLayout } from './events/create-mock/layout';
 import { EventsLayout } from './events/layout';
 import { HelpPage } from './help/page';
 import { HotkeysPage } from './hotkeys/page';
@@ -11,7 +12,6 @@ import { LogoutPage } from './logout/page';
 import { MenuLayout } from './menu/layout';
 import { NotFoundPage } from './not-found/page';
 import { QuitPage } from './quit/page';
-import { RequestsLayout } from './requests/layout';
 import { UnauthorizedPage } from './unauthorized/page';
 
 export type AppRoutePath =
@@ -22,16 +22,14 @@ export type AppRoutePath =
   | '/not-found'
   | '/quit'
   | '/settings'
-  | '/requests'
-  | '/requests/:id'
+  | '/events'
+  | '/events/:id'
+  | '/events/create-mock'
   | '/status'
   | '/metrics'
   | '/debug'
   | '/hotkeys'
-  | '/help'
-  | '/events'
-  | '/events/create'
-  | '/events/:id';
+  | '/help';
 
 // Type for static routes (no parameters)
 export type StaticAppRoutePath = Exclude<AppRoutePath, `${string}:${string}`>;
@@ -46,16 +44,17 @@ const authenticatedRoutes: AppRoute[] = [
   //   hotkey: 'p',
   // },
   {
-    path: '/requests',
-    component: RequestsLayout,
+    path: '/events',
+    component: EventsLayout,
     label: 'Events',
-    hotkey: 'r',
+    hotkey: 'e',
   },
   {
-    path: '/requests/:id',
-    component: RequestsLayout,
-    label: 'Request Details',
-    pattern: /^\/requests\/(?<id>[^/]+)$/,
+    path: '/events/:id',
+    component: EventLayout,
+    label: 'Event Details',
+    // TODO: Add pattern for event id
+    pattern: /^\/events\/(?<id>[^/]+)$/,
     showInMenu: false,
   },
   // {
@@ -65,17 +64,10 @@ const authenticatedRoutes: AppRoute[] = [
   //   hotkey: 's',
   // },
   {
-    path: '/events',
-    component: EventsLayout,
-    label: 'Events',
-    hotkey: 'e',
-    showInMenu: false,
-  },
-  {
-    path: '/events/create',
-    component: CreateEventLayout,
-    label: 'Create Event',
-    hotkey: 'c',
+    path: '/events/create-mock',
+    component: CreateMockEventLayout,
+    label: 'Mock Event',
+    hotkey: 'm',
   },
   {
     path: '/logout',

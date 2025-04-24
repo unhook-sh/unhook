@@ -5,7 +5,7 @@ import { Box, Text } from 'ink';
 import { type FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ConnectToTunnel } from '~/components/connect-to-tunnel';
-import { RequestSubscription } from '~/components/request-subscription';
+import { EventSubscription } from '~/components/event-subscription';
 import { Router } from '~/components/router';
 import { AuthProvider } from '~/context/auth-context';
 import { CliConfigProvider } from '~/context/cli-config-context';
@@ -88,7 +88,7 @@ function AppContent() {
               token={token}
               url={env.NEXT_PUBLIC_SUPABASE_URL}
             >
-              <RequestSubscription />
+              <EventSubscription />
             </SubscriptionProvider>
           )}
         </TunnelAuthorized>

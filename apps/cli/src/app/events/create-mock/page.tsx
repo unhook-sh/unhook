@@ -117,7 +117,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
       });
 
       setTimeout(() => {
-        navigate('/requests');
+        navigate('/events');
       }, 500);
     } catch (err) {
       const errorMessage =

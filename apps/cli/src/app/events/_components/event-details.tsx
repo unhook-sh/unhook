@@ -1,13 +1,13 @@
-import type { RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
 import { useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/tabs';
-import { useRequestStore } from '~/stores/request-store';
+import type { EventWithRequest } from '~/stores/events-store';
+import { useEventStore } from '~/stores/events-store';
 
-const log = debug('unhook:cli:request-details');
+const log = debug('unhook:cli:event-details');
 
 function tryDecodeBase64(str: string): string {
   try {
@@ -26,17 +26,14 @@ function tryParseJson(str: string): string {
   }
 }
 
-interface RequestDetailsProps {
-  request?: RequestType;
+interface EventDetailsProps {
+  event?: EventWithRequest;
 }
 
-export const RequestDetails: FC<RequestDetailsProps> = ({
-  request: propRequest,
-}) => {
-  const selectedRequestId = useRequestStore.use.selectedRequestId();
-  const requests = useRequestStore.use.requests();
-  const request =
-    propRequest ?? requests.find((r) => r.id === selectedRequestId);
+export const EventDetails: FC<EventDetailsProps> = ({ event: propEvent }) => {
+  const selectedEventId = useEventStore.use.selectedEventId();
+  const events = useEventStore.use.events();
+  const event = propEvent ?? events.find((e) => e.id === selectedEventId);
 
   const [_activeTabName, setActiveTabName] = useState('request');
 
@@ -45,25 +42,32 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
     setActiveTabName(name);
   }
 
-  if (!request) {
+  if (!event) {
     return (
       <Box>
-        <Text>Select a request to view details</Text>
+        <Text>Select an event to view details</Text>
       </Box>
     );
   }
 
-  const requestBody = request.request.body
-    ? tryDecodeBase64(request.request.body)
+  const lastRequest = event.requests?.[0];
+
+  const requestBody = event.originRequest.body
+    ? tryDecodeBase64(event.originRequest.body)
     : null;
-  const responseBody = request.response?.body
-    ? tryDecodeBase64(request.response.body)
+  const responseBody = lastRequest?.response?.body
+    ? tryDecodeBase64(lastRequest.response.body)
     : null;
 
   const formattedRequestBody = requestBody ? tryParseJson(requestBody) : null;
   const formattedResponseBody = responseBody
     ? tryParseJson(responseBody)
     : null;
+
+  let to = lastRequest?.to;
+  if (to && to !== '*') {
+    to = new URL(to).pathname;
+  }
 
   return (
     <Box>
@@ -77,23 +81,25 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
           <Box flexDirection="row">
             <Box width="50%" flexDirection="column">
               <Text bold color="cyan">
-                {request.request.method}{' '}
+                {event.originRequest.method}{' '}
               </Text>
-              <Text>{new URL(request.to).pathname}</Text>
+              <Text>{to}</Text>
               <Box>
                 <Text dimColor>
-                  Size: {request.request.size} bytes • IP:{' '}
-                  {request.request.clientIp} •{' '}
-                  {new Date(request.timestamp).toLocaleString()}
+                  Size: {event.originRequest.size} bytes • IP:{' '}
+                  {event.originRequest.clientIp} •{' '}
+                  {new Date(event.timestamp).toLocaleString()}
                 </Text>
               </Box>
               <Box flexDirection="column">
-                {Object.entries(request.request.headers).map(([key, value]) => (
-                  <Box key={key} marginLeft={2}>
-                    <Text>{key}: </Text>
-                    <Text dimColor>{value}</Text>
-                  </Box>
-                ))}
+                {Object.entries(event.originRequest.headers).map(
+                  ([key, value]) => (
+                    <Box key={key} marginLeft={2}>
+                      <Text>{key}: </Text>
+                      <Text dimColor>{value}</Text>
+                    </Box>
+                  ),
+                )}
               </Box>
             </Box>
             <Box width="50%" flexDirection="column">
@@ -106,7 +112,7 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
         <TabsContent value="response">
           <Box flexDirection="row">
             <Box width="50%" flexDirection="column">
-              {Object.entries(request.response?.headers || {}).map(
+              {Object.entries(event.originRequest?.headers || {}).map(
                 ([key, value]) => (
                   <Box key={key} marginLeft={2}>
                     <Text>{key}: </Text>
@@ -124,14 +130,14 @@ export const RequestDetails: FC<RequestDetailsProps> = ({
         </TabsContent>
       </Tabs>
 
-      {request.status === 'failed' && (
+      {event.status === 'failed' && (
         <Box flexDirection="column" marginTop={2}>
           <Text bold color="red">
             Request Failed
           </Text>
-          {request.failedReason && (
+          {event.failedReason && (
             <Box marginLeft={2}>
-              <Text color="red">{request.failedReason}</Text>
+              <Text color="red">{event.failedReason}</Text>
             </Box>
           )}
         </Box>

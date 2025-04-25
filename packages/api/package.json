@@ -6,6 +6,7 @@
     "@trpc/client": "11.1.0",
     "@trpc/react-query": "11.1.0",
     "@trpc/server": "11.1.0",
+    "@trpc/tanstack-react-query": "11.1.1",
     "@unhook/db": "workspace:*",
     "@vercel/kv": "3.0.0",
     "drizzle-orm": "0.41.0",

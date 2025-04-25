@@ -13,7 +13,6 @@ import { RouterProvider } from '~/context/router-context';
 import { TunnelProvider } from '~/context/tunnel-context';
 import { env } from '~/env';
 import { SignedIn, TunnelAuthorized } from '~/guards';
-import { useAuth } from '~/hooks/use-auth';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {
   PostHogIdentifyUser,
@@ -27,7 +26,7 @@ import type { CliState } from '~/stores/cli-store';
 
 const log = debug('unhook:cli:layout');
 
-function Fallback({ error }: { error: Error }) {
+function ErrorFallback({ error }: { error: Error }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
   log('An error occurred:', error);
   captureException(error);
@@ -42,9 +41,8 @@ function Fallback({ error }: { error: Error }) {
 
 function AppContent() {
   const dimensions = useDimensions();
-  const { token } = useAuth();
-  const validateToken = useAuthStore.use.validateToken();
-  const isValidating = useAuthStore.use.isValidatingToken();
+  const token = useAuthStore.use.token();
+  const isValidating = useAuthStore.use.isValidatingSession();
 
   useEffect(() => {
     capture({
@@ -56,19 +54,10 @@ function AppContent() {
     });
   }, [dimensions]);
 
-  useEffect(() => {
-    // Validate token on mount
-    log('Validating token on app mount');
-    validateToken().catch((error) => {
-      log('Token validation failed:', error);
-      captureException(error);
-    });
-  }, [validateToken]);
-
   if (isValidating) {
     return (
       <Box>
-        <Text>Validating authentication...</Text>
+        <Text>Validating session...</Text>
       </Box>
     );
   }
@@ -100,8 +89,8 @@ function AppContent() {
 
 export const Layout: FC<CliState> = (props) => {
   return (
-    <PostHogOptIn telemetry={props.telemetry}>
-      <ErrorBoundary FallbackComponent={Fallback}>
+    <PostHogOptIn enableTelemetry={props.telemetry}>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
         <AuthProvider>
           <CliConfigProvider config={props}>
             <RouterProvider>

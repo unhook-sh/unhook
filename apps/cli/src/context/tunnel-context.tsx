@@ -17,8 +17,7 @@ export const TunnelProvider: FC<TunnelProviderProps> = ({
   const setSelectedTunnelId = useTunnelStore.use.setSelectedTunnelId();
   const tunnelId = useTunnelStore.use.selectedTunnelId();
   const checkTunnelAuth = useTunnelStore.use.checkTunnelAuth();
-  const isAuthenticated = useAuthStore.use.isAuthenticated();
-  const isTokenValid = useAuthStore.use.isTokenValid();
+  const isSignedIn = useAuthStore.use.isSignedIn();
 
   // Set the tunnel ID directly from props
   useEffect(() => {
@@ -32,16 +31,15 @@ export const TunnelProvider: FC<TunnelProviderProps> = ({
   useEffect(() => {
     log('TunnelProvider checking auth with', {
       tunnelId,
-      isAuthenticated,
-      isTokenValid,
+      isSignedIn,
     });
-    if (tunnelId && isAuthenticated && isTokenValid) {
+    if (tunnelId && isSignedIn) {
       log('Effect-based auth check triggered');
       checkTunnelAuth().catch((error) => {
         log('Failed to check tunnel auth:', error);
       });
     }
-  }, [tunnelId, isAuthenticated, isTokenValid, checkTunnelAuth]);
+  }, [tunnelId, isSignedIn, checkTunnelAuth]);
 
   return <>{children}</>;
 };

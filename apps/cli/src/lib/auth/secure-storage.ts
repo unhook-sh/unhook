@@ -4,7 +4,13 @@ import keytar from 'keytar';
 const log = debug('unhook:cli:secure-storage');
 const SERVICE_NAME = 'unhook-cli';
 
+interface StorageData {
+  [key: string]: string | null;
+}
+
 export class SecureStorage {
+  private data: StorageData = {};
+
   constructor(private namespace: string) {}
 
   private getKey(key: string): string {
@@ -13,10 +19,13 @@ export class SecureStorage {
 
   async setItem(key: string, value: string): Promise<void> {
     try {
-      log('Storing secure value for key: %s', this.getKey(key));
-      await keytar.setPassword(SERVICE_NAME, this.getKey(key), value);
+      const fullKey = this.getKey(key);
+      log('Storing secure value for key', fullKey);
+      await keytar.setPassword(SERVICE_NAME, fullKey, value);
+      // Update cache after successful keychain write
+      this.data[fullKey] = value;
     } catch (error: unknown) {
-      log('Error storing secure value: %O', error);
+      log('Error storing secure value', error);
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(`Failed to store secure value: ${message}`);
     }
@@ -24,9 +33,27 @@ export class SecureStorage {
 
   async getItem(key: string): Promise<string | null> {
     try {
-      log('Retrieving secure value for key: %s', this.getKey(key));
-      const value = await keytar.getPassword(SERVICE_NAME, this.getKey(key));
-      return value || null;
+      const fullKey = this.getKey(key);
+      log('Retrieving secure value for key');
+
+      // Check cache first
+      if (fullKey in this.data) {
+        log('Retrieved secure value from cache');
+        return this.data[fullKey] ?? null;
+      }
+
+      // If not in cache, get from keychain
+      const value = await keytar.getPassword(SERVICE_NAME, fullKey);
+      log('Retrieved secure value from keychain');
+
+      // Update cache and return value
+      if (typeof value === 'string') {
+        this.data[fullKey] = value;
+        return value;
+      }
+
+      this.data[fullKey] = null;
+      return null;
     } catch (error: unknown) {
       log('Error retrieving secure value: %O', error);
       return null;
@@ -35,10 +62,13 @@ export class SecureStorage {
 
   async removeItem(key: string): Promise<void> {
     try {
-      log('Removing secure value for key: %s', this.getKey(key));
-      await keytar.deletePassword(SERVICE_NAME, this.getKey(key));
+      const fullKey = this.getKey(key);
+      log('Removing secure value for key', fullKey);
+      await keytar.deletePassword(SERVICE_NAME, fullKey);
+      // Remove from cache after successful keychain deletion
+      delete this.data[fullKey];
     } catch (error: unknown) {
-      log('Error removing secure value: %O', error);
+      log('Error removing secure value', error);
       // Don't throw on removal errors
     }
   }

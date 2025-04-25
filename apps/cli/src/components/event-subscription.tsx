@@ -12,6 +12,7 @@ export const EventSubscription = memo(function EventSubscription() {
   const subscriptionMounted = useRef(false);
   const unmountingRef = useRef(false);
   const fetchEvents = useEventStore.use.fetchEvents();
+  // const { data: requests, refetch } = api.requests.all.useQuery();
 
   // Memoize subscription callbacks to prevent unnecessary recreations
   const requestCallbacks = useMemo(
@@ -132,7 +133,7 @@ export const EventSubscription = memo(function EventSubscription() {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [fetchEvents]);
 
   return null;
 });

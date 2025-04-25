@@ -6,26 +6,24 @@ import { useAuthStore } from '~/stores/auth-store';
 const log = debug('unhook:cli:auth-context');
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const validateToken = useAuthStore.use.validateToken();
-  const isValidating = useAuthStore.use.isValidatingToken();
-  const isTokenValid = useAuthStore.use.isTokenValid();
+  const validateSession = useAuthStore.use.validateSession();
+  const isValidating = useAuthStore.use.isValidatingSession();
 
   useEffect(() => {
     // Run validation when the component mounts
     log('AuthProvider: Running initial token validation');
-    validateToken().catch((error) => {
+    validateSession().catch((error) => {
       log('AuthProvider: Token validation failed:', error);
       captureException(error);
     });
-  }, [validateToken]);
+  }, [validateSession]);
 
   // Monitor token validation state
   useEffect(() => {
     log('AuthProvider: Token validation state changed', {
       isValidating,
-      isTokenValid,
     });
-  }, [isValidating, isTokenValid]);
+  }, [isValidating]);
 
   return <>{children}</>;
 }

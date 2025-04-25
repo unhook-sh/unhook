@@ -30,7 +30,7 @@ export function CliLoginButton() {
       const redirectUrl = new URL(currentRedirectUrl || currentUrl.href);
 
       // Add the token to the redirect URL
-      redirectUrl.searchParams.set('token', result.data.token);
+      redirectUrl.searchParams.set('ticket', result.data.ticket);
       redirectUrl.searchParams.set('userId', result.data.userId);
       if (result.data.orgId) {
         redirectUrl.searchParams.set('orgId', result.data.orgId);

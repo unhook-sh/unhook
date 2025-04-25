@@ -65,7 +65,7 @@ export class UnhookLogger {
   private sequence = 0;
 
   constructor(props: LoggerProps = {}) {
-    this.enabledNamespaces = new Set(props.enabledNamespaces || ['*']);
+    this.enabledNamespaces = new Set(props.enabledNamespaces);
     this.defaultNamespace = props.defaultNamespace || 'app';
     this.useColors = props.useColors ?? isBrowser;
     this.destinations = new Set(props.destinations || []);

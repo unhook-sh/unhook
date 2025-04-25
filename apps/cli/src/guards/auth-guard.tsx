@@ -1,4 +1,4 @@
-import { Box, Text } from 'ink';
+import {} from 'ink';
 import type { PropsWithChildren } from 'react';
 import { useAuthStore } from '../stores/auth-store';
 
@@ -13,74 +13,35 @@ interface AuthGuardProps extends PropsWithChildren {
  * Component that renders its children only when the user is signed in
  * and has a valid token
  */
-export function SignedIn({ children, fallback }: AuthGuardProps) {
-  const isTokenValid = useAuthStore.use.isTokenValid();
-  const isValidating = useAuthStore.use.isValidatingToken();
-  const isSignedIn = useAuthStore.use.isAuthenticated();
+export function SignedIn({ children }: AuthGuardProps) {
+  const isSignedIn = useAuthStore.use.isSignedIn();
 
-  if (isValidating) {
-    return (
-      fallback ?? (
-        <Box>
-          <Text>Validating authentication...</Text>
-        </Box>
-      )
-    );
-  }
-
-  return isSignedIn && isTokenValid ? <>{children}</> : null;
+  return isSignedIn ? <>{children}</> : null;
 }
 
 /**
  * Component that renders its children only when the user is signed out
  */
-export function SignedOut({ children, fallback }: AuthGuardProps) {
-  const isSignedIn = useAuthStore.use.isAuthenticated();
-  const isValidating = useAuthStore.use.isValidatingToken();
-
-  if (isValidating) {
-    return (
-      fallback ?? (
-        <Box>
-          <Text>Validating authentication...</Text>
-        </Box>
-      )
-    );
-  }
+export function SignedOut({ children }: AuthGuardProps) {
+  const isSignedIn = useAuthStore.use.isSignedIn();
 
   return !isSignedIn ? <>{children}</> : null;
 }
 
 /**
- * Component that renders different content for authenticated and unauthenticated users
+ * Component that renders its children only when the user is signed out
  */
-export function AuthGuard({
-  children,
-  fallback,
-  signedOutComponent,
-}: AuthGuardProps & {
-  /**
-   * Component to show when user is not authenticated
-   */
-  signedOutComponent: React.ReactNode;
-}) {
-  const isSignedIn = useAuthStore.use.isAuthenticated();
-  const isTokenValid = useAuthStore.use.isTokenValid();
-  const isValidating = useAuthStore.use.isValidatingToken();
+export function ValidatingSession({ children }: AuthGuardProps) {
+  const isValidating = useAuthStore.use.isValidatingSession();
 
-  if (isValidating) {
-    return (
-      fallback ?? (
-        <Box>
-          <Text>Validating authentication...</Text>
-        </Box>
-      )
-    );
-  }
+  return isValidating ? <>{children}</> : null;
+}
 
-  return isSignedIn && isTokenValid ? (
-    <>{children}</>
-  ) : (
-    <>{signedOutComponent}</>
-  );
+/**
+ * Component that renders its children only when the user is signed out
+ */
+export function ValidatedSession({ children }: AuthGuardProps) {
+  const isValidating = useAuthStore.use.isValidatingSession();
+
+  return isValidating ? null : <>{children}</>;
 }

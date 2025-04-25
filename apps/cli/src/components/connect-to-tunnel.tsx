@@ -6,15 +6,14 @@ import { useTunnelStore } from '~/stores/tunnel-store';
 export function ConnectToTunnel() {
   const isConnected = useConnectionStore.use.isAnyConnected();
   const connect = useConnectionStore.use.connect();
-  const isAuthenticated = useAuthStore.use.isAuthenticated();
-  const isTokenValid = useAuthStore.use.isTokenValid();
+  const isSignedIn = useAuthStore.use.isSignedIn();
   const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
 
   useEffect(() => {
-    if (!isConnected && selectedTunnelId && isAuthenticated && isTokenValid) {
+    if (!isConnected && selectedTunnelId && isSignedIn) {
       connect();
     }
-  }, [isConnected, selectedTunnelId, connect, isAuthenticated, isTokenValid]);
+  }, [isConnected, selectedTunnelId, connect, isSignedIn]);
 
   return null;
 }

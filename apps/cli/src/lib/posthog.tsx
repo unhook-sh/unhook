@@ -27,7 +27,7 @@ export function capture(
   const { user, sessionId } = useAuthStore.getState();
   const userId = user?.id ?? sessionId;
 
-  if (!userId) {
+  if (!userId && !event.distinctId) {
     return;
   }
   const path = useRouterStore.getState().currentPath;
@@ -129,17 +129,17 @@ export function PostHogIdentifyUser() {
 
 export function PostHogOptIn({
   children,
-  telemetry,
-}: PropsWithChildren<{ telemetry?: boolean }>) {
+  enableTelemetry,
+}: PropsWithChildren<{ enableTelemetry?: boolean }>) {
   const isProduction = nodeEnv === 'production';
 
   useEffect(() => {
-    if (telemetry && isProduction) {
+    if (enableTelemetry && isProduction) {
       posthog.optIn();
     } else {
       posthog.optOut();
     }
-  }, [telemetry, isProduction]);
+  }, [enableTelemetry, isProduction]);
 
   return <>{children}</>;
 }

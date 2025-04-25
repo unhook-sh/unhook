@@ -72,7 +72,7 @@ const SubscriptionContext = createContext<SubscriptionContextValue | null>(
   null,
 );
 
-const log = debug('unhook:lib:subscription');
+const log = debug(':lib:subscription');
 
 function determineEvents<T extends TableName>(
   props: SubscriptionProps<T>,

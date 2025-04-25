@@ -97,24 +97,17 @@ const store = createStore<TunnelStore>()((set, get) => ({
     });
   },
   checkTunnelAuth: async () => {
-    const { isAuthenticated, isTokenValid } = useAuthStore.getState();
+    const { isSignedIn } = useAuthStore.getState();
     const { selectedTunnelId } = get();
 
     log('checkTunnelAuth called', {
-      isAuthenticated,
-      isTokenValid,
+      isSignedIn,
       selectedTunnelId,
     });
 
-    if (
-      !isAuthenticated ||
-      !isTokenValid ||
-      !selectedTunnelId ||
-      selectedTunnelId === ''
-    ) {
+    if (!isSignedIn || !selectedTunnelId || selectedTunnelId === '') {
       log('checkTunnelAuth - missing required state', {
-        isAuthenticated,
-        isTokenValid,
+        isSignedIn,
         selectedTunnelId,
       });
       set({

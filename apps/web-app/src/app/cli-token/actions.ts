@@ -16,12 +16,12 @@ export const createClerkToken = action.action(async () => {
   const clerk = await clerkClient();
 
   const token = await clerk.signInTokens.createSignInToken({
-    expiresInSeconds: 60 * 60 * 24 * 30,
+    expiresInSeconds: 60,
     userId: user.userId,
   });
 
   return {
-    token: token.token,
+    ticket: token.token,
     userId: user.userId,
     orgId: user.orgId,
     status: token.status,

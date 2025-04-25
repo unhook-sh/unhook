@@ -1,4 +1,5 @@
-import { useAuth } from '~/hooks/use-auth';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '~/stores/auth-store';
 import { useCliStore } from '~/stores/cli-store';
 import type { Route } from '~/stores/router-store';
 import { DebugPage } from './debug/page';
@@ -135,14 +136,17 @@ const commonRoutes: AppRoute[] = [
 ];
 
 export function useRoutes() {
-  const { isSignedIn } = useAuth();
+  const isSignedIn = useAuthStore.use.isSignedIn();
   const isDebug = useCliStore.use.debug?.();
+  const [routes, setRoutes] = useState<AppRoute[]>([]);
 
-  const routes = [
-    ...(isSignedIn ? authenticatedRoutes : unauthenticatedRoutes),
-    ...(isSignedIn && isDebug ? [debugRoute] : []),
-    ...commonRoutes,
-  ];
+  useEffect(() => {
+    setRoutes([
+      ...(isSignedIn ? authenticatedRoutes : unauthenticatedRoutes),
+      ...(isSignedIn && isDebug ? [debugRoute] : []),
+      ...commonRoutes,
+    ]);
+  }, [isSignedIn, isDebug]);
 
   return routes;
 }

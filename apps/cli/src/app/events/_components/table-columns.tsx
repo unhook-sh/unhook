@@ -336,13 +336,11 @@ export const columns: ColumnDef<EventWithRequest>[] = [
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor(isSelected);
       const lastRequest = row.requests?.[0];
-      log('last request', lastRequest);
       const decodedBody = lastRequest?.request.body
         ? tryDecodeBase64(lastRequest.request.body)
         : null;
       let event = null;
       try {
-        log('parsedBody', decodedBody);
         const parsedBody = decodedBody ? JSON.parse(decodedBody) : null;
         for (const name of knownEventTypeNames) {
           const value = getNestedField(parsedBody, name);

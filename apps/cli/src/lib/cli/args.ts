@@ -4,7 +4,7 @@ import { createId } from '@unhook/id';
 import { loadConfig } from '@unhook/tunnel';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import type { CliState } from '~/stores/cli-store';
+import { type CliState, useCliStore } from '~/stores/cli-store';
 
 export async function parseArgs(): Promise<CliState> {
   const config = await loadConfig();
@@ -72,6 +72,8 @@ export async function parseArgs(): Promise<CliState> {
 
   const parsedConfig = argv as unknown as CliState;
   parsedConfig.version = pkg.version;
+
+  useCliStore.getState().setCliArgs(parsedConfig);
 
   return {
     tunnelId: parsedConfig.tunnelId,

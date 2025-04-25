@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
@@ -11,6 +12,17 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
+  // Handle POST requests to root path with any tunnel ID
+  if (request.method === 'POST') {
+    const match = request.nextUrl.pathname.match(/^\/([^\/]+)$/);
+    if (match) {
+      const tunnelId = match[1];
+      return NextResponse.rewrite(
+        new URL(`/api/tunnel/${tunnelId}`, request.url),
+      );
+    }
+  }
+
   if (!isPublicRoute(request)) {
     await auth.protect();
   }

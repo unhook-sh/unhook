@@ -82,8 +82,8 @@ await seed(db, {
           },
           headers: {},
           requests: {
-            allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-            allowedFrom: ['/.*'],
+            allowedMethods: ['POST'],
+            allowedFrom: ['.*'],
             blockedFrom: [],
             maxRequestsPerMinute: 100,
           },

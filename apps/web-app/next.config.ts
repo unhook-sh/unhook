@@ -14,30 +14,6 @@ const nextConfig = {
     '@unhook/tunnel',
     '@unhook/logger',
   ],
-  rewrites: async () => {
-    return {
-      beforeFiles: [
-        {
-          // Catch-all route for tunnel IDs
-          source: '/:path*',
-          destination: '/api/tunnel/:path*',
-          has: [
-            {
-              type: 'query',
-              key: 'endpoint',
-            },
-          ],
-          // Add debug callback to log rewrite activity
-          missing: [
-            {
-              type: 'header',
-              key: 'x-debug-skip',
-            },
-          ],
-        },
-      ],
-    };
-  },
 };
 
 export default nextConfig;

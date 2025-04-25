@@ -17,9 +17,9 @@ export default clerkMiddleware(async (auth, request) => {
     const match = request.nextUrl.pathname.match(/^\/([^\/]+)$/);
     if (match) {
       const tunnelId = match[1];
-      return NextResponse.rewrite(
-        new URL(`/api/tunnel/${tunnelId}`, request.url),
-      );
+      const url = new URL(`/api/tunnel/${tunnelId}`, request.url);
+      url.search = request.nextUrl.search;
+      return NextResponse.rewrite(url);
     }
   }
 

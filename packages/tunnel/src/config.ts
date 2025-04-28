@@ -27,39 +27,67 @@ const remotePatternSchema = z.object({
   search: z.string().optional(),
 });
 
-export const configSchema = z.object({
-  tunnelId: z.string(),
-  clientId: z.string().optional(),
-  debug: z.boolean().default(false).optional(),
-  telemetry: z.boolean().default(true).optional(),
-  from: z
-    .array(
+export const configSchema = z
+  .object({
+    tunnelId: z.string(),
+    clientId: z.string().optional(),
+    debug: z.boolean().default(false).optional(),
+    telemetry: z.boolean().default(true).optional(),
+    to: z
+      .array(
+        z.object({
+          name: z.string(),
+          url: z.union([
+            z.instanceof(URL),
+            z.string().url(),
+            remotePatternSchema,
+          ]),
+          ping: z
+            .union([
+              z.instanceof(URL),
+              z.string().url(),
+              remotePatternSchema,
+              z.boolean(),
+            ])
+            .default(true)
+            .optional(),
+        }),
+      )
+      .optional(),
+    from: z
+      .array(
+        z.object({
+          name: z.string(),
+          agent: headerSchema.optional(),
+          timestamp: headerSchema.optional(),
+          verification: headerSchema.optional(),
+          secret: z.string().optional(),
+          defaultTimeout: z.number().default(18000).optional(),
+        }),
+      )
+      .optional(),
+    forward: z.array(
       z.object({
-        name: z.string(),
-        agent: headerSchema.optional(),
-        timestamp: headerSchema.optional(),
-        verification: headerSchema.optional(),
-        secret: z.string().optional(),
-        defaultTimeout: z.number().default(18000).optional(),
+        from: z.string().default('*').optional(),
+        to: z.string(),
       }),
-    )
-    .optional(),
-  forward: z.array(
-    z.object({
-      from: z.string().default('*').optional(),
-      to: z.union([z.instanceof(URL), z.string().url(), remotePatternSchema]),
-      ping: z
-        .union([
-          z.instanceof(URL),
-          z.string().url(),
-          remotePatternSchema,
-          z.boolean(),
-        ])
-        .default(true)
-        .optional(),
-    }),
-  ),
-});
+    ),
+  })
+  .superRefine((data, ctx) => {
+    // Runtime validation: ensure all forward.to values exist in to[].name
+    if (data.to && data.forward) {
+      const validNames = new Set(data.to.map((t) => t.name));
+      data.forward.forEach((f, idx) => {
+        if (!validNames.has(f.to)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Invalid forward.to: "${f.to}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'forward.to' matches a 'to[].name'.\nSee https://unhook.sh/docs/config for examples.`,
+            path: ['forward', idx, 'to'],
+          });
+        }
+      });
+    }
+  });
 
 export type TunnelConfig = z.infer<typeof configSchema>;
 
@@ -114,5 +142,13 @@ export async function loadConfig(cwd = process.cwd()): Promise<TunnelConfig> {
     }
   }
 
+  return config;
+}
+
+export function defineTunnelConfig<
+  T extends readonly { name: string }[],
+  F extends readonly { from?: string; to: T[number]['name'] }[],
+  Rest extends Omit<TunnelConfig, 'to' | 'forward'>,
+>(config: { to: T; forward: F } & Rest): { to: T; forward: F } & Rest {
   return config;
 }

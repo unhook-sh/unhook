@@ -8,7 +8,6 @@ import { ConnectToTunnel } from '~/components/connect-to-tunnel';
 import { EventSubscription } from '~/components/event-subscription';
 import { Router } from '~/components/router';
 import { AuthProvider } from '~/context/auth-context';
-import { CliConfigProvider } from '~/context/cli-config-context';
 import { RouterProvider } from '~/context/router-context';
 import { TunnelProvider } from '~/context/tunnel-context';
 import { env } from '~/env';
@@ -22,8 +21,7 @@ import {
   captureException,
 } from '~/lib/posthog';
 import { useAuthStore } from '~/stores/auth-store';
-import type { CliState } from '~/stores/cli-store';
-
+import { useCliStore } from '~/stores/cli-store';
 const log = debug('unhook:cli:layout');
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -87,22 +85,23 @@ function AppContent() {
   );
 }
 
-export const Layout: FC<CliState> = (props) => {
+export const Layout: FC = () => {
+  const telemetry = useCliStore.use.telemetry?.() ?? true;
+  const tunnelId = useCliStore.use.tunnelId();
+
   return (
-    <PostHogOptIn enableTelemetry={props.telemetry}>
+    <PostHogOptIn enableTelemetry={telemetry}>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <AuthProvider>
-          <CliConfigProvider config={props}>
-            <RouterProvider>
-              <PostHogPageView />
-              <PostHogIdentifyUser />
-              <TunnelProvider initialTunnelId={props.tunnelId}>
-                <TRPCReactProvider sourceHeader="cli">
-                  <AppContent />
-                </TRPCReactProvider>
-              </TunnelProvider>
-            </RouterProvider>
-          </CliConfigProvider>
+          <RouterProvider>
+            <PostHogPageView />
+            <PostHogIdentifyUser />
+            <TunnelProvider initialTunnelId={tunnelId}>
+              <TRPCReactProvider sourceHeader="cli">
+                <AppContent />
+              </TRPCReactProvider>
+            </TunnelProvider>
+          </RouterProvider>
         </AuthProvider>
       </ErrorBoundary>
     </PostHogOptIn>

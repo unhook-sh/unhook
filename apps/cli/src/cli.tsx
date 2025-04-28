@@ -51,7 +51,7 @@ async function main() {
       argSources,
     });
 
-    const renderInstance = render(<Layout {...config} />, {
+    const renderInstance = render(<Layout />, {
       debug: config.debug,
     });
 

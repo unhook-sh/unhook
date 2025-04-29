@@ -20,6 +20,7 @@
     "chalk": "5.4.1",
     "cli-highlight": "2.1.11",
     "cli-spinners": "3.2.0",
+    "clipboardy": "4.0.0",
     "date-fns": "4.1.0",
     "dedent-js": "1.0.1",
     "drizzle-orm": "0.41.0",
@@ -97,10 +98,11 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --minify --sourcemap --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun}",
+    "build": "bun run build:base --minify --bytecode --production",
+    "build:base": "NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun}",
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "copy-readme": "cp ../../README.md ./README.md",
-    "dev": "bun with-env bun run build --watch",
+    "dev": "bun with-env bun run build:base --watch --sourcemap=inline",
     "prepublishOnly": "bun typecheck && bun copy-readme && bun build",
     "start": "bun with-env bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun with-env bun run ./src/cli.tsx",

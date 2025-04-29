@@ -1,14 +1,15 @@
+import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Box, measureElement } from 'ink';
 import type { DOMElement } from 'ink';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Table } from '~/components/table';
+import { useForceUpdate } from '~/hooks/use-force-update';
 import { capture } from '~/lib/posthog';
-import type { EventWithRequest } from '~/stores/events-store';
 import { useEventStore } from '~/stores/events-store';
 import { useRouterStore } from '~/stores/router-store';
 import type { RouteProps } from '~/stores/router-store';
-import { columns } from './_components/table-columns';
+import { columns } from './_components/events-table-columns';
 
 export const EventsPage: FC<RouteProps> = () => {
   const selectedEventId = useEventStore.use.selectedEventId();
@@ -19,32 +20,17 @@ export const EventsPage: FC<RouteProps> = () => {
     events.findIndex((event) => event.id === selectedEventId),
   );
   const navigate = useRouterStore.use.navigate();
-  const [, forceUpdate] = useState({});
-
-  // Add timer effect to update the page every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      forceUpdate({});
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+  useForceUpdate({ intervalMs: 1000 });
 
   const handleViewDetails = useCallback(
-    (event: EventWithRequest) => {
+    (event: EventTypeWithRequest) => {
       setSelectedEventId(event.id);
       navigate('/events/:id', { id: event.id });
     },
     [setSelectedEventId, navigate],
   );
 
-  const replayRequest = useEventStore.use.replayRequest();
-  const handleReplay = useCallback(
-    (event: EventWithRequest) => {
-      void replayRequest(event);
-    },
-    [replayRequest],
-  );
+  const replayRequest = useEventStore.use.replayEvent();
 
   const ref = useRef<DOMElement>(null);
   const [_containerHeight, setContainerHeight] = useState(0);
@@ -58,7 +44,7 @@ export const EventsPage: FC<RouteProps> = () => {
 
   return (
     <Box flexDirection="row" ref={ref}>
-      <Table<EventWithRequest>
+      <Table<EventTypeWithRequest>
         totalCount={totalCount}
         data={events}
         columns={columns}
@@ -102,7 +88,7 @@ export const EventsPage: FC<RouteProps> = () => {
                 },
               });
               if (event) {
-                handleReplay(event);
+                void replayRequest(event);
               }
             },
           },

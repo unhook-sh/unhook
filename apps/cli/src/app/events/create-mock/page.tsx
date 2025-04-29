@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { SelectInput } from '~/components/select-input';
 import { env } from '~/env';
 import { capture } from '~/lib/posthog';
-import { useCliStore } from '~/stores/cli-store';
+import { useConfigStore } from '~/stores/config-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
 import { fixtures } from './fixtures';
 import type { EventFixture } from './fixtures/types';
@@ -48,7 +48,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
     'selecting',
   );
   const [error, setError] = useState<string | null>(null);
-  const tunnelId = useCliStore.use.tunnelId();
+  const tunnelId = useConfigStore.use.tunnelId();
   const navigate = useRouterStore.use.navigate();
 
   const menuItems = fixtures.map((fixture) => ({

@@ -9,7 +9,10 @@ export function Cell<T extends ScalarDict>({
 }: CellProps<T>) {
   const { isFocused } = useFocus({ id: rowId });
   return (
-    <Text color={isSelected ? (isFocused ? 'green' : 'gray') : undefined}>
+    <Text
+      color={isSelected ? (isFocused ? 'green' : 'gray') : undefined}
+      wrap="truncate"
+    >
       {' '}
       {children}
     </Text>

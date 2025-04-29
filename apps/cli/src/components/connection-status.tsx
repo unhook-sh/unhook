@@ -1,13 +1,15 @@
 import figures from 'figures';
 import { Box, Text } from 'ink';
 import { useCliStore } from '~/stores/cli-store';
+import { useConfigStore } from '~/stores/config-store';
 import { useConnectionStore } from '~/stores/connection-store';
 import { Spinner } from './spinner';
 
 export function ConnectionStatus() {
   const isConnected = useConnectionStore.use.isAnyConnected();
   const connectionId = useConnectionStore.use.connectionId();
-  const forward = useCliStore.use.forward();
+  const forward = useConfigStore.use.forward();
+  const debug = useCliStore.use.debug();
 
   if (!forward?.length) {
     return (
@@ -40,9 +42,11 @@ export function ConnectionStatus() {
           </Text>
         )}
       </Box>
-      <Box>
-        <Text dimColor>Connection ID: {connectionId ?? 'Not connected'}</Text>
-      </Box>
+      {debug && (
+        <Box>
+          <Text dimColor>Connection ID: {connectionId ?? 'Not connected'}</Text>
+        </Box>
+      )}
     </Box>
   );
 }

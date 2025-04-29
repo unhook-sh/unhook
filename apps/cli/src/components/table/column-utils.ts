@@ -146,3 +146,16 @@ export function inferColumns<T extends ScalarDict>(data: T[]): (keyof T)[] {
   }
   return Array.from(keys);
 }
+
+export function truncateText(text: string | null, maxWidth: number) {
+  if (!text) return '-';
+  if (text.length <= maxWidth) return text;
+  return `${text.slice(0, maxWidth - 1)}…`;
+}
+
+export function getSelectedColor(
+  isSelected: boolean,
+  defaultColor = 'gray',
+): string {
+  return isSelected ? 'white' : defaultColor;
+}

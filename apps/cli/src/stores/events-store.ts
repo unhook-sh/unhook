@@ -1,43 +1,35 @@
 import { inspect } from 'node:util';
+import type { Tables } from '@unhook/db';
 import { db } from '@unhook/db/client';
 import { Events, Requests, Tunnels } from '@unhook/db/schema';
 import type {
-  RequestType as BaseRequestType,
   EventType,
+  EventTypeWithRequest,
+  RequestPayload,
   RequestType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
+import type { TunnelForward, TunnelTo } from '@unhook/tunnel';
 import { createSelectors } from '@unhook/zustand';
 import { count, desc, eq, sql } from 'drizzle-orm';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
 import { capture } from '../lib/posthog';
 import { useAuthStore } from './auth-store';
-import { useCliStore } from './cli-store';
+import { useConfigStore } from './config-store';
 import { useConnectionStore } from './connection-store';
 
 const log = debug('unhook:cli:request-store');
 
-// Extend RequestType to include event data
-export interface RequestWithEvent extends BaseRequestType {
-  event?: EventType | null;
-  [key: string]: string | number | boolean | object | null | undefined;
-}
-
-export interface EventWithRequest extends EventType {
-  requests?: RequestType[];
-  [key: string]: string | number | boolean | object | null | undefined;
-}
-
 interface EventState {
-  events: EventWithRequest[];
+  events: EventTypeWithRequest[];
   selectedEventId: string | null;
   isLoading: boolean;
   totalCount: number;
 }
 
 interface EventsActions {
-  setEvents: (events: EventWithRequest[]) => void;
+  setEvents: (events: EventTypeWithRequest[]) => void;
   setSelectedEventId: (id: string | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   initializeSelection: () => void;
@@ -45,8 +37,10 @@ interface EventsActions {
     limit?: number;
     offset?: number;
   }) => Promise<void>;
-  handlePendingRequest: (webhookRequest: RequestWithEvent) => Promise<void>;
-  replayRequest: (event: EventType) => Promise<void>;
+  handlePendingRequest: (webhookRequest: Tables<'requests'>) => Promise<void>;
+  replayEvent: (event: EventType) => Promise<void>;
+  replayRequest: (request: RequestType) => Promise<void>;
+  forwardEvent: (event: Tables<'events'>) => Promise<void>;
   reset: () => void;
 }
 
@@ -58,6 +52,215 @@ const defaultEventState: EventState = {
   isLoading: true,
   totalCount: 0,
 };
+
+type RemotePatternSchema = {
+  protocol?: string;
+  hostname: string;
+  port?: string;
+  pathname?: string;
+  search?: string;
+};
+
+function getUrlString(url: string | URL | RemotePatternSchema): string {
+  if (typeof url === 'string') return url;
+  if (typeof URL !== 'undefined' && url instanceof URL) return url.toString();
+  if (
+    typeof url === 'object' &&
+    url !== null &&
+    'hostname' in url &&
+    typeof (url as RemotePatternSchema).hostname === 'string'
+  ) {
+    const {
+      protocol = 'http',
+      hostname,
+      port,
+      pathname = '',
+      search = '',
+    } = url as RemotePatternSchema;
+    return `${protocol}://${hostname}${port ? `:${port}` : ''}${pathname}${search}`;
+  }
+  return '';
+}
+
+function resolveDestination({
+  from,
+  forward,
+  to,
+}: {
+  from: string;
+  forward: TunnelForward[];
+  to: TunnelTo[];
+}): { url: string; to: string } {
+  const matchingForward = forward.find(
+    (rule) => rule.from === '*' || rule.from === from,
+  );
+  if (!matchingForward) {
+    throw new Error(`No forward rule found for source: ${from}`);
+  }
+  const toDef = (to ?? []).find((t) => t.name === matchingForward.to);
+  if (!toDef || !toDef.url) {
+    throw new Error(`No 'to' definition found for name: ${matchingForward.to}`);
+  }
+  const destinationUrl = getUrlString(toDef.url);
+  return {
+    url: destinationUrl,
+    to: toDef.name,
+  };
+}
+
+// DB update helpers
+async function markRequestCompleted({
+  requestId,
+  response,
+  responseTimeMs,
+  connectionId,
+}: {
+  requestId: string;
+  response: { status: number; headers: Record<string, string>; body: string };
+  responseTimeMs: number;
+  connectionId?: string | null;
+}) {
+  await db
+    .update(Requests)
+    .set({
+      status: 'completed',
+      response,
+      responseTimeMs,
+      completedAt: new Date(),
+      connectionId: connectionId ?? undefined,
+    })
+    .where(eq(Requests.id, requestId));
+}
+
+async function markRequestFailed({
+  requestId,
+  failedReason,
+  connectionId,
+}: {
+  requestId: string;
+  failedReason: string;
+  connectionId?: string | null;
+}) {
+  await db
+    .update(Requests)
+    .set({
+      status: 'failed',
+      failedReason,
+      completedAt: new Date(),
+      connectionId: connectionId ?? undefined,
+    })
+    .where(eq(Requests.id, requestId));
+}
+
+async function updateEventStatusAndRetry({
+  eventId,
+  status,
+  retryCount,
+  failedReason,
+}: {
+  eventId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  retryCount?: number;
+  failedReason?: string;
+}) {
+  await db
+    .update(Events)
+    .set({
+      status,
+      retryCount,
+      failedReason,
+      updatedAt: new Date(),
+    })
+    .where(eq(Events.id, eventId));
+}
+
+async function updateTunnelStats({
+  tunnelId,
+  updateLastRequest,
+}: {
+  tunnelId?: string;
+  updateLastRequest?: boolean;
+}) {
+  if (typeof tunnelId !== 'string') return;
+  await db
+    .update(Tunnels)
+    .set({
+      ...(updateLastRequest ? { lastRequestAt: new Date() } : {}),
+      requestCount: sql`${Tunnels.requestCount} + 1`,
+    })
+    .where(eq(Tunnels.clientId, tunnelId));
+}
+
+// Helper to create requests for all destinations in 'to' for a given event
+async function createRequestsForEventToAllDestinations({
+  event,
+  userId,
+  orgId,
+  connectionId,
+  isEventRetry = false,
+  pingEnabledFn,
+}: {
+  event: EventType;
+  userId: string;
+  orgId: string;
+  connectionId?: string | null;
+  isEventRetry?: boolean;
+  pingEnabledFn?: (destination: TunnelTo) => boolean;
+}) {
+  const { to } = useConfigStore.getState();
+  const originRequest = event.originRequest;
+
+  for (const destination of to) {
+    const urlString = getUrlString(destination.url);
+    log(
+      `Creating request for event ${event.id} to destination: ${destination.name} (${urlString})`,
+    );
+    capture({
+      event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_forward',
+      properties: {
+        eventId: event.id,
+        tunnelId: event.tunnelId,
+        method: originRequest.method,
+        connectionId,
+        pingEnabled: pingEnabledFn
+          ? pingEnabledFn(destination)
+          : !!destination.ping,
+        isEventRetry,
+        source: event.from,
+        to: destination.name,
+        destination: urlString,
+      },
+    });
+    await db.insert(Requests).values({
+      tunnelId: event.tunnelId,
+      eventId: event.id,
+      apiKey: event.apiKey,
+      connectionId,
+      request: originRequest,
+      from: event.from,
+      to: {
+        name: destination.name,
+        url: urlString,
+      },
+      status: 'pending',
+      timestamp:
+        typeof event.timestamp === 'string'
+          ? new Date(event.timestamp)
+          : event.timestamp,
+      userId,
+      orgId,
+    });
+    // Update tunnel's requestCount
+    if (typeof event.tunnelId === 'string') {
+      await updateTunnelStats({
+        tunnelId: event.tunnelId === null ? undefined : event.tunnelId,
+      });
+    }
+    log(
+      `Created request for event ${event.id} to destination: ${destination.name}`,
+    );
+  }
+}
 
 const store = createStore<EventStore>()((set, get) => ({
   ...defaultEventState,
@@ -88,7 +291,7 @@ const store = createStore<EventStore>()((set, get) => ({
     offset = 0,
   }: { limit?: number; offset?: number } = {}) => {
     log('Fetching events from database', { limit, offset });
-    const { tunnelId } = useCliStore.getState();
+    const { tunnelId } = useConfigStore.getState();
     const currentState = get();
 
     try {
@@ -99,7 +302,9 @@ const store = createStore<EventStore>()((set, get) => ({
           orderBy: [desc(Events.timestamp)],
           where: eq(Events.tunnelId, tunnelId),
           with: {
-            requests: true,
+            requests: {
+              orderBy: [desc(Requests.createdAt)],
+            },
           },
         }),
       ]);
@@ -121,42 +326,18 @@ const store = createStore<EventStore>()((set, get) => ({
       set({ isLoading: false });
     }
   },
-  handlePendingRequest: async (webhookRequest: RequestWithEvent) => {
+  handlePendingRequest: async (webhookRequest: Tables<'requests'>) => {
     log(`Handling pending event: ${webhookRequest.id}`);
-    const { forward } = useCliStore.getState();
-    const { connectionId } = useConnectionStore.getState();
+    const { forward, to } = useConfigStore.getState();
+    // const { connectionId } = useConnectionStore.getState();
 
-    // Find the matching forward rule for this request
-    const matchingRule = forward.find(
-      (rule) => rule.from === '*' || rule.from === webhookRequest.from,
-    );
-
-    if (!matchingRule) {
-      log(`No matching forward rule found for source: ${webhookRequest.from}`);
-      throw new Error(
-        `No forward rule found for source: ${webhookRequest.from}`,
-      );
-    }
-
-    // Get the destination URL from the rule
-    let destinationUrl: URL;
-    if (matchingRule.to instanceof URL) {
-      destinationUrl = matchingRule.to;
-    } else if (typeof matchingRule.to === 'string') {
-      destinationUrl = new URL(matchingRule.to);
-    } else {
-      // Handle remotePattern
-      const {
-        protocol = 'http',
-        hostname,
-        port,
-        pathname = '',
-        search = '',
-      } = matchingRule.to;
-      destinationUrl = new URL(
-        `${protocol}://${hostname}${port ? `:${port}` : ''}${pathname}${search}`,
-      );
-    }
+    // Use helper to resolve rule and URL
+    const destination = resolveDestination({
+      from: webhookRequest.from,
+      forward,
+      to,
+    });
+    const request = webhookRequest.request as unknown as RequestType['request'];
 
     capture({
       event: 'webhook_request_received',
@@ -164,41 +345,40 @@ const store = createStore<EventStore>()((set, get) => ({
         requestId: webhookRequest.id,
         tunnelId: webhookRequest.tunnelId,
         eventId: webhookRequest.eventId,
-        method: webhookRequest.request.method,
-        connectionId,
+        method: (webhookRequest.request as unknown as RequestType['request'])
+          ?.method,
         source: webhookRequest.from,
-        destination: destinationUrl.toString(),
+        to: destination.to,
+        destination: destination.url,
       },
     });
 
     if (webhookRequest.status === 'pending') {
       try {
-        log(`Forwarding request to: ${destinationUrl.toString()}`);
+        log(`Forwarding request to: ${destination.url}`);
 
         // Decode base64 request body if it exists
         let requestBody: string | undefined;
-        if (webhookRequest.request.body) {
+        if (request.body) {
           try {
-            requestBody = Buffer.from(
-              webhookRequest.request.body,
-              'base64',
-            ).toString('utf-8');
+            requestBody = Buffer.from(request.body, 'base64').toString('utf-8');
             log('Decoded request body successfully');
           } catch {
             log('Failed to decode base64 body, using raw body');
-            requestBody = webhookRequest.request.body;
+            requestBody = request.body;
           }
         }
 
         const startTime = Date.now();
-        log(
-          `Sending request: method=${webhookRequest.request.method}, url=${destinationUrl.toString()}, headers=${inspect(webhookRequest.request.headers)}`,
-        );
+        log('Sending request', {
+          method: request.method,
+          url: destination.url,
+        });
 
-        const { host, ...headers } = webhookRequest.request.headers;
+        const { host, ...headers } = request.headers;
 
-        const response = await undiciRequest(destinationUrl, {
-          method: webhookRequest.request.method,
+        const response = await undiciRequest(destination.url, {
+          method: request.method,
           headers,
           body: requestBody,
         });
@@ -207,63 +387,62 @@ const store = createStore<EventStore>()((set, get) => ({
         const responseBodyBase64 = Buffer.from(responseText).toString('base64');
         const responseTimeMs = Date.now() - startTime;
 
+        log('Request completed', {
+          status: response.statusCode,
+          responseTimeMs,
+          requestId: webhookRequest.id,
+          tunnelId: webhookRequest.tunnelId,
+          eventId: webhookRequest.eventId,
+        });
+
         capture({
           event: 'webhook_request_completed',
           properties: {
             requestId: webhookRequest.id,
             tunnelId: webhookRequest.tunnelId,
             eventId: webhookRequest.eventId,
-            method: webhookRequest.request.method,
+            method: request.method,
             responseStatus: response.statusCode,
             responseTimeMs,
-            connectionId,
           },
         });
 
-        await db
-          .update(Requests)
-          .set({
-            status: 'completed',
-            response: {
-              status: response.statusCode,
-              headers: Object.fromEntries(
-                Object.entries(response.headers).map(([k, v]) => [
-                  k,
-                  Array.isArray(v) ? v.join(', ') : v || '',
-                ]),
-              ),
-              body: responseBodyBase64,
-            },
-            responseTimeMs,
-            completedAt: new Date(),
-            connectionId: connectionId ?? undefined,
-          })
-          .where(eq(Requests.id, webhookRequest.id));
+        await markRequestCompleted({
+          requestId: webhookRequest.id,
+          response: {
+            status: response.statusCode,
+            headers: Object.fromEntries(
+              Object.entries(response.headers).map(([k, v]) => [
+                k,
+                Array.isArray(v) ? v.join(', ') : v || '',
+              ]),
+            ),
+            body: responseBodyBase64,
+          },
+          responseTimeMs,
+        });
 
         log('Updated request status to completed in database');
 
         // If this request is part of an event, update the event status
-        if (webhookRequest.eventId) {
+        if (typeof webhookRequest.eventId === 'string') {
           log(`Updating associated event: ${webhookRequest.eventId}`);
-          await db
-            .update(Events)
-            .set({
-              status: 'completed',
-              updatedAt: new Date(),
-            })
-            .where(eq(Events.id, webhookRequest.eventId));
+          await updateEventStatusAndRetry({
+            eventId: webhookRequest.eventId,
+            status: 'completed',
+          });
         }
 
         // Update tunnel's lastRequestAt
-        if (webhookRequest.tunnelId) {
+        if (typeof webhookRequest.tunnelId === 'string') {
           log(`Updating tunnel stats: ${webhookRequest.tunnelId}`);
-          await db
-            .update(Tunnels)
-            .set({
-              lastRequestAt: new Date(),
-              requestCount: sql`${Tunnels.requestCount} + 1`,
-            })
-            .where(eq(Tunnels.clientId, webhookRequest.tunnelId));
+          await updateTunnelStats({
+            tunnelId:
+              webhookRequest.tunnelId === null
+                ? undefined
+                : webhookRequest.tunnelId,
+            updateLastRequest: true,
+          });
         }
       } catch (error) {
         log(`Failed to forward request: ${inspect(error)}`);
@@ -279,45 +458,36 @@ const store = createStore<EventStore>()((set, get) => ({
             requestId: webhookRequest.id,
             tunnelId: webhookRequest.tunnelId,
             eventId: webhookRequest.eventId,
-            method: webhookRequest.request.method,
+            method: request.method,
             failedReason,
-            connectionId,
           },
         });
 
-        await db
-          .update(Requests)
-          .set({
-            status: 'failed',
-            failedReason,
-            completedAt: new Date(),
-            connectionId: connectionId ?? undefined,
-          })
-          .where(eq(Requests.id, webhookRequest.id));
+        await markRequestFailed({
+          requestId: webhookRequest.id,
+          failedReason,
+        });
 
         log('Updated request status to failed in database');
 
         // If this request is part of an event, check if we should retry or mark as failed
-        if (webhookRequest.eventId) {
+        if (typeof webhookRequest.eventId === 'string') {
           log(`Checking event retry status: ${webhookRequest.eventId}`);
           const event = await db.query.Events.findFirst({
             where: eq(Events.id, webhookRequest.eventId),
           });
 
-          if (event) {
+          if (event && typeof event.id === 'string') {
             if (event.retryCount < event.maxRetries) {
               log(
                 `Retrying event: attempt ${event.retryCount + 1}/${event.maxRetries}`,
               );
               // Update event for retry
-              await db
-                .update(Events)
-                .set({
-                  status: 'processing',
-                  retryCount: event.retryCount + 1,
-                  updatedAt: new Date(),
-                })
-                .where(eq(Events.id, event.id));
+              await updateEventStatusAndRetry({
+                eventId: event.id,
+                status: 'processing',
+                retryCount: event.retryCount + 1,
+              });
 
               // Create a new retry request
               await db.insert(Requests).values({
@@ -327,7 +497,10 @@ const store = createStore<EventStore>()((set, get) => ({
                 userId: webhookRequest.userId,
                 orgId: webhookRequest.orgId,
                 from: event.from,
-                to: destinationUrl.toString(),
+                to: {
+                  name: destination.to,
+                  url: destination.url,
+                },
                 request: event.originRequest,
                 status: 'pending',
                 timestamp: new Date(),
@@ -336,14 +509,11 @@ const store = createStore<EventStore>()((set, get) => ({
             } else {
               log('Event failed: max retries reached');
               // Mark event as failed if max retries reached
-              await db
-                .update(Events)
-                .set({
-                  status: 'failed',
-                  failedReason: `Max retries (${event.maxRetries}) reached. Last error: ${failedReason}`,
-                  updatedAt: new Date(),
-                })
-                .where(eq(Events.id, event.id));
+              await updateEventStatusAndRetry({
+                eventId: event.id,
+                status: 'failed',
+                failedReason: `Max retries (${event.maxRetries}) reached. Last error: ${failedReason}`,
+              });
             }
           }
         }
@@ -352,35 +522,107 @@ const store = createStore<EventStore>()((set, get) => ({
       }
     }
   },
-  replayRequest: async (event: EventType) => {
+  replayEvent: async (event: EventType) => {
     log(`Replaying event: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
-    const { forward } = useCliStore.getState();
+    const { to } = useConfigStore.getState();
 
-    // Find the matching forward rule
-    const matchingRule = forward.find(
-      (rule) => rule.from === '*' || rule.from === event.from,
-    );
-
-    if (!matchingRule) {
-      throw new Error(`No forward rule found for source: ${event.from}`);
+    if (!user?.id || !orgId) {
+      log('Authentication error: missing user or org ID');
+      throw new Error('User or org not authenticated');
     }
 
-    // Check if ping is enabled for this rule
-    const pingEnabled = matchingRule.ping !== false;
+    if (!connectionId) {
+      log('Connection error: no active connection');
+      throw new Error('Connection not found');
+    }
+
+    // Normalize timestamp to Date
+    const normalizedEvent = {
+      ...event,
+      timestamp:
+        typeof event.timestamp === 'string'
+          ? new Date(event.timestamp)
+          : event.timestamp,
+    };
+    log(`Using timestamp for replay: ${normalizedEvent.timestamp}`);
+
+    // If the request is part of an event, increment its retry count
+    if (event.retryCount && typeof event.id === 'string') {
+      log(`Processing event for replay: ${event.id}`);
+      log(`Updating event retry count: ${event.retryCount + 1}`);
+      // Update event status and retry count
+      await updateEventStatusAndRetry({
+        eventId: event.id,
+        status: 'processing',
+        retryCount: event.retryCount + 1,
+      });
+    }
+
+    log('Creating new requests for replay to all destinations');
+    await createRequestsForEventToAllDestinations({
+      event: normalizedEvent,
+      userId: user.id,
+      orgId,
+      connectionId,
+      isEventRetry: true,
+      pingEnabledFn: (destination) =>
+        !!to.find((t) => t.ping && t.name === destination.name),
+    });
+  },
+  forwardEvent: async (event: Tables<'events'>) => {
+    log(`Forwarding event to all destinations: ${event.id}`);
+    const { user, orgId } = useAuthStore.getState();
+    const { connectionId } = useConnectionStore.getState();
+
+    if (!user?.id || !orgId) {
+      log('Authentication error: missing user or org ID');
+      throw new Error('User or org not authenticated');
+    }
+
+    // Normalize timestamp, createdAt, and updatedAt to Date, and cast originRequest
+    const normalizedEvent = {
+      ...event,
+      timestamp:
+        typeof event.timestamp === 'string'
+          ? new Date(event.timestamp)
+          : event.timestamp,
+      createdAt:
+        typeof event.createdAt === 'string'
+          ? new Date(event.createdAt)
+          : event.createdAt,
+      updatedAt:
+        event.updatedAt && typeof event.updatedAt === 'string'
+          ? new Date(event.updatedAt)
+          : event.updatedAt,
+      originRequest: event.originRequest as unknown as RequestPayload,
+    } as EventType;
+
+    await createRequestsForEventToAllDestinations({
+      event: normalizedEvent,
+      userId: user.id,
+      orgId,
+      connectionId,
+      isEventRetry: false,
+    });
+  },
+  replayRequest: async (request: RequestType) => {
+    log(`Replaying request: ${request.id}`);
+    const { user, orgId } = useAuthStore.getState();
+    const { connectionId } = useConnectionStore.getState();
+    const { to } = useConfigStore.getState();
 
     capture({
       event: 'webhook_request_replay',
       properties: {
-        originalEventId: event.id,
-        tunnelId: event.tunnelId,
-        eventId: event.id,
-        method: event.originRequest.method,
+        originalEventId: request.eventId,
+        tunnelId: request.tunnelId,
+        eventId: request.eventId,
+        method: request.request.method,
         connectionId,
-        pingEnabled,
-        isEventRetry: !!event.retryCount,
-        source: event.from,
+        pingEnabled: !!to.find((t) => t.ping),
+        source: request.from,
       },
     });
 
@@ -389,61 +631,34 @@ const store = createStore<EventStore>()((set, get) => ({
       throw new Error('User or org not authenticated');
     }
 
-    if (!connectionId && pingEnabled) {
+    if (!connectionId) {
       log('Connection error: no active connection');
       throw new Error('Connection not found');
     }
 
-    const timestamp = event.timestamp;
+    const timestamp =
+      typeof request.timestamp === 'string'
+        ? new Date(request.timestamp)
+        : request.timestamp;
     log(`Using timestamp for replay: ${timestamp}`);
 
     // If the request is part of an event, increment its retry count
-    if (event.retryCount) {
-      log(`Processing event for replay: ${event.id}`);
-
-      if (event) {
-        log(`Updating event retry count: ${event.retryCount + 1}`);
-        // Update event status and retry count
-        await db
-          .update(Events)
-          .set({
-            status: 'processing',
-            retryCount: event.retryCount + 1,
-            updatedAt: new Date(),
-          })
-          .where(eq(Events.id, event.id));
-      }
-    }
+    // if (request.retryCount && typeof request.id === 'string') {
+    log(`Processing event for replay: ${request.id}`);
+    // Update event status and retry count
+    // await updateEventStatusAndRetry({
+    //   eventId: request.eventId,
+    //   status: 'processing',
+    // });
+    // }
 
     log('Creating new request for replay');
-    // Insert the new request, maintaining the event relationship if it exists
-    await db.insert(Requests).values({
-      tunnelId: event.tunnelId,
-      eventId: event.id,
-      apiKey: event.apiKey,
-      userId: user.id,
-      orgId: orgId,
-      connectionId: connectionId ?? undefined,
-      request: event.originRequest,
-      from: event.from,
-      to:
-        matchingRule.to instanceof URL
-          ? matchingRule.to.toString()
-          : typeof matchingRule.to === 'string'
-            ? matchingRule.to
-            : `${matchingRule.to.protocol || 'http'}://${matchingRule.to.hostname}${matchingRule.to.port ? `:${matchingRule.to.port}` : ''}${matchingRule.to.pathname || ''}${matchingRule.to.search || ''}`,
-      status: 'pending',
-      timestamp,
-    });
-
-    log('Updating tunnel request count');
-    // Update tunnel's requestCount
-    await db
-      .update(Tunnels)
-      .set({
-        requestCount: sql`${Tunnels.requestCount} + 1`,
-      })
-      .where(eq(Tunnels.clientId, event.tunnelId));
+    // await createRequestForEvent({
+    //   event,
+    //   userId: user.id,
+    //   orgId,
+    //   connectionId,
+    // });
   },
   reset: () => {
     log('Resetting event store');

@@ -57,7 +57,7 @@ export function RequestMetadata({
           >
             {request.request.method}
           </Badge>
-          <span className="font-mono">{new URL(request.to).pathname}</span>
+          <span className="font-mono">{request.to.name}</span>
           <Badge
             variant={
               (request.response?.status ?? 0) >= 400 ? 'destructive' : 'outline'
@@ -142,15 +142,13 @@ export function RequestMetadata({
 
               <div className="space-y-1 border-t border-zinc-800 pt-4">
                 <div className="text-zinc-400">Path</div>
-                <div className="font-mono text-sm">
-                  {new URL(request.to).pathname}
-                </div>
+                <div className="font-mono text-sm">{request.to.name}</div>
               </div>
 
               <div className="space-y-1 border-t border-zinc-800 pt-4">
                 <div className="text-zinc-400">Host</div>
                 <div className="font-mono text-sm">
-                  {new URL(request.to).host}
+                  {new URL(request.to.url).host}
                 </div>
               </div>
 

@@ -21,7 +21,7 @@ import {
   captureException,
 } from '~/lib/posthog';
 import { useAuthStore } from '~/stores/auth-store';
-import { useCliStore } from '~/stores/cli-store';
+import { useConfigStore } from '~/stores/config-store';
 const log = debug('unhook:cli:layout');
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -86,8 +86,8 @@ function AppContent() {
 }
 
 export const Layout: FC = () => {
-  const telemetry = useCliStore.use.telemetry?.() ?? true;
-  const tunnelId = useCliStore.use.tunnelId();
+  const telemetry = useConfigStore.use.telemetry?.() ?? true;
+  const tunnelId = useConfigStore.use.tunnelId();
 
   return (
     <PostHogOptIn enableTelemetry={telemetry}>

@@ -16,6 +16,7 @@ import { useAuthStore } from '~/stores/auth-store';
 import { useCliStore } from '~/stores/cli-store';
 import { useConnectionStore } from '~/stores/connection-store';
 import { useTunnelStore } from '~/stores/tunnel-store';
+import { useConfigStore } from './config-store';
 
 // --- Mocks --- //
 mock.module('node:net', () => net);
@@ -104,29 +105,16 @@ describe('useConnectionStore', () => {
       sessionId: 'test-session-id',
       logout: vi.fn(),
     });
-    vi.mocked(useCliStore.getState).mockReturnValue({
+    vi.mocked(useConfigStore.getState).mockReturnValue({
       tunnelId: 'test-tunnel-id',
       clientId: 'test-client-id',
       debug: false,
-      version: '1.0.0',
       telemetry: true,
-      argSources: {},
+      to: [],
       forward: [],
       from: [],
-      setDebug: vi.fn(),
-      setTunnelId: vi.fn(),
-      setClientId: vi.fn(),
-      setVersion: vi.fn(),
-      setCliArgs: vi.fn(),
-      setTelemetry: vi.fn(),
-      getForward: () => [],
-      getFrom: () => [],
-      getTunnelId: () => 'test-tunnel-id',
-      getClientId: () => 'test-client-id',
-      getDebug: () => false,
-      getTelemetry: () => true,
-      getVersion: () => '1.0.0',
-      reset: vi.fn(),
+      setConfig: vi.fn(),
+      getConfig: vi.fn(),
     });
     vi.mocked(useTunnelStore.getState).mockReturnValue({
       selectedTunnelId: 'test-tunnel-id',
@@ -250,29 +238,16 @@ describe('useConnectionStore', () => {
 
   describe('Redirect Connection', () => {
     beforeEach(() => {
-      vi.mocked(useCliStore.getState).mockReturnValue({
+      vi.mocked(useConfigStore.getState).mockReturnValue({
         tunnelId: 'test-tunnel-id',
         clientId: 'test-client-id',
         debug: false,
-        version: '1.0.0',
         telemetry: true,
-        argSources: {},
         forward: [],
         from: [],
-        setDebug: vi.fn(),
-        setTunnelId: vi.fn(),
-        setClientId: vi.fn(),
-        setVersion: vi.fn(),
-        setCliArgs: vi.fn(),
-        setTelemetry: vi.fn(),
-        getForward: () => [],
-        getFrom: () => [],
-        getTunnelId: () => 'test-tunnel-id',
-        getClientId: () => 'test-client-id',
-        getDebug: () => false,
-        getTelemetry: () => true,
-        getVersion: () => '1.0.0',
-        reset: vi.fn(),
+        to: [],
+        setConfig: vi.fn(),
+        getConfig: vi.fn(),
       });
     });
 

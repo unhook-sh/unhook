@@ -12,8 +12,7 @@ defaultLogger.addDestination(
   }),
 );
 
-const log = debug('unhook:cli');
-
+import { loadConfig } from '@unhook/tunnel';
 import { render } from 'ink';
 import { Layout } from './app/layout';
 import { parseArgs } from './lib/cli/args';
@@ -21,38 +20,41 @@ import { setupDebug } from './lib/cli/debug';
 import { setupProcessHandlers } from './lib/cli/process';
 import { capture, captureException } from './lib/posthog';
 import { useCliStore } from './stores/cli-store';
+import { useConfigStore } from './stores/config-store';
+
+const log = debug('unhook:cli');
 
 async function main() {
   try {
-    const config = await parseArgs();
+    const config = await loadConfig();
+    useConfigStore.getState().setConfig(config);
 
-    const { tunnelId, clientId, debug, version, argSources } =
-      useCliStore.getState();
+    const args = await parseArgs({ debug: config.debug });
+    useCliStore.getState().setCliArgs(args);
 
     capture({
       event: 'cli_loaded',
       properties: {
-        tunnelId,
-        clientId,
-        debug,
-        version,
-        argSources,
+        tunnelId: config.tunnelId,
+        clientId: config.clientId,
+        debug: args.debug,
+        version: args.version,
       },
     });
 
-    await setupDebug({ isDebugEnabled: debug ?? false });
+    await setupDebug({ isDebugEnabled: args.debug });
     setupProcessHandlers();
 
     log('Starting CLI', {
-      tunnelId,
-      clientId,
-      debug,
-      version,
-      argSources,
+      tunnelId: config.tunnelId,
+      clientId: config.clientId,
+      debug: args.debug,
+      version: args.version,
     });
+    log('args', useConfigStore.getState());
 
     const renderInstance = render(<Layout />, {
-      debug: config.debug,
+      debug: args.debug,
     });
 
     log('Waiting for CLI to exit...');

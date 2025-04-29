@@ -33,27 +33,25 @@ export const configSchema = z
     clientId: z.string().optional(),
     debug: z.boolean().default(false).optional(),
     telemetry: z.boolean().default(true).optional(),
-    to: z
-      .array(
-        z.object({
-          name: z.string(),
-          url: z.union([
+    to: z.array(
+      z.object({
+        name: z.string(),
+        url: z.union([
+          z.instanceof(URL),
+          z.string().url(),
+          remotePatternSchema,
+        ]),
+        ping: z
+          .union([
             z.instanceof(URL),
             z.string().url(),
             remotePatternSchema,
-          ]),
-          ping: z
-            .union([
-              z.instanceof(URL),
-              z.string().url(),
-              remotePatternSchema,
-              z.boolean(),
-            ])
-            .default(true)
-            .optional(),
-        }),
-      )
-      .optional(),
+            z.boolean(),
+          ])
+          .default(true)
+          .optional(),
+      }),
+    ),
     from: z
       .array(
         z.object({
@@ -89,6 +87,12 @@ export const configSchema = z
     }
   });
 
+export type TunnelForward = z.infer<typeof configSchema>['forward'][number];
+export type TunnelTo = NonNullable<z.infer<typeof configSchema>['to']>[number];
+export type TunnelFrom = NonNullable<
+  z.infer<typeof configSchema>['from']
+>[number];
+
 export type TunnelConfig = z.infer<typeof configSchema>;
 
 async function loadJsConfig(configPath: string): Promise<TunnelConfig> {
@@ -112,6 +116,7 @@ export async function loadConfig(cwd = process.cwd()): Promise<TunnelConfig> {
 
   let config = {
     tunnelId: '',
+    to: [] as Array<z.infer<typeof configSchema>['to'][number]>,
     forward: [] as Array<z.infer<typeof configSchema>['forward'][number]>,
   };
 

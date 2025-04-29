@@ -56,13 +56,17 @@ export const LoginPage: FC<RouteProps> = () => {
   return (
     <Box flexDirection="column" gap={1}>
       <Box flexDirection="column" gap={1}>
-        <Box>
+        <Box flexDirection="row" gap={1}>
           <Spinner />
           <Text>Opening browser for authentication...</Text>
+          <Text dimColor>Copied to clipboard</Text>
         </Box>
         {authUrl && (
           <Box flexDirection="column" gap={1}>
-            <Text>If the browser doesn't open automatically, click here: </Text>
+            <Text>
+              Copied to clipboard. If the browser doesn't open automatically,
+              click here.
+            </Text>
             <Text dimColor underline>
               {authUrl}
             </Text>

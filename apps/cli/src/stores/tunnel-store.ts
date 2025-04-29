@@ -6,7 +6,7 @@ import { createSelectors } from '@unhook/zustand';
 import { desc, eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { useAuthStore } from './auth-store';
-import { useCliStore } from './cli-store';
+import { useConfigStore } from './config-store';
 
 const log = debug('unhook:cli:tunnel-store');
 
@@ -142,7 +142,7 @@ const store = createStore<TunnelStore>()((set, get) => ({
   },
   createTunnel: async (port: number) => {
     const { user, orgId } = useAuthStore.getState();
-    const { clientId } = useCliStore.getState();
+    const { clientId } = useConfigStore.getState();
 
     if (!user?.id || !orgId) {
       throw new Error('User must be authenticated to create a tunnel');

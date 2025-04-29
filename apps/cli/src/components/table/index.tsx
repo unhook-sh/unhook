@@ -261,12 +261,12 @@ export function Table<T extends ScalarDict>({
   }, [columns, columnWidths]);
 
   return (
-    <Box flexDirection="column" height={maxHeight}>
+    <Box flexDirection="column">
       <Box
         borderColor="blue"
         borderStyle="round"
         flexDirection="row"
-        height={calculatedMaxHeight}
+        // height={calculatedMaxHeight}
       >
         <Box flexDirection="column" width="100%">
           {renderRow({ row: {} as T, isHeader: true })}

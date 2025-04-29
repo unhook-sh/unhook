@@ -3,6 +3,7 @@ import { useAuthStore } from '~/stores/auth-store';
 import { useCliStore } from '~/stores/cli-store';
 import type { Route } from '~/stores/router-store';
 import { DebugPage } from './debug/page';
+import { EventRequestLayout } from './events/[id]/[requestId]/layout';
 import { EventLayout } from './events/[id]/layout';
 import { CreateMockEventLayout } from './events/create-mock/layout';
 import { EventsLayout } from './events/layout';
@@ -25,6 +26,7 @@ export type AppRoutePath =
   | '/settings'
   | '/events'
   | '/events/:id'
+  | '/events/:id/:requestId'
   | '/events/create-mock'
   | '/status'
   | '/metrics'
@@ -57,6 +59,13 @@ const authenticatedRoutes: AppRoute[] = [
     // TODO: Add pattern for event id
     pattern: /^\/events\/(?<id>[^/]+)$/,
     showInMenu: false,
+  },
+  {
+    path: '/events/:id/:requestId',
+    component: EventRequestLayout,
+    label: 'Event Request Details',
+    showInMenu: false,
+    pattern: /^\/events\/(?<id>[^/]+)\/(?<requestId>[^/]+)$/,
   },
   // {
   //   path: '/status',

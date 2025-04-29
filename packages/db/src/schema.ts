@@ -356,6 +356,10 @@ export const Events = pgTable(
 
 export type EventType = typeof Events.$inferSelect;
 
+export type EventTypeWithRequest = EventType & {
+  requests: RequestType[];
+};
+
 export const EventsRelations = relations(Events, ({ one, many }) => ({
   tunnel: one(Tunnels, {
     fields: [Events.tunnelId],
@@ -396,7 +400,10 @@ export const Requests = pgTable(
     ),
     request: json('request').notNull().$type<RequestPayload>(),
     from: text('from').notNull().default('*'),
-    to: text('to').notNull(),
+    to: json('to').notNull().$type<{
+      name: string;
+      url: string;
+    }>(),
     status: requestStatusEnum('status').notNull(),
     failedReason: text('failedReason'),
     timestamp: timestamp('timestamp', {

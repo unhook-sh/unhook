@@ -1,10 +1,10 @@
+import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
 import { useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/tabs';
-import type { EventWithRequest } from '~/stores/events-store';
 import { useEventStore } from '~/stores/events-store';
 
 const log = debug('unhook:cli:event-details');
@@ -26,14 +26,15 @@ function tryParseJson(str: string): string {
   }
 }
 
-interface EventDetailsProps {
-  event?: EventWithRequest;
+interface EventRequestDetailsProps {
+  event?: EventTypeWithRequest;
+  request?: RequestType;
 }
 
-export const EventDetails: FC<EventDetailsProps> = ({ event: propEvent }) => {
+export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
   const selectedEventId = useEventStore.use.selectedEventId();
   const events = useEventStore.use.events();
-  const event = propEvent ?? events.find((e) => e.id === selectedEventId);
+  const event = props.event ?? events.find((e) => e.id === selectedEventId);
 
   const [_activeTabName, setActiveTabName] = useState('request');
 
@@ -64,11 +65,6 @@ export const EventDetails: FC<EventDetailsProps> = ({ event: propEvent }) => {
     ? tryParseJson(responseBody)
     : null;
 
-  let to = lastRequest?.to;
-  if (to && to !== '*') {
-    to = new URL(to).pathname;
-  }
-
   return (
     <Box>
       <Tabs onChange={handleTabChange} defaultValue="request">
@@ -83,7 +79,7 @@ export const EventDetails: FC<EventDetailsProps> = ({ event: propEvent }) => {
               <Text bold color="cyan">
                 {event.originRequest.method}{' '}
               </Text>
-              <Text>{to}</Text>
+              <Text>{lastRequest?.to?.name}</Text>
               <Box>
                 <Text dimColor>
                   Size: {event.originRequest.size} bytes • IP:{' '}
@@ -92,14 +88,14 @@ export const EventDetails: FC<EventDetailsProps> = ({ event: propEvent }) => {
                 </Text>
               </Box>
               <Box flexDirection="column">
-                {Object.entries(event.originRequest.headers).map(
+                {/* {Object.entries(event.originRequest.headers).map(
                   ([key, value]) => (
                     <Box key={key} marginLeft={2}>
                       <Text>{key}: </Text>
                       <Text dimColor>{value}</Text>
                     </Box>
                   ),
-                )}
+                )} */}
               </Box>
             </Box>
             <Box width="50%" flexDirection="column">
@@ -112,14 +108,14 @@ export const EventDetails: FC<EventDetailsProps> = ({ event: propEvent }) => {
         <TabsContent value="response">
           <Box flexDirection="row">
             <Box width="50%" flexDirection="column">
-              {Object.entries(event.originRequest?.headers || {}).map(
+              {/* {Object.entries(event.originRequest?.headers || {}).map(
                 ([key, value]) => (
                   <Box key={key} marginLeft={2}>
                     <Text>{key}: </Text>
                     <Text dimColor>{value}</Text>
                   </Box>
                 ),
-              )}
+              )} */}
             </Box>
             <Box width="50%" flexDirection="column">
               {formattedResponseBody && (

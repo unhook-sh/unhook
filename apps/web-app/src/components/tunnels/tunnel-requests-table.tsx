@@ -80,9 +80,12 @@ export function TunnelRequestsTable({
                 clientIp: '127.0.0.1',
               },
               from: '*',
-              to: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
-                Math.floor(Math.random() * 4)
-              ] as string,
+              to: {
+                name: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
+                  Math.floor(Math.random() * 4)
+                ] as string,
+                url: 'https://example.com',
+              },
               failedReason: status === 'failed' ? 'Connection error' : null,
               completedAt: status === 'completed' ? new Date() : null,
               response:
@@ -206,7 +209,7 @@ export function TunnelRequestsTable({
                       </Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs truncate max-w-[300px]">
-                      {new URL(request.to).pathname}
+                      {request.to.name}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

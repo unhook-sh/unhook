@@ -7,10 +7,10 @@ import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
-import { getProcessIdForPort } from '~/utils/get-process-id';
 import { capture } from '../lib/posthog';
 import { useAuthStore } from './auth-store';
 import { useCliStore } from './cli-store';
+import { useConfigStore } from './config-store';
 import { useTunnelStore } from './tunnel-store';
 
 const log = debug('unhook:cli:connection-store');
@@ -158,18 +158,17 @@ const createConnectionStore = () => {
     connect: async () => {
       if (isDestroyedRef) return;
 
-      const { getForward } = useCliStore.getState();
+      const { forward, to } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
-      const forwardRules = getForward();
 
       // If no forward rules have ping enabled, treat as disabled
-      const pingEnabled = forwardRules.some((rule) => rule.ping !== false);
+      const pingEnabled = to.some((rule) => rule.ping !== false);
 
       capture({
         event: 'connection_attempt',
         properties: {
           pingEnabled,
-          forwardRulesCount: forwardRules.length,
+          forwardRulesCount: forward.length,
         },
       });
 
@@ -183,7 +182,8 @@ const createConnectionStore = () => {
         return;
       }
 
-      const { clientId, version } = useCliStore.getState();
+      const { version } = useCliStore.getState();
+      const { clientId } = useConfigStore.getState();
       const { selectedTunnelId } = useTunnelStore.getState();
 
       if (!user?.id) {
@@ -244,19 +244,19 @@ const createConnectionStore = () => {
       }
 
       // Check each forward rule that has ping enabled
-      for (const rule of forwardRules) {
+      for (const rule of to) {
         if (rule.ping === false) continue;
 
         // Generate a stable ID for the rule based on from/to
-        const ruleId = `${String(rule.from ?? '')}-${typeof rule.to === 'string' ? rule.to : rule.to.hostname}`;
+        const ruleId = `${String(rule.name)}`;
 
         // Ensure we have a valid URL string for the target
         const targetUrl =
-          typeof rule.to === 'string'
-            ? rule.to
-            : rule.to instanceof URL
-              ? rule.to.toString()
-              : `${rule.to.protocol || 'http'}://${rule.to.hostname}${rule.to.port ? `:${rule.to.port}` : ''}${rule.to.pathname || ''}`;
+          typeof rule.url === 'string'
+            ? rule.url
+            : rule.url instanceof URL
+              ? rule.url.toString()
+              : `${rule.url.protocol || 'http'}://${rule.url.hostname}${rule.url.port ? `:${rule.url.port}` : ''}${rule.url.pathname || ''}`;
 
         // Ensure we have a valid URL string for ping
         const pingUrl =
@@ -287,11 +287,11 @@ const createConnectionStore = () => {
               }
 
               socketRef.once('connect', async () => {
-                const processInfo = await getProcessIdForPort(port);
+                // const processInfo = await getProcessIdForPort(port);
                 await get().setRuleConnectionState(ruleId, {
                   isConnected: true,
-                  pid: processInfo?.pid ?? null,
-                  processName: processInfo?.name ?? null,
+                  // pid: processInfo?.pid ?? null,
+                  // processName: processInfo?.name ?? null,
                 });
                 resolve();
                 if (socketRef) socketRef.destroy();

@@ -1,5 +1,6 @@
 import { debug } from '@unhook/logger';
 import keytar from 'keytar';
+import type { StorageInterface } from './storage-interface';
 
 const log = debug('unhook:cli:secure-storage');
 const SERVICE_NAME = 'unhook-cli';
@@ -8,10 +9,13 @@ interface StorageData {
   [key: string]: string | null;
 }
 
-export class SecureStorage {
+export class SecureStorage implements StorageInterface {
   private data: StorageData = {};
+  private namespace: string;
 
-  constructor(private namespace: string) {}
+  constructor(props: { namespace: string }) {
+    this.namespace = props.namespace;
+  }
 
   private getKey(key: string): string {
     return `${this.namespace}:${key}`;

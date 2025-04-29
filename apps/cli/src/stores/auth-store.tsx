@@ -2,6 +2,7 @@ import type { UserResource } from '@clerk/types';
 import { createId } from '@unhook/id';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
+import clipboard from 'clipboardy';
 import { createStore } from 'zustand';
 import { ClerkService } from '../lib/auth/clerk-service';
 import { capture } from '../lib/posthog';
@@ -130,6 +131,11 @@ const store = createStore<AuthStore>()((set, get) => ({
   setAuthUrl: (authUrl: string | null) => {
     log('Setting auth URL:', authUrl);
     set({ authUrl });
+
+    if (authUrl) {
+      clipboard.writeSync(authUrl);
+    }
+
     capture({
       event: 'auth_state_updated',
       properties: {

@@ -162,11 +162,12 @@ await seed(db, {
       from: funcs.valuesFromArray({
         values: ['stripe', 'clerk', '*'],
       }),
-      to: funcs.valuesFromArray({
-        values: [
-          'http://localhost:3000/api/webhooks/clerk',
-          'https://example.com/api/webhooks/clerk',
-          '*',
+      to: funcs.default({
+        defaultValue: [
+          {
+            name: 'clerk',
+            url: 'http://localhost:3000/api/webhooks/clerk',
+          },
         ],
       }),
     },

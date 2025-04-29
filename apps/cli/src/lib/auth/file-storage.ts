@@ -2,19 +2,24 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { debug } from '@unhook/logger';
+import type { StorageInterface } from './storage-interface';
 
 const log = debug('unhook:cli:file-storage');
 const STORAGE_DIR = path.join(os.homedir(), '.unhook');
-const STORAGE_FILE = path.join(STORAGE_DIR, 'storage.json');
 
 interface StorageData {
   [key: string]: string;
 }
 
-export class FileStorage {
+export class FileStorage implements StorageInterface {
   private data: StorageData = {};
+  private storageFile: string;
+  private namespace: string;
 
-  constructor(private namespace: string) {
+  constructor(props: { namespace: string; fileName?: string }) {
+    this.namespace = props.namespace;
+    this.storageFile = path.join(STORAGE_DIR, props.fileName ?? 'storage.json');
+
     // Initialize storage asynchronously
     this.initStorage().catch((error) => {
       log('Error initializing storage', error);
@@ -32,7 +37,7 @@ export class FileStorage {
 
       // Try to read existing data
       try {
-        const fileContent = await fs.readFile(STORAGE_FILE, 'utf-8');
+        const fileContent = await fs.readFile(this.storageFile, 'utf-8');
         this.data = JSON.parse(fileContent);
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
@@ -51,7 +56,7 @@ export class FileStorage {
   private async saveData(): Promise<void> {
     try {
       await fs.writeFile(
-        STORAGE_FILE,
+        this.storageFile,
         JSON.stringify(this.data, null, 2),
         'utf-8',
       );

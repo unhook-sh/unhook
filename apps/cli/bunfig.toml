@@ -1,11 +1,11 @@
 [build]
-entrypoints = ["./src/cli.ink.tsx"]
+entrypoints = ["./src/cli.tsx"]
 outdir = "./bin"
-minify = true
+# minify = true
 sourcemap = true
 target = "${BUN_BUILD_TARGET:-bun}"  # Default to 'bun' if BUN_BUILD_TARGET is not set
 main-fields = ["bin", "module", "main"]
-bytecode = true
+# bytecode = true
 
 [env]
 process.env.NEXT_PUBLIC_SUPABASE_URL = "${NEXT_PUBLIC_SUPABASE_URL}"

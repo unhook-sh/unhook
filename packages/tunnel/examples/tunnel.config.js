@@ -35,10 +35,16 @@ const config = {
   // Default: false
   debug: false,
 
+  to: [
+    {
+      name: 'clerk',
+      url: 'http://localhost:3000/api/webhooks/clerk',
+    },
+  ],
   forward: [
     {
       from: 'clerk',
-      to: new URL('http://localhost:3000/api/webhooks/clerk'),
+      to: 'clerk',
     },
   ],
 };

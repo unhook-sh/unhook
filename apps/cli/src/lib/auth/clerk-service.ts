@@ -10,6 +10,7 @@ import {
 } from './errors';
 import { FileStorage } from './file-storage';
 import { SecureStorage } from './secure-storage';
+import type { StorageInterface } from './storage-interface';
 
 const log = debug('unhook:cli:clerk-service');
 
@@ -19,12 +20,24 @@ global.window = global.window || {};
 export class ClerkService {
   private static instance: ClerkService | null = null;
   private clerk: Clerk | null = null;
-  private fileStorage: FileStorage;
-  private secureStorage: SecureStorage;
+  private fileStorage: StorageInterface;
+  private secureStorage: StorageInterface;
   private signInTicketCache: string | null = null;
   private constructor() {
-    this.secureStorage = new SecureStorage('clerk');
-    this.fileStorage = new FileStorage('clerk');
+    if (env.NEXT_PUBLIC_APP_ENV === 'development') {
+      this.secureStorage = new FileStorage({
+        namespace: 'clerk',
+        fileName: 'dev-secure-storage.json',
+      });
+    } else {
+      this.secureStorage = new SecureStorage({
+        namespace: 'clerk',
+      });
+    }
+
+    this.fileStorage = new FileStorage({
+      namespace: 'clerk',
+    });
   }
 
   public static getInstance(): ClerkService {
@@ -38,8 +51,6 @@ export class ClerkService {
     log('Clearing token cache and secure storage');
     await this.secureStorage.removeItem('token');
     await this.fileStorage.removeItem('sessionId');
-    this.secureStorage = new SecureStorage('clerk');
-    this.fileStorage = new FileStorage('clerk');
     this.signInTicketCache = null;
   }
 
@@ -118,7 +129,6 @@ export class ClerkService {
       });
       log('Token', token);
     }
-    log('is logged in', this.clerk);
 
     return this.clerk;
   }

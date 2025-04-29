@@ -12,6 +12,8 @@ export const EventSubscription = memo(function EventSubscription() {
   const subscriptionMounted = useRef(false);
   const unmountingRef = useRef(false);
   const fetchEvents = useEventStore.use.fetchEvents();
+  const handlePendingRequest = useEventStore.use.handlePendingRequest();
+  const forwardEvent = useEventStore.use.forwardEvent();
   // const { data: requests, refetch } = api.requests.all.useQuery();
 
   // Memoize subscription callbacks to prevent unnecessary recreations
@@ -26,10 +28,11 @@ export const EventSubscription = memo(function EventSubscription() {
       onError: (error: Error) => {
         log('Request subscription error:', error);
       },
-      onInsert: async (_payload: Tables<'requests'>) => {
+      onInsert: async (payload: Tables<'requests'>) => {
         log('Request inserted');
         if (subscriptionMounted.current && !unmountingRef.current) {
           fetchEvents();
+          handlePendingRequest(payload);
         }
       },
       onStatusChange: (
@@ -44,7 +47,7 @@ export const EventSubscription = memo(function EventSubscription() {
         }
       },
     }),
-    [fetchEvents],
+    [fetchEvents, handlePendingRequest],
   );
 
   const eventCallbacks = useMemo(
@@ -58,10 +61,11 @@ export const EventSubscription = memo(function EventSubscription() {
       onError: (error: Error) => {
         log('Event subscription error:', error);
       },
-      onInsert: () => {
+      onInsert: (payload: Tables<'events'>) => {
         log('Event inserted');
         if (!unmountingRef.current) {
           fetchEvents();
+          forwardEvent(payload);
         }
       },
       onStatusChange: (
@@ -76,7 +80,7 @@ export const EventSubscription = memo(function EventSubscription() {
         }
       },
     }),
-    [fetchEvents],
+    [fetchEvents, forwardEvent],
   );
 
   // Subscribe to requests

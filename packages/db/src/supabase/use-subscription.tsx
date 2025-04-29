@@ -414,8 +414,8 @@ export function useSubscription<T extends TableName>(
   const INITIAL_RETRY_DELAY = 1000; // 1 second
 
   const networkStatus = useNetworkStore.use.status();
-  const startMonitoring = useNetworkStore.use.startMonitoring();
-  const stopMonitoring = useNetworkStore.use.stopMonitoring();
+  // const startMonitoring = useNetworkStore.use.startMonitoring();
+  // const stopMonitoring = useNetworkStore.use.stopMonitoring();
 
   const subscriptionKey = useMemo(
     () =>
@@ -431,10 +431,10 @@ export function useSubscription<T extends TableName>(
   );
 
   // Start network monitoring
-  useEffect(() => {
-    startMonitoring({ checkInterval: 5000 });
-    return () => stopMonitoring();
-  }, [startMonitoring, stopMonitoring]);
+  // useEffect(() => {
+  // startMonitoring({ checkInterval: 5000 });
+  // return () => stopMonitoring();
+  // }, [startMonitoring, stopMonitoring]);
 
   // Monitor network status changes
   useEffect(() => {

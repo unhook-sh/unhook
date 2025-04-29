@@ -1,6 +1,7 @@
 import { hostname, platform, release } from 'node:os';
-import { Box, Text } from 'ink';
-import type { FC } from 'react';
+import clipboard from 'clipboardy';
+import { Box, Text, useInput } from 'ink';
+import { type FC, useState } from 'react';
 import { Ascii } from '~/components/ascii';
 import { SelectInput } from '~/components/select-input';
 import { useDimensions } from '~/hooks/use-dimensions';
@@ -10,6 +11,7 @@ import type { RouteProps } from '~/stores/router-store';
 import type { AppRoutePath } from '../routes';
 
 import { ConnectionStatus } from '~/components/connection-status';
+import { useConfigStore } from '~/stores/config-store';
 import { useRoutes } from '../routes';
 
 export const MenuPage: FC<RouteProps> = () => {
@@ -31,11 +33,23 @@ export const MenuPage: FC<RouteProps> = () => {
   }>;
 
   const dimensions = useDimensions();
-  const clientId = useCliStore.use.clientId?.();
+  const clientId = useConfigStore.use.clientId?.();
   const version = useCliStore.use.version();
-  const tunnelId = useCliStore.use.tunnelId();
+  const tunnelId = useConfigStore.use.tunnelId();
+  const debug = useCliStore.use.debug();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${tunnelId}`;
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${tunnelId}?from=XXX`;
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+
+  useInput((input) => {
+    if (input === 'c') {
+      clipboard.writeSync(webhookUrl);
+      setCopiedToClipboard(true);
+      setTimeout(() => {
+        setCopiedToClipboard(false);
+      }, 2000);
+    }
+  });
 
   return (
     <Box flexDirection="column">
@@ -48,15 +62,26 @@ export const MenuPage: FC<RouteProps> = () => {
         />
       </Box>
       <Box marginBottom={1} flexDirection="column">
-        <Text dimColor>Version: {version}</Text>
-        <Text dimColor>Client: {clientId}</Text>
-        <Text dimColor>Tunnel: {tunnelId}</Text>
-        <Text dimColor>Webhook URL: {webhookUrl}</Text>
-        <Text dimColor>
-          Platform: {platform()} {release()}
-        </Text>
-        <Text dimColor>Hostname: {hostname()}</Text>
+        {/* <Box flexDirection="row"> */}
+        {/* <Text dimColor>Webhook URL:</Text> */}
+        <Text bold>{webhookUrl}</Text>
+        {/* </Box> */}
+        {!copiedToClipboard && (
+          <Text dimColor>Press 'c' to copy to clipboard</Text>
+        )}
+        {copiedToClipboard && <Text dimColor>Copied!</Text>}
       </Box>
+      {debug && (
+        <Box marginBottom={1} flexDirection="column">
+          <Text dimColor>Version: {version}</Text>
+          <Text dimColor>Client: {clientId}</Text>
+          <Text dimColor>Tunnel: {tunnelId}</Text>
+          <Text dimColor>
+            Platform: {platform()} {release()}
+          </Text>
+          <Text dimColor>Hostname: {hostname()}</Text>
+        </Box>
+      )}
       <Box marginBottom={1}>
         <ConnectionStatus />
       </Box>

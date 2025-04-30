@@ -1,9 +1,8 @@
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import type { FC } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Spinner } from '~/components/spinner';
-import { AuthService } from '~/lib/auth/service';
 import { useAuthStore } from '~/stores/auth-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
 
@@ -11,12 +10,12 @@ const log = debug('unhook:cli:login-page');
 
 export const LoginPage: FC<RouteProps> = () => {
   // State management
-  const authService = useMemo<AuthService>(() => new AuthService(), []);
   const [error, setError] = useState<string | null>(null);
 
   // Store access
   const navigate = useRouterStore.use.navigate();
   const isAuthenticated = useAuthStore.use.isSignedIn();
+  const authenticate = useAuthStore.use.authenticate();
   const authUrl = useAuthStore.use.authUrl();
   // Start authentication when ready
   useEffect(() => {
@@ -27,10 +26,8 @@ export const LoginPage: FC<RouteProps> = () => {
     }
 
     async function startAuthentication() {
-      if (!authService) return; // Safety check
-
       try {
-        await authService.authenticate();
+        await authenticate();
 
         navigate('/');
       } catch (error) {
@@ -42,7 +39,6 @@ export const LoginPage: FC<RouteProps> = () => {
     void startAuthentication();
 
     return () => {
-      authService?.reset();
       useAuthStore.setState({
         isSigningIn: false,
         authUrl: null,
@@ -50,7 +46,7 @@ export const LoginPage: FC<RouteProps> = () => {
         token: null,
       });
     };
-  }, [isAuthenticated, navigate, authService]);
+  }, [isAuthenticated, navigate, authenticate]);
 
   // Render based on current state
   return (

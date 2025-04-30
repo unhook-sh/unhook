@@ -7,29 +7,24 @@ import {
 import { debug } from '@unhook/logger';
 import { capture } from '../posthog';
 import { InvalidAuthResponseError } from './errors';
-import type { AuthResult } from './service';
 
 const log = debug('unhook:cli:auth-server');
 
 interface AuthCallbackParams {
-  state: string | null;
-  ticket: string | null;
-  userId: string | null;
-  orgId: string | null;
+  csrfToken: string | null;
+  code: string | null;
   error: string | null;
 }
 
 export class AuthServer {
   private server: Server | null = null;
-  private resolveAuth: ((value: AuthResult) => void) | null = null;
+  private resolveAuth: ((value: { code: string }) => void) | null = null;
   private rejectAuth: ((reason: Error) => void) | null = null;
 
   private parseCallbackParams(url: URL): AuthCallbackParams {
     return {
-      state: url.searchParams.get('state'),
-      ticket: url.searchParams.get('ticket'),
-      userId: url.searchParams.get('userId'),
-      orgId: url.searchParams.get('orgId'),
+      csrfToken: url.searchParams.get('csrf'),
+      code: url.searchParams.get('code'),
       error: url.searchParams.get('error'),
     };
   }
@@ -56,7 +51,7 @@ export class AuthServer {
   private async handleCallback(
     req: IncomingMessage,
     res: ServerResponse,
-    stateToken: string,
+    csrfToken: string,
     port: number,
   ): Promise<void> {
     log('Received request:', req.method, req.url);
@@ -80,10 +75,8 @@ export class AuthServer {
     const params = this.parseCallbackParams(url);
 
     log('Parsed URL parameters:', {
-      state: params.state,
-      hasTicket: !!params.ticket,
-      hasUserId: !!params.userId,
-      hasOrgId: !!params.orgId,
+      csrfToken: params.csrfToken,
+      hasCode: !!params.code,
       error: params.error,
     });
 
@@ -102,19 +95,13 @@ export class AuthServer {
       return;
     }
 
-    if (
-      !params.state ||
-      !params.ticket ||
-      !params.userId ||
-      params.state !== stateToken
-    ) {
+    if (!params.csrfToken || !params.code || params.csrfToken !== csrfToken) {
       this.handleInvalidRequest(
         res,
         new InvalidAuthResponseError({
-          hasState: !!params.state,
-          hasTicket: !!params.ticket,
-          hasUserId: !!params.userId,
-          stateMatches: params.state === stateToken,
+          hasCsrfToken: !!params.csrfToken,
+          hasCode: !!params.code,
+          csrfTokenMatches: params.csrfToken === csrfToken,
         }),
       );
       return;
@@ -128,50 +115,44 @@ export class AuthServer {
     capture({
       event: 'auth_callback_success',
       properties: {
-        userId: params.userId,
-        orgId: params.orgId,
+        code: params.code,
       },
     });
 
-    if (!params.userId || !params.ticket || !params.orgId) {
+    if (!params.code) {
       this.handleInvalidRequest(
         res,
         new InvalidAuthResponseError({
           reason: 'missing_required_params',
-          hasUserId: !!params.userId,
-          hasTicket: !!params.ticket,
-          hasOrgId: !!params.orgId,
+          hasCode: !!params.code,
         }),
       );
       return;
     }
 
     log('Authentication successful:', {
-      userId: params.userId,
-      orgId: params.orgId,
+      code: params.code,
     });
 
     this.resolveAuth?.({
-      ticket: params.ticket,
-      userId: params.userId,
-      orgId: params.orgId,
+      code: params.code,
     });
   }
 
   public start({
-    stateToken,
+    csrfToken,
     port,
   }: {
-    stateToken: string;
+    csrfToken: string;
     port: number;
-  }): Promise<AuthResult> {
+  }): Promise<{ code: string }> {
     return new Promise((resolve, reject) => {
       this.resolveAuth = resolve;
       this.rejectAuth = reject;
 
       if (!this.server) {
         this.server = createServer(async (req, res) => {
-          await this.handleCallback(req, res, stateToken, port);
+          await this.handleCallback(req, res, csrfToken, port);
         });
 
         this.server.on('error', (err) => {

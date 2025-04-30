@@ -9,7 +9,7 @@ import {
 } from 'bun:test';
 import type { Mock } from 'bun:test';
 import net from 'node:net';
-import type { UserResource } from '@clerk/types';
+import type { RouterOutputs } from '@unhook/api';
 import { db } from '@unhook/db/client';
 import { Connections } from '@unhook/db/schema';
 import { useAuthStore } from '~/stores/auth-store';
@@ -91,8 +91,18 @@ describe('useConnectionStore', () => {
     mockDbReturning.mockResolvedValue([{ id: 'new-conn-id' }]);
 
     vi.mocked(useAuthStore.getState).mockReturnValue({
-      user: { id: 'test-user-id' } as UserResource,
+      user: {
+        id: 'test-user-id',
+        email: 'test-email',
+        fullName: 'test-full-name',
+      } as RouterOutputs['auth']['verifySessionToken']['user'],
+      fileStorage: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      },
       orgId: 'test-org-id',
+      token: 'test-token',
       isValidatingSession: false,
       validateSession: vi.fn(),
       authUrl: null,
@@ -100,7 +110,14 @@ describe('useConnectionStore', () => {
       setSigningIn: vi.fn(),
       setAuthUrl: vi.fn(),
       reset: vi.fn(),
-      token: 'test-token',
+      authenticate: vi.fn(),
+      authServer: null,
+      csrfToken: null,
+      secureStorage: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      },
       isSignedIn: true,
       sessionId: 'test-session-id',
       logout: vi.fn(),
@@ -352,6 +369,19 @@ describe('useConnectionStore', () => {
         orgId: null,
         token: null,
         authUrl: null,
+        authServer: null,
+        fileStorage: {
+          getItem: vi.fn(),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+        },
+        authenticate: vi.fn(),
+        csrfToken: null,
+        secureStorage: {
+          getItem: vi.fn(),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+        },
         isSigningIn: false,
         setSigningIn: vi.fn(),
         setAuthUrl: vi.fn(),

@@ -556,3 +556,54 @@ export const ConnectionsRelations = relations(Connections, ({ one, many }) => ({
   }),
   requests: many(Requests),
 }));
+
+export const AuthCodes = pgTable('authCodes', {
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'ac' }))
+    .notNull()
+    .primaryKey(),
+  expiresAt: timestamp('expiresAt', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .$defaultFn(() => new Date(Date.now() + 1000 * 60 * 30)) // 30 minutes
+    .notNull(),
+  sessionId: text('sessionId').notNull(),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+  usedAt: timestamp('usedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
+  userId: varchar('userId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+});
+
+export type AuthCodeType = typeof AuthCodes.$inferSelect;
+
+export const AuthCodesRelations = relations(AuthCodes, ({ one }) => ({
+  user: one(Users, {
+    fields: [AuthCodes.userId],
+    references: [Users.id],
+  }),
+  org: one(Orgs, {
+    fields: [AuthCodes.orgId],
+    references: [Orgs.id],
+  }),
+}));

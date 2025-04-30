@@ -1,10 +1,17 @@
-import { getAuth } from '@clerk/nextjs/server';
-import type { NextRequest } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 
 import { db } from '@unhook/db/client';
+import type { NextRequest } from 'next/server';
 
-export const createTRPCContext = (request: NextRequest) => {
-  return { auth: getAuth(request), db };
+export const createTRPCContext = async (_request: NextRequest) => {
+  let authResult: Awaited<ReturnType<typeof auth>> | null = null;
+  try {
+    authResult = await auth();
+  } catch (error) {
+    console.error('Error authenticating', error);
+  }
+
+  return { auth: authResult, db };
 };
 
-export type Context = ReturnType<typeof createTRPCContext>;
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;

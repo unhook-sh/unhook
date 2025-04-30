@@ -1,5 +1,6 @@
 import { TRPCReactProvider } from '@unhook/api/client';
 import { SubscriptionProvider } from '@unhook/db/supabase/client';
+
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import { type FC, useEffect } from 'react';
@@ -22,6 +23,7 @@ import {
 } from '~/lib/posthog';
 import { useAuthStore } from '~/stores/auth-store';
 import { useConfigStore } from '~/stores/config-store';
+
 const log = debug('unhook:cli:layout');
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -41,6 +43,8 @@ function AppContent() {
   const dimensions = useDimensions();
   const token = useAuthStore.use.token();
   const isValidating = useAuthStore.use.isValidatingSession();
+  // const result = api.tunnels.all.useQuery();
+  // log('result', result.data);
 
   useEffect(() => {
     capture({

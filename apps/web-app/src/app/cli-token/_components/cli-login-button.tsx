@@ -4,12 +4,12 @@ import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
-import { createClerkToken } from '../actions';
+import { createAuthCode } from '../actions';
 
 export function CliLoginButton() {
   const [error, setError] = useState<string>();
 
-  const { executeAsync, status } = useAction(createClerkToken);
+  const { executeAsync, status } = useAction(createAuthCode);
   const isPending = status === 'executing';
 
   async function onLogin() {
@@ -23,27 +23,18 @@ export function CliLoginButton() {
       }
 
       const currentUrl = new URL(window.location.href);
-      const currentRedirectUrl = currentUrl.searchParams.get('redirectUrl');
-      const state = currentUrl.searchParams.get('state');
+      const port = currentUrl.searchParams.get('port');
+      const csrfToken = currentUrl.searchParams.get('csrf');
 
       // Get the redirect URL from search params, defaulting to current URL if not provided
-      const redirectUrl = new URL(currentRedirectUrl || currentUrl.href);
+      const redirectUrl = new URL(`http://localhost:${port}`);
 
       // Add the token to the redirect URL
-      redirectUrl.searchParams.set('ticket', result.data.ticket);
-      redirectUrl.searchParams.set('userId', result.data.userId);
-      if (result.data.orgId) {
-        redirectUrl.searchParams.set('orgId', result.data.orgId);
-      }
-      redirectUrl.searchParams.set('status', result.data.status);
-      redirectUrl.searchParams.set('url', result.data.url);
-      redirectUrl.searchParams.set('id', result.data.id);
-      redirectUrl.searchParams.set('state', state || '');
+      redirectUrl.searchParams.set('code', result.data.id);
+      redirectUrl.searchParams.set('csrf', csrfToken || '');
       // If we have a redirect URL in the search params, redirect to it
-      if (currentUrl.searchParams.has('redirectUrl')) {
-        window.location.href = redirectUrl.href;
-        return;
-      }
+      window.location.href = redirectUrl.href;
+      return;
     } catch (error) {
       console.error('Failed to generate token:', error);
       setError('Failed to authenticate. Please try again.');

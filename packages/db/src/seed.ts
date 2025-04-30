@@ -3,6 +3,7 @@ import { seed } from 'drizzle-seed';
 
 import { db } from './client';
 import {
+  AuthCodes,
   Connections,
   Events,
   OrgMembers,
@@ -21,6 +22,7 @@ await db.delete(Tunnels);
 await db.delete(Requests);
 await db.delete(Connections);
 await db.delete(Events);
+await db.delete(AuthCodes);
 
 await seed(db, {
   Orgs,

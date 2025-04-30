@@ -8,19 +8,21 @@ export class AuthError extends Error {
     message: string,
     public code: string,
     public details?: Record<string, unknown>,
+    options?: { cause?: Error },
   ) {
-    super(message);
+    super(message, options);
     this.name = 'AuthError';
   }
 
   logAndCapture(): void {
-    log(this.message, this.details);
+    log('Auth error', this);
     captureException(this);
     capture({
       event: `auth_error_${this.code}`,
       properties: {
         error: this.message,
         ...this.details,
+        cause: this.cause instanceof Error ? this.cause.message : undefined,
       },
     });
   }
@@ -63,6 +65,7 @@ export class TokenExpiredError extends AuthError {
 }
 
 export function handleAuthError(error: unknown): never {
+  log('Handling auth error', error);
   const authError =
     error instanceof AuthError
       ? error
@@ -71,6 +74,8 @@ export function handleAuthError(error: unknown): never {
             ? error.message
             : 'Unknown authentication error',
           'unknown',
+          undefined,
+          { cause: error instanceof Error ? error : undefined },
         );
 
   authError.logAndCapture();

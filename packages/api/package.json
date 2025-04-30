@@ -35,6 +35,10 @@
     "./server": {
       "default": "./src/react/server-exports.ts",
       "types": "./dist/react/server-exports.d.ts"
+    },
+    "./cli": {
+      "default": "./src/react/cli.ts",
+      "types": "./dist/react/cli.d.ts"
     }
   },
   "license": "MIT",

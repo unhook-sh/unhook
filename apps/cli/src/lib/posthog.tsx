@@ -102,7 +102,7 @@ export function PostHogIdentifyUser() {
   const path = useRouterStore.use.currentPath();
   const sessionId = useAuthStore.use.sessionId();
   const userId = user?.id ?? sessionId;
-  const email = user?.primaryEmailAddress?.emailAddress;
+  const email = user?.email;
 
   useEffect(() => {
     if (userId && isProduction) {

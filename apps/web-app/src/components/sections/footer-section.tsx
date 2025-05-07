@@ -61,7 +61,7 @@ export function FooterSection() {
             text={'Unhook'}
             // text={tablet ? 'Unhook' : 'Streamline your workflow'}
             // fontSize={tablet ? 70 : 90}
-            fontSize={tablet ? 140 : 160}
+            fontSize={tablet ? 110 : 160}
             className="h-full w-full"
             squareSize={2}
             gridGap={tablet ? 2 : 3}

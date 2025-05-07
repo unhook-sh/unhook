@@ -80,12 +80,16 @@
       {
         "label": "Support",
         "href": "mailto:chris.watts.t@gmail.com"
+      },
+      {
+        "label": "Dashboard",
+        "href": "https://unhook.sh/app"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://unhook.sh/dashboard"
+      "label": "Create Webhook URL",
+      "href": "https://unhook.sh/create-webhook-url"
     }
   },
   "footer": {

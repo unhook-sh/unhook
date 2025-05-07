@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/trpc(.*)',
   // Match any path that contains t_ for tunnel-specific webhook endpoints
   '/(.*t_.*)/',
+  '/',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

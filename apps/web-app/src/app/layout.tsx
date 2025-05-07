@@ -2,13 +2,12 @@ import { ReactScan } from '@unhook/ui/custom/react-scan';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata, Viewport } from 'next';
-import { cookies } from 'next/headers';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 import { AnalyticsProviders } from '@unhook/analytics';
 import { ThemeProvider } from '@unhook/ui/custom/theme';
 import { cn } from '@unhook/ui/lib/utils';
-import { SidebarInset, SidebarProvider } from '@unhook/ui/sidebar';
+import {} from '@unhook/ui/sidebar';
 import { Toaster } from '@unhook/ui/sonner';
 
 import '@unhook/ui/globals.css';
@@ -16,7 +15,6 @@ import '@unhook/ui/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 
 import { TRPCReactProvider } from '@unhook/api/client';
-import { AppSidebar } from '~/components/app-sidebar';
 import { env } from '~/env.server';
 
 export const metadata: Metadata = {
@@ -48,9 +46,6 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -70,12 +65,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
                   defaultTheme="dark"
                   enableSystem
                 >
-                  <SidebarProvider defaultOpen={defaultOpen}>
-                    <AppSidebar />
-                    <SidebarInset className="max-w-[calc(100vw-var(--sidebar-width))] peer-data-[collapsible=offcanvas]:peer-data-[state=collapsed]:max-w-[100vw] peer-data-[state=collapsed]:max-w-[calc(100vw-var(--sidebar-width-icon))]">
-                      {props.children}
-                    </SidebarInset>
-                  </SidebarProvider>
+                  {props.children}
                   <Toaster />
                 </ThemeProvider>
               </AnalyticsProviders>

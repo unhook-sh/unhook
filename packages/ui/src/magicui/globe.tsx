@@ -1,44 +1,54 @@
 'use client';
 
-import type { COBEOptions } from 'cobe';
-import createGlobe from 'cobe';
+import createGlobe, { type COBEOptions } from 'cobe';
+import { useMotionValue, useSpring } from 'motion/react';
 import { useTheme } from 'next-themes';
-import { useCallback, useEffect, useRef } from 'react';
-import { useSpring } from 'react-spring';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { cn } from '@unhook/ui/lib/utils';
 
+const MOVEMENT_DAMPING = 1400;
+
 const GLOBE_CONFIG: COBEOptions = {
-  baseColor: [1, 1, 1],
-  dark: 1,
-  devicePixelRatio: 2,
-  diffuse: 3,
-  glowColor: [1.2, 1.2, 1.2],
+  width: 800,
   height: 800,
-  mapBrightness: 1.2,
-  mapSamples: 16_000,
-  markerColor: [117 / 255, 169 / 255, 156 / 255],
-  markers: [
-    { location: [37.7749, -122.4194], size: 0.5 }, // San Francisco, USA
-    { location: [34.0522, -118.2437], size: 0.4 }, // Los Angeles, USA
-    { location: [40.7128, -74.006], size: 0.5 }, // New York City, USA
-    { location: [51.5074, -0.1278], size: 0.3 }, // London, UK
-    { location: [48.8566, 2.3522], size: 0.2 }, // Paris, France
-    { location: [52.52, 13.405], size: 0.2 }, // Berlin, Germany
-    { location: [55.7558, 37.6173], size: 0.2 }, // Moscow, Russia
-    { location: [35.6895, 139.6917], size: 0.3 }, // Tokyo, Japan
-    { location: [19.076, 72.8777], size: 0.3 }, // Mumbai, India
-    { location: [31.2304, 121.4737], size: 0.3 }, // Shanghai, China
-    { location: [39.9042, 116.4074], size: 0.3 }, // Beijing, China
-    { location: [-33.8688, 151.2093], size: 0.2 }, // Sydney, Australia
-    { location: [1.3521, 103.8198], size: 0.3 }, // Singapore
-    { location: [22.3964, 114.1095], size: 0.3 }, // Hong Kong
-    { location: [37.5665, 126.978], size: 0.2 }, // Seoul, South Korea
-  ],
   onRender: () => {},
+  devicePixelRatio: 2,
   phi: 0,
   theta: 0.3,
-  width: 800,
+  dark: 0,
+  diffuse: 0.4,
+  mapSamples: 16000,
+  mapBrightness: 1.2,
+  baseColor: [1, 1, 1],
+  markerColor: [251 / 255, 100 / 255, 21 / 255],
+  glowColor: [1, 1, 1],
+  markers: [
+    { location: [14.5995, 120.9842], size: 0.12 },
+    { location: [19.076, 72.8777], size: 0.4 },
+    { location: [23.8103, 90.4125], size: 0.2 },
+    { location: [30.0444, 31.2357], size: 0.28 },
+    { location: [39.9042, 116.4074], size: 0.32 },
+    { location: [-23.5505, -46.6333], size: 0.4 },
+    { location: [19.4326, -99.1332], size: 0.4 },
+    { location: [40.7128, -74.006], size: 0.4 },
+    { location: [34.6937, 135.5022], size: 0.2 },
+    { location: [41.0082, 28.9784], size: 0.24 },
+  ],
+};
+
+// Define color configurations for light and dark modes
+const COLORS = {
+  light: {
+    base: [1, 1, 1] as [number, number, number],
+    glow: [1, 1, 1] as [number, number, number],
+    marker: [0, 0.812, 0.439] as [number, number, number],
+  },
+  dark: {
+    base: [0.4, 0.4, 0.4] as [number, number, number],
+    glow: [0.24, 0.24, 0.27] as [number, number, number],
+    marker: [0, 0.812, 0.439] as [number, number, number],
+  },
 };
 
 export function Globe({
@@ -48,26 +58,49 @@ export function Globe({
   className?: string;
   config?: COBEOptions;
 }) {
-  let phi = 0;
-  let width = 0;
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
+
+  const phiRef = useRef(0);
+  const widthRef = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
-  const theme = useTheme();
-  const [{ r }, api] = useSpring(() => ({
-    config: {
-      friction: 40,
-      mass: 1,
-      precision: 0.001,
-      tension: 280,
-    },
-    r: 0,
-  }));
+
+  const r = useMotionValue(0);
+  const rs = useSpring(r, {
+    mass: 1,
+    damping: 30,
+    stiffness: 100,
+  });
+
+  // Get the computed RGB values from CSS variable
+  const getSecondaryColor = (): [number, number, number] => {
+    if (typeof window === 'undefined') return [0.696, 0.17, 162.48];
+    const style = getComputedStyle(document.documentElement);
+    const color = style.getPropertyValue('--secondary').trim();
+    // Convert OKLCH to RGB
+    const values = color.match(/[\d.]+/g)?.map(Number) || [0.696, 0.17, 162.48];
+    return [values[0] || 0.696, values[1] || 0.17, values[2] || 162.48];
+  };
+
+  const finalConfig = useMemo(
+    () => ({
+      ...config,
+      baseColor: isDarkMode ? COLORS.dark.base : COLORS.light.base,
+      glowColor: isDarkMode ? COLORS.dark.glow : COLORS.light.glow,
+      markerColor: isDarkMode ? COLORS.dark.marker : COLORS.light.marker,
+      dark: isDarkMode ? 1 : 0,
+      diffuse: isDarkMode ? 0.5 : 0.4,
+      mapBrightness: isDarkMode ? 1.4 : 1.2,
+    }),
+    [config, isDarkMode],
+  );
 
   const updatePointerInteraction = (value: number | null) => {
     pointerInteracting.current = value;
     if (canvasRef.current) {
-      canvasRef.current.style.cursor = value ? 'grabbing' : 'grab';
+      canvasRef.current.style.cursor = value !== null ? 'grabbing' : 'grab';
     }
   };
 
@@ -75,66 +108,55 @@ export function Globe({
     if (pointerInteracting.current !== null) {
       const delta = clientX - pointerInteracting.current;
       pointerInteractionMovement.current = delta;
-      api.start({ r: delta / 200 });
+      r.set(r.get() + delta / MOVEMENT_DAMPING);
     }
   };
 
-  const onRender = useCallback(
-    (state: Record<string, number>) => {
-      if (!pointerInteracting.current) phi += 0.005;
-      state.phi = phi + r.get();
-      state.width = width * 2;
-      state.height = width * 2;
-    },
-    [phi, r, width],
-  );
-
-  const onResize = useCallback(() => {
-    if (canvasRef.current) {
-      width = canvasRef.current.offsetWidth;
-    }
-  }, [width]);
-
   useEffect(() => {
+    const onResize = () => {
+      if (canvasRef.current) {
+        widthRef.current = canvasRef.current.offsetWidth;
+      }
+    };
+
     window.addEventListener('resize', onResize);
     onResize();
 
-    if (!canvasRef.current) return;
-
-    const globe = createGlobe(canvasRef.current, {
-      ...config,
-      dark: theme.theme === 'dark' ? 1 : 0,
-      height: width * 2,
-      onRender,
-      opacity: 0.5,
-      width: width * 2,
+    const globe = createGlobe(canvasRef.current!, {
+      ...finalConfig,
+      width: widthRef.current * 2,
+      height: widthRef.current * 2,
+      onRender: (state) => {
+        if (!pointerInteracting.current) phiRef.current += 0.005;
+        state.phi = phiRef.current + rs.get();
+        state.width = widthRef.current * 2;
+        state.height = widthRef.current * 2;
+      },
     });
 
-    setTimeout(() => {
-      if (canvasRef.current) {
-        canvasRef.current.style.opacity = '1';
-      }
-    });
-    return () => globe.destroy();
-  }, [theme.theme, width, config, onRender, onResize]);
+    setTimeout(() => (canvasRef.current!.style.opacity = '1'), 0);
+    return () => {
+      globe.destroy();
+      window.removeEventListener('resize', onResize);
+    };
+  }, [rs, finalConfig]);
 
   return (
     <div
       className={cn(
-        'inset-0 mx-auto aspect-1/1 w-full max-w-[600px]',
+        'absolute inset-0 mx-auto aspect-[1/1] w-full max-w-[600px]',
         className,
       )}
     >
       <canvas
         className={cn(
-          'h-full w-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]',
+          'size-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]',
         )}
         ref={canvasRef}
-        onPointerDown={(e) =>
-          updatePointerInteraction(
-            e.clientX - pointerInteractionMovement.current,
-          )
-        }
+        onPointerDown={(e) => {
+          pointerInteracting.current = e.clientX;
+          updatePointerInteraction(e.clientX);
+        }}
         onPointerUp={() => updatePointerInteraction(null)}
         onPointerOut={() => updatePointerInteraction(null)}
         onMouseMove={(e) => updateMovement(e.clientX)}

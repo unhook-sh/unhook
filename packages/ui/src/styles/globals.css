@@ -7,7 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(98.46% 0.002 247.84);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -15,7 +15,7 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.6 0.118 184.704);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -26,11 +26,11 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.577 0.243 264.376); /* HSL: 220 70% 50% - Blue */
-  --chart-2: oklch(0.488 0.17 162.48); /* HSL: 173 58% 39% - Teal */
-  --chart-3: oklch(0.769 0.189 84.429); /* HSL: 45 90% 65% - Yellow/Orange */
-  --chart-4: oklch(0.627 0.265 303.9); /* HSL: 271 70% 69% - Purple */
-  --chart-5: oklch(0.637 0.237 25.331); /* HSL: 0 65% 65% - Red */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -47,30 +47,11 @@
   --animation-duration-normal: 0.3s;
   --animation-duration-slow: 0.5s;
   --animation-duration-very-slow: 0.8s;
-
-  /*
-     * function-specific color system
-     * These colors are named based on their semantic meaning in functions:
-     * - function-input: For input/request data (blue)
-     * - function-output: For output/response data (green)
-     * - function-error: For error/exception data (red)
-     */
-  --function-input: oklch(0.645 0.246 264.376); /* Blue for input/request elements */
-  --function-input-foreground: oklch(0.95 0.02 264.376);
-  --function-warning: oklch(0.828 0.189 84.429); /* Yellow for warnings */
-  --function-warning-foreground: oklch(0.95 0.02 84.429);
-  --function-error: oklch(0.577 0.245 27.325); /* Red for error/exception elements */
-  --function-error-foreground: oklch(0.95 0.02 27.325);
-  --function-output: oklch(0.577 0.187 142.48); /* Softer green for output/response elements */
-  --function-output-foreground: oklch(0.98 0.02 142.48);
-  --function-highlight: oklch(0.769 0.188 70.08); /* Amber for highlights */
-  --function-highlight-foreground: oklch(0.1 0.02 70.08);
-  --function-name: oklch(0.627 0.265 303.9); /* Purple for function names and special elements */
-  --function-name-foreground: oklch(0.95 0.02 303.9);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  /* --background: oklch(0.145 0 0); */
+  --background: oklch(21.03% 0.006 285.89); /* #18181B */
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -78,7 +59,8 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  /* --secondary: oklch(0.269 0 0); */
+  --secondary: oklch(0.696 0.17 162.48); /* green */
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
@@ -89,11 +71,11 @@
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.577 0.243 264.376); /* HSL: 220 70% 50% - Blue */
-  --chart-2: oklch(0.527 0.17 162.48); /* HSL: 160 60% 45% - Green */
-  --chart-3: oklch(0.637 0.189 70.08); /* HSL: 30 80% 55% - Orange */
-  --chart-4: oklch(0.577 0.265 303.9); /* HSL: 280 65% 60% - Purple */
-  --chart-5: oklch(0.577 0.237 355.331); /* HSL: 340 75% 55% - Pink */
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -102,21 +84,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
-
-  /* Custom --- */
-  /* function colors - dark mode versions */
-  --function-input: oklch(0.488 0.243 264.376); /* Darker blue for input/request elements */
-  --function-input-foreground: oklch(0.9 0.02 264.376);
-  --function-warning: oklch(0.769 0.188 70.08); /* Yellow for warnings */
-  --function-warning-foreground: oklch(0.95 0.02 70.08);
-  --function-error: oklch(0.577 0.245 27.325); /* Red for error/exception elements */
-  --function-error-foreground: oklch(0.95 0.02 27.325);
-  --function-output: oklch(0.488 0.187 142.48); /* Darker green for output/response elements */
-  --function-output-foreground: oklch(0.9 0.02 142.48);
-  --function-highlight: oklch(0.769 0.188 70.08); /* Amber for highlights */
-  --function-highlight-foreground: oklch(0.95 0.02 70.08);
-  --function-name: oklch(0.577 0.265 303.9); /* Purple for function names */
-  --function-name-foreground: oklch(0.95 0.02 303.9);
 }
 
 @theme inline {
@@ -159,19 +126,32 @@
   --animate-accordion-down: accordion-down 0.1s ease-out;
   --animate-accordion-up: accordion-up 0.1s ease-out;
 
-  /* Custom --- */
-  --color-function-input: var(--function-input);
-  --color-function-input-foreground: var(--function-input-foreground);
-  --color-function-output: var(--function-output);
-  --color-function-output-foreground: var(--function-output-foreground);
-  --color-function-highlight: var(--function-highlight);
-  --color-function-highlight-foreground: var(--function-highlight-foreground);
-  --color-function-name: var(--function-name);
-  --color-function-name-foreground: var(--function-name-foreground);
-  --color-function-warning: var(--function-warning);
-  --color-function-warning-foreground: var(--function-warning-foreground);
-  --color-function-error: var(--function-error);
-  --color-function-error-foreground: var(--function-error-foreground);
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-orbit: orbit calc(var(--duration) * 1s) linear infinite;
+  --animate-slide-down: slide-down 300ms cubic-bezier(0.87, 0, 0.13, 1);
+  --animate-slide-up: slide-up 300ms cubic-bezier(0.87, 0, 0.13, 1);
+  --scaleIn: scaleIn 200ms ease;
+  --scaleOut: scaleOut 200ms ease;
+  --fadeIn: fadeIn 200ms ease;
+  --fadeOut: fadeOut 200ms ease;
+  --enterFromLeft: enterFromLeft 250ms ease;
+  --enterFromRight: enterFromRight 250ms ease;
+  --exitToLeft: exitToLeft 250ms ease;
+  --exitToRight: exitToRight 250ms ease;
+  --animate-elliptical-orbit: elliptical-orbit 20s linear infinite;
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(calc(var(--angle) * 1deg))
+        translateY(calc(var(--radius) * 1px)) rotate(calc(var(--angle) * -1deg));
+    }
+    100% {
+      transform: rotate(calc(var(--angle) * 1deg + 360deg))
+        translateY(calc(var(--radius) * 1px))
+        rotate(calc((var(--angle) * -1deg) - 360deg));
+    }
+  }
 
   @keyframes accordion-down {
     from {
@@ -190,11 +170,147 @@
       height: 0;
     }
   }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes slide-down {
+    from {
+      height: 0px;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0px;
+    }
+  }
+
+  /* Add this to your globals.css */
+  @keyframes enterFromRight {
+    from {
+      opacity: 0;
+      transform: translateX(200px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes enterFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-200px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes exitToRight {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(200px);
+    }
+  }
+
+  @keyframes exitToLeft {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-200px);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: rotateX(-30deg) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: rotateX(0deg) scale(1);
+    }
+  }
+
+  @keyframes scaleOut {
+    from {
+      opacity: 1;
+      transform: rotateX(0deg) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: rotateX(-10deg) scale(0.95);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes elliptical-orbit {
+    from {
+      transform: rotate(var(--angle, 0) deg)
+        translate(var(--h-radius, 160px), 0)
+        rotate(calc(var(--angle, 0) deg * -1));
+    }
+    to {
+      transform: rotate(calc(var(--angle, 0) deg + 360deg))
+        translate(var(--h-radius, 160px), 0)
+        rotate(calc((var(--angle, 0) deg + 360deg) * -1));
+    }
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;

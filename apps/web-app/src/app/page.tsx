@@ -1,21 +1,31 @@
-import { H1, P } from '@unhook/ui/custom/typography';
-import ModernFlowDiagram from './test';
-export default async function Page() {
-  return (
-    <main className="container py-16">
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <H1>Unhook</H1>
-          <P className="text-muted-foreground">
-            Unhook is a tool for building webhooks.
-          </P>
-        </div>
-        <ModernFlowDiagram />
+import { BentoSection } from '~/components/sections/bento-section';
+import { CTASection } from '~/components/sections/cta-section';
+import { FAQSection } from '~/components/sections/faq-section';
+import { FeatureSection } from '~/components/sections/feature-section';
+import { FooterSection } from '~/components/sections/footer-section';
+import { GrowthSection } from '~/components/sections/growth-section';
+import { HeroSection } from '~/components/sections/hero-section';
+import { Navbar } from '~/components/sections/navbar';
 
-        {/* <Suspense fallback={<MapsSkeleton />}> */}
-        {/* <HydrationBoundary></HydrationBoundary> */}
-        {/* </Suspense> */}
-      </div>
-    </main>
+export default function Home() {
+  return (
+    <div className="max-w-7xl mx-auto border-x relative">
+      <div className="block w-px h-full border-l border-border absolute top-0 left-6 z-10" />
+      <div className="block w-px h-full border-r border-border absolute top-0 right-6 z-10" />
+      <Navbar />
+      <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
+        <HeroSection />
+        {/* <CompanyShowcase /> */}
+        <BentoSection />
+        {/* <QuoteSection /> */}
+        <FeatureSection />
+        <GrowthSection />
+        {/* <PricingSection /> */}
+        {/* <TestimonialSection /> */}
+        <FAQSection />
+        <CTASection />
+        <FooterSection />
+      </main>
+    </div>
   );
 }

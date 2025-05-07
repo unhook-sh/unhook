@@ -173,34 +173,31 @@ export function LineChart({
       />
 
       {/* Multiple pulsing waves */}
-      {showPulse && (
-        <>
-          {[0, 1, 2].map((index) => (
-            <motion.circle
-              key={index}
-              cx={middlePoint?.x ?? 0}
-              cy={middlePoint?.y ?? 0}
-              r="10"
-              stroke={color}
-              strokeWidth="2"
-              fill="none"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{
-                scale: [0.5, 2],
-                opacity: [0.8, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Number.POSITIVE_INFINITY,
-                delay: index * 0.67,
-                ease: 'easeOut',
-                times: [0, 1],
-                repeatDelay: 0,
-              }}
-            />
-          ))}
-        </>
-      )}
+      {showPulse &&
+        [0, 1, 2].map((index) => (
+          <motion.circle
+            key={index}
+            cx={middlePoint?.x ?? 0}
+            cy={middlePoint?.y ?? 0}
+            r="10"
+            stroke={color}
+            strokeWidth="2"
+            fill="none"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{
+              scale: [0.5, 2],
+              opacity: [0.8, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Number.POSITIVE_INFINITY,
+              delay: index * 0.67,
+              ease: 'easeOut',
+              times: [0, 1],
+              repeatDelay: 0,
+            }}
+          />
+        ))}
     </svg>
   );
 }

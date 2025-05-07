@@ -131,6 +131,7 @@ export function Navbar() {
               <button
                 className="md:hidden border border-border size-8 rounded-md cursor-pointer flex items-center justify-center"
                 onClick={toggleDrawer}
+                type="button"
               >
                 {isDrawerOpen ? (
                   <X className="size-5" />
@@ -174,6 +175,7 @@ export function Navbar() {
                   <button
                     onClick={toggleDrawer}
                     className="border border-border rounded-md p-1 cursor-pointer"
+                    type="button"
                   >
                     <X className="size-5" />
                   </button>

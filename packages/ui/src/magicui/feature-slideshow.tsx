@@ -137,6 +137,7 @@ export const Feature = ({
   };
 
   // interval for changing images
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) =>
@@ -147,6 +148,7 @@ export const Feature = ({
     return () => clearInterval(timer);
   }, [collapseDelay, currentIndex, featureItems.length]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const handleAutoScroll = () => {
       const nextIndex =
@@ -355,8 +357,9 @@ export const Feature = ({
             }}
           >
             {featureItems.map((item, index) => (
-              <a
+              <button
                 key={item.id}
+                type="button"
                 className="card relative grid h-full max-w-64 shrink-0 items-start justify-center p-3 bg-background border-l last:border-r border-t border-b first:rounded-tl-xl last:rounded-tr-xl"
                 onClick={() => setCurrentIndex(index)}
                 style={{
@@ -413,7 +416,7 @@ export const Feature = ({
                     {item.content}
                   </p>
                 </div>
-              </a>
+              </button>
             ))}
           </ul>
         </div>

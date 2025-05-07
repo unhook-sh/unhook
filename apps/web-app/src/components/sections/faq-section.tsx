@@ -30,10 +30,10 @@ export function FAQSection() {
           collapsible
           className="w-full border-b-0 grid gap-2"
         >
-          {faqSection.faQitems.map((faq, index) => (
+          {faqSection.faQitems.map((faq) => (
             <AccordionItem
-              key={index}
-              value={index.toString()}
+              key={faq.question}
+              value={faq.question}
               className="border-0 grid gap-2"
             >
               <AccordionTrigger className="border bg-accent border-border rounded-lg px-4 py-3.5 cursor-pointer no-underline hover:no-underline data-[state=open]:ring data-[state=open]:ring-primary/20">

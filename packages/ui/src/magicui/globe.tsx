@@ -75,7 +75,7 @@ export function Globe({
   });
 
   // Get the computed RGB values from CSS variable
-  const getSecondaryColor = (): [number, number, number] => {
+  const _getSecondaryColor = (): [number, number, number] => {
     if (typeof window === 'undefined') return [0.696, 0.17, 162.48];
     const style = getComputedStyle(document.documentElement);
     const color = style.getPropertyValue('--secondary').trim();
@@ -122,21 +122,31 @@ export function Globe({
     window.addEventListener('resize', onResize);
     onResize();
 
-    const globe = createGlobe(canvasRef.current!, {
-      ...finalConfig,
-      width: widthRef.current * 2,
-      height: widthRef.current * 2,
-      onRender: (state) => {
-        if (!pointerInteracting.current) phiRef.current += 0.005;
-        state.phi = phiRef.current + rs.get();
-        state.width = widthRef.current * 2;
-        state.height = widthRef.current * 2;
-      },
-    });
+    let globe: ReturnType<typeof createGlobe> | null = null;
 
-    setTimeout(() => (canvasRef.current!.style.opacity = '1'), 0);
+    if (canvasRef.current) {
+      globe = createGlobe(canvasRef.current, {
+        ...finalConfig,
+        width: widthRef.current * 2,
+        height: widthRef.current * 2,
+        onRender: (state) => {
+          if (!pointerInteracting.current) phiRef.current += 0.005;
+          state.phi = phiRef.current + rs.get();
+          state.width = widthRef.current * 2;
+          state.height = widthRef.current * 2;
+        },
+      });
+
+      setTimeout(() => {
+        if (canvasRef.current) {
+          canvasRef.current.style.opacity = '1';
+        }
+      }, 0);
+    }
     return () => {
-      globe.destroy();
+      if (globe) {
+        globe.destroy();
+      }
       window.removeEventListener('resize', onResize);
     };
   }, [rs, finalConfig]);

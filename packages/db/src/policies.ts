@@ -226,7 +226,7 @@ async function setupAllPolicies() {
   );
 }
 
-async function dropAllPolicies() {
+async function _dropAllPolicies() {
   return withErrorHandling(
     async () => {
       await Promise.all(Object.values(policyConfigs).map(dropTablePolicies));

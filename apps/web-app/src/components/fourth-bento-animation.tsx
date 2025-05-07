@@ -110,67 +110,67 @@ export function FourthBentoAnimation({
     >
       <div className="absolute inset-0 flex -z-10 [mask:linear-gradient(180deg,transparent,black_40%,black_40%,transparent)] ">
         <div className=" w-1/2 h-full flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
         <div className=" w-1/2 h-full flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent "
-            ></div>
+            />
           ))}
         </div>
         <div className=" w-1/2 h-full flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
         <div className=" w-1/2 h-full flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
-          {Array.from({ length: 5 }).map((_, index) => (
+          {[1, 2, 3, 4, 5].map((index) => (
             <div
               key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
-            ></div>
+            />
           ))}
         </div>
       </div>
@@ -224,7 +224,7 @@ export function FourthBentoAnimation({
         <AnimatePresence>
           {translateXValues.map((translateX, index) => (
             <motion.div
-              key={index}
+              key={`box-${translateX}`}
               initial={{
                 opacity: 0,
                 x:

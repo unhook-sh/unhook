@@ -10,6 +10,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={cn('size-4 fill-[var(--secondary)]', className)}
     >
+      <title>Unhook Logo</title>
       <g clipPath="url(#clip0_322_9172)">
         <path
           d="M22.3546 0.96832C22.9097 0.390834 23.6636 0.0664062 24.4487 0.0664062C27.9806 0.0664062 31.3091 0.066408 34.587 0.0664146C41.1797 0.0664284 44.481 8.35854 39.8193 13.2082L29.6649 23.7718C29.1987 24.2568 28.4016 23.9133 28.4016 23.2274V13.9234L29.5751 12.7025C30.5075 11.7326 29.8472 10.0742 28.5286 10.0742H13.6016L22.3546 0.96832Z"
@@ -36,6 +37,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={cn('size-4', className)}
     >
+      <title>Soc2 Icon</title>
       <g filter="url(#filter0_ddd_1_4900)">
         <rect
           x="3"
@@ -231,6 +233,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={cn('size-4', className)}
     >
+      <title>Soc2 Icon</title>
       <g filter="url(#filter0_ddd_1_2018)">
         <rect
           x="3"
@@ -426,6 +429,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <title>hippa icon</title>
       <g filter="url(#filter0_ddd_1_4905)">
         <rect
           x="3"
@@ -566,6 +570,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <title>hippa dark icon</title>
       <g filter="url(#filter0_ddd_1_2028)">
         <rect
           x="3"
@@ -706,6 +711,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={cn('size-4', className)}
     >
+      <title>gdpr icon</title>
       <g filter="url(#filter0_ddd_1_4914)">
         <rect
           x="3"
@@ -1011,6 +1017,7 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       className={cn('size-4', className)}
     >
+      <title>gdpr dark icon</title>
       <g filter="url(#filter0_ddd_1_2046)">
         <rect
           x="3"
@@ -1313,6 +1320,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>vercel icon</title>
       <g filter="url(#filter0_dddd_1_4108)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -1427,6 +1435,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>replit icon</title>
       <g filter="url(#filter0_dddd_1_4111)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -1552,6 +1561,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>posthog icon</title>
       <g filter="url(#filter0_dddd_1_4116)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -1674,6 +1684,7 @@ export const Icons = {
       viewBox="0 0 87.3 78"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>google drive icon</title>
       <path
         d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z"
         fill="#0066da"
@@ -1708,6 +1719,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>workos icon</title>
       <g filter="url(#filter0_dddd_1_4101)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -1829,6 +1841,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>runwayml icon</title>
       <g filter="url(#filter0_dddd_1_4106)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -1936,6 +1949,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>gemini icon</title>
       <g filter="url(#filter0_dddd_1_4143)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -2065,6 +2079,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>boat icon</title>
       <g filter="url(#filter0_dddd_1_4139)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -2176,6 +2191,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>supabase icon</title>
       <g filter="url(#filter0_dddd_1_4134)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"
@@ -2324,6 +2340,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>figma icon</title>
       <g filter="url(#filter0_dddd_1_4123)">
         <path
           d="M5 22C5 10.402 14.402 1 26 1C37.598 1 47 10.402 47 22C47 33.598 37.598 43 26 43C14.402 43 5 33.598 5 22Z"

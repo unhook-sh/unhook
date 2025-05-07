@@ -4,9 +4,7 @@ import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
 import { capture } from '../lib/posthog';
-import { useApiStore } from './api-store';
 import { useAuthStore } from './auth-store';
-import { useCliStore } from './cli-store';
 import { useConfigStore } from './config-store';
 import { useTunnelStore } from './tunnel-store';
 
@@ -129,12 +127,11 @@ const createConnectionStore = () => {
       // Update tunnel record with connection status
       const { selectedTunnelId } = useTunnelStore.getState();
       if (selectedTunnelId) {
-        const isAnyConnected = Object.values({
+        const _isAnyConnected = Object.values({
           ...currentState.ruleStates,
           [ruleId]: updatedRuleState,
         }).some((state) => state.isConnected);
 
-        const { api } = useApiStore.getState();
         // const tunnel = await api.tunnels.byId.query({ id: selectedTunnelId });
         // if (tunnel) {
         //   await api.tunnels.update.mutate({
@@ -163,7 +160,6 @@ const createConnectionStore = () => {
 
       const { forward, to } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
-      const { api } = useApiStore.getState();
 
       // If no forward rules have ping enabled, treat as disabled
       const pingEnabled = to.some((rule) => rule.ping !== false);
@@ -186,8 +182,6 @@ const createConnectionStore = () => {
         return;
       }
 
-      const { version } = useCliStore.getState();
-      const { clientId } = useConfigStore.getState();
       const { selectedTunnelId } = useTunnelStore.getState();
 
       if (!user?.id) {
@@ -355,7 +349,6 @@ const createConnectionStore = () => {
       currentFetchAbortController?.abort();
 
       const currentState = get();
-      const { api } = useApiStore.getState();
 
       capture({
         event: 'connection_disconnect',

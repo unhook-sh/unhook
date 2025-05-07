@@ -23,6 +23,7 @@ function PricingTabs({ activeTab, setActiveTab, className }: TabsProps) {
       {['monthly', 'yearly'].map((tab) => (
         <button
           key={tab}
+          type="button"
           onClick={() => setActiveTab(tab as 'yearly' | 'monthly')}
           className={cn(
             'relative z-[1] px-2 h-8 flex items-center justify-center cursor-pointer',
@@ -146,6 +147,7 @@ export function PricingSection() {
 
               <div className="flex flex-col gap-2 p-4">
                 <button
+                  type="button"
                   className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
                     tier.isPopular
                       ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
@@ -181,6 +183,7 @@ export function PricingSection() {
                             xmlns="http://www.w3.org/2000/svg"
                             className="block dark:hidden"
                           >
+                            <title>Checkmark Icon</title>
                             <path
                               d="M1.5 3.48828L3.375 5.36328L6.5 0.988281"
                               stroke="#101828"
@@ -198,6 +201,7 @@ export function PricingSection() {
                             xmlns="http://www.w3.org/2000/svg"
                             className="hidden dark:block"
                           >
+                            <title>Checkmark Icon</title>
                             <path
                               d="M1.5 3.48828L3.375 5.36328L6.5 0.988281"
                               stroke="#FAFAFA"

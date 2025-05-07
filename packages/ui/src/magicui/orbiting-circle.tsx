@@ -108,7 +108,10 @@ export function OrbitingCircles({
               )}
             >
               <motion.div
-                key={`orbit-child-${index}`}
+                key={`orbit-child-${
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  index
+                }`}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{

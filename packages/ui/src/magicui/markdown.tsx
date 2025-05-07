@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from '@unhook/ui/lib/utils';
 import { marked } from 'marked';
-import { memo, useId, useMemo } from 'react';
-import ReactMarkdown, { type Components } from 'react-markdown';
+import { type PropsWithChildren, memo, useId, useMemo } from 'react';
+import ReactMarkdown, {
+  type Components,
+  type ExtraProps,
+} from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock, CodeBlockCode } from './code-block';
 
@@ -15,7 +18,7 @@ export type MarkdownProps = {
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
   const tokens = marked.lexer(markdown);
-  return tokens.map((token: any) => token.raw);
+  return tokens.map((token: { raw: string }) => token.raw);
 }
 
 function extractLanguage(className?: string): string {
@@ -26,7 +29,11 @@ function extractLanguage(className?: string): string {
 }
 
 const INITIAL_COMPONENTS: Partial<Components> = {
-  code: function CodeComponent({ className, children, ...props }: any) {
+  code: function CodeComponent({
+    className,
+    children,
+    ...props
+  }: PropsWithChildren<ExtraProps & { className?: string }>) {
     const isInline =
       !props.node?.position?.start.line ||
       props.node?.position?.start.line === props.node?.position?.end.line;
@@ -53,7 +60,7 @@ const INITIAL_COMPONENTS: Partial<Components> = {
       </CodeBlock>
     );
   },
-  pre: function PreComponent({ children }: any) {
+  pre: function PreComponent({ children }: PropsWithChildren<ExtraProps>) {
     return <>{children}</>;
   },
 };
@@ -72,7 +79,10 @@ const MemoizedMarkdownBlock = memo(
       </ReactMarkdown>
     );
   },
-  function propsAreEqual(prevProps: any, nextProps: any) {
+  function propsAreEqual(
+    prevProps: { content: string },
+    nextProps: { content: string },
+  ) {
     return prevProps.content === nextProps.content;
   },
 );
@@ -91,9 +101,9 @@ function MarkdownComponent({
 
   return (
     <div className={className}>
-      {blocks.map((block, index) => (
+      {blocks.map((block) => (
         <MemoizedMarkdownBlock
-          key={`${blockId}-block-${index}`}
+          key={`${blockId}-block`}
           content={block}
           components={components}
         />

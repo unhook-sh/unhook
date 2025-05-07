@@ -78,7 +78,8 @@ function useTextStream({
     if (modeRef.current === 'typewriter') {
       if (normalizedSpeed < 25) return 1;
       return Math.max(1, Math.round((normalizedSpeed - 25) / 10));
-    } else if (modeRef.current === 'fade') {
+    }
+    if (modeRef.current === 'fade') {
       return 1;
     }
 
@@ -254,6 +255,7 @@ function useTextStream({
     }
   }, [textStream, isComplete, processStringTypewriter]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     startStreaming();
 

@@ -67,6 +67,7 @@ export function SocialProofTestimonials({
               .map((_, i) => (
                 <Marquee
                   vertical
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                   key={i}
                   className={cn({
                     '[--duration:60s]': i === 1,
@@ -74,8 +75,8 @@ export function SocialProofTestimonials({
                     '[--duration:70s]': i === 3,
                   })}
                 >
-                  {testimonials.slice(i * 3, (i + 1) * 3).map((card, idx) => (
-                    <TestimonialCard {...card} key={idx} />
+                  {testimonials.slice(i * 3, (i + 1) * 3).map((card) => (
+                    <TestimonialCard {...card} key={card.id} />
                   ))}
                 </Marquee>
               ))}

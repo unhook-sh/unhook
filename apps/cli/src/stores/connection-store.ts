@@ -1,5 +1,5 @@
 import net from 'node:net';
-import { hostname, platform, release } from 'node:os';
+import {} from 'node:os';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
@@ -135,26 +135,26 @@ const createConnectionStore = () => {
         }).some((state) => state.isConnected);
 
         const { api } = useApiStore.getState();
-        const tunnel = await api.tunnels.byId.query({ id: selectedTunnelId });
-        if (tunnel) {
-          await api.tunnels.update.mutate({
-            id: selectedTunnelId,
-            clientId: tunnel.clientId,
-            port: tunnel.port,
-            localConnectionStatus: isAnyConnected
-              ? 'connected'
-              : 'disconnected',
-            localConnectionPid: updatedRuleState.pid ?? undefined,
-            localConnectionProcessName:
-              updatedRuleState.processName ?? undefined,
-            lastLocalConnectionAt: updatedRuleState.isConnected
-              ? now
-              : undefined,
-            lastLocalDisconnectionAt: !updatedRuleState.isConnected
-              ? now
-              : undefined,
-          });
-        }
+        // const tunnel = await api.tunnels.byId.query({ id: selectedTunnelId });
+        // if (tunnel) {
+        //   await api.tunnels.update.mutate({
+        //     id: selectedTunnelId,
+        //     clientId: tunnel.clientId,
+        //     port: tunnel.port,
+        //     localConnectionStatus: isAnyConnected
+        //       ? 'connected'
+        //       : 'disconnected',
+        //     localConnectionPid: updatedRuleState.pid ?? undefined,
+        //     localConnectionProcessName:
+        //       updatedRuleState.processName ?? undefined,
+        //     lastLocalConnectionAt: updatedRuleState.isConnected
+        //       ? now
+        //       : undefined,
+        //     lastLocalDisconnectionAt: !updatedRuleState.isConnected
+        //       ? now
+        //       : undefined,
+        //   });
+        // }
       }
     },
 
@@ -213,25 +213,25 @@ const createConnectionStore = () => {
       const { signal } = currentFetchAbortController;
 
       // Create DB Connection Record
-      let dbConnectionId: string | null = null;
+      const dbConnectionId: string | null = null;
       try {
         log('Attempting to create a database connection record');
-        const result = await api.connections.create.mutate({
-          tunnelId: selectedTunnelId,
-          ipAddress: 'unknown',
-          clientId: clientId ?? '',
-          clientVersion: version,
-          clientOs: `${platform()} ${release()}`,
-          clientHostname: hostname(),
-          connectedAt: new Date(),
-          lastPingAt: new Date(),
-        });
+        // const result = await api.connections.create.mutate({
+        //   tunnelId: selectedTunnelId,
+        //   ipAddress: 'unknown',
+        //   clientId: clientId ?? '',
+        //   clientVersion: version,
+        //   clientOs: `${platform()} ${release()}`,
+        //   clientHostname: hostname(),
+        //   connectedAt: new Date(),
+        //   lastPingAt: new Date(),
+        // });
 
-        if (!result?.id) {
-          throw new Error('Failed to create connection record in DB');
-        }
-        log('Database connection record created with ID:', result.id);
-        dbConnectionId = result.id;
+        // if (!result?.id) {
+        //   throw new Error('Failed to create connection record in DB');
+        // }
+        // log('Database connection record created with ID:', result.id);
+        // dbConnectionId = result.id;
         set({ connectionId: dbConnectionId });
       } catch (dbError) {
         log('Error creating connection record:', dbError);
@@ -382,24 +382,24 @@ const createConnectionStore = () => {
       // Update the DB connection record status to disconnected
       const connectionId = currentState.connectionId;
       if (connectionId) {
-        try {
-          const connection = await api.connections.byId.query({
-            id: connectionId,
-          });
-          if (connection) {
-            await api.connections.update.mutate({
-              id: connectionId,
-              clientId: connection.clientId,
-              tunnelId: connection.tunnelId,
-              ipAddress: connection.ipAddress,
-              connectedAt: connection.connectedAt,
-              lastPingAt: connection.lastPingAt,
-              disconnectedAt: new Date(),
-            });
-          }
-        } catch (error) {
-          log('Failed to update connection status in DB on disconnect:', error);
-        }
+        // try {
+        // const connection = await api.connections.byId.query({
+        //   id: connectionId,
+        // });
+        // if (connection) {
+        //   await api.connections.update.mutate({
+        //     id: connectionId,
+        //     clientId: connection.clientId,
+        //     tunnelId: connection.tunnelId,
+        //     ipAddress: connection.ipAddress,
+        //     connectedAt: connection.connectedAt,
+        //     lastPingAt: connection.lastPingAt,
+        //     disconnectedAt: new Date(),
+        //   });
+        // }
+        // } catch (error) {
+        // log('Failed to update connection status in DB on disconnect:', error);
+        // }
       }
 
       // Reset the store state to default

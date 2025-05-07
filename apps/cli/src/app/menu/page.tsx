@@ -6,12 +6,10 @@ import { Ascii } from '~/components/ascii';
 import { SelectInput } from '~/components/select-input';
 import { useDimensions } from '~/hooks/use-dimensions';
 import { useCliStore } from '~/stores/cli-store';
+import { useConfigStore } from '~/stores/config-store';
 import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
 import type { RouteProps } from '~/stores/router-store';
 import type { AppRoutePath } from '../routes';
-
-import { ConnectionStatus } from '~/components/connection-status';
-import { useConfigStore } from '~/stores/config-store';
 import { useRoutes } from '../routes';
 
 export const MenuPage: FC<RouteProps> = () => {
@@ -82,9 +80,9 @@ export const MenuPage: FC<RouteProps> = () => {
           <Text dimColor>Hostname: {hostname()}</Text>
         </Box>
       )}
-      <Box marginBottom={1}>
-        <ConnectionStatus />
-      </Box>
+      {/* <Box marginBottom={1}> */}
+      {/* <ConnectionStatus /> */}
+      {/* </Box> */}
 
       <Box flexDirection="column">
         <SelectInput<StaticRoutePath<AppRoutePath>>

@@ -134,17 +134,18 @@ const store = createStore<AuthStore>()((set, get) => ({
         return false;
       }
 
-      useApiStore.setState({
-        api: createClient({
-          authToken: storedToken,
-          sessionCookie: storedToken,
-        }),
-      });
-
-      const token = await createClient({
+      const apiClient = createClient({
         authToken: storedToken,
         sessionCookie: storedToken,
-      }).auth.verifySessionToken.query();
+      });
+
+      useApiStore.setState({
+        api: apiClient,
+      });
+
+      const token = await apiClient.auth.verifySessionToken.query({
+        sessionId,
+      });
 
       capture({
         event: 'session_validated',
@@ -225,10 +226,11 @@ const store = createStore<AuthStore>()((set, get) => ({
         },
       });
 
+      const { api } = useApiStore.getState();
+
       // Handle authentication
-      const { token, user, orgId, sessionId } = await useApiStore
-        .getState()
-        .api.auth.exchangeAuthCode.query({
+      const { token, user, orgId, sessionId } =
+        await api.auth.exchangeAuthCode.query({
           code: result.code,
         });
 

@@ -29,26 +29,13 @@ export const tunnelsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      const tunnel = await ctx.db
-        .select()
-        .from(Tunnels)
-        .where(and(eq(Tunnels.id, input.id), eq(Tunnels.orgId, ctx.auth.orgId)))
-        .limit(1);
+      const tunnel = await ctx.db.query.Tunnels.findFirst({
+        where: and(eq(Tunnels.id, input.id), eq(Tunnels.orgId, ctx.auth.orgId)),
+      });
 
-      if (!tunnel.length) return null;
+      if (!tunnel) return null;
 
-      const [firstTunnel] = tunnel;
-      if (!firstTunnel) return null;
-
-      const isConnected = await kv.hexists(
-        'tunnel:clients',
-        `${firstTunnel.id}:${firstTunnel.clientId}`,
-      );
-
-      return {
-        ...firstTunnel,
-        isConnected,
-      };
+      return tunnel;
     }),
 
   create: protectedProcedure

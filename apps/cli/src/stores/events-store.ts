@@ -109,15 +109,11 @@ function resolveDestination({
 // Helper to create requests for all destinations in 'to' for a given event
 async function createRequestsForEventToAllDestinations({
   event,
-  userId,
-  orgId,
   connectionId,
   isEventRetry = false,
   pingEnabledFn,
 }: {
   event: EventType;
-  userId: string;
-  orgId: string;
   connectionId?: string | null;
   isEventRetry?: boolean;
   pingEnabledFn?: (destination: TunnelTo) => boolean;
@@ -469,8 +465,6 @@ const store = createStore<EventStore>()((set, get) => ({
     log('Creating new requests for replay to all destinations');
     await createRequestsForEventToAllDestinations({
       event: normalizedEvent,
-      userId: user.id,
-      orgId,
       connectionId,
       isEventRetry: true,
       pingEnabledFn: (destination) =>
@@ -507,8 +501,6 @@ const store = createStore<EventStore>()((set, get) => ({
 
     await createRequestsForEventToAllDestinations({
       event: normalizedEvent,
-      userId: user.id,
-      orgId,
       connectionId,
       isEventRetry: false,
     });

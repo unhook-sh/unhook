@@ -7,22 +7,25 @@ import { z } from 'zod';
 import { protectedProcedure, publicProcedure } from '../trpc';
 
 export const authRouter = {
-  verifySessionToken: protectedProcedure.query(async ({ ctx }) => {
-    const clerk = await clerkClient();
-    const user = await clerk.users.getUser(ctx.auth.userId);
-    const emailAddress = user.emailAddresses.find(
-      (email) => email.id === user.primaryEmailAddressId,
-    );
+  verifySessionToken: protectedProcedure
+    .input(z.object({ sessionId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const clerk = await clerkClient();
+      const user = await clerk.users.getUser(ctx.auth.userId);
+      const session = await clerk.sessions.getSession(input.sessionId);
+      const emailAddress = user.emailAddresses.find(
+        (email) => email.id === user.primaryEmailAddressId,
+      );
 
-    return {
-      user: {
-        id: ctx.auth.userId,
-        email: emailAddress?.emailAddress,
-        fullName: user.fullName,
-      },
-      orgId: ctx.auth.orgId,
-    };
-  }),
+      return {
+        user: {
+          id: ctx.auth.userId,
+          email: emailAddress?.emailAddress,
+          fullName: user.fullName,
+        },
+        orgId: session.lastActiveOrganizationId,
+      };
+    }),
   exchangeAuthCode: publicProcedure
     .input(
       z.object({

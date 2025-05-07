@@ -12,7 +12,7 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, request) => {
   // Handle POST requests to root path with any tunnel ID
   if (request.method === 'POST') {
-    const match = request.nextUrl.pathname.match(/^\/([^\/]+)$/);
+    const match = request.nextUrl.pathname.match(/^\/t_([^\/]+)$/);
     if (match) {
       const tunnelId = match[1];
       const url = new URL(`/api/tunnel/${tunnelId}`, request.url);

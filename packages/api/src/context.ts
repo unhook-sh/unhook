@@ -11,7 +11,16 @@ export const createTRPCContext = async (_request: NextRequest) => {
     console.error('Error authenticating', error);
   }
 
-  return { auth: authResult, db };
+  // NOTE(seawatts): we have to do this because the clerk session claims
+  // are not always available in the request context when calling from the cli
+  if (authResult?.sessionClaims?.org_id) {
+    authResult.orgId = authResult.sessionClaims.org_id;
+  }
+
+  return {
+    auth: authResult,
+    db,
+  };
 };
 
 export type Context = Awaited<ReturnType<typeof createTRPCContext>>;

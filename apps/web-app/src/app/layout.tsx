@@ -45,6 +45,8 @@ export const viewport: Viewport = {
   ],
 };
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 export default async function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -55,7 +57,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           GeistMono.variable,
         )}
       >
-        <ReactScan />
+        {isDevelopment && <ReactScan />}
         <NuqsAdapter>
           <TRPCReactProvider>
             <ClerkProvider>

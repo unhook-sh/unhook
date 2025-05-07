@@ -72,6 +72,7 @@
     "migrate": "drizzle-kit migrate && bun gen-types",
     "push": "drizzle-kit push && bun gen-types",
     "seed": "tsx src/seed.ts",
+    "policies": "tsx src/policies.ts",
     "studio": "drizzle-kit studio",
     "typecheck": "tsc --noEmit"
   },

@@ -129,11 +129,12 @@ export const OrgMembers = pgTable('orgMembers', {
     mode: 'date',
     withTimezone: true,
   }).defaultNow(),
-  createdByUserId: varchar('createdByUserId')
+  userId: varchar('userId')
     .references(() => Users.id, {
       onDelete: 'cascade',
     })
-    .notNull(),
+    .notNull()
+    .default(sql`auth.jwt()->>'sub'`),
   id: varchar('id', { length: 128 })
     .$defaultFn(() => createId({ prefix: 'member' }))
     .notNull()
@@ -142,7 +143,8 @@ export const OrgMembers = pgTable('orgMembers', {
     .references(() => Orgs.id, {
       onDelete: 'cascade',
     })
-    .notNull(),
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
   role: userRoleEnum('role').default('user').notNull(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
@@ -156,10 +158,9 @@ export type OrgMembersType = typeof OrgMembers.$inferSelect & {
 };
 
 export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
-  createdByUser: one(Users, {
-    fields: [OrgMembers.createdByUserId],
+  user: one(Users, {
+    fields: [OrgMembers.userId],
     references: [Users.id],
-    relationName: 'createdByUser',
   }),
   org: one(Orgs, {
     fields: [OrgMembers.orgId],
@@ -250,12 +251,14 @@ export const Tunnels = pgTable('tunnels', {
     .references(() => Users.id, {
       onDelete: 'cascade',
     })
-    .notNull(),
+    .notNull()
+    .default(sql`auth.jwt()->>'sub'`),
   orgId: varchar('orgId')
     .references(() => Orgs.id, {
       onDelete: 'cascade',
     })
-    .notNull(),
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
 });
 
 export type TunnelType = typeof Tunnels.$inferSelect;
@@ -390,12 +393,14 @@ export const Events = pgTable(
       .references(() => Users.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
     orgId: varchar('orgId')
       .references(() => Orgs.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
   },
   (table) => [
     // Composite indexes for common access patterns
@@ -513,12 +518,14 @@ export const Requests = pgTable(
       .references(() => Users.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
     orgId: varchar('orgId')
       .references(() => Orgs.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
   },
   (table) => [
     // Foreign key indexes
@@ -641,12 +648,14 @@ export const Connections = pgTable(
       .references(() => Users.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
     orgId: varchar('orgId')
       .references(() => Orgs.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
   },
   (table) => [
     // Composite index for org-based queries
@@ -747,12 +756,14 @@ export const AuthCodes = pgTable('authCodes', {
     .references(() => Users.id, {
       onDelete: 'cascade',
     })
-    .notNull(),
+    .notNull()
+    .default(sql`auth.jwt()->>'sub'`),
   orgId: varchar('orgId')
     .references(() => Orgs.id, {
       onDelete: 'cascade',
     })
-    .notNull(),
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
 });
 
 export type AuthCodeType = typeof AuthCodes.$inferSelect;

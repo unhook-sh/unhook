@@ -67,14 +67,13 @@
     "build.todo": "bun gen-types && tsc",
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsx ./scripts/watch.ts",
-    "gen-migration": "bun with-env drizzle-kit generate",
-    "gen-types": "bun with-env tsx ./scripts/generate-types.ts",
-    "migrate": "bun with-env drizzle-kit migrate && bun gen-types",
-    "push": "bun with-env drizzle-kit push && bun gen-types",
-    "seed": "bun with-env tsx src/seed.ts",
-    "studio": "bun with-env drizzle-kit studio",
-    "typecheck": "tsc --noEmit",
-    "with-env": "infisical run --"
+    "gen-migration": "drizzle-kit generate",
+    "gen-types": "tsx ./scripts/generate-types.ts",
+    "migrate": "drizzle-kit migrate && bun gen-types",
+    "push": "drizzle-kit push && bun gen-types",
+    "seed": "tsx src/seed.ts",
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
   },
   "type": "module",
   "version": "0.1.0"

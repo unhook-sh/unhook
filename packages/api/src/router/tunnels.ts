@@ -1,8 +1,12 @@
 import { kv } from '@vercel/kv';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { Tunnels } from '@unhook/db/schema';
+import {
+  CreateTunnelTypeSchema,
+  Tunnels,
+  UpdateTunnelTypeSchema,
+} from '@unhook/db/schema';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
@@ -48,12 +52,7 @@ export const tunnelsRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(
-      z.object({
-        clientId: z.string(),
-        port: z.number(),
-      }),
-    )
+    .input(CreateTunnelTypeSchema)
     .mutation(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
       if (!ctx.auth.userId) throw new Error('User ID is required');
@@ -61,9 +60,7 @@ export const tunnelsRouter = createTRPCRouter({
       const [tunnel] = await ctx.db
         .insert(Tunnels)
         .values({
-          clientId: input.clientId,
-          port: input.port,
-          status: 'active',
+          ...input,
           orgId: ctx.auth.orgId,
           userId: ctx.auth.userId,
         })
@@ -75,6 +72,47 @@ export const tunnelsRouter = createTRPCRouter({
       return tunnel;
     }),
 
+  update: protectedProcedure
+    .input(UpdateTunnelTypeSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      if (!input.id) throw new Error('Tunnel ID is required');
+
+      const [tunnel] = await ctx.db
+        .update(Tunnels)
+        .set(input)
+        .where(and(eq(Tunnels.id, input.id), eq(Tunnels.orgId, ctx.auth.orgId)))
+        .returning();
+
+      return tunnel;
+    }),
+
+  updateStats: protectedProcedure
+    .input(
+      z.object({
+        tunnelId: z.string(),
+        updateLastRequest: z.boolean().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [tunnel] = await ctx.db
+        .update(Tunnels)
+        .set({
+          ...(input.updateLastRequest ? { lastRequestAt: new Date() } : {}),
+          requestCount: sql`${Tunnels.requestCount} + 1`,
+        })
+        .where(
+          and(
+            eq(Tunnels.clientId, input.tunnelId),
+            eq(Tunnels.orgId, ctx.auth.orgId),
+          ),
+        )
+        .returning();
+
+      return tunnel;
+    }),
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {

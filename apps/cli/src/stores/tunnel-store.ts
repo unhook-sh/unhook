@@ -1,10 +1,8 @@
-import { db } from '@unhook/db/client';
-import { Tunnels } from '@unhook/db/schema';
 import type { TunnelType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
-import { desc, eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
+import { useApiStore } from './api-store';
 import { useAuthStore } from './auth-store';
 import { useConfigStore } from './config-store';
 
@@ -27,8 +25,6 @@ interface TunnelActions {
   fetchTunnels: () => Promise<void>;
   fetchTunnelById: (tunnelId: string) => Promise<TunnelType | null>;
   createTunnel: (port: number) => Promise<void>;
-  deleteTunnel: (id: string) => Promise<void>;
-  updateTunnel: (id: string, data: Partial<TunnelType>) => Promise<void>;
   checkTunnelAuth: () => Promise<boolean>;
 }
 
@@ -52,17 +48,11 @@ const store = createStore<TunnelStore>()((set, get) => ({
   setIsCheckingTunnel: (isChecking) => set({ isCheckingTunnel: isChecking }),
   fetchTunnelById: async (id: string) => {
     const { orgId } = useAuthStore.getState();
+    const { api } = useApiStore.getState();
 
     log('fetchTunnelById', { id, orgId });
-    // if (!orgId) {
-    //   throw new Error('User must be authenticated to fetch a tunnel');
-    // }
 
-    const tunnel = await db.query.Tunnels.findFirst({
-      where: eq(Tunnels.id, id),
-      // where: and(eq(Tunnels.id, id), eq(Tunnels.orgId, orgId)),
-      orderBy: [desc(Tunnels.createdAt)],
-    });
+    const tunnel = await api.tunnels.byId.query({ id });
 
     if (tunnel) {
       set((state) => ({
@@ -79,9 +69,9 @@ const store = createStore<TunnelStore>()((set, get) => ({
     return null;
   },
   fetchTunnels: async () => {
-    const tunnels = await db.query.Tunnels.findMany({
-      orderBy: [desc(Tunnels.createdAt)],
-    });
+    const { api } = useApiStore.getState();
+
+    const tunnels = await api.tunnels.all.query();
 
     set((state) => {
       const selectedTunnelId =
@@ -148,12 +138,11 @@ const store = createStore<TunnelStore>()((set, get) => ({
       throw new Error('User must be authenticated to create a tunnel');
     }
 
-    await db.insert(Tunnels).values({
+    const { api } = useApiStore.getState();
+
+    await api.tunnels.create.mutate({
       clientId: clientId || 'default',
       port,
-      userId: user.id,
-      orgId: orgId ?? 'FIXME',
-      requestCount: 0,
       clientCount: 0,
       localConnectionStatus: 'disconnected',
       status: 'inactive',
@@ -170,14 +159,6 @@ const store = createStore<TunnelStore>()((set, get) => ({
       },
     });
 
-    await get().fetchTunnels();
-  },
-  deleteTunnel: async (id: string) => {
-    await db.delete(Tunnels).where(eq(Tunnels.id, id));
-    await get().fetchTunnels();
-  },
-  updateTunnel: async (id: string, data: Partial<TunnelType>) => {
-    await db.update(Tunnels).set(data).where(eq(Tunnels.id, id));
     await get().fetchTunnels();
   },
 }));

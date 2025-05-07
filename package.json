@@ -9,12 +9,13 @@
     "@commitlint/cli": "19.8.0",
     "@testing-library/react": "16.3.0",
     "@turbo/gen": "2.5.2",
-    "@types/bun": "1.2.10",
+    "@types/bun": "1.2.11",
     "@unhook/commitlint-config": "workspace:*",
-    "bun": "1.2.10",
-    "checkly": "5.2.0",
-    "lefthook": "1.11.11",
-    "mintlify": "4.0.509",
+    "bun": "1.2.11",
+    "checkly": "5.3.1",
+    "knip": "5.52.0",
+    "lefthook": "1.11.12",
+    "mintlify": "4.0.515",
     "turbo": "2.5.2",
     "typescript": "5.8.3",
     "vitest": "3.1.2"
@@ -32,7 +33,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "bun with-env turbo run build",
+    "build": "turbo run build",
     "bump-versions": "changeset version && bun install",
     "clean": "git clean -xdf node_modules",
     "clean:ws": "turbo run clean",
@@ -41,7 +42,7 @@
     "db:push": "turbo -F @unhook/db push",
     "db:seed": "turbo -F @unhook/db seed",
     "db:studio": "turbo -F @unhook/db studio",
-    "dev": "turbo watch dev",
+    "dev": "turbo watch dev --concurrency 20",
     "dev:next": "turbo watch dev -F @unhook/web-app...",
     "docs": "cd docs && mintlify dev",
     "format": "biome check",
@@ -52,10 +53,10 @@
     "postinstall.todo": "bun lint:ws",
     "prepare.todo": "npx lefthook install",
     "release.todo": "bun build && changeset publish",
-    "test": "bun with-env bun test",
+    "test": "bun test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
-    "with-env": "infisical run -- "
+    "with-env": "infisical run --"
   },
   "workspaces": ["packages/*", "apps/*", "tooling/*"]
 }

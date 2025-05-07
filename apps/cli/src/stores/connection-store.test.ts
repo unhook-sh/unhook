@@ -148,8 +148,6 @@ describe('useConnectionStore', () => {
       setIsLoading: vi.fn(),
       fetchTunnels: vi.fn(),
       createTunnel: vi.fn(),
-      deleteTunnel: vi.fn(),
-      updateTunnel: vi.fn(),
     });
 
     vi.mocked(fetch).mockResolvedValue({
@@ -419,8 +417,6 @@ describe('useConnectionStore', () => {
         setIsLoading: vi.fn(),
         fetchTunnels: vi.fn(),
         createTunnel: vi.fn(),
-        deleteTunnel: vi.fn(),
-        updateTunnel: vi.fn(),
       });
 
       const { connect } = useConnectionStore.getState();

@@ -2,7 +2,11 @@ import { kv } from '@vercel/kv';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { Connections } from '@unhook/db/schema';
+import {
+  Connections,
+  CreateConnectionTypeSchema,
+  UpdateConnectionTypeSchema,
+} from '@unhook/db/schema';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
@@ -68,6 +72,38 @@ export const connectionsRouter = createTRPCRouter({
         .orderBy(desc(Connections.connectedAt));
 
       return connections;
+    }),
+
+  create: protectedProcedure
+    .input(CreateConnectionTypeSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [connection] = await ctx.db
+        .insert(Connections)
+        .values({
+          ...input,
+          orgId: ctx.auth.orgId,
+          userId: ctx.auth.userId,
+        })
+        .returning();
+
+      return connection;
+    }),
+
+  update: protectedProcedure
+    .input(UpdateConnectionTypeSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      if (!input.id) throw new Error('Connection ID is required');
+
+      const [connection] = await ctx.db
+        .update(Connections)
+        .set(input)
+        .where(eq(Connections.id, input.id))
+        .returning();
+
+      return connection;
     }),
 
   delete: protectedProcedure

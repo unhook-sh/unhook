@@ -1,5 +1,6 @@
 import { authRouter } from './router/auth';
 import { connectionsRouter } from './router/connections';
+import { eventsRouter } from './router/events';
 import { requestsRouter } from './router/requests';
 import { tunnelsRouter } from './router/tunnels';
 import { userRouter } from './router/user';
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   tunnels: tunnelsRouter,
   requests: requestsRouter,
   connections: connectionsRouter,
+  events: eventsRouter,
 });
 
 // export type definition of API

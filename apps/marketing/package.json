@@ -53,11 +53,10 @@
   "scripts": {
     "build": "next build",
     "clean": "git clean -xdf .next .turbo node_modules dist",
-    "dev": "bun with-env next dev --turbo",
+    "dev": "next dev --turbo",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
-    "start": "bun with-env next start",
-    "typecheck": "tsc --noEmit",
-    "with-env": "infisical run --"
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "type": "module",
   "version": "0.1.0"

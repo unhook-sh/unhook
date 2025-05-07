@@ -52,7 +52,7 @@ bun add -g @unhook/cli
 ### 2. Start the Tunnel
 
 ```bash
-unhook --port 3000
+unhook
 ```
 
 This will create a secure tunnel to your local server and provide you with a webhook URL in this format:
@@ -68,10 +68,7 @@ https://unhook.sh/t_123?e=YOUR_ENDPOINT
 For example:
 ```bash
 # Using full parameter names
-https://unhook.sh/t_123?endpoint=api/webhooks/stripe
-
-# Using shorthand
-https://unhook.sh/t_123?e=api/webhooks/stripe
+https://unhook.sh/t_123?from=stripe
 ```
 
 Components of the URL:
@@ -103,13 +100,10 @@ https://unhook.sh/t_123?endpoint=api/webhooks/github
 
 ```bash
 # Start tunnel on port 3000
-unhook --port 3000
+unhook
 
 # Enable debug logging
-unhook --port 3000 --debug
-
-# Specify a custom client ID
-unhook --port 3000 --client-id my-app
+unhook --debug
 ```
 
 ### Configuration File

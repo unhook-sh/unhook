@@ -11,7 +11,7 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 import { createId } from '@unhook/id';
@@ -260,6 +260,60 @@ export const Tunnels = pgTable('tunnels', {
 
 export type TunnelType = typeof Tunnels.$inferSelect;
 
+export const CreateTunnelTypeSchema = createInsertSchema(Tunnels, {
+  clientId: z.string(),
+  port: z.number(),
+  status: z.enum(tunnelStatusEnum.enumValues).default('inactive'),
+  localConnectionStatus: z
+    .enum(localConnectionStatusEnum.enumValues)
+    .default('disconnected'),
+  config: z.object({
+    storage: z.object({
+      storeHeaders: z.boolean(),
+      storeRequestBody: z.boolean(),
+      storeResponseBody: z.boolean(),
+      maxRequestBodySize: z.number(),
+      maxResponseBodySize: z.number(),
+    }),
+    headers: z.object({
+      allowList: z.array(z.string()).optional(),
+      blockList: z.array(z.string()).optional(),
+      sensitiveHeaders: z.array(z.string()).optional(),
+    }),
+    requests: z.object({
+      allowedMethods: z.array(z.string()).optional(),
+      allowedFrom: z.array(z.string()).optional(),
+      blockedFrom: z.array(z.string()).optional(),
+      maxRequestsPerMinute: z.number().optional(),
+      maxRetries: z.number().optional(),
+    }),
+  }),
+}).omit({
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  orgId: true,
+});
+
+export const UpdateTunnelTypeSchema = createInsertSchema(Tunnels, {
+  status: z.enum(tunnelStatusEnum.enumValues).default('inactive'),
+  localConnectionStatus: z
+    .enum(localConnectionStatusEnum.enumValues)
+    .default('disconnected'),
+  localConnectionPid: z.number().optional(),
+  localConnectionProcessName: z.string().optional(),
+  lastLocalConnectionAt: z.date().optional(),
+  lastLocalDisconnectionAt: z.date().optional(),
+  lastConnectionAt: z.date().optional(),
+  lastRequestAt: z.date().optional(),
+  requestCount: z.number().default(0),
+}).omit({
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  orgId: true,
+});
+
 export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
   user: one(Users, {
     fields: [Tunnels.userId],
@@ -273,22 +327,26 @@ export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
   connections: many(Connections),
 }));
 
-export interface RequestPayload {
-  id: string;
-  method: string;
-  sourceUrl: string;
-  headers: Record<string, string>;
-  size: number;
-  body?: string;
-  contentType: string;
-  clientIp: string;
-}
+export const RequestPayloadSchema = z.object({
+  id: z.string(),
+  method: z.string(),
+  sourceUrl: z.string(),
+  headers: z.record(z.string()),
+  size: z.number(),
+  body: z.string().optional(),
+  contentType: z.string(),
+  clientIp: z.string(),
+});
 
-export interface ResponsePayload {
-  status: number;
-  headers: Record<string, string>;
-  body?: string;
-}
+export type RequestPayload = z.infer<typeof RequestPayloadSchema>;
+
+export const ResponsePayloadSchema = z.object({
+  status: z.number(),
+  headers: z.record(z.string()),
+  body: z.string().optional(),
+});
+
+export type ResponsePayload = z.infer<typeof ResponsePayloadSchema>;
 
 export const Events = pgTable(
   'events',
@@ -359,6 +417,35 @@ export type EventType = typeof Events.$inferSelect;
 export type EventTypeWithRequest = EventType & {
   requests: RequestType[];
 };
+
+export const CreateEventTypeSchema = createInsertSchema(Events, {
+  apiKey: z.string().optional(),
+  failedReason: z.string().optional(),
+  from: z.string().default('*'),
+  maxRetries: z.number().default(3),
+  originRequest: RequestPayloadSchema,
+  retryCount: z.number().default(0),
+  status: z.enum(eventStatusEnum.enumValues).default('pending'),
+  timestamp: z.date(),
+  tunnelId: z.string(),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  orgId: true,
+});
+
+export const UpdateEventTypeSchema = createUpdateSchema(Events, {
+  status: z.enum(eventStatusEnum.enumValues).default('pending'),
+  retryCount: z.number().default(0),
+  failedReason: z.string().optional(),
+}).omit({
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  orgId: true,
+});
 
 export const EventsRelations = relations(Events, ({ one, many }) => ({
   tunnel: one(Tunnels, {
@@ -458,6 +545,32 @@ export const Requests = pgTable(
   ],
 );
 
+export type RequestType = typeof Requests.$inferSelect;
+
+export const CreateRequestTypeSchema = createInsertSchema(Requests, {
+  apiKey: z.string().optional(),
+  connectionId: z.string().optional(),
+  eventId: z.string().optional(),
+  failedReason: z.string().optional(),
+  from: z.string().default('*'),
+  request: RequestPayloadSchema,
+  response: ResponsePayloadSchema.optional(),
+  responseTimeMs: z.number().default(0),
+  status: z.enum(requestStatusEnum.enumValues).default('pending'),
+  timestamp: z.date(),
+  to: z.object({
+    name: z.string(),
+    url: z.string(),
+  }),
+  tunnelId: z.string(),
+}).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+  userId: true,
+  orgId: true,
+});
+
 export const RequestsRelations = relations(Requests, ({ one }) => ({
   tunnel: one(Tunnels, {
     fields: [Requests.tunnelId],
@@ -480,8 +593,6 @@ export const RequestsRelations = relations(Requests, ({ one }) => ({
     references: [Events.id],
   }),
 }));
-
-export type RequestType = typeof Requests.$inferSelect;
 
 export const Connections = pgTable(
   'connections',
@@ -516,6 +627,16 @@ export const Connections = pgTable(
     })
       .notNull()
       .defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).$onUpdateFn(() => new Date()),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
     userId: varchar('userId')
       .references(() => Users.id, {
         onDelete: 'cascade',
@@ -540,6 +661,45 @@ export const Connections = pgTable(
 );
 
 export type ConnectionType = typeof Connections.$inferSelect;
+
+export const CreateConnectionTypeSchema = createInsertSchema(Connections, {
+  tunnelId: z.string(),
+  ipAddress: z.string(),
+  clientId: z.string(),
+  clientVersion: z.string().optional(),
+  clientOs: z.string().optional(),
+  clientHostname: z.string().optional(),
+  connectedAt: z.date(),
+  disconnectedAt: z.date().optional(),
+  lastPingAt: z.date(),
+  userId: z.string(),
+  orgId: z.string(),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  orgId: true,
+});
+
+export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
+  tunnelId: z.string(),
+  ipAddress: z.string(),
+  clientId: z.string(),
+  clientVersion: z.string().optional(),
+  clientOs: z.string().optional(),
+  clientHostname: z.string().optional(),
+  connectedAt: z.date(),
+  disconnectedAt: z.date().optional(),
+  lastPingAt: z.date(),
+  userId: z.string(),
+  orgId: z.string(),
+}).omit({
+  createdAt: true,
+  updatedAt: true,
+  userId: true,
+  orgId: true,
+});
 
 export const ConnectionsRelations = relations(Connections, ({ one, many }) => ({
   tunnel: one(Tunnels, {

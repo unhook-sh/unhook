@@ -30,6 +30,17 @@ import { z } from 'zod';
 const formSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
   port: z.number().min(1, 'Port is required'),
+  config: z.object({
+    storage: z.object({
+      storeHeaders: z.boolean(),
+      storeRequestBody: z.boolean(),
+      storeResponseBody: z.boolean(),
+      maxRequestBodySize: z.number(),
+      maxResponseBodySize: z.number(),
+    }),
+    headers: z.object({}),
+    requests: z.object({}),
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -45,6 +56,17 @@ export function CreateTunnelDialog({ children }: CreateTunnelDialogProps) {
     defaultValues: {
       clientId: '',
       port: 3000,
+      config: {
+        storage: {
+          storeHeaders: true,
+          storeRequestBody: true,
+          storeResponseBody: true,
+          maxRequestBodySize: 1024 * 1024,
+          maxResponseBodySize: 1024 * 1024,
+        },
+        headers: {},
+        requests: {},
+      },
     },
     resolver: zodResolver(formSchema),
   });

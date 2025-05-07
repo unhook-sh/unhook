@@ -78,6 +78,7 @@ const authenticatedRoutes: AppRoute[] = [
     component: CreateMockEventLayout,
     label: 'Mock Event',
     hotkey: 'm',
+    showInMenu: false,
   },
   {
     path: '/logout',

@@ -1,13 +1,10 @@
 import net from 'node:net';
 import { hostname, platform, release } from 'node:os';
-import { db } from '@unhook/db/client';
-import { Connections } from '@unhook/db/schema';
-import { Tunnels } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
-import { eq } from 'drizzle-orm';
 import { createStore } from 'zustand';
 import { capture } from '../lib/posthog';
+import { useApiStore } from './api-store';
 import { useAuthStore } from './auth-store';
 import { useCliStore } from './cli-store';
 import { useConfigStore } from './config-store';
@@ -40,11 +37,12 @@ interface ConnectionActions {
   reset: () => void;
 }
 
-type ConnectionStore = ConnectionState &
-  ConnectionActions & {
-    isAnyConnected: boolean;
-    isAllConnected: boolean;
-  };
+interface ConnectionComputed {
+  isAnyConnected: boolean;
+  isAllConnected: boolean;
+}
+
+type ConnectionStore = ConnectionState & ConnectionActions & ConnectionComputed;
 
 const defaultRuleState: RuleConnectionState = {
   isConnected: false,
@@ -66,10 +64,10 @@ const createConnectionStore = () => {
   let isDestroyedRef = false;
   let currentFetchAbortController: AbortController | null = null;
 
-  return createStore<ConnectionStore>()((set, get) => ({
+  return createStore<ConnectionStore>((set, get) => ({
     ...defaultConnectionState,
 
-    // Calculated properties
+    // Computed properties
     get isAnyConnected() {
       const ruleStates = get().ruleStates;
       return Object.values(ruleStates).some((state) => state.isConnected);
@@ -136,22 +134,27 @@ const createConnectionStore = () => {
           [ruleId]: updatedRuleState,
         }).some((state) => state.isConnected);
 
-        await db
-          .update(Tunnels)
-          .set({
+        const { api } = useApiStore.getState();
+        const tunnel = await api.tunnels.byId.query({ id: selectedTunnelId });
+        if (tunnel) {
+          await api.tunnels.update.mutate({
+            id: selectedTunnelId,
+            clientId: tunnel.clientId,
+            port: tunnel.port,
             localConnectionStatus: isAnyConnected
               ? 'connected'
               : 'disconnected',
-            localConnectionPid: updatedRuleState.pid ?? null,
-            localConnectionProcessName: updatedRuleState.processName ?? null,
+            localConnectionPid: updatedRuleState.pid ?? undefined,
+            localConnectionProcessName:
+              updatedRuleState.processName ?? undefined,
             lastLocalConnectionAt: updatedRuleState.isConnected
               ? now
               : undefined,
             lastLocalDisconnectionAt: !updatedRuleState.isConnected
               ? now
               : undefined,
-          })
-          .where(eq(Tunnels.id, selectedTunnelId));
+          });
+        }
       }
     },
 
@@ -160,6 +163,7 @@ const createConnectionStore = () => {
 
       const { forward, to } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
+      const { api } = useApiStore.getState();
 
       // If no forward rules have ping enabled, treat as disabled
       const pingEnabled = to.some((rule) => rule.ping !== false);
@@ -212,27 +216,22 @@ const createConnectionStore = () => {
       let dbConnectionId: string | null = null;
       try {
         log('Attempting to create a database connection record');
-        const result = await db
-          .insert(Connections)
-          .values({
-            tunnelId: selectedTunnelId,
-            ipAddress: 'unknown',
-            clientId: clientId ?? '',
-            clientVersion: version,
-            clientOs: `${platform()} ${release()}`,
-            clientHostname: hostname(),
-            userId: user.id,
-            orgId,
-            connectedAt: new Date(),
-            lastPingAt: new Date(),
-          })
-          .returning();
+        const result = await api.connections.create.mutate({
+          tunnelId: selectedTunnelId,
+          ipAddress: 'unknown',
+          clientId: clientId ?? '',
+          clientVersion: version,
+          clientOs: `${platform()} ${release()}`,
+          clientHostname: hostname(),
+          connectedAt: new Date(),
+          lastPingAt: new Date(),
+        });
 
-        if (!result[0]?.id) {
+        if (!result?.id) {
           throw new Error('Failed to create connection record in DB');
         }
-        log('Database connection record created with ID:', result[0].id);
-        dbConnectionId = result[0].id;
+        log('Database connection record created with ID:', result.id);
+        dbConnectionId = result.id;
         set({ connectionId: dbConnectionId });
       } catch (dbError) {
         log('Error creating connection record:', dbError);
@@ -287,11 +286,8 @@ const createConnectionStore = () => {
               }
 
               socketRef.once('connect', async () => {
-                // const processInfo = await getProcessIdForPort(port);
                 await get().setRuleConnectionState(ruleId, {
                   isConnected: true,
-                  // pid: processInfo?.pid ?? null,
-                  // processName: processInfo?.name ?? null,
                 });
                 resolve();
                 if (socketRef) socketRef.destroy();
@@ -359,6 +355,7 @@ const createConnectionStore = () => {
       currentFetchAbortController?.abort();
 
       const currentState = get();
+      const { api } = useApiStore.getState();
 
       capture({
         event: 'connection_disconnect',
@@ -386,15 +383,22 @@ const createConnectionStore = () => {
       const connectionId = currentState.connectionId;
       if (connectionId) {
         try {
-          await db
-            .update(Connections)
-            .set({ disconnectedAt: new Date() })
-            .where(eq(Connections.id, connectionId));
+          const connection = await api.connections.byId.query({
+            id: connectionId,
+          });
+          if (connection) {
+            await api.connections.update.mutate({
+              id: connectionId,
+              clientId: connection.clientId,
+              tunnelId: connection.tunnelId,
+              ipAddress: connection.ipAddress,
+              connectedAt: connection.connectedAt,
+              lastPingAt: connection.lastPingAt,
+              disconnectedAt: new Date(),
+            });
+          }
         } catch (error) {
-          log(
-            `Failed to update connection ${connectionId} status in DB on disconnect:`,
-            error,
-          );
+          log('Failed to update connection status in DB on disconnect:', error);
         }
       }
 

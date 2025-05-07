@@ -1,7 +1,5 @@
 import { inspect } from 'node:util';
 import type { Tables } from '@unhook/db';
-import { db } from '@unhook/db/client';
-import { Events, Requests, Tunnels } from '@unhook/db/schema';
 import type {
   EventType,
   EventTypeWithRequest,
@@ -11,10 +9,10 @@ import type {
 import { debug } from '@unhook/logger';
 import type { TunnelForward, TunnelTo } from '@unhook/tunnel';
 import { createSelectors } from '@unhook/zustand';
-import { count, desc, eq, sql } from 'drizzle-orm';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
 import { capture } from '../lib/posthog';
+import { useApiStore } from './api-store';
 import { useAuthStore } from './auth-store';
 import { useConfigStore } from './config-store';
 import { useConnectionStore } from './connection-store';
@@ -108,89 +106,6 @@ function resolveDestination({
   };
 }
 
-// DB update helpers
-async function markRequestCompleted({
-  requestId,
-  response,
-  responseTimeMs,
-  connectionId,
-}: {
-  requestId: string;
-  response: { status: number; headers: Record<string, string>; body: string };
-  responseTimeMs: number;
-  connectionId?: string | null;
-}) {
-  await db
-    .update(Requests)
-    .set({
-      status: 'completed',
-      response,
-      responseTimeMs,
-      completedAt: new Date(),
-      connectionId: connectionId ?? undefined,
-    })
-    .where(eq(Requests.id, requestId));
-}
-
-async function markRequestFailed({
-  requestId,
-  failedReason,
-  connectionId,
-}: {
-  requestId: string;
-  failedReason: string;
-  connectionId?: string | null;
-}) {
-  await db
-    .update(Requests)
-    .set({
-      status: 'failed',
-      failedReason,
-      completedAt: new Date(),
-      connectionId: connectionId ?? undefined,
-    })
-    .where(eq(Requests.id, requestId));
-}
-
-async function updateEventStatusAndRetry({
-  eventId,
-  status,
-  retryCount,
-  failedReason,
-}: {
-  eventId: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  retryCount?: number;
-  failedReason?: string;
-}) {
-  await db
-    .update(Events)
-    .set({
-      status,
-      retryCount,
-      failedReason,
-      updatedAt: new Date(),
-    })
-    .where(eq(Events.id, eventId));
-}
-
-async function updateTunnelStats({
-  tunnelId,
-  updateLastRequest,
-}: {
-  tunnelId?: string;
-  updateLastRequest?: boolean;
-}) {
-  if (typeof tunnelId !== 'string') return;
-  await db
-    .update(Tunnels)
-    .set({
-      ...(updateLastRequest ? { lastRequestAt: new Date() } : {}),
-      requestCount: sql`${Tunnels.requestCount} + 1`,
-    })
-    .where(eq(Tunnels.clientId, tunnelId));
-}
-
 // Helper to create requests for all destinations in 'to' for a given event
 async function createRequestsForEventToAllDestinations({
   event,
@@ -208,6 +123,7 @@ async function createRequestsForEventToAllDestinations({
   pingEnabledFn?: (destination: TunnelTo) => boolean;
 }) {
   const { to } = useConfigStore.getState();
+  const { api } = useApiStore.getState();
   const originRequest = event.originRequest;
 
   for (const destination of to) {
@@ -221,7 +137,7 @@ async function createRequestsForEventToAllDestinations({
         eventId: event.id,
         tunnelId: event.tunnelId,
         method: originRequest.method,
-        connectionId,
+        connectionId: connectionId ?? undefined,
         pingEnabled: pingEnabledFn
           ? pingEnabledFn(destination)
           : !!destination.ping,
@@ -231,29 +147,30 @@ async function createRequestsForEventToAllDestinations({
         destination: urlString,
       },
     });
-    await db.insert(Requests).values({
+
+    await api.events.create.mutate({
       tunnelId: event.tunnelId,
       eventId: event.id,
-      apiKey: event.apiKey,
-      connectionId,
+      apiKey: event.apiKey ?? undefined,
+      connectionId: connectionId ?? undefined,
       request: originRequest,
       from: event.from,
       to: {
         name: destination.name,
         url: urlString,
       },
-      status: 'pending',
       timestamp:
         typeof event.timestamp === 'string'
           ? new Date(event.timestamp)
           : event.timestamp,
-      userId,
-      orgId,
+      status: 'pending',
+      responseTimeMs: 0,
     });
+
     // Update tunnel's requestCount
     if (typeof event.tunnelId === 'string') {
-      await updateTunnelStats({
-        tunnelId: event.tunnelId === null ? undefined : event.tunnelId,
+      await api.tunnels.updateStats.mutate({
+        tunnelId: event.tunnelId,
       });
     }
     log(
@@ -292,21 +209,14 @@ const store = createStore<EventStore>()((set, get) => ({
   }: { limit?: number; offset?: number } = {}) => {
     log('Fetching events from database', { limit, offset });
     const { tunnelId } = useConfigStore.getState();
+    const { api } = useApiStore.getState();
     const currentState = get();
 
     try {
       // Fetch requests with their associated events
       const [totalEventCount, events] = await Promise.all([
-        db.select({ count: count() }).from(Events),
-        db.query.Events.findMany({
-          orderBy: [desc(Events.timestamp)],
-          where: eq(Events.tunnelId, tunnelId),
-          with: {
-            requests: {
-              orderBy: [desc(Requests.createdAt)],
-            },
-          },
-        }),
+        api.events.count.query({ tunnelId }),
+        api.events.byTunnelId.query({ tunnelId }),
       ]);
 
       log(`Fetched ${events.length} events`);
@@ -319,7 +229,7 @@ const store = createStore<EventStore>()((set, get) => ({
             ? (events[0]?.id ?? null)
             : currentState.selectedEventId,
         isLoading: false,
-        totalCount: Number(totalEventCount[0]?.count ?? 0),
+        totalCount: Number(totalEventCount),
       });
     } catch (error) {
       log('Error fetching events:', error);
@@ -329,7 +239,7 @@ const store = createStore<EventStore>()((set, get) => ({
   handlePendingRequest: async (webhookRequest: Tables<'requests'>) => {
     log(`Handling pending event: ${webhookRequest.id}`);
     const { forward, to } = useConfigStore.getState();
-    // const { connectionId } = useConnectionStore.getState();
+    const { api } = useApiStore.getState();
 
     // Use helper to resolve rule and URL
     const destination = resolveDestination({
@@ -407,7 +317,7 @@ const store = createStore<EventStore>()((set, get) => ({
           },
         });
 
-        await markRequestCompleted({
+        await api.events.markCompleted.mutate({
           requestId: webhookRequest.id,
           response: {
             status: response.statusCode,
@@ -427,7 +337,7 @@ const store = createStore<EventStore>()((set, get) => ({
         // If this request is part of an event, update the event status
         if (typeof webhookRequest.eventId === 'string') {
           log(`Updating associated event: ${webhookRequest.eventId}`);
-          await updateEventStatusAndRetry({
+          await api.events.updateEventStatus.mutate({
             eventId: webhookRequest.eventId,
             status: 'completed',
           });
@@ -436,11 +346,8 @@ const store = createStore<EventStore>()((set, get) => ({
         // Update tunnel's lastRequestAt
         if (typeof webhookRequest.tunnelId === 'string') {
           log(`Updating tunnel stats: ${webhookRequest.tunnelId}`);
-          await updateTunnelStats({
-            tunnelId:
-              webhookRequest.tunnelId === null
-                ? undefined
-                : webhookRequest.tunnelId,
+          await api.tunnels.updateStats.mutate({
+            tunnelId: webhookRequest.tunnelId,
             updateLastRequest: true,
           });
         }
@@ -463,7 +370,7 @@ const store = createStore<EventStore>()((set, get) => ({
           },
         });
 
-        await markRequestFailed({
+        await api.events.markFailed.mutate({
           requestId: webhookRequest.id,
           failedReason,
         });
@@ -473,8 +380,8 @@ const store = createStore<EventStore>()((set, get) => ({
         // If this request is part of an event, check if we should retry or mark as failed
         if (typeof webhookRequest.eventId === 'string') {
           log(`Checking event retry status: ${webhookRequest.eventId}`);
-          const event = await db.query.Events.findFirst({
-            where: eq(Events.id, webhookRequest.eventId),
+          const event = await api.events.byId.query({
+            id: webhookRequest.eventId,
           });
 
           if (event && typeof event.id === 'string') {
@@ -483,19 +390,17 @@ const store = createStore<EventStore>()((set, get) => ({
                 `Retrying event: attempt ${event.retryCount + 1}/${event.maxRetries}`,
               );
               // Update event for retry
-              await updateEventStatusAndRetry({
+              await api.events.updateEventStatus.mutate({
                 eventId: event.id,
                 status: 'processing',
                 retryCount: event.retryCount + 1,
               });
 
               // Create a new retry request
-              await db.insert(Requests).values({
+              await api.events.create.mutate({
                 tunnelId: webhookRequest.tunnelId,
                 eventId: event.id,
-                apiKey: webhookRequest.apiKey,
-                userId: webhookRequest.userId,
-                orgId: webhookRequest.orgId,
+                apiKey: webhookRequest.apiKey ?? undefined,
                 from: event.from,
                 to: {
                   name: destination.to,
@@ -504,12 +409,13 @@ const store = createStore<EventStore>()((set, get) => ({
                 request: event.originRequest,
                 status: 'pending',
                 timestamp: new Date(),
+                responseTimeMs: 0,
               });
               log('Created new retry request for event');
             } else {
               log('Event failed: max retries reached');
               // Mark event as failed if max retries reached
-              await updateEventStatusAndRetry({
+              await api.events.updateEventStatus.mutate({
                 eventId: event.id,
                 status: 'failed',
                 failedReason: `Max retries (${event.maxRetries}) reached. Last error: ${failedReason}`,
@@ -527,7 +433,7 @@ const store = createStore<EventStore>()((set, get) => ({
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
     const { to } = useConfigStore.getState();
-
+    const { api } = useApiStore.getState();
     if (!user?.id || !orgId) {
       log('Authentication error: missing user or org ID');
       throw new Error('User or org not authenticated');
@@ -553,7 +459,7 @@ const store = createStore<EventStore>()((set, get) => ({
       log(`Processing event for replay: ${event.id}`);
       log(`Updating event retry count: ${event.retryCount + 1}`);
       // Update event status and retry count
-      await updateEventStatusAndRetry({
+      await api.events.updateEventStatus.mutate({
         eventId: event.id,
         status: 'processing',
         retryCount: event.retryCount + 1,

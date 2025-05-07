@@ -1,18 +1,18 @@
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { Requests } from '@unhook/db/schema';
+import { CreateRequestTypeSchema, Requests } from '@unhook/db/schema';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const requestsRouter = createTRPCRouter({
   all: protectedProcedure.query(async ({ ctx }) => {
-    // if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+    if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
     const requests = await ctx.db
       .select()
       .from(Requests)
-      // .where(eq(Requests.orgId, ctx.auth.orgId))
+      .where(eq(Requests.orgId, ctx.auth.orgId))
       .orderBy(desc(Requests.createdAt));
 
     return requests;
@@ -53,6 +53,23 @@ export const requestsRouter = createTRPCRouter({
         .orderBy(desc(Requests.createdAt));
 
       return requests;
+    }),
+
+  create: protectedProcedure
+    .input(CreateRequestTypeSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [request] = await ctx.db
+        .insert(Requests)
+        .values({
+          ...input,
+          orgId: ctx.auth.orgId,
+          userId: ctx.auth.userId,
+        })
+        .returning();
+
+      return request;
     }),
 
   delete: protectedProcedure

@@ -1,5 +1,4 @@
 import type { RequestType } from '@unhook/db/schema';
-import {} from 'date-fns';
 import figureSet from 'figures';
 import { Text } from 'ink';
 import { Spinner } from '~/components/spinner';

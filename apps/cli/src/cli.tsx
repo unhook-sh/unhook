@@ -12,7 +12,7 @@ defaultLogger.addDestination(
   }),
 );
 
-import { loadConfig } from '@unhook/tunnel';
+import { loadConfig } from '@unhook/tunnel/config';
 import { render } from 'ink';
 import { Layout } from './app/layout';
 import { parseArgs } from './lib/cli/args';

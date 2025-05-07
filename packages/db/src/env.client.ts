@@ -17,14 +17,8 @@ export const env = createEnv({
   runtimeEnv: {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NODE_ENV: process.env.NODE_ENV,
   },
 
-  shared: {
-    NODE_ENV: z
-      .enum(['development', 'production', 'test'])
-      .default('development'),
-  },
   skipValidation:
     !!process.env.CI || process.env.npm_lifecycle_event === 'lint',
 });

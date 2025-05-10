@@ -83,9 +83,9 @@ export function FirstBentoAnimation() {
                 transition={{ duration: 0.3 }}
                 className="rounded-lg bg-accent/60 border border-border p-3 mt-2"
               >
-                <div className="grid grid-cols-6 gap-1 items-center font-mono text-xs">
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-1 items-center font-mono text-xs">
                   <div
-                    className={`flex items-center gap-1 col-span-2 ${event.expires.color}`}
+                    className={`items-center gap-1 col-span-2 hidden md:flex ${event.expires.color}`}
                   >
                     {event.expires.icon}
                     <span>{event.expires.label}</span>

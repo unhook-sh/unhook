@@ -673,12 +673,6 @@ export const siteConfig = {
       },
       {
         id: 5,
-        question: 'Is there a free trial available?',
-        answer:
-          'Yes, we offer a 14-day free trial that gives you full access to all features. No credit card is required to start your trial, and you can upgrade or cancel at any time.',
-      },
-      {
-        id: 6,
         question: 'How does Unhook save me time?',
         answer:
           'Unhook automates repetitive tasks, streamlines workflows, and provides quick solutions to common challenges. This automation and efficiency can save hours of manual work, allowing you to focus on more strategic activities.',

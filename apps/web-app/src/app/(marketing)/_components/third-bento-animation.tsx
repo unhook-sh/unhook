@@ -44,7 +44,7 @@ export function ThirdBentoAnimation({
   return (
     <div
       className={cn(
-        'relative flex h-[500px] w-full items-center justify-center overflow-hidden p-10',
+        'relative flex h-[500px] w-full items-center justify-center overflow-hidden p-3 md:p-10',
         className,
       )}
       ref={containerRef}

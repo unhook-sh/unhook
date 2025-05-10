@@ -1,10 +1,10 @@
-import type { TunnelConfig } from '@unhook/tunnel/config';
+import type { WebhookConfig } from '@unhook/webhook/config';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
 
-// Default state matching TunnelConfig shape
-const defaultConfigState: TunnelConfig = {
-  tunnelId: '',
+// Default state matching WebhookConfig shape
+const defaultConfigState: WebhookConfig = {
+  webhookId: '',
   to: [],
   forward: [],
   debug: false,
@@ -12,11 +12,11 @@ const defaultConfigState: TunnelConfig = {
 };
 
 interface ConfigActions {
-  setConfig: (config: Partial<TunnelConfig>) => void;
-  getConfig: () => TunnelConfig;
+  setConfig: (config: Partial<WebhookConfig>) => void;
+  getConfig: () => WebhookConfig;
 }
 
-type ConfigStore = TunnelConfig & ConfigActions;
+type ConfigStore = WebhookConfig & ConfigActions;
 
 const store = createStore<ConfigStore>()((set, get) => ({
   ...defaultConfigState,

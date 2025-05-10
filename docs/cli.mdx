@@ -33,14 +33,14 @@ bun add -g @unhook/cli
 
 ## Basic Usage
 
-Start the tunnel to begin receiving webhooks:
+Start the webhook to begin receiving webhooks:
 
 ```bash
 unhook --port 3000
 ```
 
 This will:
-1. Create a secure tunnel to your local server
+1. Create a secure webhook to your local server
 2. Generate a webhook URL in the format: `https://unhook.sh/t_123?e=YOUR_ENDPOINT`
 3. Start forwarding webhooks to your local port
 
@@ -49,10 +49,10 @@ This will:
 ### Core Commands
 
 ```bash
-# Start tunnel with basic configuration
+# Start webhook with basic configuration
 unhook --port 3000
 
-# Start tunnel with custom client ID
+# Start webhook with custom client ID
 unhook --port 3000 --client-id dev-1
 
 # Enable debug logging
@@ -67,7 +67,7 @@ unhook --redirect https://api.example.com
 | Option | Alias | Description | Required | Default |
 |--------|-------|-------------|----------|---------|
 | `--port` | `-p` | Local service port | Yes* | - |
-| `--tunnel-id` | `-t` | Tunnel ID | Yes* | - |
+| `--webhook-id` | `-t` | Webhook ID | Yes* | - |
 | `--client-id` | `-c` | Unique client ID | No | Auto-generated |
 | `--redirect` | `-r` | Redirect URL | Yes* | - |
 | `--debug` | `-d` | Enable debug logs | No | `false` |
@@ -118,14 +118,14 @@ All CLI options can be set via environment variables:
 
 ```bash
 # Core settings
-TUNNEL_PORT=3000
-TUNNEL_API_KEY=your_api_key
-TUNNEL_CLIENT_ID=dev-1
-TUNNEL_DEBUG=true
+WEBHOOK_PORT=3000
+WEBHOOK_API_KEY=your_api_key
+WEBHOOK_CLIENT_ID=dev-1
+WEBHOOK_DEBUG=true
 
 # Advanced settings
-TUNNEL_REDIRECT=https://api.example.com
-TUNNEL_PING=true
+WEBHOOK_REDIRECT=https://api.example.com
+WEBHOOK_PING=true
 ```
 
 ## Exit Codes
@@ -149,7 +149,7 @@ Enable debug logging for detailed information:
 unhook --port 3000 --debug
 
 # Via environment variable
-TUNNEL_DEBUG=true unhook --port 3000
+WEBHOOK_DEBUG=true unhook --port 3000
 ```
 
 Debug output includes:
@@ -163,25 +163,25 @@ Debug output includes:
 ### Basic Development Setup
 
 ```bash
-# Start tunnel on default port
-unhook --port 3000 --tunnel-id your_tunnel_id
+# Start webhook on default port
+unhook --port 3000 --webhook-id your_webhook_id
 ```
 
 ### Team Development
 
 ```bash
 # Developer 1
-unhook --port 3000 --client-id dev1 --tunnel-id team_tunnel_id
+unhook --port 3000 --client-id dev1 --webhook-id team_webhook_id
 
 # Developer 2
-unhook --port 3000 --client-id dev2 --tunnel-id team_tunnel_id
+unhook --port 3000 --client-id dev2 --webhook-id team_webhook_id
 ```
 
 ### Production Redirect
 
 ```bash
 # Redirect to production API
-unhook --redirect https://api.production.com --tunnel-id prod_tunnel_id
+unhook --redirect https://api.production.com --webhook-id prod_webhook_id
 ```
 
 ### Custom Health Checks

@@ -12,7 +12,7 @@ defaultLogger.addDestination(
   }),
 );
 
-import { loadConfig } from '@unhook/tunnel/config';
+import { loadConfig } from '@unhook/webhook/config';
 import { render } from 'ink';
 import { Layout } from './app/layout';
 import { parseArgs } from './lib/cli/args';
@@ -35,7 +35,7 @@ async function main() {
     capture({
       event: 'cli_loaded',
       properties: {
-        tunnelId: config.tunnelId,
+        webhookId: config.webhookId,
         clientId: config.clientId,
         debug: args.debug,
         version: args.version,
@@ -46,7 +46,7 @@ async function main() {
     setupProcessHandlers();
 
     log('Starting CLI', {
-      tunnelId: config.tunnelId,
+      webhookId: config.webhookId,
       clientId: config.clientId,
       debug: args.debug,
       version: args.version,

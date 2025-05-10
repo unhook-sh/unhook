@@ -3,20 +3,20 @@ import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
-  '/api/tunnel(.*)',
+  '/api/webhook(.*)',
   '/api/trpc(.*)',
-  // Match any path that contains t_ for tunnel-specific webhook endpoints
-  '/(.*t_.*)/',
+  // Match any path that contains wh_ for webhook-specific webhook endpoints
+  '/(.*wh_.*)/',
   '/',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
-  // Handle POST requests to root path with any tunnel ID
+  // Handle POST requests to root path with any webhook ID
   if (request.method === 'POST') {
-    const match = request.nextUrl.pathname.match(/^\/t_([^\/]+)$/);
+    const match = request.nextUrl.pathname.match(/^\/wh_([^\/]+)$/);
     if (match) {
-      const tunnelId = match[1];
-      const url = new URL(`/api/tunnel/${tunnelId}`, request.url);
+      const webhookId = match[1];
+      const url = new URL(`/api/webhook/${webhookId}`, request.url);
       url.search = request.nextUrl.search;
       return NextResponse.rewrite(url);
     }

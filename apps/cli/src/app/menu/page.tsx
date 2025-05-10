@@ -33,10 +33,10 @@ export const MenuPage: FC<RouteProps> = () => {
   const dimensions = useDimensions();
   const clientId = useConfigStore.use.clientId?.();
   const version = useCliStore.use.version();
-  const tunnelId = useConfigStore.use.tunnelId();
+  const webhookId = useConfigStore.use.webhookId();
   const debug = useCliStore.use.debug();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${tunnelId}?from=XXX`;
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}?from=XXX`;
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   useInput((input) => {
@@ -73,7 +73,7 @@ export const MenuPage: FC<RouteProps> = () => {
         <Box marginBottom={1} flexDirection="column">
           <Text dimColor>Version: {version}</Text>
           <Text dimColor>Client: {clientId}</Text>
-          <Text dimColor>Tunnel: {tunnelId}</Text>
+          <Text dimColor>Webhook: {webhookId}</Text>
           <Text dimColor>
             Platform: {platform()} {release()}
           </Text>

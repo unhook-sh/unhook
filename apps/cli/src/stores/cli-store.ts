@@ -28,7 +28,7 @@ const store = createStore<CliStore>()((set, get) => ({
   // Individual setters remain simple
   setDebug: (debug) => set((state) => ({ ...state, debug })),
 
-  // Getters for TunnelConfig fields
+  // Getters for WebhookConfig fields
   getDebug: () => get().debug ?? false,
   getVersion: () => get().version,
 

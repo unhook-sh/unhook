@@ -1,1 +1,1 @@
-export * from '@unhook/tunnel/config';
+export * from '@unhook/webhook/config';

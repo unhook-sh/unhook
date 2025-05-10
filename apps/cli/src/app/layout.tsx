@@ -5,14 +5,14 @@ import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import { type FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { ConnectToTunnel } from '~/components/connect-to-tunnel';
+import { ConnectToWebhook } from '~/components/connect-to-webhook';
 import { EventSubscription } from '~/components/event-subscription';
 import { Router } from '~/components/router';
 import { AuthProvider } from '~/context/auth-context';
 import { RouterProvider } from '~/context/router-context';
-import { TunnelProvider } from '~/context/tunnel-context';
+import { WebhookProvider } from '~/context/webhook-context';
 import { env } from '~/env';
-import { SignedIn, TunnelAuthorized } from '~/guards';
+import { SignedIn, WebhookAuthorized } from '~/guards';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {
   PostHogIdentifyUser,
@@ -43,7 +43,7 @@ function AppContent() {
   const dimensions = useDimensions();
   const token = useAuthStore.use.token();
   const isValidating = useAuthStore.use.isValidatingSession();
-  // const result = api.tunnels.all.useQuery();
+  // const result = api.webhooks.all.useQuery();
   // log('result', result.data);
 
   useEffect(() => {
@@ -72,8 +72,8 @@ function AppContent() {
       minHeight={dimensions.height}
     >
       <SignedIn>
-        <TunnelAuthorized>
-          <ConnectToTunnel />
+        <WebhookAuthorized>
+          <ConnectToWebhook />
           {token && (
             <SubscriptionProvider
               token={token}
@@ -82,7 +82,7 @@ function AppContent() {
               <EventSubscription />
             </SubscriptionProvider>
           )}
-        </TunnelAuthorized>
+        </WebhookAuthorized>
       </SignedIn>
       <Router />
     </Box>
@@ -91,7 +91,7 @@ function AppContent() {
 
 export const Layout: FC = () => {
   const telemetry = useConfigStore.use.telemetry?.() ?? true;
-  const tunnelId = useConfigStore.use.tunnelId();
+  const webhookId = useConfigStore.use.webhookId();
 
   return (
     <PostHogOptIn enableTelemetry={telemetry}>
@@ -100,11 +100,11 @@ export const Layout: FC = () => {
           <RouterProvider>
             <PostHogPageView />
             <PostHogIdentifyUser />
-            <TunnelProvider initialTunnelId={tunnelId}>
+            <WebhookProvider initialWebhookId={webhookId}>
               <TRPCReactProvider sourceHeader="cli">
                 <AppContent />
               </TRPCReactProvider>
-            </TunnelProvider>
+            </WebhookProvider>
           </RouterProvider>
         </AuthProvider>
       </ErrorBoundary>

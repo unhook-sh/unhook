@@ -7,7 +7,7 @@ import type {
   RequestType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
-import type { TunnelForward, TunnelTo } from '@unhook/tunnel';
+import type { WebhookForward, WebhookTo } from '@unhook/webhook';
 import { createSelectors } from '@unhook/zustand';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
@@ -86,8 +86,8 @@ function resolveDestination({
   to,
 }: {
   from: string;
-  forward: TunnelForward[];
-  to: TunnelTo[];
+  forward: WebhookForward[];
+  to: WebhookTo[];
 }): { url: string; to: string } {
   const matchingForward = forward.find(
     (rule) => rule.from === '*' || rule.from === from,
@@ -116,7 +116,7 @@ async function createRequestsForEventToAllDestinations({
   event: EventType;
   connectionId?: string | null;
   isEventRetry?: boolean;
-  pingEnabledFn?: (destination: TunnelTo) => boolean;
+  pingEnabledFn?: (destination: WebhookTo) => boolean;
 }) {
   const { to } = useConfigStore.getState();
   const { api } = useApiStore.getState();
@@ -131,7 +131,7 @@ async function createRequestsForEventToAllDestinations({
       event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_forward',
       properties: {
         eventId: event.id,
-        tunnelId: event.tunnelId,
+        webhookId: event.webhookId,
         method: originRequest.method,
         connectionId: connectionId ?? undefined,
         pingEnabled: pingEnabledFn
@@ -145,7 +145,7 @@ async function createRequestsForEventToAllDestinations({
     });
 
     await api.events.create.mutate({
-      tunnelId: event.tunnelId,
+      webhookId: event.webhookId,
       eventId: event.id,
       apiKey: event.apiKey ?? undefined,
       connectionId: connectionId ?? undefined,
@@ -163,10 +163,10 @@ async function createRequestsForEventToAllDestinations({
       responseTimeMs: 0,
     });
 
-    // Update tunnel's requestCount
-    if (typeof event.tunnelId === 'string') {
-      await api.tunnels.updateStats.mutate({
-        tunnelId: event.tunnelId,
+    // Update webhook's requestCount
+    if (typeof event.webhookId === 'string') {
+      await api.webhooks.updateStats.mutate({
+        webhookId: event.webhookId,
       });
     }
     log(
@@ -204,15 +204,15 @@ const store = createStore<EventStore>()((set, get) => ({
     offset = 0,
   }: { limit?: number; offset?: number } = {}) => {
     log('Fetching events from database', { limit, offset });
-    const { tunnelId } = useConfigStore.getState();
+    const { webhookId } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     const currentState = get();
 
     try {
       // Fetch requests with their associated events
       const [totalEventCount, events] = await Promise.all([
-        api.events.count.query({ tunnelId }),
-        api.events.byTunnelId.query({ tunnelId }),
+        api.events.count.query({ webhookId }),
+        api.events.byWebhookId.query({ webhookId }),
       ]);
 
       log(`Fetched ${events.length} events`);
@@ -249,7 +249,7 @@ const store = createStore<EventStore>()((set, get) => ({
       event: 'webhook_request_received',
       properties: {
         requestId: webhookRequest.id,
-        tunnelId: webhookRequest.tunnelId,
+        webhookId: webhookRequest.webhookId,
         eventId: webhookRequest.eventId,
         method: (webhookRequest.request as unknown as RequestType['request'])
           ?.method,
@@ -297,7 +297,7 @@ const store = createStore<EventStore>()((set, get) => ({
           status: response.statusCode,
           responseTimeMs,
           requestId: webhookRequest.id,
-          tunnelId: webhookRequest.tunnelId,
+          webhookId: webhookRequest.webhookId,
           eventId: webhookRequest.eventId,
         });
 
@@ -305,7 +305,7 @@ const store = createStore<EventStore>()((set, get) => ({
           event: 'webhook_request_completed',
           properties: {
             requestId: webhookRequest.id,
-            tunnelId: webhookRequest.tunnelId,
+            webhookId: webhookRequest.webhookId,
             eventId: webhookRequest.eventId,
             method: request.method,
             responseStatus: response.statusCode,
@@ -339,11 +339,11 @@ const store = createStore<EventStore>()((set, get) => ({
           });
         }
 
-        // Update tunnel's lastRequestAt
-        if (typeof webhookRequest.tunnelId === 'string') {
-          log(`Updating tunnel stats: ${webhookRequest.tunnelId}`);
-          await api.tunnels.updateStats.mutate({
-            tunnelId: webhookRequest.tunnelId,
+        // Update webhook's lastRequestAt
+        if (typeof webhookRequest.webhookId === 'string') {
+          log(`Updating webhook stats: ${webhookRequest.webhookId}`);
+          await api.webhooks.updateStats.mutate({
+            webhookId: webhookRequest.webhookId,
             updateLastRequest: true,
           });
         }
@@ -359,7 +359,7 @@ const store = createStore<EventStore>()((set, get) => ({
           event: 'webhook_request_failed',
           properties: {
             requestId: webhookRequest.id,
-            tunnelId: webhookRequest.tunnelId,
+            webhookId: webhookRequest.webhookId,
             eventId: webhookRequest.eventId,
             method: request.method,
             failedReason,
@@ -394,7 +394,7 @@ const store = createStore<EventStore>()((set, get) => ({
 
               // Create a new retry request
               await api.events.create.mutate({
-                tunnelId: webhookRequest.tunnelId,
+                webhookId: webhookRequest.webhookId,
                 eventId: event.id,
                 apiKey: webhookRequest.apiKey ?? undefined,
                 from: event.from,
@@ -515,7 +515,7 @@ const store = createStore<EventStore>()((set, get) => ({
       event: 'webhook_request_replay',
       properties: {
         originalEventId: request.eventId,
-        tunnelId: request.tunnelId,
+        webhookId: request.webhookId,
         eventId: request.eventId,
         method: request.request.method,
         connectionId,

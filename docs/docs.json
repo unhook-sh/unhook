@@ -89,12 +89,12 @@
     "primary": {
       "type": "button",
       "label": "Create Webhook URL",
-      "href": "https://unhook.sh/create-webhook-url"
+      "href": "https://unhook.sh/app/webhooks/create?utm_source=docs"
     }
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/unhook-sh"
+      "github": "https://github.com/unhook-sh/unhook"
     }
   }
 }

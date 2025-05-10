@@ -36,8 +36,8 @@ export const requestsRouter = createTRPCRouter({
       return request[0];
     }),
 
-  byTunnelId: protectedProcedure
-    .input(z.object({ tunnelId: z.string() }))
+  byWebhookId: protectedProcedure
+    .input(z.object({ webhookId: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
@@ -46,7 +46,7 @@ export const requestsRouter = createTRPCRouter({
         .from(Requests)
         .where(
           and(
-            eq(Requests.tunnelId, input.tunnelId),
+            eq(Requests.webhookId, input.webhookId),
             eq(Requests.orgId, ctx.auth.orgId),
           ),
         )

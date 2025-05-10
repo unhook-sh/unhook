@@ -52,12 +52,12 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
   let testEvent: EventType;
   let userId: string;
   let orgId: string;
-  let tunnelId: string;
+  let webhookId: string;
 
   beforeEach(async () => {
     userId = createId({ prefix: 'user' });
     orgId = createId({ prefix: 'org' });
-    tunnelId = createId({ prefix: 't' });
+    webhookId = createId({ prefix: 't' });
 
     // Create test user
     await supabase.from('user').insert([
@@ -76,10 +76,10 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
       },
     ]);
 
-    // Create test tunnel
-    await supabase.from('tunnels').insert([
+    // Create test webhook
+    await supabase.from('webhooks').insert([
       {
-        id: tunnelId,
+        id: webhookId,
         clientId: createId({ prefix: 'client' }),
         port: 3000,
         status: 'active',
@@ -115,7 +115,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
       updatedAt: null,
       userId,
       orgId,
-      tunnelId,
+      webhookId,
     };
 
     // Check if event exists and delete it first
@@ -146,7 +146,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
   afterEach(async () => {
     // Clean up test data in reverse order of creation
     await supabase.from('events').delete().eq('id', testEvent.id);
-    await supabase.from('tunnels').delete().eq('id', tunnelId);
+    await supabase.from('webhooks').delete().eq('id', webhookId);
     await supabase.from('orgs').delete().eq('id', orgId);
     await supabase.from('user').delete().eq('id', userId);
   });
@@ -206,7 +206,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
       updatedAt: null,
       userId,
       orgId,
-      tunnelId,
+      webhookId,
     };
 
     // Check if event exists and delete it first

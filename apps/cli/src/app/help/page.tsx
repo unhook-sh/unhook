@@ -1,12 +1,12 @@
 import { Box, Text } from 'ink';
 import { useCliStore } from '~/stores/cli-store';
-import { useTunnelStore } from '~/stores/tunnel-store';
+import { useWebhookStore } from '~/stores/webhook-store';
 
 export function HelpPage() {
-  const selectedTunnelId = useTunnelStore.use.selectedTunnelId();
+  const selectedWebhookId = useWebhookStore.use.selectedWebhookId();
   const version = useCliStore.use.version();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${selectedTunnelId}`;
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${selectedWebhookId}`;
 
   return (
     <Box flexDirection="column" padding={1}>

@@ -5,7 +5,7 @@ export const SphereMask = ({ reverse = false }: { reverse?: boolean }) => {
     <div
       className={cn(
         // color
-        '[--color:var(--color-one)]',
+        '[--color:var(--secondary)]',
         'pointer-events-none relative -z-2 mx-auto h-[50rem] overflow-hidden',
 
         // sphere mask

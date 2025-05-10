@@ -8,28 +8,28 @@ description: 'Configure Unhook for your development environment'
 Unhook supports multiple configuration file formats. Create any of these files in your project root:
 
 ```plaintext
-.tunnelrc
-.tunnelrc.json
-.tunnelrc.yaml
-.tunnelrc.yml
-.tunnelrc.js
-.tunnelrc.cjs
-tunnel.config.js
-tunnel.config.cjs
-tunnel.config.json
-tunnel.config.yaml
-tunnel.config.yml
+.webhookrc
+.webhookrc.json
+.webhookrc.yaml
+.webhookrc.yml
+.webhookrc.js
+.webhookrc.cjs
+webhook.config.js
+webhook.config.cjs
+webhook.config.json
+webhook.config.yaml
+webhook.config.yml
 ```
 
 ### Configuration Options
 
 ```typescript
-interface TunnelConfig {
+interface WebhookConfig {
   // Port to forward webhooks to (1-65535)
   port?: number;
 
   // Your Unhook API key
-  tunnelId?: string;
+  webhookId?: string;
 
   // Custom client identifier
   clientId?: string;
@@ -50,10 +50,10 @@ interface TunnelConfig {
 <CodeGroup>
 
 ```javascript JavaScript
-// tunnel.config.js
+// webhook.config.js
 module.exports = {
   port: 3000,
-  tunnelId: 'your_tunnel_id',
+  webhookId: 'your_webhook_id',
   clientId: 'dev-machine-1',
   debug: true,
   ping: true
@@ -63,7 +63,7 @@ module.exports = {
 ```json JSON
 {
   "port": 3000,
-  "tunnelId": "your_tunnel_id",
+  "webhookId": "your_webhook_id",
   "clientId": "dev-machine-1",
   "debug": true,
   "ping": true
@@ -72,7 +72,7 @@ module.exports = {
 
 ```yaml YAML
 port: 3000
-tunnelId: your_tunnel_id
+webhookId: your_webhook_id
 clientId: dev-machine-1
 debug: true
 ping: true
@@ -85,12 +85,12 @@ ping: true
 All configuration options can be set via environment variables:
 
 ```bash
-TUNNEL_PORT=3000
-TUNNEL_TUNNEL_ID=your_tunnel_id
-TUNNEL_CLIENT_ID=dev-machine-1
-TUNNEL_DEBUG=true
-TUNNEL_REDIRECT=https://api.example.com
-TUNNEL_PING=true
+WEBHOOK_PORT=3000
+WEBHOOK_WEBHOOK_ID=your_webhook_id
+WEBHOOK_CLIENT_ID=dev-machine-1
+WEBHOOK_DEBUG=true
+WEBHOOK_REDIRECT=https://api.example.com
+WEBHOOK_PING=true
 ```
 
 ## CLI Options
@@ -99,7 +99,7 @@ All configuration options can also be set via command line arguments:
 
 ```bash
 unhook --port 3000 \
-       --tunnel-id your_tunnel_id \
+       --webhook-id your_webhook_id \
        --client-id dev-machine-1 \
        --debug \
        --ping true
@@ -110,7 +110,7 @@ unhook --port 3000 \
 | Option | Alias | Description | Default |
 |--------|-------|-------------|---------|
 | `--port` | `-p` | Local service port | From config |
-| `--tunnel-id` | `-t` | Tunnel ID | From config |
+| `--webhook-id` | `-t` | Webhook ID | From config |
 | `--client-id` | `-c` | Unique client ID | Auto-generated |
 | `--redirect` | `-r` | Redirect URL | From config |
 | `--debug` | `-d` | Enable debug logs | `false` |

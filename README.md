@@ -49,13 +49,13 @@ yarn global add @unhook/cli
 bun add -g @unhook/cli
 ```
 
-### 2. Start the Tunnel
+### 2. Start the Webhook
 
 ```bash
 unhook
 ```
 
-This will create a secure tunnel to your local server and provide you with a webhook URL in this format:
+This will create a secure webhook to your local server and provide you with a webhook URL in this format:
 
 ```
 # Full parameter names
@@ -99,7 +99,7 @@ https://unhook.sh/t_123?endpoint=api/webhooks/github
 ### Basic Usage
 
 ```bash
-# Start tunnel on port 3000
+# Start webhook on port 3000
 unhook
 
 # Enable debug logging
@@ -113,7 +113,7 @@ Create an `unhook.config.js` file in your project root:
 ```javascript
 module.exports = {
   port: 3000,
-  tunnelId: 'your-tunnel-id',
+  webhookId: 'your-webhook-id',
   debug: false,
   // Add other configuration options
 }

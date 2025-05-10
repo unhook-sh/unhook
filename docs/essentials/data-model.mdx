@@ -11,26 +11,26 @@ This document explains the core data entities in Unhook and how they relate to e
 
 ```mermaid
 flowchart TD
-    subgraph Tunnel[Tunnel]
-        T[id: string<br/>clientId: string<br/>tunnelId: string<br/>port: number<br/>status: string]
+    subgraph Webhook[Webhook]
+        T[id: string<br/>clientId: string<br/>webhookId: string<br/>port: number<br/>status: string]
     end
 
     subgraph Event[Event]
-        E[id: string<br/>tunnelId: string<br/>originalRequest: RequestPayload<br/>status: string]
+        E[id: string<br/>webhookId: string<br/>originalRequest: RequestPayload<br/>status: string]
     end
 
     subgraph Request[Request]
-        R[id: string<br/>tunnelId: string<br/>eventId: string<br/>request: RequestPayload<br/>status: string]
+        R[id: string<br/>webhookId: string<br/>eventId: string<br/>request: RequestPayload<br/>status: string]
     end
 
-    Tunnel -->|1:Many| Event
+    Webhook -->|1:Many| Event
     Event -->|1:Many| Request
-    Tunnel -->|1:Many| Request
+    Webhook -->|1:Many| Request
 ```
 
 ## Core Entities
 
-### Tunnel Entity
+### Webhook Entity
 
 The primary entity that manages webhook routing and configuration.
 
@@ -42,8 +42,8 @@ The primary entity that manages webhook routing and configuration.
   Client identifier for routing
 </ParamField>
 
-<ParamField body="tunnelId" type="string" required>
-  Associated tunnel ID
+<ParamField body="webhookId" type="string" required>
+  Associated webhook ID
 </ParamField>
 
 <ParamField body="port" type="number" required>
@@ -51,7 +51,7 @@ The primary entity that manages webhook routing and configuration.
 </ParamField>
 
 <ParamField body="status" type="string" required>
-  Current tunnel status. Can be 'active' or 'inactive'
+  Current webhook status. Can be 'active' or 'inactive'
 </ParamField>
 
 <ParamField body="localConnectionStatus" type="string" required>
@@ -59,7 +59,7 @@ The primary entity that manages webhook routing and configuration.
 </ParamField>
 
 <ParamField body="config" type="object" required>
-  Tunnel configuration object
+  Webhook configuration object
   ```typescript
   {
     storage: {
@@ -101,8 +101,8 @@ Represents a webhook notification received by the system.
   Unique identifier with 'evt' prefix
 </ParamField>
 
-<ParamField body="tunnelId" type="string" required>
-  Associated tunnel ID
+<ParamField body="webhookId" type="string" required>
+  Associated webhook ID
 </ParamField>
 
 <ParamField body="originalRequest" type="object" required>
@@ -137,16 +137,16 @@ Represents an attempt to deliver a webhook to a local development environment.
   Unique identifier with 'req' prefix
 </ParamField>
 
-<ParamField body="tunnelId" type="string" required>
-  Associated tunnel ID
+<ParamField body="webhookId" type="string" required>
+  Associated webhook ID
 </ParamField>
 
 <ParamField body="eventId" type="string" required>
   Associated event ID
 </ParamField>
 
-<ParamField body="tunnelId" type="string" required>
-  Associated tunnel ID
+<ParamField body="webhookId" type="string" required>
+  Associated webhook ID
 </ParamField>
 
 <ParamField body="connectionId" type="string">
@@ -220,12 +220,12 @@ Represents an attempt to deliver a webhook to a local development environment.
 <Steps>
   <Step title="Webhook Reception">
     - System creates an Event with the original request
-    - Event is associated with the target Tunnel
+    - Event is associated with the target Webhook
     - Initial status is set to 'pending'
   </Step>
   <Step title="Processing">
     - System creates a Request for delivery attempt
-    - Request inherits Event and Tunnel properties
+    - Request inherits Event and Webhook properties
     - System attempts to forward to local environment
   </Step>
   <Step title="Completion">

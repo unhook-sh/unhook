@@ -10,13 +10,37 @@ import {
   DropdownMenuTrigger,
 } from '../components/dropdown-menu';
 
-function ThemeToggle() {
-  const { setTheme } = useTheme();
+interface ThemeToggleProps {
+  mode?: 'dropdown' | 'toggle';
+  className?: string;
+}
+
+function ThemeToggle({ mode = 'dropdown', className }: ThemeToggleProps) {
+  const { setTheme, theme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  if (mode === 'toggle') {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={toggleTheme}
+        className={className}
+      >
+        <SunIcon className="dark:-rotate-90 size-5 rotate-0 scale-100 transition-all dark:scale-0" />
+        <MoonIcon className="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className={className}>
           <SunIcon className="dark:-rotate-90 size-5 rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>

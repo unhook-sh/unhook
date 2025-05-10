@@ -1,7 +1,11 @@
 import {
+  SiClerk,
   SiDiscord,
+  SiGithub,
   SiOpenai,
   SiOpenaiHex,
+  SiSlack,
+  SiStripe,
   SiX,
 } from '@icons-pack/react-simple-icons';
 import type { VariantProps } from 'class-variance-authority';
@@ -137,6 +141,18 @@ export type SiIconProps = TwcComponentProps<'svg'> &
   VariantProps<typeof iconVariants> & { withColor?: boolean };
 
 export const Icons = {
+  Clerk: twx(SiClerk).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Stripe: twx(SiStripe).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Slack: twx(SiSlack).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Github: twx(SiGithub).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   LogIn: twx(LogIn).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),

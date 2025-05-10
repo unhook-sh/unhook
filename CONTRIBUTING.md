@@ -21,7 +21,7 @@ unhook/
 │   ├── api/              # API layer
 │   ├── db/               # Database utilities
 │   ├── id/               # ID generation utilities
-│   ├── tunnel/           # Tunnel implementation
+│   ├── webhook/           # Webhook implementation
 │   ├── ui/               # Shared UI components
 │   └── validators/       # Shared validation logic
 ├── tooling/              # Build and development tools

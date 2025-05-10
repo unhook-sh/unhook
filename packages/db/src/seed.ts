@@ -9,8 +9,8 @@ import {
   OrgMembers,
   Orgs,
   Requests,
-  Tunnels,
   Users,
+  Webhooks,
 } from './schema';
 
 // Reset all tables
@@ -18,7 +18,7 @@ import {
 await db.delete(Users);
 await db.delete(Orgs);
 await db.delete(OrgMembers);
-await db.delete(Tunnels);
+await db.delete(Webhooks);
 await db.delete(Requests);
 await db.delete(Connections);
 await db.delete(Events);
@@ -28,7 +28,7 @@ await seed(db, {
   Orgs,
   OrgMembers,
   Users,
-  Tunnels,
+  Webhooks,
   Requests,
   Connections,
   Events,
@@ -64,9 +64,9 @@ await seed(db, {
     },
     count: 1,
   },
-  Tunnels: {
+  Webhooks: {
     columns: {
-      id: funcs.default({ defaultValue: 't_internal' }),
+      id: funcs.default({ defaultValue: 'wh_internal' }),
       clientId: funcs.default({ defaultValue: 'cl_123' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),

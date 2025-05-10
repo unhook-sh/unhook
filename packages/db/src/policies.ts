@@ -124,8 +124,8 @@ const policyConfigs: Record<string, PolicyConfig> = {
       createOrgOwnershipPolicy('ALL'),
     ],
   },
-  tunnels: {
-    tableName: 'tunnels',
+  webhooks: {
+    tableName: 'webhooks',
     policies: [
       createUserOwnershipPolicy('SELECT'),
       createUserOwnershipPolicy('INSERT'),

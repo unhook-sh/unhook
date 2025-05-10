@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Unhook Development Rules
@@ -31,8 +31,8 @@ Website: https://unhook.sh
    - Handle connection management and session tracking.
 
 2. **URL Management:**
-   - Generate and manage webhook URLs with format: `https://unhook.sh/t_123&e=ENDPOINT`
-   - Support both full (`endpoint`) and shorthand (`e`) URL parameters.
+   - Generate and manage webhook URLs with format: `https://unhook.sh/wh_123?from=clerk`
+   - Support both full (`from`)
    - Validate and process incoming webhook requests.
 
 3. **Team Collaboration:**
@@ -52,7 +52,7 @@ Website: https://unhook.sh
    - Display active team members and their connections.
 
 6. **CLI Interface:**
-   - Offer simple command-line interface for starting tunnels.
+   - Offer simple command-line interface for starting webhooks.
    - Support configuration via command line arguments and config files.
    - Provide clear, helpful output and debugging information.
 

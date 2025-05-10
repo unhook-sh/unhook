@@ -1,7 +1,7 @@
-import { defineTunnelConfig } from '@unhook/cli';
+import { defineWebhookConfig } from '@unhook/cli';
 
-const config = defineTunnelConfig({
-  tunnelId: 't_internal',
+const config = defineWebhookConfig({
+  webhookId: 't_internal',
   to: [
     {
       name: 'localClerk',

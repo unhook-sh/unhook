@@ -12,14 +12,14 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const eventsRouter = createTRPCRouter({
   count: protectedProcedure
-    .input(z.object({ tunnelId: z.string() }))
+    .input(z.object({ webhookId: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
       const totalCount = await ctx.db
         .select({ count: count() })
         .from(Events)
-        .where(eq(Events.tunnelId, input.tunnelId));
+        .where(eq(Events.webhookId, input.webhookId));
 
       return totalCount[0]?.count ?? 0;
     }),
@@ -51,14 +51,14 @@ export const eventsRouter = createTRPCRouter({
       return event[0];
     }),
 
-  byTunnelId: protectedProcedure
-    .input(z.object({ tunnelId: z.string() }))
+  byWebhookId: protectedProcedure
+    .input(z.object({ webhookId: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
       const events = await ctx.db.query.Events.findMany({
         where: and(
-          eq(Events.tunnelId, input.tunnelId),
+          eq(Events.webhookId, input.webhookId),
           eq(Events.orgId, ctx.auth.orgId),
         ),
         orderBy: [desc(Events.timestamp)],

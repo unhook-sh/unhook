@@ -45,7 +45,7 @@ export const connectionsRouter = createTRPCRouter({
       if (!firstConnection) return null;
 
       const isConnected = await kv.hexists(
-        'tunnel:clients',
+        'webhook:clients',
         `${firstConnection.clientId}`,
       );
 
@@ -55,8 +55,8 @@ export const connectionsRouter = createTRPCRouter({
       };
     }),
 
-  byTunnelId: protectedProcedure
-    .input(z.object({ tunnelId: z.string() }))
+  byWebhookId: protectedProcedure
+    .input(z.object({ webhookId: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
@@ -65,7 +65,7 @@ export const connectionsRouter = createTRPCRouter({
         .from(Connections)
         .where(
           and(
-            eq(Connections.tunnelId, input.tunnelId),
+            eq(Connections.webhookId, input.webhookId),
             eq(Connections.orgId, ctx.auth.orgId),
           ),
         )

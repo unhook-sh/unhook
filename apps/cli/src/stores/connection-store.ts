@@ -6,7 +6,7 @@ import { createStore } from 'zustand';
 import { capture } from '../lib/posthog';
 import { useAuthStore } from './auth-store';
 import { useConfigStore } from './config-store';
-import { useTunnelStore } from './tunnel-store';
+import { useWebhookStore } from './webhook-store';
 
 const log = debug('unhook:cli:connection-store');
 
@@ -124,20 +124,20 @@ const createConnectionStore = () => {
         isLoading: false,
       });
 
-      // Update tunnel record with connection status
-      const { selectedTunnelId } = useTunnelStore.getState();
-      if (selectedTunnelId) {
+      // Update webhook record with connection status
+      const { selectedWebhookId } = useWebhookStore.getState();
+      if (selectedWebhookId) {
         const _isAnyConnected = Object.values({
           ...currentState.ruleStates,
           [ruleId]: updatedRuleState,
         }).some((state) => state.isConnected);
 
-        // const tunnel = await api.tunnels.byId.query({ id: selectedTunnelId });
-        // if (tunnel) {
-        //   await api.tunnels.update.mutate({
-        //     id: selectedTunnelId,
-        //     clientId: tunnel.clientId,
-        //     port: tunnel.port,
+        // const webhook = await api.webhooks.byId.query({ id: selectedWebhookId });
+        // if (webhook) {
+        //   await api.webhooks.update.mutate({
+        //     id: selectedWebhookId,
+        //     clientId: webhook.clientId,
+        //     port: webhook.port,
         //     localConnectionStatus: isAnyConnected
         //       ? 'connected'
         //       : 'disconnected',
@@ -182,15 +182,15 @@ const createConnectionStore = () => {
         return;
       }
 
-      const { selectedTunnelId } = useTunnelStore.getState();
+      const { selectedWebhookId } = useWebhookStore.getState();
 
       if (!user?.id) {
         log('User must be authenticated to connect');
         return;
       }
 
-      if (!selectedTunnelId) {
-        log('No tunnel selected');
+      if (!selectedWebhookId) {
+        log('No webhook selected');
         return;
       }
 
@@ -211,7 +211,7 @@ const createConnectionStore = () => {
       try {
         log('Attempting to create a database connection record');
         // const result = await api.connections.create.mutate({
-        //   tunnelId: selectedTunnelId,
+        //   webhookId: selectedWebhookId,
         //   ipAddress: 'unknown',
         //   clientId: clientId ?? '',
         //   clientVersion: version,
@@ -383,7 +383,7 @@ const createConnectionStore = () => {
         //   await api.connections.update.mutate({
         //     id: connectionId,
         //     clientId: connection.clientId,
-        //     tunnelId: connection.tunnelId,
+        //     webhookId: connection.webhookId,
         //     ipAddress: connection.ipAddress,
         //     connectedAt: connection.connectedAt,
         //     lastPingAt: connection.lastPingAt,

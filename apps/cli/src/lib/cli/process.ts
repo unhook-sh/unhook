@@ -6,11 +6,11 @@ import { capture, captureException, shutdown } from '../posthog';
 
 const log = debug('unhook:cli:process');
 
-let tunnelClientCleanup: (() => void) | null = null;
+let webhookClientCleanup: (() => void) | null = null;
 let requestSubscriptionCleanup: (() => void) | undefined;
 
-export function setTunnelClientCleanup(cleanup: () => void) {
-  tunnelClientCleanup = cleanup;
+export function setWebhookClientCleanup(cleanup: () => void) {
+  webhookClientCleanup = cleanup;
 }
 
 export function setRequestSubscriptionCleanup(cleanup: () => void) {
@@ -73,10 +73,10 @@ export function setupProcessHandlers(): void {
 export async function cleanup() {
   log('Starting cleanup process...');
 
-  if (tunnelClientCleanup) {
-    log('Cleaning up tunnel client...');
-    tunnelClientCleanup();
-    tunnelClientCleanup = null;
+  if (webhookClientCleanup) {
+    log('Cleaning up webhook client...');
+    webhookClientCleanup();
+    webhookClientCleanup = null;
   }
 
   if (requestSubscriptionCleanup) {

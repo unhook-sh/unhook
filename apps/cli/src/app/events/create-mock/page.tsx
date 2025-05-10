@@ -10,17 +10,17 @@ import { fixtures } from './fixtures';
 import type { EventFixture } from './fixtures/types';
 
 async function sendWebhook(params: {
-  tunnelId: string;
+  webhookId: string;
   fixture: EventFixture;
   status?: number;
 }) {
-  const { tunnelId, fixture } = params;
+  const { webhookId, fixture } = params;
   const baseUrl = env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/api/tunnel`, {
+  const response = await fetch(`${baseUrl}/api/webhook`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-unhook-tunnel-id': tunnelId,
+      'x-unhook-webhook-id': webhookId,
       'x-unhook-endpoint': `api/mock-consumer?status=${params.status ?? 200}`,
       'User-Agent': `UnhookMock/${fixture.provider}`,
     },
@@ -48,7 +48,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
     'selecting',
   );
   const [error, setError] = useState<string | null>(null);
-  const tunnelId = useConfigStore.use.tunnelId();
+  const webhookId = useConfigStore.use.webhookId();
   const navigate = useRouterStore.use.navigate();
 
   const menuItems = fixtures.map((fixture) => ({
@@ -69,21 +69,21 @@ export const CreateEventPage: FC<RouteProps> = () => {
       properties: {
         provider,
         eventType,
-        tunnelId,
+        webhookId,
         fixtureFound: !!fixture,
       },
     });
   };
 
   const createEventAndRequest = async () => {
-    if (!selectedFixture || !tunnelId) {
+    if (!selectedFixture || !webhookId) {
       const errorMessage = 'Missing required data to create event';
       setError(errorMessage);
       capture({
         event: 'event_creation_error',
         properties: {
           error: errorMessage,
-          tunnelId,
+          webhookId,
           hasSelectedFixture: !!selectedFixture,
         },
       });
@@ -97,12 +97,12 @@ export const CreateEventPage: FC<RouteProps> = () => {
         properties: {
           provider: selectedFixture.provider,
           eventType: selectedFixture.body.eventType,
-          tunnelId,
+          webhookId,
         },
       });
 
       await sendWebhook({
-        tunnelId,
+        webhookId,
         fixture: selectedFixture,
       });
 
@@ -112,7 +112,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
         properties: {
           provider: selectedFixture.provider,
           eventType: selectedFixture.body.eventType,
-          tunnelId,
+          webhookId,
         },
       });
 
@@ -130,7 +130,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
           error: errorMessage,
           provider: selectedFixture.provider,
           eventType: selectedFixture.body.eventType,
-          tunnelId,
+          webhookId,
         },
       });
     }

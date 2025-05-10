@@ -17,7 +17,10 @@ import { z } from 'zod';
 import { createId } from '@unhook/id';
 
 export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user']);
-export const tunnelStatusEnum = pgEnum('tunnelStatus', ['active', 'inactive']);
+export const webhookStatusEnum = pgEnum('webhookStatus', [
+  'active',
+  'inactive',
+]);
 export const localConnectionStatusEnum = pgEnum('localConnectionStatus', [
   'connected',
   'disconnected',
@@ -35,7 +38,7 @@ export const requestStatusEnum = pgEnum('requestStatus', [
 ]);
 
 export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
-export const TunnelStatusType = z.enum(tunnelStatusEnum.enumValues).Enum;
+export const WebhookStatusType = z.enum(webhookStatusEnum.enumValues).Enum;
 export const LocalConnectionStatusType = z.enum(
   localConnectionStatusEnum.enumValues,
 ).Enum;
@@ -63,7 +66,7 @@ export const Users = pgTable('user', {
 
 export const UsersRelations = relations(Users, ({ many }) => ({
   orgMembers: many(OrgMembers),
-  tunnels: many(Tunnels),
+  webhooks: many(Webhooks),
   connections: many(Connections),
   requests: many(Requests),
   events: many(Events),
@@ -118,7 +121,7 @@ export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
     references: [Users.id],
   }),
   orgMembers: many(OrgMembers),
-  tunnels: many(Tunnels),
+  webhooks: many(Webhooks),
   connections: many(Connections),
   requests: many(Requests),
 }));
@@ -168,8 +171,8 @@ export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
   }),
 }));
 
-// Add new type for tunnel config
-export type TunnelConfig = {
+// Add new type for webhook config
+export type WebhookConfig = {
   // Request/Response Storage Options
   storage: {
     storeHeaders: boolean;
@@ -194,9 +197,9 @@ export type TunnelConfig = {
   };
 };
 
-export const Tunnels = pgTable('tunnels', {
+export const Webhooks = pgTable('webhooks', {
   id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 't' }))
+    .$defaultFn(() => createId({ prefix: 'wh' }))
     .notNull()
     .primaryKey(),
   clientId: text('clientId').notNull(),
@@ -225,7 +228,7 @@ export const Tunnels = pgTable('tunnels', {
     withTimezone: true,
   }),
   config: json('config')
-    .$type<TunnelConfig>()
+    .$type<WebhookConfig>()
     .default({
       storage: {
         storeHeaders: true,
@@ -238,7 +241,7 @@ export const Tunnels = pgTable('tunnels', {
       requests: {},
     })
     .notNull(),
-  status: tunnelStatusEnum('status').notNull().default('inactive'),
+  status: webhookStatusEnum('status').notNull().default('inactive'),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
@@ -261,12 +264,12 @@ export const Tunnels = pgTable('tunnels', {
     .default(sql`auth.jwt()->>'org_id'`),
 });
 
-export type TunnelType = typeof Tunnels.$inferSelect;
+export type WebhookType = typeof Webhooks.$inferSelect;
 
-export const CreateTunnelTypeSchema = createInsertSchema(Tunnels, {
+export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
   clientId: z.string(),
   port: z.number(),
-  status: z.enum(tunnelStatusEnum.enumValues).default('inactive'),
+  status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
   localConnectionStatus: z
     .enum(localConnectionStatusEnum.enumValues)
     .default('disconnected'),
@@ -298,8 +301,8 @@ export const CreateTunnelTypeSchema = createInsertSchema(Tunnels, {
   orgId: true,
 });
 
-export const UpdateTunnelTypeSchema = createInsertSchema(Tunnels, {
-  status: z.enum(tunnelStatusEnum.enumValues).default('inactive'),
+export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks, {
+  status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
   localConnectionStatus: z
     .enum(localConnectionStatusEnum.enumValues)
     .default('disconnected'),
@@ -317,17 +320,18 @@ export const UpdateTunnelTypeSchema = createInsertSchema(Tunnels, {
   orgId: true,
 });
 
-export const TunnelsRelations = relations(Tunnels, ({ one, many }) => ({
+export const WebhooksRelations = relations(Webhooks, ({ one, many }) => ({
   user: one(Users, {
-    fields: [Tunnels.userId],
+    fields: [Webhooks.userId],
     references: [Users.id],
   }),
   org: one(Orgs, {
-    fields: [Tunnels.orgId],
+    fields: [Webhooks.orgId],
     references: [Orgs.id],
   }),
   requests: many(Requests),
   connections: many(Connections),
+  events: many(Events),
 }));
 
 export const RequestPayloadSchema = z.object({
@@ -358,8 +362,8 @@ export const Events = pgTable(
       .$defaultFn(() => createId({ prefix: 'evt' }))
       .notNull()
       .primaryKey(),
-    tunnelId: varchar('tunnelId', { length: 128 })
-      .references(() => Tunnels.id, {
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
         onDelete: 'cascade',
       })
       .notNull(),
@@ -409,7 +413,7 @@ export const Events = pgTable(
       table.status,
       table.timestamp,
     ),
-    index('events_tunnel_status_idx').on(table.tunnelId, table.status),
+    index('events_webhook_status_idx').on(table.webhookId, table.status),
     // Partial index for pending events that need processing
     index('events_pending_idx')
       .on(table.timestamp)
@@ -432,7 +436,7 @@ export const CreateEventTypeSchema = createInsertSchema(Events, {
   retryCount: z.number().default(0),
   status: z.enum(eventStatusEnum.enumValues).default('pending'),
   timestamp: z.date(),
-  tunnelId: z.string(),
+  webhookId: z.string(),
 }).omit({
   id: true,
   createdAt: true,
@@ -453,9 +457,9 @@ export const UpdateEventTypeSchema = createUpdateSchema(Events, {
 });
 
 export const EventsRelations = relations(Events, ({ one, many }) => ({
-  tunnel: one(Tunnels, {
-    fields: [Events.tunnelId],
-    references: [Tunnels.id],
+  webhook: one(Webhooks, {
+    fields: [Events.webhookId],
+    references: [Webhooks.id],
   }),
   user: one(Users, {
     fields: [Events.userId],
@@ -475,8 +479,8 @@ export const Requests = pgTable(
       .$defaultFn(() => createId({ prefix: 'req' }))
       .notNull()
       .primaryKey(),
-    tunnelId: varchar('tunnelId', { length: 128 })
-      .references(() => Tunnels.id, {
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
         onDelete: 'cascade',
       })
       .notNull(),
@@ -529,7 +533,7 @@ export const Requests = pgTable(
   },
   (table) => [
     // Foreign key indexes
-    index('requests_tunnel_id_idx').on(table.tunnelId),
+    index('requests_webhook_id_idx').on(table.webhookId),
     index('requests_event_id_idx').on(table.eventId),
     // Composite indexes for common access patterns
     index('requests_org_status_timestamp_idx').on(
@@ -569,7 +573,7 @@ export const CreateRequestTypeSchema = createInsertSchema(Requests, {
     name: z.string(),
     url: z.string(),
   }),
-  tunnelId: z.string(),
+  webhookId: z.string(),
 }).omit({
   id: true,
   createdAt: true,
@@ -579,9 +583,9 @@ export const CreateRequestTypeSchema = createInsertSchema(Requests, {
 });
 
 export const RequestsRelations = relations(Requests, ({ one }) => ({
-  tunnel: one(Tunnels, {
-    fields: [Requests.tunnelId],
-    references: [Tunnels.id],
+  webhook: one(Webhooks, {
+    fields: [Requests.webhookId],
+    references: [Webhooks.id],
   }),
   user: one(Users, {
     fields: [Requests.userId],
@@ -608,8 +612,8 @@ export const Connections = pgTable(
       .$defaultFn(() => createId({ prefix: 'c' }))
       .notNull()
       .primaryKey(),
-    tunnelId: varchar('tunnelId', { length: 128 })
-      .references(() => Tunnels.id, {
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
         onDelete: 'cascade',
       })
       .notNull(),
@@ -672,7 +676,7 @@ export const Connections = pgTable(
 export type ConnectionType = typeof Connections.$inferSelect;
 
 export const CreateConnectionTypeSchema = createInsertSchema(Connections, {
-  tunnelId: z.string(),
+  webhookId: z.string(),
   ipAddress: z.string(),
   clientId: z.string(),
   clientVersion: z.string().optional(),
@@ -692,7 +696,7 @@ export const CreateConnectionTypeSchema = createInsertSchema(Connections, {
 });
 
 export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
-  tunnelId: z.string(),
+  webhookId: z.string(),
   ipAddress: z.string(),
   clientId: z.string(),
   clientVersion: z.string().optional(),
@@ -711,9 +715,9 @@ export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
 });
 
 export const ConnectionsRelations = relations(Connections, ({ one, many }) => ({
-  tunnel: one(Tunnels, {
-    fields: [Connections.tunnelId],
-    references: [Tunnels.id],
+  webhook: one(Webhooks, {
+    fields: [Connections.webhookId],
+    references: [Webhooks.id],
   }),
   user: one(Users, {
     fields: [Connections.userId],

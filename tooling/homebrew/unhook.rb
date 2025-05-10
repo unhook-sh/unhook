@@ -1,14 +1,14 @@
 class Unhook < Formula
-  desc "CLI tool for managing tunnels"
-  homepage "https://github.com/seawatts/tunnel"
+  desc "CLI tool for managing webhooks"
+  homepage "https://github.com/seawatts/webhook"
   version "0.1.0"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/seawatts/tunnel/releases/download/v#{version}/unhook-darwin-arm64"
+      url "https://github.com/seawatts/webhook/releases/download/v#{version}/unhook-darwin-arm64"
       sha256 "SKIP" # Will be updated automatically by the bump-homebrew-formula-action
     else
-      url "https://github.com/seawatts/tunnel/releases/download/v#{version}/unhook-darwin-x64"
+      url "https://github.com/seawatts/webhook/releases/download/v#{version}/unhook-darwin-x64"
       sha256 "SKIP" # Will be updated automatically by the bump-homebrew-formula-action
     end
   end
@@ -16,18 +16,18 @@ class Unhook < Formula
   on_linux do
     if Hardware::CPU.arm?
       if OS.alpine?
-        url "https://github.com/seawatts/tunnel/releases/download/v#{version}/unhook-linux-arm64-musl"
+        url "https://github.com/seawatts/webhook/releases/download/v#{version}/unhook-linux-arm64-musl"
         sha256 "SKIP"
       else
-        url "https://github.com/seawatts/tunnel/releases/download/v#{version}/unhook-linux-arm64"
+        url "https://github.com/seawatts/webhook/releases/download/v#{version}/unhook-linux-arm64"
         sha256 "SKIP"
       end
     else
       if OS.alpine?
-        url "https://github.com/seawatts/tunnel/releases/download/v#{version}/unhook-linux-x64-musl"
+        url "https://github.com/seawatts/webhook/releases/download/v#{version}/unhook-linux-x64-musl"
         sha256 "SKIP"
       else
-        url "https://github.com/seawatts/tunnel/releases/download/v#{version}/unhook-linux-x64"
+        url "https://github.com/seawatts/webhook/releases/download/v#{version}/unhook-linux-x64"
         sha256 "SKIP"
       end
     end

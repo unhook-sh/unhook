@@ -1,37 +1,37 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.14.3",
+    "@clerk/nextjs": "6.19.2",
     "@supabase/ssr": "0.6.1",
     "@supabase/supabase-js": "2.49.4",
-    "@t3-oss/env-core": "0.12.0",
+    "@t3-oss/env-core": "0.13.4",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
     "@unhook/zustand": "workspace:*",
     "@vercel/postgres": "0.10.0",
     "date-fns": "4.1.0",
-    "drizzle-orm": "0.41.0",
+    "drizzle-orm": "0.43.1",
     "drizzle-seed": "0.3.1",
     "drizzle-zod": "0.7.1",
     "lodash-es": "4.17.21",
-    "next": "15.3.0",
+    "next": "15.3.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "3.24.2",
-    "zustand": "5.0.3"
+    "zod": "3.24.4",
+    "zustand": "5.0.4"
   },
   "devDependencies": {
-    "@t3-oss/env-core": "0.12.0",
-    "@t3-oss/env-nextjs": "0.12.0",
+    "@t3-oss/env-core": "0.13.4",
+    "@t3-oss/env-nextjs": "0.13.4",
     "@types/lodash-es": "4.17.12",
-    "@types/react": "19.1.1",
-    "@types/react-dom": "19.1.2",
+    "@types/react": "19.1.3",
+    "@types/react-dom": "19.1.3",
     "@unhook/tsconfig": "workspace:*",
     "chokidar": "4.0.3",
-    "drizzle-kit": "0.30.6",
-    "supabase": "2.20.12",
-    "tsx": "4.19.3",
+    "drizzle-kit": "0.31.1",
+    "supabase": "2.22.12",
+    "tsx": "4.19.4",
     "typescript": "5.8.3",
-    "zx": "8.5.2"
+    "zx": "8.5.4"
   },
   "exports": {
     ".": {

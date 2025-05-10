@@ -51,16 +51,16 @@ Unhook consists of several key components working together to provide seamless w
 erDiagram
     Users ||--o{ OrgMembers : "belongs to"
     Orgs ||--o{ OrgMembers : "has"
-    Users ||--o{ Tunnels : "owns"
-    Orgs ||--o{ Tunnels : "manages"
+    Users ||--o{ Webhooks : "owns"
+    Orgs ||--o{ Webhooks : "manages"
 ```
 
-#### Tunnels and Connections
+#### Webhooks and Connections
 
 ```mermaid
 erDiagram
-    Tunnels ||--o{ Connections : "has"
-    Tunnels ||--o{ Requests : "processes"
+    Webhooks ||--o{ Connections : "has"
+    Webhooks ||--o{ Requests : "processes"
     Connections ||--o{ Requests : "handles"
     Users ||--o{ Connections : "owns"
 ```
@@ -88,16 +88,16 @@ interface Org {
 }
 ```
 
-#### Tunnels
+#### Webhooks
 ```typescript
-interface Tunnel {
+interface Webhook {
   id: string;
   clientId: string;
-  tunnelId: string;
+  webhookId: string;
   port: number;
   status: 'active' | 'inactive';
   localConnectionStatus: 'connected' | 'disconnected';
-  config: TunnelConfig;
+  config: WebhookConfig;
   userId: string;
   orgId: string;
 }
@@ -107,7 +107,7 @@ interface Tunnel {
 ```typescript
 interface Event {
   id: string;
-  tunnelId: string;
+  webhookId: string;
   originalRequest: RequestPayload;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   retryCount: number;
@@ -117,9 +117,9 @@ interface Event {
 
 ### Configuration Types
 
-#### Tunnel Configuration
+#### Webhook Configuration
 ```typescript
-interface TunnelConfig {
+interface WebhookConfig {
   storage: {
     storeHeaders: boolean;
     storeRequestBody: boolean;
@@ -156,7 +156,7 @@ The API server handles:
 ### CLI Client
 
 The CLI client manages:
-- Local tunnel connections
+- Local webhook connections
 - Event subscription
 - Request forwarding
 - Health monitoring

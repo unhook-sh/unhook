@@ -62,11 +62,22 @@
   "trustedDependencies": [
     "@biomejs/biome",
     "@clerk/shared",
+    "@scarf/scarf",
     "@sentry/cli",
     "@tailwindcss/oxide",
     "@vercel/speed-insights",
     "browser-tabs-lock",
+    "bufferutil",
+    "bun",
     "core-js",
-    "core-js-pure"
+    "core-js-pure",
+    "electron",
+    "esbuild",
+    "keytar",
+    "lefthook",
+    "puppeteer",
+    "sharp",
+    "supabase",
+    "yarn"
   ]
 }

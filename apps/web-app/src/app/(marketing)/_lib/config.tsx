@@ -226,14 +226,7 @@ export const siteConfig = {
       },
       {
         id: 3,
-        content: (
-          <ThirdBentoAnimation
-            data={[20, 30, 25, 45, 40, 55, 75]}
-            toolTipValues={[
-              1234, 1678, 2101, 2534, 2967, 3400, 3833, 4266, 4700, 5133,
-            ]}
-          />
-        ),
+        content: <ThirdBentoAnimation />,
         title: 'Local Event Routing',
         description:
           'Automatically route webhooks to local development environments based on routing rules.',

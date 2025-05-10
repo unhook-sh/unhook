@@ -40,8 +40,8 @@ export function IntegrationsSection({ className }: { className?: string }) {
           'relative flex h-[500px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background p-1 md:p-10 md:shadow-xl',
           className,
         )}
-        color={['#75a99c', '#84a6d3', '#9e7aff']}
-        ref={containerRef}
+        // color={['#75a99c', '#84a6d3', '#9e7aff']}
+        // ref={containerRef}
       >
         <DotPattern
           width={20}

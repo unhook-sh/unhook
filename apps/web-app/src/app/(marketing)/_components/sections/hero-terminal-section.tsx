@@ -185,7 +185,9 @@ export function HeroTerminalSection() {
                 <TableHead className="hidden lg:table-cell">To</TableHead>
                 <TableHead className="hidden lg:table-cell">Endpoint</TableHead>
                 <TableHead>Event</TableHead>
-                <TableHead>Response</TableHead>
+                <TableHead>
+                  <span className="hidden lg:block">Response</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
   // Match any path that contains wh_ for webhook-specific webhook endpoints
   '/(.*wh_.*)/',
   '/',
+  '/privacy-policy',
+  '/terms-of-service',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

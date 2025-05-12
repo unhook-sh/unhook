@@ -34,6 +34,7 @@
   - Stripe
   - GitHub
   - Clerk
+  - Discord
   - And many more!
 
 ## Quick Start

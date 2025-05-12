@@ -2,12 +2,31 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Unhook",
+  "description": "Unhook is a simple, secure, and reliable webhook service that allows you to create and manage webhooks for your applications.",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#009689",
+    "light": "#009689",
+    "dark": "#009689"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/favicon.png",
+  "icons": {
+    "library": "lucide"
+  },
+  "fonts": {
+    "family": "Geist",
+    "weight": 400,
+    "source": "https://fonts.gstatic.com/s/geist/v3/gyByhwUxId8gMEwcGFWNOITd.woff2",
+    "format": "woff2"
+  },
+  "banner": {
+    "content": "Unhook is currently in beta. Please report any issues you find."
+  },
+  "integrations": {
+    "posthog": {
+      "apiHost": "https://us.api.posthog.com",
+      "apiKey": "phc_KaX5gqla4Oco74fZowSXJ4nfoDG4TqhXRyIHr3TExcG"
+    }
+  },
   "navigation": {
     "tabs": [
       {
@@ -72,8 +91,8 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
   },
   "navbar": {
     "links": [

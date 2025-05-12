@@ -19,7 +19,7 @@
     "format": "woff2"
   },
   "banner": {
-    "content": "Unhook is currently in beta. Please report any issues you find."
+    "content": "Unhook is currently in beta."
   },
   "integrations": {
     "posthog": {
@@ -91,8 +91,8 @@
     }
   },
   "logo": {
-    "light": "/logo/logo.svg",
-    "dark": "/logo/logo.svg"
+    "light": "/logo/logo-light.svg",
+    "dark": "/logo/logo-dark.svg"
   },
   "navbar": {
     "links": [

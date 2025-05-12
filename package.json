@@ -29,7 +29,7 @@
   },
   "packageManager": "bun@1.2.10",
   "patchedDependencies": {
-    "ink@5.2.0": "patches/ink@5.2.0.patch"
+    "ink@5.2.1": "patches/ink@5.2.1.patch"
   },
   "private": true,
   "scripts": {

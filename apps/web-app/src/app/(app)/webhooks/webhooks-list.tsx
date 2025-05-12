@@ -93,7 +93,7 @@ export function WebhooksList() {
             <div className="flex flex-col gap-4 rounded-lg border p-6 transition-all hover:border-primary/50 hover:shadow-md">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <P className="font-medium">{webhook.clientId}</P>
+                  {/* <P className="font-medium">{webhook.clientId}</P> */}
                   <Badge
                     variant={
                       webhook.status === 'active' ? 'default' : 'secondary'
@@ -110,20 +110,20 @@ export function WebhooksList() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Icons.Share size="sm" variant="muted" />
-                  <P className="text-sm">Local Port: {webhook.port}</P>
+                  {/* <P className="text-sm">Local Port: {webhook.port}</P> */}
                 </div>
                 <div className="flex items-center gap-2">
                   <Icons.ExternalLink size="sm" variant="muted" />
                   <P className="text-sm text-muted-foreground truncate">
-                    https://{webhook.clientId}.webhook.example.com
+                    https://{webhook.id}.webhook.unhook.dev
                   </P>
                 </div>
                 <div className="flex items-center gap-2">
                   <Icons.Clock size="sm" variant="muted" />
                   <P className="text-sm text-muted-foreground">
                     Last Active:{' '}
-                    {webhook.lastConnectionAt
-                      ? formatDistanceToNow(webhook.lastConnectionAt, {
+                    {webhook.updatedAt
+                      ? formatDistanceToNow(webhook.updatedAt, {
                           addSuffix: true,
                         })
                       : 'Never'}
@@ -132,11 +132,6 @@ export function WebhooksList() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">
-                  <Icons.User size="xs" className="mr-1" />
-                  {webhook.clientCount} Client
-                  {webhook.clientCount !== 1 ? 's' : ''}
-                </Badge>
                 <Badge variant="outline">
                   <Icons.BarChart2 size="xs" className="mr-1" />
                   {formatNumber(webhook.requestCount)} Request

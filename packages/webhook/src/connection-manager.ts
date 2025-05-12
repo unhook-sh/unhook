@@ -47,7 +47,6 @@ export class ConnectionManager {
         .update(Webhooks)
         .set({
           status: 'active',
-          lastConnectionAt: new Date(),
         })
         .where(eq(Webhooks.id, webhook.id));
 
@@ -85,7 +84,6 @@ export class ConnectionManager {
           .update(Webhooks)
           .set({
             status: 'active',
-            lastConnectionAt: new Date(),
           })
           .where(eq(Webhooks.id, webhook.id)),
         db
@@ -128,7 +126,6 @@ export class ConnectionManager {
           .update(Webhooks)
           .set({
             status: 'inactive',
-            lastConnectionAt: new Date(),
           })
           .where(eq(Webhooks.id, webhook.id)),
         db

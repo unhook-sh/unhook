@@ -5,6 +5,13 @@ import { createStore } from 'zustand';
 export type CliState = {
   version: string;
   debug: boolean;
+  code?: string;
+  command?: string;
+  path?: string;
+  webhookId?: string;
+  from?: string;
+  to?: string;
+  configPath?: string;
 };
 
 interface CliActions {
@@ -20,6 +27,7 @@ type CliStore = CliState & CliActions;
 const defaultCliState: Partial<CliState> = {
   debug: false,
   version: '',
+  code: undefined,
 };
 
 const store = createStore<CliStore>()((set, get) => ({

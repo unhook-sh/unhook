@@ -80,8 +80,8 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     await supabase.from('webhooks').insert([
       {
         id: webhookId,
-        clientId: createId({ prefix: 'client' }),
-        port: 3000,
+        name: 'test-webhook',
+        apiKey: 'test-api-key',
         status: 'active',
         userId,
         orgId,

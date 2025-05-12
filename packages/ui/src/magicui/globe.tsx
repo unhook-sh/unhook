@@ -42,12 +42,12 @@ const COLORS = {
   light: {
     base: [1, 1, 1] as [number, number, number],
     glow: [1, 1, 1] as [number, number, number],
-    marker: [0, 0.812, 0.439] as [number, number, number],
+    marker: [87 / 255, 179 / 255, 148 / 255] as [number, number, number],
   },
   dark: {
     base: [0.4, 0.4, 0.4] as [number, number, number],
     glow: [0.24, 0.24, 0.27] as [number, number, number],
-    marker: [0, 0.812, 0.439] as [number, number, number],
+    marker: [87 / 255, 179 / 255, 148 / 255] as [number, number, number],
   },
 };
 
@@ -73,16 +73,6 @@ export function Globe({
     damping: 30,
     stiffness: 100,
   });
-
-  // Get the computed RGB values from CSS variable
-  const _getSecondaryColor = (): [number, number, number] => {
-    if (typeof window === 'undefined') return [0.696, 0.17, 162.48];
-    const style = getComputedStyle(document.documentElement);
-    const color = style.getPropertyValue('--secondary').trim();
-    // Convert OKLCH to RGB
-    const values = color.match(/[\d.]+/g)?.map(Number) || [0.696, 0.17, 162.48];
-    return [values[0] || 0.696, values[1] || 0.17, values[2] || 162.48];
-  };
 
   const finalConfig = useMemo(
     () => ({

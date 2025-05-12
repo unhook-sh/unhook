@@ -28,8 +28,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const formSchema = z.object({
-  clientId: z.string().min(1, 'Client ID is required'),
-  port: z.number().min(1, 'Port is required'),
+  name: z.string().min(1, 'Name is required'),
   config: z.object({
     storage: z.object({
       storeHeaders: z.boolean(),
@@ -54,8 +53,7 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     defaultValues: {
-      clientId: '',
-      port: 3000,
+      name: '',
       config: {
         storage: {
           storeHeaders: true,
@@ -104,26 +102,12 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
           >
             <FormField
               control={form.control}
-              name="clientId"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client ID</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="my-app" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="port"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Port</FormLabel>
-                  <FormControl>
-                    <Input placeholder="3000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

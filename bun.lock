@@ -489,6 +489,9 @@
     "lefthook",
     "supabase",
   ],
+  "patchedDependencies": {
+    "ink@5.2.1": "patches/ink@5.2.1.patch",
+  },
   "overrides": {
     "react-reconciler": "0.32.0",
   },

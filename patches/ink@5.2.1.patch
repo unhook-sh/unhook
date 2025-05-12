@@ -1,8 +1,8 @@
 diff --git a/build/components/Box.js b/build/components/Box.js
-index d62c0094452eb9741692f5b772d6326770821e33..1b2e270e9247d2db2e50c7d785a34af3247c48b6 100644
+index d62c0094452eb9741692f5b772d6326770821e33..89134fc18311c499982c12c03dc3daf94f9623d4 100644
 --- a/build/components/Box.js
 +++ b/build/components/Box.js
-@@ -4,6 +4,10 @@ import React, { forwardRef } from 'react';
+@@ -4,17 +4,15 @@ import React, { forwardRef } from 'react';
   */
  const Box = forwardRef(({ children, ...style }, ref) => {
      return (React.createElement("ink-box", { ref: ref, style: {
@@ -13,31 +13,43 @@ index d62c0094452eb9741692f5b772d6326770821e33..1b2e270e9247d2db2e50c7d785a34af3
              ...style,
              overflowX: style.overflowX ?? style.overflow ?? 'visible',
              overflowY: style.overflowY ?? style.overflow ?? 'visible',
-diff --git a/build/hooks/use-input.js b/build/hooks/use-input.js
-index 7b40a138f24d015f76fa303e5f368d7f5455c3d1..b2569730a088330b0048f5d84332021090423fe6 100644
---- a/build/hooks/use-input.js
-+++ b/build/hooks/use-input.js
-@@ -81,9 +81,9 @@ const useInput = (inputHandler, options = {}) => {
-             // If app is not supposed to exit on Ctrl+C, then let input listener handle it
-             if (!(input === 'c' && key.ctrl) || !internal_exitOnCtrlC) {
-                 // @ts-expect-error TypeScript types for `batchedUpdates` require an argument, but React's codebase doesn't provide it and it works without it as exepected.
--                reconciler.batchedUpdates(() => {
-+                reconciler.batchedUpdates(() => {
-                     inputHandler(input, key);
--                });
-+                });
-             }
-         };
-         internal_eventEmitter?.on('input', handleData);
+         } }, children));
+ });
+ Box.displayName = 'Box';
+-Box.defaultProps = {
+-    flexWrap: 'nowrap',
+-    flexDirection: 'row',
+-    flexGrow: 0,
+-    flexShrink: 1,
+-};
+ export default Box;
+ //# sourceMappingURL=Box.js.map
+\ No newline at end of file
 diff --git a/build/ink.js b/build/ink.js
-index a9c444ff161ed4b6ea13909591844909015fe97c..4cd82c08c567904c01dfcd6b2852ff4c7ae1111e 100644
+index a9c444ff161ed4b6ea13909591844909015fe97c..0d0c6b5980c0f4405e93b3291d19318668df900d 100644
 --- a/build/ink.js
 +++ b/build/ink.js
-@@ -56,9 +56,9 @@ export default class Ink {
+@@ -13,6 +13,7 @@ import * as dom from './dom.js';
+ import logUpdate from './log-update.js';
+ import instances from './instances.js';
+ import App from './components/App.js';
++import { createDevTools } from 'react-devtools-core';
+ const noop = () => { };
+ export default class Ink {
+     options;
+@@ -29,6 +30,7 @@ export default class Ink {
+     exitPromise;
+     restoreConsole;
+     unsubscribeResize;
++    devTools;
+     constructor(options) {
+         autoBind(this);
+         this.options = options;
+@@ -56,17 +58,16 @@ export default class Ink {
          // so that it's rerendered every time, not just new static parts, like in non-debug mode
          this.fullStaticOutput = '';
          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
--        this.container = reconciler.createContainer(this.rootNode,
+-        this.container = reconciler.createContainer(this.rootNode, 
 +        this.container = reconciler.createContainer(this.rootNode,
          // Legacy mode
 -        0, null, false, null, 'id', () => { }, null);
@@ -45,17 +57,17 @@ index a9c444ff161ed4b6ea13909591844909015fe97c..4cd82c08c567904c01dfcd6b2852ff4c
          // Unmount when process exits
          this.unsubscribeExit = signalExit(this.unmount, { alwaysLast: false });
          if (process.env['DEV'] === 'true') {
-@@ -66,7 +66,7 @@ export default class Ink {
+-            reconciler.injectIntoDevTools({
++            this.devTools = createDevTools({
                  bundleType: 0,
                  // Reporting React DOM's version, not Ink's
                  // See https://github.com/facebook/react/issues/16666#issuecomment-532639905
 -                version: '16.13.1',
-+                // version: '16.13.1',
                  rendererPackageName: 'ink',
              });
          }
 diff --git a/build/reconciler.js b/build/reconciler.js
-index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..4d672ebf5919cdae30df8ae0a81682c519ffdfcd 100644
+index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..43c2b22a6f8dc981eec55a4eb0bfd266504e3a1e 100644
 --- a/build/reconciler.js
 +++ b/build/reconciler.js
 @@ -1,6 +1,6 @@
@@ -66,30 +78,37 @@ index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..4d672ebf5919cdae30df8ae0a81682c5
  import Yoga from 'yoga-layout';
  import { createTextNode, appendChildNode, insertBeforeNode, removeChildNode, setStyle, setTextNodeValue, createNode, setAttribute, } from './dom.js';
  import applyStyles from './styles.js';
-@@ -58,6 +58,9 @@ const cleanupYogaNode = (node) => {
+@@ -58,6 +58,7 @@ const cleanupYogaNode = (node) => {
      node?.unsetMeasureFunc();
      node?.freeRecursive();
  };
-+
 +let currentUpdatePriority = NoEventPriority;
-+
  export default createReconciler({
      getRootHostContext: () => ({
          isInsideText: false,
-@@ -162,7 +165,11 @@ export default createReconciler({
+@@ -94,7 +95,7 @@ export default createReconciler({
+     shouldSetTextContent: () => false,
+     createInstance(originalType, newProps, _root, hostContext) {
+         if (hostContext.isInsideText && originalType === 'ink-box') {
+-            throw new Error(`<Box> can’t be nested inside <Text> component`);
++            throw new Error(`<Box> can't be nested inside <Text> component`);
+         }
+         const type = originalType === 'ink-text' && hostContext.isInsideText
+             ? 'ink-virtual-text'
+@@ -162,7 +163,11 @@ export default createReconciler({
      scheduleTimeout: setTimeout,
      cancelTimeout: clearTimeout,
      noTimeout: -1,
 -    getCurrentEventPriority: () => DefaultEventPriority,
 +    setCurrentUpdatePriority: newPriority => {
-+		currentUpdatePriority = newPriority;
-+	},
-+	getCurrentUpdatePriority: () => currentUpdatePriority,
++        currentUpdatePriority = newPriority;
++    },
++    getCurrentUpdatePriority: () => currentUpdatePriority,
 +    resolveUpdatePriority: () => currentUpdatePriority || DefaultEventPriority,
      beforeActiveInstanceBlur() { },
      afterActiveInstanceBlur() { },
      detachDeletedInstance() { },
-@@ -186,7 +193,8 @@ export default createReconciler({
+@@ -186,26 +191,18 @@ export default createReconciler({
          }
          return { props, style };
      },
@@ -99,31 +118,52 @@ index 55acec78d35c8c1f0901720655e5ff1c58fd83c2..4d672ebf5919cdae30df8ae0a81682c5
          if (props) {
              for (const [key, value] of Object.entries(props)) {
                  if (key === 'style') {
-@@ -215,5 +223,21 @@ export default createReconciler({
+-                    setStyle(node, value);
+-                    continue;
+-                }
+-                if (key === 'internal_transform') {
+-                    node.internal_transform = value;
+-                    continue;
+-                }
+-                if (key === 'internal_static') {
+-                    node.internal_static = true;
+                     continue;
+                 }
+                 setAttribute(node, key, value);
+             }
+         }
+-        if (style && node.yogaNode) {
+-            applyStyles(node.yogaNode, style);
++        if (style) {
++            applyStyles(node, style);
+         }
+     },
+     commitTextUpdate(node, _oldText, newText) {
+@@ -215,5 +212,21 @@ export default createReconciler({
          removeChildNode(node, removeNode);
          cleanupYogaNode(removeNode.yogaNode);
      },
 +    maySuspendCommit() {
-+		// TODO: May return false here if we are confident that we don't need to suspend
-+		return true;
-+	},
-+	startSuspendingCommit() {},
-+	waitForCommitToBeReady() {
-+		return null;
-+	},
-+	preloadInstance() {
-+		// Return true to indicate it's already loaded
-+		return true;
-+	},
-+	suspendInstance() {},
-+	shouldAttemptEagerTransition() {
-+		return false;
-+	},
++        // TODO: May return false here if we are confident that we don't need to suspend
++        return true;
++    },
++    startSuspendingCommit() {},
++    waitForCommitToBeReady() {
++        return null;
++    },
++    preloadInstance() {
++        // Return true to indicate it's already loaded
++        return true;
++    },
++    suspendInstance() {},
++    shouldAttemptEagerTransition() {
++        return false;
++    },
  });
  //# sourceMappingURL=reconciler.js.map
 \ No newline at end of file
 diff --git a/package.json b/package.json
-index 0359c38546c5c159165af12846b7a1f45a3271b9..22c7f5d51facd3afd73852842f403b8f84d3e471 100644
+index 7b0a8f4e9f3e906a888da1b91e352bcb3fdc7416..2e7f53c87d208cde636f740457901707ef308e03 100644
 --- a/package.json
 +++ b/package.json
 @@ -47,63 +47,63 @@

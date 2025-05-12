@@ -63,8 +63,8 @@
   },
   "exports": {
     ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/src/index.d.ts"
+      "default": "./src/exports.ts",
+      "types": "./dist/src/exports.d.ts"
     }
   },
   "files": ["bin", "README.md", "LICENSE"],

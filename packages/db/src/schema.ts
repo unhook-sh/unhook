@@ -202,31 +202,8 @@ export const Webhooks = pgTable('webhooks', {
     .$defaultFn(() => createId({ prefix: 'wh' }))
     .notNull()
     .primaryKey(),
-  clientId: text('clientId').notNull(),
-  port: integer('port').notNull(),
-  lastConnectionAt: timestamp('lastConnectionAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
-  lastRequestAt: timestamp('lastRequestAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
+  name: text('name').notNull(),
   requestCount: integer('requestCount').notNull().default(0),
-  clientCount: integer('clientCount').notNull().default(0),
-  localConnectionStatus: localConnectionStatusEnum('localConnectionStatus')
-    .notNull()
-    .default('disconnected'),
-  localConnectionPid: integer('localConnectionPid'),
-  localConnectionProcessName: text('localConnectionProcessName'),
-  lastLocalConnectionAt: timestamp('lastLocalConnectionAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
-  lastLocalDisconnectionAt: timestamp('lastLocalDisconnectionAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
   config: json('config')
     .$type<WebhookConfig>()
     .default({
@@ -242,6 +219,11 @@ export const Webhooks = pgTable('webhooks', {
     })
     .notNull(),
   status: webhookStatusEnum('status').notNull().default('inactive'),
+  isPrivate: boolean('isPrivate').notNull().default(false),
+  apiKey: text('apiKey')
+    .$defaultFn(() => createId({ prefix: 'whsk' }))
+    .notNull()
+    .unique(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
@@ -267,12 +249,9 @@ export const Webhooks = pgTable('webhooks', {
 export type WebhookType = typeof Webhooks.$inferSelect;
 
 export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
-  clientId: z.string(),
-  port: z.number(),
+  name: z.string(),
+  isPrivate: z.boolean().default(false).optional(),
   status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
-  localConnectionStatus: z
-    .enum(localConnectionStatusEnum.enumValues)
-    .default('disconnected'),
   config: z.object({
     storage: z.object({
       storeHeaders: z.boolean(),
@@ -302,16 +281,9 @@ export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
 });
 
 export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks, {
+  name: z.string().optional(),
   status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
-  localConnectionStatus: z
-    .enum(localConnectionStatusEnum.enumValues)
-    .default('disconnected'),
-  localConnectionPid: z.number().optional(),
-  localConnectionProcessName: z.string().optional(),
-  lastLocalConnectionAt: z.date().optional(),
-  lastLocalDisconnectionAt: z.date().optional(),
-  lastConnectionAt: z.date().optional(),
-  lastRequestAt: z.date().optional(),
+  isPrivate: z.boolean().default(false),
   requestCount: z.number().default(0),
 }).omit({
   createdAt: true,

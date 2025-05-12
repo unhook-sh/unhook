@@ -3,7 +3,7 @@
 import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useAction } from 'next-safe-action/hooks';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { createAuthCode } from '../actions';
 
 export function CliLoginButton() {
@@ -12,7 +12,7 @@ export function CliLoginButton() {
   const { executeAsync, status } = useAction(createAuthCode);
   const isPending = status === 'executing';
 
-  async function onLogin() {
+  const onLogin = useCallback(async () => {
     try {
       setError(undefined);
       const result = await executeAsync();
@@ -39,7 +39,7 @@ export function CliLoginButton() {
       console.error('Failed to generate token:', error);
       setError('Failed to authenticate. Please try again.');
     }
-  }
+  }, [executeAsync]);
 
   return (
     <div className="flex flex-col gap-2">

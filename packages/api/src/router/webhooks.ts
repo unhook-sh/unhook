@@ -12,12 +12,12 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 export const webhooksRouter = createTRPCRouter({
   all: protectedProcedure.query(async ({ ctx }) => {
     // console.log('ctx.auth', ctx.auth);
-    // if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+    if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
     const webhooks = await ctx.db
       .select()
       .from(Webhooks)
-      // .where(eq(Webhooks.orgId, ctx.auth.orgId))
+      .where(eq(Webhooks.orgId, ctx.auth.orgId))
       .orderBy(desc(Webhooks.updatedAt));
 
     return webhooks;
@@ -93,7 +93,7 @@ export const webhooksRouter = createTRPCRouter({
         })
         .where(
           and(
-            eq(Webhooks.clientId, input.webhookId),
+            eq(Webhooks.id, input.webhookId),
             eq(Webhooks.orgId, ctx.auth.orgId),
           ),
         )

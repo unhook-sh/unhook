@@ -43,7 +43,7 @@ export function HeroSection() {
           <div className="absolute inset-0 -z-10 h-[600px] md:h-[800px] w-full [background:radial-gradient(125%_125%_at_50%_10%,var(--background)_40%,var(--secondary)_100%)] rounded-b-xl" />
         </div>
         <motion.div
-          className="relative z-10 pt-32 max-w-3xl mx-auto h-full w-full flex flex-col gap-10 items-center justify-center"
+          className="relative z-10 pt-24 max-w-3xl mx-auto h-full w-full flex flex-col gap-10 items-center justify-center"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"

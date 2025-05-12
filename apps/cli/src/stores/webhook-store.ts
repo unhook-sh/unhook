@@ -4,7 +4,6 @@ import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
 import { useApiStore } from './api-store';
 import { useAuthStore } from './auth-store';
-import { useConfigStore } from './config-store';
 
 const log = debug('unhook:cli:webhook-store');
 
@@ -130,9 +129,8 @@ const store = createStore<WebhookStore>()((set, get) => ({
       return false;
     }
   },
-  createWebhook: async (port: number) => {
+  createWebhook: async () => {
     const { user, orgId } = useAuthStore.getState();
-    const { clientId } = useConfigStore.getState();
 
     if (!user?.id || !orgId) {
       throw new Error('User must be authenticated to create a webhook');
@@ -141,10 +139,7 @@ const store = createStore<WebhookStore>()((set, get) => ({
     const { api } = useApiStore.getState();
 
     await api.webhooks.create.mutate({
-      clientId: clientId || 'default',
-      port,
-      clientCount: 0,
-      localConnectionStatus: 'disconnected',
+      name: 'default',
       status: 'inactive',
       config: {
         storage: {

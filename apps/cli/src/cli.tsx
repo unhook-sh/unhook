@@ -15,12 +15,14 @@ defaultLogger.addDestination(
 import { loadConfig } from '@unhook/webhook/config';
 import { render } from 'ink';
 import { Layout } from './app/layout';
+import type { StaticAppRoutePath } from './app/routes';
 import { parseArgs } from './lib/cli/args';
 import { setupDebug } from './lib/cli/debug';
 import { setupProcessHandlers } from './lib/cli/process';
 import { capture, captureException } from './lib/posthog';
 import { useCliStore } from './stores/cli-store';
 import { useConfigStore } from './stores/config-store';
+import { useRouterStore } from './stores/router-store';
 
 const log = debug('unhook:cli');
 
@@ -32,6 +34,11 @@ async function main() {
     const args = await parseArgs({ debug: config.debug });
     useCliStore.getState().setCliArgs(args);
 
+    // Set initial route based on command
+    if (args.command) {
+      useRouterStore.getState().navigate(args.command as StaticAppRoutePath);
+    }
+
     capture({
       event: 'cli_loaded',
       properties: {
@@ -39,6 +46,7 @@ async function main() {
         clientId: config.clientId,
         debug: args.debug,
         version: args.version,
+        command: args.command,
       },
     });
 
@@ -47,11 +55,10 @@ async function main() {
 
     log('Starting CLI', {
       webhookId: config.webhookId,
-      clientId: config.clientId,
       debug: args.debug,
       version: args.version,
+      // command: args.command,
     });
-    log('args', useConfigStore.getState());
 
     const renderInstance = render(<Layout />, {
       debug: args.debug,

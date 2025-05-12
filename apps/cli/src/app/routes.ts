@@ -9,6 +9,7 @@ import { CreateMockEventLayout } from './events/create-mock/layout';
 import { EventsLayout } from './events/layout';
 import { HelpPage } from './help/page';
 import { HotkeysPage } from './hotkeys/page';
+import { InitLayout } from './init/layout';
 import { LoginLayout } from './login/layout';
 import { LogoutPage } from './logout/page';
 import { MenuLayout } from './menu/layout';
@@ -32,7 +33,9 @@ export type AppRoutePath =
   | '/metrics'
   | '/debug'
   | '/hotkeys'
-  | '/help';
+  | '/help'
+  | '/init'
+  | '/listen';
 
 // Type for static routes (no parameters)
 export type StaticAppRoutePath = Exclude<AppRoutePath, `${string}:${string}`>;
@@ -85,6 +88,18 @@ const authenticatedRoutes: AppRoute[] = [
     component: LogoutPage,
     label: 'Logout',
     hotkey: 'l',
+  },
+  {
+    path: '/init',
+    component: InitLayout,
+    label: 'Initialize Project',
+    showInMenu: false,
+  },
+  {
+    path: '/listen',
+    component: InitLayout,
+    label: 'Listen for Changes',
+    showInMenu: false,
   },
 ];
 

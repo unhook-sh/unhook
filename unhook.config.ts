@@ -1,7 +1,7 @@
 import { defineWebhookConfig } from '@unhook/cli';
 
 const config = defineWebhookConfig({
-  webhookId: 't_internal',
+  webhookId: 'wh_xpsduom94d3hhdu0wp9cink1',
   to: [
     {
       name: 'localClerk',

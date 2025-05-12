@@ -43,6 +43,7 @@ interface AuthActions {
   setAuthUrl: (authUrl: string | null) => void;
   reset: () => void;
   authenticate: () => Promise<void>;
+  exchangeAuthCode: (code: string) => Promise<void>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -172,6 +173,40 @@ const store = createStore<AuthStore>()((set, get) => ({
     }
   },
 
+  exchangeAuthCode: async (code: string) => {
+    set({ isValidatingSession: true });
+    const state = get();
+    const { api } = useApiStore.getState();
+
+    // Handle authentication
+    const { token, user, orgId, sessionId } =
+      await api.auth.exchangeAuthCode.query({
+        code,
+      });
+
+    await state.secureStorage.setItem('token', token);
+    await state.fileStorage.setItem('sessionId', sessionId);
+
+    set({
+      token,
+      sessionId,
+      user,
+      orgId,
+      isSignedIn: true,
+    });
+
+    log('Authentication completed successfully');
+    capture({
+      event: 'user_authenticated',
+      distinctId: user.id,
+      properties: {
+        userId: user.id,
+        orgId,
+        email: user.email,
+      },
+    });
+  },
+
   authenticate: async () => {
     const state = get();
     state.reset();
@@ -226,35 +261,7 @@ const store = createStore<AuthStore>()((set, get) => ({
         },
       });
 
-      const { api } = useApiStore.getState();
-
-      // Handle authentication
-      const { token, user, orgId, sessionId } =
-        await api.auth.exchangeAuthCode.query({
-          code: result.code,
-        });
-
-      await state.secureStorage.setItem('token', token);
-      await state.fileStorage.setItem('sessionId', sessionId);
-
-      set({
-        token,
-        sessionId,
-        user,
-        orgId,
-        isSignedIn: true,
-      });
-
-      log('Authentication completed successfully');
-      capture({
-        event: 'user_authenticated',
-        distinctId: user.id,
-        properties: {
-          userId: user.id,
-          orgId,
-          email: user.email,
-        },
-      });
+      await get().exchangeAuthCode(result.code);
     } catch (error) {
       handleAuthError(error);
     } finally {

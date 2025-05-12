@@ -13,7 +13,6 @@ export async function setupDebug({
   try {
     log('Setting up React DevTools connection...');
     const { connectToDevTools } = await import('react-devtools-core/backend');
-
     log('Connecting to React DevTools...');
     connectToDevTools({
       host: 'localhost',
@@ -22,7 +21,6 @@ export async function setupDebug({
       websocket: true,
       resolveRNStyle: null,
     });
-
     log('React DevTools connection setup complete');
   } catch (error) {
     log('Failed to setup React DevTools:', error);

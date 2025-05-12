@@ -10,7 +10,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ webhookId: string }> },
+  { params }: { params: Promise<{ webhookId: string; apiKey?: string }> },
 ) {
   const { webhookId } = await params;
 
@@ -20,6 +20,9 @@ export async function POST(
 
   let from =
     req.headers.get('x-unhook-from') ?? req.nextUrl.searchParams.get('from');
+  const apiKey =
+    req.headers.get('x-unhook-api-key') ??
+    req.nextUrl.searchParams.get('apiKey');
 
   // If no from is provided, send to all endpoints that match from = *
   if (!from) {
@@ -27,17 +30,28 @@ export async function POST(
   }
 
   // Get webhook configuration
-  const conditions = [
-    eq(Webhooks.status, 'active'),
-    eq(Webhooks.id, webhookId),
-  ];
+  const conditions = [eq(Webhooks.id, webhookId)];
 
   const webhook = await db.query.Webhooks.findFirst({
     where: and(...conditions),
   });
 
   if (!webhook) {
-    return new NextResponse('Invalid API key', { status: 401 });
+    return new NextResponse('Invalid webhook', { status: 401 });
+  }
+
+  if (webhook.isPrivate) {
+    if (!apiKey) {
+      return new NextResponse('Invalid API key', { status: 401 });
+    }
+
+    if (apiKey !== webhook.apiKey) {
+      return new NextResponse('Invalid API key', { status: 401 });
+    }
+  }
+
+  if (!webhook.status) {
+    return new NextResponse('Invalid webhook', { status: 401 });
   }
 
   // Ensure config exists with defaults
@@ -104,16 +118,6 @@ export async function POST(
 
     // Determine the most likely source URL
     const sourceUrl = origin || referer || `https://${host}` || requestUrl;
-
-    console.log('Webhook Request Details:', {
-      requestUrl,
-      sourceUrl,
-      origin,
-      headerReferer,
-      propertyReferer,
-      host,
-      headers: JSON.stringify(headers),
-    });
 
     const request: RequestPayload = {
       id: createId({ prefix: 'req' }),

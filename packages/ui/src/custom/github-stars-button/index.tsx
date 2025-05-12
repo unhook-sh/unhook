@@ -33,9 +33,9 @@ export function GitHubStarsButton({
   // const stars = (await getGitHubStars(repo)) ?? 0;
   const stars = 0;
 
-  if (stars <= 1000) {
-    return null;
-  }
+  // if (stars <= 1000) {
+  //   return null;
+  // }
 
   return (
     <GitHubStarsButtonClient stars={stars} className={className} repo={repo} />

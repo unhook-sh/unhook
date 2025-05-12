@@ -75,7 +75,7 @@ export const siteConfig = {
     badge: 'Introducing shared webhook URLs',
     title: 'Webhook Development Simplified',
     description:
-      'Test webhooks locally and share URLs with your team. Built for developers, with security and collaboration in mind.',
+      'Open source toolkit for webhook development. Test, debug, and share webhooks with your team - all from your local environment.',
     cta: {
       primary: {
         text: 'Create Webhook URL',

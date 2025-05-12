@@ -13,7 +13,7 @@ import { type NavItem, NavMenu } from '~/app/(marketing)/_components/nav-menu';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 const INITIAL_WIDTH = '70rem';
-const MAX_WIDTH = '800px';
+const MAX_WIDTH = '900px';
 
 // Animation variants
 const overlayVariants = {

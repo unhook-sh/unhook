@@ -2,7 +2,6 @@
 
 import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
-import { NumberTicker } from '@unhook/ui/magicui/number-ticker';
 
 export function GitHubStarsButtonClient({
   stars,
@@ -27,17 +26,19 @@ export function GitHubStarsButtonClient({
       )}
       aria-label={`Star ${repo} on GitHub`}
     >
-      <span className="flex items-center gap-2 pl-4 pr-2 py-2 border-r border-border">
+      {/* <span className="flex items-center gap-2 pl-4 pr-2 py-2 border-r border-border"> */}
+      <span className="flex items-center gap-2 px-4 py-2">
         <Icons.Github size="sm" variant="primary" />
         <span>Star</span>
       </span>
-      <span className="flex items-center w-12 h-full justify-center px-3 py-2 bg-accent/50 rounded-r-full">
-        <NumberTicker
+      {/* <span className="flex items-center w-12 h-full justify-center px-3 py-2 bg-accent/50 rounded-r-full"> */}
+      {/* <NumberTicker
           value={stars}
           direction="up"
           formatter={(num) => formater.format(num)}
-        />
-      </span>
+        /> */}
+      {/* Open Source */}
+      {/* </span> */}
     </a>
   );
 }

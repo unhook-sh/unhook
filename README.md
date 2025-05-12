@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="apps/web-app/public/logo.png" alt="Unhook Logo" width="100" height="100" />
+
 # Unhook
 
 [![npm version](https://img.shields.io/npm/v/@unhook/cli.svg)](https://www.npmjs.com/package/@unhook/cli)

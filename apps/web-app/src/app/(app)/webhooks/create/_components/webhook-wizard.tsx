@@ -1,6 +1,6 @@
 'use client';
 
-import type { WebhookType } from '@unhook/db/schema';
+import type { AuthCodeType, WebhookType } from '@unhook/db/schema';
 import { Button } from '@unhook/ui/components/button';
 import {
   Card,
@@ -36,10 +36,17 @@ const STEPS = [
   { id: 'url', title: 'Your Webhook URL' },
 ] as const;
 
-function InstallationCommand({ authCode }: { authCode: string }) {
+function InstallationCommand({
+  authCode,
+  webhookId,
+  from,
+}: {
+  authCode: string;
+  webhookId: string;
+  from: string;
+}) {
   return (
     <div className="mt-4 space-y-2">
-      <p className="text-sm text-muted-foreground">Install unhook CLI:</p>
       <Tabs defaultValue="npx" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="npx">npx</TabsTrigger>
@@ -48,17 +55,20 @@ function InstallationCommand({ authCode }: { authCode: string }) {
         </TabsList>
         <TabsContent value="npx" className="mt-2">
           <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
-            npx unhook --code {authCode}
+            npx unhook init --webhook {webhookId} --from {from} --code{' '}
+            {authCode}
           </code>
         </TabsContent>
         <TabsContent value="pnpm" className="mt-2">
           <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
-            pnpm x unhook --code {authCode}
+            pnpm x unhook init --webhook {webhookId} --from {from} --code{' '}
+            {authCode}
           </code>
         </TabsContent>
         <TabsContent value="bun" className="mt-2">
           <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
-            bunx unhook --code {authCode}
+            bunx unhook init --webhook {webhookId} --from {from} --code{' '}
+            {authCode}
           </code>
         </TabsContent>
       </Tabs>
@@ -73,6 +83,7 @@ export function WebhookWizard() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
+  const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
 
   const { executeAsync: executeCreateWebhook, status: webhookStatus } =
     useAction(createWebhook);
@@ -108,11 +119,13 @@ export function WebhookWizard() {
               toast.error('Failed to create auth code', {
                 description: 'Please try again.',
               });
-            }
+            } else {
+              setAuthCode(authResult.data);
 
-            toast.success('Webhook created', {
-              description: 'The webhook has been created successfully.',
-            });
+              toast.success('Webhook created', {
+                description: 'The webhook has been created successfully.',
+              });
+            }
           } else {
             toast.error('Failed to create webhook', {
               description: 'Please try again.',
@@ -200,7 +213,13 @@ export function WebhookWizard() {
           {currentStep >= 5 && (
             <div className="animate-in slide-in-from-bottom-4 duration-300">
               <WebhookUrlStep webhookUrl={webhookUrl} />
-              {webhook && <InstallationCommand authCode={webhook.apiKey} />}
+              {webhook && authCode && (
+                <InstallationCommand
+                  authCode={authCode.id}
+                  webhookId={webhook.id}
+                  from={from}
+                />
+              )}
             </div>
           )}
         </div>

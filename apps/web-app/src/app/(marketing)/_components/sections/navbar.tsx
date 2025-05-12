@@ -119,9 +119,9 @@ export function Navbar({
               : 'shadow-none px-7',
           )}
         >
-          <div className="flex h-[56px] items-center justify-between p-4">
-            <Link href="/" className="flex items-center gap-3">
-              <Icons.logo className="size-7 md:size-10" />
+          <div className="flex h-[56px] items-center justify-between pl-1 md:pl-2 pr-4">
+            <Link href="/" className="flex items-center gap-1">
+              <Icons.logo className="size-12" />
               <p className="text-lg font-semibold text-primary">Unhook</p>
             </Link>
 

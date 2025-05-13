@@ -14,6 +14,15 @@ export async function parseArgs({
     readFileSync(join(__dirname, '../../../package.json'), 'utf-8'),
   ) as { version: string };
 
+  // Map command to route path
+  const commandToPath: Record<string, AppRoutePath> = {
+    init: '/init',
+    listen: '/events',
+    login: '/login',
+  };
+
+  let command: AppRoutePath | undefined;
+
   const argv = await yargs(hideBin(process.argv))
     .option('debug', {
       alias: 'd',
@@ -21,74 +30,84 @@ export async function parseArgs({
       description: 'Enable debug logging',
       default: debug ?? false,
     })
-    .command('init', 'Initialize a new Unhook project', {
-      path: {
-        type: 'string',
-        description: 'Path to initialize the project',
-        default: '.',
+    .command(
+      'init',
+      'Initialize a new Unhook project',
+      {
+        code: {
+          alias: 'c',
+          type: 'string',
+          description: 'Authentication code for direct login',
+        },
+        webhook: {
+          alias: 'w',
+          type: 'string',
+          description: 'Webhook ID to use',
+        },
+        from: {
+          alias: 'f',
+          type: 'string',
+          description: 'Source URL or path',
+        },
+        to: {
+          alias: 't',
+          type: 'string',
+          description: 'Destination URL or path',
+        },
       },
-      code: {
-        alias: 'c',
-        type: 'string',
-        description: 'Authentication code for direct login',
+      () => {
+        command = commandToPath['init' as keyof typeof commandToPath];
       },
-      webhookId: {
-        alias: 'w',
-        type: 'string',
-        description: 'Webhook ID to use',
+    )
+    .command(
+      'listen',
+      'Start listening for changes',
+      {
+        path: {
+          type: 'string',
+          description: 'Path to watch for changes',
+          default: '.',
+        },
+        config: {
+          alias: 'c',
+          type: 'string',
+          description: 'Path to configuration file',
+        },
       },
-      from: {
-        alias: 'f',
-        type: 'string',
-        description: 'Source URL or path',
+      () => {
+        command = commandToPath['listen' as keyof typeof commandToPath];
       },
-      to: {
-        alias: 't',
-        type: 'string',
-        description: 'Destination URL or path',
+    )
+    .command(
+      'login',
+      'Login to your Unhook account',
+      {
+        code: {
+          alias: 'c',
+          type: 'string',
+          description: 'Authentication code for direct login',
+        },
       },
-    })
-    .command('listen', 'Start listening for changes', {
-      path: {
-        type: 'string',
-        description: 'Path to watch for changes',
-        default: '.',
+      () => {
+        command = commandToPath['login' as keyof typeof commandToPath];
       },
-      config: {
-        alias: 'c',
-        type: 'string',
-        description: 'Path to configuration file',
-      },
-    })
-    .command('login', 'Login to your Unhook account', {
-      code: {
-        alias: 'c',
-        type: 'string',
-        description: 'Authentication code for direct login',
-      },
-    })
+    )
     .usage('Usage: $0 <command> [options]')
     .help()
     .alias('help', 'h')
     .parseAsync();
 
-  const parsedConfig = argv as unknown as CliState;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const parsedConfig = argv as any;
   parsedConfig.version = pkg.version;
-
-  // Map command to route path
-  const commandToPath: Record<string, AppRoutePath> = {
-    init: '/init',
-    listen: '/listen',
-    login: '/login',
-  };
 
   return {
     debug: parsedConfig.debug,
     version: parsedConfig.version,
     code: parsedConfig.code,
-    command: commandToPath[parsedConfig.command as string] || '/',
+    command,
     path: parsedConfig.path as string,
-    webhookId: parsedConfig.webhookId as string,
+    webhookId: parsedConfig.webhook as string,
     from: parsedConfig.from as string,
     to: parsedConfig.to as string,
     configPath: parsedConfig.configPath as string,

@@ -79,7 +79,7 @@ export const configSchema = z
         if (!validNames.has(f.to)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Invalid forward.to: "${f.to}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'forward.to' matches a 'to[].name'.\nSee https://unhook.sh/docs/config for examples.`,
+            message: `Invalid forward.to: "${f.to}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'forward.to' matches a 'to[].name'.\nSee https://docs.unhook.sh/config for examples.`,
             path: ['forward', idx, 'to'],
           });
         }
@@ -110,10 +110,14 @@ function loadYamlConfig(configPath: string): WebhookConfig {
   return parseYaml(content);
 }
 
-export async function loadConfig(cwd = process.cwd()): Promise<WebhookConfig> {
-  // Find the first matching config file
-  const configPath = await findUp(CONFIG_FILES, { cwd });
+export async function findUpConfig(): Promise<string> {
+  const cwd = process.cwd();
+  const configPath =
+    (await findUp(CONFIG_FILES, { cwd })) ?? 'unhook.config.ts';
+  return configPath;
+}
 
+export async function loadConfig(configPath: string): Promise<WebhookConfig> {
   let config = {
     webhookId: '',
     to: [] as Array<z.infer<typeof configSchema>['to'][number]>,

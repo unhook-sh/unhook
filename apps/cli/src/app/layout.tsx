@@ -5,6 +5,7 @@ import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
 import { type FC, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Ascii } from '~/components/ascii';
 import { ConnectToWebhook } from '~/components/connect-to-webhook';
 import { EventSubscription } from '~/components/event-subscription';
 import { Router } from '~/components/router';
@@ -22,7 +23,9 @@ import {
   captureException,
 } from '~/lib/posthog';
 import { useAuthStore } from '~/stores/auth-store';
+import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
+import { useRouterStore } from '~/stores/router-store';
 
 const log = debug('unhook:cli:layout');
 
@@ -43,8 +46,10 @@ function AppContent() {
   const dimensions = useDimensions();
   const token = useAuthStore.use.token();
   const isValidating = useAuthStore.use.isValidatingSession();
-  // const result = api.webhooks.all.useQuery();
-  // log('result', result.data);
+  const webhookId = useConfigStore.use.webhookId();
+  const navigate = useRouterStore.use.navigate();
+  const command = useCliStore.use.command?.();
+  const currentPath = useRouterStore.use.currentPath();
 
   useEffect(() => {
     capture({
@@ -58,10 +63,26 @@ function AppContent() {
 
   if (isValidating) {
     return (
-      <Box>
+      <Box flexDirection="column" minHeight={dimensions.height} padding={1}>
+        <Box marginBottom={1}>
+          <Ascii
+            text="Unhook"
+            width={dimensions.width}
+            font="ANSI Shadow"
+            color="gray"
+          />
+        </Box>
         <Text>Validating session...</Text>
       </Box>
     );
+  }
+
+  if (!webhookId && currentPath !== '/init') {
+    log('No webhook ID, navigating to /init');
+    navigate('/init');
+  } else if (command && currentPath !== command) {
+    log('Navigating to command:', command);
+    navigate(command);
   }
 
   return (

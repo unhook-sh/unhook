@@ -36,7 +36,7 @@ export const MenuPage: FC<RouteProps> = () => {
   const webhookId = useConfigStore.use.webhookId();
   const debug = useCliStore.use.debug();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}?from=XXX`;
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}?from=*`;
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   useInput((input) => {

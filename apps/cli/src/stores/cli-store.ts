@@ -1,12 +1,13 @@
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
+import type { AppRoutePath } from '~/app/routes';
 
 // Combine base and exclusive properties into the final state type
 export type CliState = {
   version: string;
   debug: boolean;
   code?: string;
-  command?: string;
+  command?: AppRoutePath;
   path?: string;
   webhookId?: string;
   from?: string;
@@ -28,6 +29,11 @@ const defaultCliState: Partial<CliState> = {
   debug: false,
   version: '',
   code: undefined,
+  command: undefined,
+  webhookId: undefined,
+  from: undefined,
+  to: undefined,
+  configPath: undefined,
 };
 
 const store = createStore<CliStore>()((set, get) => ({
@@ -39,9 +45,11 @@ const store = createStore<CliStore>()((set, get) => ({
   // Getters for WebhookConfig fields
   getDebug: () => get().debug ?? false,
   getVersion: () => get().version,
+  getCommand: () => get().command,
 
   // Reset method to restore default state
   reset: () => set(defaultCliState as CliState),
+  getWebhookId: () => get().webhookId,
 
   // setCliArgs needs to carefully merge while respecting the union type.
   // Since input `args` comes from validated sources (yargs/loadConfig),

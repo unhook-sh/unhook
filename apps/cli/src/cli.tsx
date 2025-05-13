@@ -11,33 +11,24 @@ defaultLogger.addDestination(
     rotationInterval: 60 * 60 * 1000, // 1 hour
   }),
 );
-
-import { loadConfig } from '@unhook/webhook/config';
 import { render } from 'ink';
 import { Layout } from './app/layout';
-import type { StaticAppRoutePath } from './app/routes';
 import { parseArgs } from './lib/cli/args';
 import { setupDebug } from './lib/cli/debug';
 import { setupProcessHandlers } from './lib/cli/process';
 import { capture, captureException } from './lib/posthog';
 import { useCliStore } from './stores/cli-store';
 import { useConfigStore } from './stores/config-store';
-import { useRouterStore } from './stores/router-store';
 
 const log = debug('unhook:cli');
 
 async function main() {
   try {
-    const config = await loadConfig();
-    useConfigStore.getState().setConfig(config);
+    const config = await useConfigStore.getState().loadConfig();
+    void useConfigStore.getState().watchConfig();
 
     const args = await parseArgs({ debug: config.debug });
-    useCliStore.getState().setCliArgs(args);
-
-    // Set initial route based on command
-    if (args.command) {
-      useRouterStore.getState().navigate(args.command as StaticAppRoutePath);
-    }
+    useCliStore.setState(args);
 
     capture({
       event: 'cli_loaded',
@@ -57,7 +48,7 @@ async function main() {
       webhookId: config.webhookId,
       debug: args.debug,
       version: args.version,
-      // command: args.command,
+      command: args.command,
     });
 
     const renderInstance = render(<Layout />, {

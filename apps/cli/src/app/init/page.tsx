@@ -1,53 +1,59 @@
-import { hostname, platform, release } from 'node:os';
-import clipboard from 'clipboardy';
-import { Box, Text, useInput } from 'ink';
+import { debug } from '@unhook/logger';
+import { Box, Text } from 'ink';
 import { type FC, useState } from 'react';
+import { z } from 'zod';
 import { Ascii } from '~/components/ascii';
-import { SelectInput } from '~/components/select-input';
+
+import {
+  FormDescription,
+  FormInput,
+  FormLabel,
+  FormProvider,
+} from '~/components/form';
 import { useDimensions } from '~/hooks/use-dimensions';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
-import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
-import type { RouteProps } from '~/stores/router-store';
-import type { AppRoutePath } from '../routes';
-import { useRoutes } from '../routes';
+import { type RouteProps, useRouterStore } from '~/stores/router-store';
+const log = debug('unhook:cli:init');
+
+const initFormSchema = z.object({
+  to: z.string().url('Please enter a valid URL'),
+  from: z.string().min(1, 'From is required'),
+});
+
+type InitFormValues = z.infer<typeof initFormSchema>;
 
 export const InitPage: FC<RouteProps> = () => {
-  const navigate = useRouterStore.use.navigate();
-  const routes = useRoutes();
-
-  const menuItems = routes
-    .map((route) => ({
-      label: route.label,
-      value: route.path,
-      hotkey: route.hotkey,
-      showInMenu: route.showInMenu ?? true,
-    }))
-    .filter((item) => item.showInMenu && !item.value.includes(':')) as Array<{
-    label: string;
-    value: StaticRoutePath<AppRoutePath>;
-    hotkey: string | undefined;
-    showInMenu: boolean;
-  }>;
-
   const dimensions = useDimensions();
-  const clientId = useConfigStore.use.clientId?.();
-  const version = useCliStore.use.version();
-  const webhookId = useConfigStore.use.webhookId();
-  const debug = useCliStore.use.debug();
+  const [submitted, setSubmitted] = useState(false);
+  const from = useCliStore.use.from?.();
+  const to = useCliStore.use.to?.();
+  const navigate = useRouterStore.use.navigate();
+  const writeConfig = useConfigStore.use.writeConfig();
+  const setConfig = useConfigStore.use.setConfig();
+  const webhookId = useCliStore.use.webhookId?.();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}?from=XXX`;
-  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+  const handleSubmit = async (values: InitFormValues) => {
+    setSubmitted(true);
 
-  useInput((input) => {
-    if (input === 'c') {
-      clipboard.writeSync(webhookUrl);
-      setCopiedToClipboard(true);
-      setTimeout(() => {
-        setCopiedToClipboard(false);
-      }, 2000);
+    if (!webhookId) {
+      log('No webhook ID found');
+      return;
     }
-  });
+
+    const config = {
+      webhookId,
+      to: [{ name: 'default', url: values.to }],
+      forward: [{ from: values.from ?? '*', to: 'default' }],
+    };
+
+    await writeConfig(config);
+    setConfig(config);
+
+    // setTimeout(() => {
+    navigate('/');
+    // }, 1000);
+  };
 
   return (
     <Box flexDirection="column">
@@ -59,37 +65,37 @@ export const InitPage: FC<RouteProps> = () => {
           color="gray"
         />
       </Box>
-      <Box marginBottom={1} flexDirection="column">
-        {/* <Box flexDirection="row"> */}
-        {/* <Text dimColor>Webhook URL:</Text> */}
-        <Text bold>{webhookUrl}</Text>
-        {/* </Box> */}
-        {!copiedToClipboard && (
-          <Text dimColor>Press 'c' to copy to clipboard</Text>
-        )}
-        {copiedToClipboard && <Text dimColor>Copied!</Text>}
-      </Box>
-      {debug && (
+      <FormProvider schema={initFormSchema} onSubmit={handleSubmit}>
         <Box marginBottom={1} flexDirection="column">
-          <Text dimColor>Version: {version}</Text>
-          <Text dimColor>Client: {clientId}</Text>
-          <Text dimColor>Webhook: {webhookId}</Text>
-          <Text dimColor>
-            Platform: {platform()} {release()}
+          <FormLabel id="from">Enter your from service:</FormLabel>
+          <FormDescription id="from">
+            The service that will send webhooks to Unhook (e.g., Stripe, GitHub)
+          </FormDescription>
+          <FormInput id="from" placeholder="Stripe" defaultValue={from} />
+        </Box>
+        <Box marginBottom={1} flexDirection="column">
+          <FormLabel id="to">Enter your to URL:</FormLabel>
+          <FormDescription id="to">
+            The URL where Unhook will forward the webhooks to
+          </FormDescription>
+          <FormInput
+            id="to"
+            placeholder="http://localhost:3000"
+            defaultValue={to ?? 'http://localhost:3000'}
+          />
+        </Box>
+      </FormProvider>
+      {submitted && (
+        <Box marginBottom={1} flexDirection="column">
+          <Text>Success!</Text>
+          <Text>Your webhook config has been saved.</Text>
+          <Text>
+            You can now use the <Text color="blue">unhook listen</Text> command
+            to forward webhooks to your service.
           </Text>
-          <Text dimColor>Hostname: {hostname()}</Text>
+          <Text>Redirecting to the home page...</Text>
         </Box>
       )}
-      {/* <Box marginBottom={1}> */}
-      {/* <ConnectionStatus /> */}
-      {/* </Box> */}
-
-      <Box flexDirection="column">
-        <SelectInput<StaticRoutePath<AppRoutePath>>
-          items={menuItems}
-          onSelect={(item) => navigate(item.value)}
-        />
-      </Box>
     </Box>
   );
 };

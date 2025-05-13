@@ -30,7 +30,6 @@ export const createDefaultLinks = ({
       const headers = new Headers();
       headers.set('x-trpc-source', sourceHeader ?? 'vanilla');
 
-      console.log('authToken', authToken);
       if (authToken) {
         headers.set('Authorization', `Bearer ${authToken}`);
       }

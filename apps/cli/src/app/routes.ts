@@ -22,7 +22,9 @@ export type AppRoutePath =
   | '/login'
   | '/logout'
   | '/unauthorized'
+  | '/docs'
   | '/not-found'
+  | '/report-issue'
   | '/quit'
   | '/settings'
   | '/events'
@@ -90,12 +92,6 @@ const authenticatedRoutes: AppRoute[] = [
     hotkey: 'l',
   },
   {
-    path: '/init',
-    component: InitLayout,
-    label: 'Initialize Project',
-    showInMenu: false,
-  },
-  {
     path: '/listen',
     component: InitLayout,
     label: 'Listen for Changes',
@@ -127,6 +123,12 @@ const commonRoutes: AppRoute[] = [
     showInMenu: false,
   },
   {
+    path: '/init',
+    component: InitLayout,
+    label: 'Initialize Project',
+    showInMenu: false,
+  },
+  {
     path: '/hotkeys',
     component: HotkeysPage,
     label: 'Hotkeys',
@@ -139,6 +141,20 @@ const commonRoutes: AppRoute[] = [
     label: 'Help',
     showInMenu: false,
     hotkey: 'h',
+  },
+  {
+    path: '/report-issue',
+    component: () => null,
+    label: 'Report Issue',
+    hotkey: 'i',
+    url: 'https://github.com/unhook-sh/unhook/issues/new?template=bug_report.yml',
+  },
+  {
+    path: '/docs',
+    component: () => null,
+    label: 'Docs',
+    hotkey: 'd',
+    url: 'https://docs.unhook.sh',
   },
   {
     path: '/quit',

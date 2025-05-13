@@ -1,4 +1,5 @@
 import { createSelectors } from '@unhook/zustand';
+import open from 'open';
 import type { FC } from 'react';
 import { createStore } from 'zustand';
 import type { AppRoutePath } from '~/app/routes';
@@ -33,6 +34,7 @@ export interface Route<TPath extends string = AppRoutePath> {
   hotkey?: string;
   pattern?: RegExp;
   showInMenu?: boolean;
+  url?: string;
 }
 
 // Router state and actions
@@ -47,7 +49,7 @@ interface RouterActions {
     <T extends AppRoutePath>(
       path: T extends `${string}:${string}` ? never : T,
     ): void;
-    <T extends AppRoutePath>(template: T, params: PathParams<T>): void;
+    <T extends AppRoutePath>(template: T, params?: PathParams<T>): void;
   };
   goBack: () => void;
   setRoutes: (routes: Route[]) => void;
@@ -83,9 +85,12 @@ const store = createStore<RouterStore>()((set, get) => ({
     params?: PathParams<T>,
   ) => {
     const path = params ? buildPath(pathOrTemplate, params) : pathOrTemplate;
-    const { currentPath, history } = get();
+    const { currentPath, history, routes } = get();
     // Don't add to history if navigating to the same path
     if (path === currentPath) return;
+
+    // Find the route and open URL if it exists
+    const route = routes.find((r) => r.path === path);
 
     capture({
       event: 'navigation',
@@ -95,6 +100,11 @@ const store = createStore<RouterStore>()((set, get) => ({
         historyLength: history.length,
       },
     });
+
+    if (route?.url) {
+      void open(route.url);
+      return;
+    }
 
     set((state) => ({
       currentPath: path as AppRoutePath,

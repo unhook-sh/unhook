@@ -5,8 +5,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
   '/api/webhook(.*)',
   '/api/trpc(.*)',
-  // Match any path that contains wh_ for webhook-specific webhook endpoints
-  '/(.*wh_.*)/',
+  // Match webhook paths that start with /wh_ and end there
+  '/wh_([^/]+)',
   '/',
   '/privacy-policy',
   '/terms-of-service',

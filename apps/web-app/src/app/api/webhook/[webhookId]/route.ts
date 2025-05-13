@@ -1,8 +1,9 @@
+import { posthog } from '@unhook/analytics/posthog/server';
 import { db } from '@unhook/db/client';
 import { Events, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
 import { filterHeaders } from '@unhook/webhook';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
 // Mark as edge runtime to support streaming
@@ -15,6 +16,14 @@ export async function POST(
   const { webhookId } = await params;
 
   if (!webhookId) {
+    posthog.capture({
+      event: 'webhook_error',
+      distinctId: 'anonymous',
+      properties: {
+        error: 'missing_webhook_id',
+        webhookId: null,
+      },
+    });
     return new NextResponse('Webhook ID required', { status: 400 });
   }
 
@@ -30,28 +39,60 @@ export async function POST(
   }
 
   // Get webhook configuration
-  const conditions = [eq(Webhooks.id, webhookId)];
-
   const webhook = await db.query.Webhooks.findFirst({
-    where: and(...conditions),
+    where: eq(Webhooks.id, webhookId),
   });
 
   if (!webhook) {
-    return new NextResponse('Invalid webhook', { status: 401 });
+    posthog.capture({
+      event: 'webhook_error',
+      distinctId: 'anonymous',
+      properties: {
+        error: 'webhook_not_found',
+        webhookId,
+      },
+    });
+    return new NextResponse('Webhook not found', { status: 404 });
   }
+
+  const userId = webhook.userId;
 
   if (webhook.isPrivate) {
     if (!apiKey) {
+      posthog.capture({
+        event: 'webhook_error',
+        distinctId: userId,
+        properties: {
+          error: 'missing_api_key',
+          webhookId,
+        },
+      });
       return new NextResponse('Invalid API key', { status: 401 });
     }
 
     if (apiKey !== webhook.apiKey) {
+      posthog.capture({
+        event: 'webhook_error',
+        distinctId: userId,
+        properties: {
+          error: 'invalid_api_key',
+          webhookId,
+        },
+      });
       return new NextResponse('Invalid API key', { status: 401 });
     }
   }
 
-  if (!webhook.status) {
-    return new NextResponse('Invalid webhook', { status: 401 });
+  if (webhook.status === 'inactive') {
+    posthog.capture({
+      event: 'webhook_error',
+      distinctId: userId,
+      properties: {
+        error: 'webhook_inactive',
+        webhookId,
+      },
+    });
+    return new NextResponse('Webhook is inactive', { status: 403 });
   }
 
   // Ensure config exists with defaults
@@ -77,17 +118,47 @@ export async function POST(
     config.requests.allowedMethods.length > 0 &&
     !config.requests.allowedMethods.includes(req.method)
   ) {
+    posthog.capture({
+      event: 'webhook_error',
+      distinctId: userId,
+      properties: {
+        error: 'method_not_allowed',
+        webhookId,
+        method: req.method,
+        allowedMethods: config.requests.allowedMethods,
+      },
+    });
     return new NextResponse('Method not allowed', { status: 405 });
   }
 
   // Sanitize and check path restrictions
   if (config.requests.blockedFrom?.some((p) => from?.match(p))) {
+    posthog.capture({
+      event: 'webhook_error',
+      distinctId: userId,
+      properties: {
+        error: 'from_blocked',
+        webhookId,
+        from,
+        blockedFrom: config.requests.blockedFrom,
+      },
+    });
     return new NextResponse('From not allowed', { status: 403 });
   }
   if (
     config.requests.allowedFrom?.length &&
     !config.requests.allowedFrom.some((p) => from?.match(p))
   ) {
+    posthog.capture({
+      event: 'webhook_error',
+      distinctId: userId,
+      properties: {
+        error: 'from_not_allowed',
+        webhookId,
+        from,
+        allowedFrom: config.requests.allowedFrom,
+      },
+    });
     return new NextResponse('From not allowed', { status: 403 });
   }
 
@@ -147,12 +218,38 @@ export async function POST(
       .returning();
 
     if (!event) {
+      posthog.capture({
+        event: 'webhook_error',
+        distinctId: userId,
+        properties: {
+          error: 'failed_to_create_event',
+          webhookId,
+          from,
+        },
+      });
       return new NextResponse('Failed to create event', { status: 500 });
     }
+
+    posthog.capture({
+      event: 'webhook_received',
+      distinctId: userId,
+      properties: {
+        webhookId,
+        from,
+        apiKey,
+      },
+    });
 
     return new NextResponse('Webhook received', { status: 202 });
   } catch (error) {
     console.error('Error storing webhook request:', error);
+    posthog.captureException(error, userId, {
+      properties: {
+        webhookId,
+        from,
+        apiKey,
+      },
+    });
     return new NextResponse('Internal server error', { status: 500 });
   }
 }

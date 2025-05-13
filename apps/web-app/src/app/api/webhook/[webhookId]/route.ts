@@ -146,7 +146,7 @@ export async function POST(
     return new NextResponse('From not allowed', { status: 403 });
   }
   if (
-    config.requests.allowedFrom?.length &&
+    config.requests.allowedFrom?.length > 0 &&
     !config.requests.allowedFrom.some((p) => from?.match(p))
   ) {
     posthog.capture({

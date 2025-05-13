@@ -24,7 +24,14 @@ export async function POST(
         webhookId: null,
       },
     });
-    return new NextResponse('Webhook ID required', { status: 400 });
+    return NextResponse.json(
+      {
+        error: 'Webhook ID required',
+        help: 'Please provide a valid webhook ID in the URL path',
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 400 },
+    );
   }
 
   let from =
@@ -52,7 +59,15 @@ export async function POST(
         webhookId,
       },
     });
-    return new NextResponse('Webhook not found', { status: 404 });
+    return NextResponse.json(
+      {
+        error: 'Webhook not found',
+        help: 'The webhook ID provided does not exist or has been deleted',
+        webhookId,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 404 },
+    );
   }
 
   const userId = webhook.userId;
@@ -67,7 +82,14 @@ export async function POST(
           webhookId,
         },
       });
-      return new NextResponse('Invalid API key', { status: 401 });
+      return NextResponse.json(
+        {
+          error: 'Invalid API key',
+          help: 'Please provide a valid API key in the x-unhook-api-key header or apiKey query parameter',
+          docs: 'https://docs.unhook.sh',
+        },
+        { status: 401 },
+      );
     }
 
     if (apiKey !== webhook.apiKey) {
@@ -79,7 +101,14 @@ export async function POST(
           webhookId,
         },
       });
-      return new NextResponse('Invalid API key', { status: 401 });
+      return NextResponse.json(
+        {
+          error: 'Invalid API key',
+          help: 'The provided API key does not match the webhook configuration',
+          docs: 'https://docs.unhook.sh',
+        },
+        { status: 401 },
+      );
     }
   }
 
@@ -92,7 +121,15 @@ export async function POST(
         webhookId,
       },
     });
-    return new NextResponse('Webhook is inactive', { status: 403 });
+    return NextResponse.json(
+      {
+        error: 'Webhook is inactive',
+        help: 'This webhook has been deactivated. Please reactivate it in the dashboard to continue receiving events',
+        webhookId,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 403 },
+    );
   }
 
   // Ensure config exists with defaults
@@ -128,7 +165,15 @@ export async function POST(
         allowedMethods: config.requests.allowedMethods,
       },
     });
-    return new NextResponse('Method not allowed', { status: 405 });
+    return NextResponse.json(
+      {
+        error: 'Method not allowed',
+        help: 'This webhook does not accept requests with this method',
+        method: req.method,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 405 },
+    );
   }
 
   // Sanitize and check path restrictions
@@ -143,7 +188,15 @@ export async function POST(
         blockedFrom: config.requests.blockedFrom,
       },
     });
-    return new NextResponse('From not allowed', { status: 403 });
+    return NextResponse.json(
+      {
+        error: 'From not allowed',
+        help: 'The source of this request is blocked by the webhook configuration',
+        from,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 403 },
+    );
   }
   if (
     config.requests.allowedFrom?.length > 0 &&
@@ -159,7 +212,15 @@ export async function POST(
         allowedFrom: config.requests.allowedFrom,
       },
     });
-    return new NextResponse('From not allowed', { status: 403 });
+    return NextResponse.json(
+      {
+        error: 'From not allowed',
+        help: 'The source of this request is not in the allowed list',
+        from,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 403 },
+    );
   }
 
   // Store the webhook request in Supabase
@@ -227,7 +288,15 @@ export async function POST(
           from,
         },
       });
-      return new NextResponse('Failed to create event', { status: 500 });
+      return NextResponse.json(
+        {
+          error: 'Failed to create event',
+          help: 'There was an error processing your webhook request. Please try again later',
+          webhookId,
+          docs: 'https://docs.unhook.sh',
+        },
+        { status: 500 },
+      );
     }
 
     posthog.capture({
@@ -240,7 +309,15 @@ export async function POST(
       },
     });
 
-    return new NextResponse('Webhook received', { status: 202 });
+    return NextResponse.json(
+      {
+        message: 'Webhook received',
+        webhookId,
+        eventId: event.id,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 202 },
+    );
   } catch (error) {
     console.error('Error storing webhook request:', error);
     posthog.captureException(error, userId, {
@@ -250,6 +327,14 @@ export async function POST(
         apiKey,
       },
     });
-    return new NextResponse('Internal server error', { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        help: 'An unexpected error occurred while processing your webhook request. Please try again later',
+        webhookId,
+        docs: 'https://docs.unhook.sh',
+      },
+      { status: 500 },
+    );
   }
 }

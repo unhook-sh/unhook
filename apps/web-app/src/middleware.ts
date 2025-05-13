@@ -18,7 +18,7 @@ export default clerkMiddleware(async (auth, request) => {
     const match = request.nextUrl.pathname.match(/^\/wh_([^\/]+)$/);
     if (match) {
       const webhookId = match[1];
-      const url = new URL(`/api/webhook/${webhookId}`, request.url);
+      const url = new URL(`/api/webhook/wh_${webhookId}`, request.url);
       url.search = request.nextUrl.search;
       return NextResponse.rewrite(url);
     }

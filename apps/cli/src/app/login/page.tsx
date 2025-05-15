@@ -14,20 +14,15 @@ export const LoginPage: FC<RouteProps> = () => {
 
   // Store access
   const navigate = useRouterStore.use.navigate();
-  const isAuthenticated = useAuthStore.use.isSignedIn();
-  const authenticate = useAuthStore.use.authenticate();
+  // const isSignedIn = useAuthStore.use.isSignedIn();
+  const signIn = useAuthStore.use.signIn();
   const authUrl = useAuthStore.use.authUrl();
+
   // Start authentication when ready
   useEffect(() => {
-    // If already authenticated, navigate away
-    if (isAuthenticated) {
-      navigate('/');
-      return;
-    }
-
     async function startAuthentication() {
       try {
-        await authenticate();
+        await signIn();
 
         navigate('/');
       } catch (error) {
@@ -37,16 +32,7 @@ export const LoginPage: FC<RouteProps> = () => {
 
     log('Starting authentication');
     void startAuthentication();
-
-    return () => {
-      useAuthStore.setState({
-        isSigningIn: false,
-        authUrl: null,
-        isValidatingSession: false,
-        token: null,
-      });
-    };
-  }, [isAuthenticated, navigate, authenticate]);
+  }, [navigate, signIn]);
 
   // Render based on current state
   return (

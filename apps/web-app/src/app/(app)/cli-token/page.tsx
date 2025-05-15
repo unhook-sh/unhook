@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
-import { WebhookSelectorProvider } from './_components/webhook-selector';
+import { CliLoginButton } from './_components/cli-login-button';
 
 export default async function CliTokenPage() {
   // TODO: Add a button to switch organizations
@@ -26,7 +26,8 @@ export default async function CliTokenPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <WebhookSelectorProvider />
+            {/* <WebhookSelectorProvider /> */}
+            <CliLoginButton />
           </CardContent>
           <CardFooter>
             <span className="text-sm text-muted-foreground">

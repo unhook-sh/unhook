@@ -10,7 +10,7 @@ const config = defineWebhookConfig({
   ],
   forward: [
     {
-      from: 'Clerk',
+      from: 'clerk',
       to: 'default',
     },
   ],

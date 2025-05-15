@@ -7,10 +7,7 @@ import clipboard from 'clipboardy';
 import open from 'open';
 import { createStore } from 'zustand';
 import { env } from '../env';
-import {
-  AuthenticationInProgressError,
-  handleAuthError,
-} from '../lib/auth/errors';
+import { handleAuthError } from '../lib/auth/errors';
 import { AuthServer } from '../lib/auth/server';
 import { capture } from '../lib/posthog';
 import { FileStorage } from '../lib/storage/file-storage';
@@ -42,8 +39,13 @@ interface AuthActions {
   setSigningIn: (isSigningIn: boolean) => void;
   setAuthUrl: (authUrl: string | null) => void;
   reset: () => void;
-  authenticate: () => Promise<void>;
-  exchangeAuthCode: (code: string) => Promise<void>;
+  signIn: () => Promise<void>;
+  exchangeAuthCode: (code: string) => Promise<{
+    token: string;
+    user: RouterOutputs['auth']['verifySessionToken']['user'];
+    orgId: string;
+    sessionId: string;
+  }>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -205,15 +207,26 @@ const store = createStore<AuthStore>()((set, get) => ({
         email: user.email,
       },
     });
+
+    return {
+      token,
+      user,
+      orgId,
+      sessionId,
+    };
   },
 
-  authenticate: async () => {
+  signIn: async () => {
     const state = get();
+
+    if (state.isSigningIn || state.isSignedIn) {
+      log('Authentication already in progress, skipping');
+      return;
+    }
+
     state.reset();
 
-    if (state.isSigningIn) {
-      throw new AuthenticationInProgressError();
-    }
+    log('Starting sign in');
 
     try {
       state.setSigningIn(true);
@@ -261,7 +274,21 @@ const store = createStore<AuthStore>()((set, get) => ({
         },
       });
 
-      await get().exchangeAuthCode(result.code);
+      const exchangedAuthCode = await get().exchangeAuthCode(result.code);
+
+      useApiStore.setState({
+        api: createClient({
+          authToken: exchangedAuthCode.token,
+          sessionCookie: exchangedAuthCode.token,
+        }),
+      });
+
+      set({
+        isSigningIn: false,
+        authUrl: null,
+        isValidatingSession: false,
+        token: null,
+      });
     } catch (error) {
       handleAuthError(error);
     } finally {

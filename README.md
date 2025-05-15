@@ -49,99 +49,227 @@ yarn global add @unhook/cli
 
 # Using bun
 bun add -g @unhook/cli
+
+# Using pnpm
+pnpm add -g @unhook/cli
 ```
 
-### 2. Start the Webhook
+### 2. Initialize Your Project
+
+Run the initialization command using your preferred package runner:
 
 ```bash
-unhook
+# Using npx
+npx @unhook/cli init
+
+# Using bunx
+bunx @unhook/cli init
+
+# Using pnpm
+pnpm dlx @unhook/cli init
+
+# Using deno
+deno run --allow-net --allow-read --allow-write npm:@unhook/cli init
 ```
 
-This will create a secure webhook to your local server and provide you with a webhook URL in this format:
+This will:
+1. Open your browser to authenticate with Unhook
+2. Create an `unhook.config.ts` file in your project
+3. Configure your webhook endpoints
 
-```
-# Full parameter names
-https://unhook.sh/t_123?endpoint=YOUR_ENDPOINT
+### 3. Start the Webhook
 
-# Shorthand parameters (k=key, e=endpoint)
-https://unhook.sh/t_123?e=YOUR_ENDPOINT
-```
-
-For example:
 ```bash
-# Using full parameter names
-https://unhook.sh/t_123?from=stripe
+# Using npx
+npx @unhook/cli
+
+# Using bunx
+bunx @unhook/cli
+
+# Using pnpm
+pnpm dlx @unhook/cli
+
+# Using deno
+deno run --allow-net --allow-read --allow-write npm:@unhook/cli
 ```
 
-Components of the URL:
-- `key` or `k`: Your public API key for authentication
-- `endpoint` or `e`: The local endpoint where webhooks should be forwarded
+This will create a secure webhook endpoint that forwards requests to your local server based on the configuration.
 
-### 3. Configure Your Webhook Provider
+### 4. Configure Your Webhook Provider
 
-Use either URL format in your webhook provider's settings:
+Use the webhook URL in your provider's settings:
 
-#### Stripe
 ```bash
-# Full parameters
-https://unhook.sh/t_123?endpoint=api/webhooks/stripe
-
-# Shorthand
-https://unhook.sh/t_123?e=api/webhooks/stripe
+https://unhook.sh/wh_your_webhook_id
 ```
 
-#### GitHub
-```bash
-# GitHub webhook endpoint
-https://unhook.sh/t_123?endpoint=api/webhooks/github
+The webhook will automatically route requests based on the `from` and `to` configuration in your `unhook.config.ts`.
+
+## Configuration
+
+### Webhook Configuration
+
+The `unhook.config.ts` file supports the following options:
+
+```typescript
+interface WebhookConfig {
+  webhookId: string;  // Your unique webhook ID
+  to: Array<{
+    name: string;     // Name of the endpoint
+    url: string;      // Local URL to forward requests to
+  }>;
+  forward: Array<{
+    from: string;     // Source of the webhook (e.g., 'clerk', 'stripe')
+    to: string;       // Name of the endpoint to forward to
+  }>;
+}
 ```
+
+### Security Features
+
+- API key authentication for private webhooks
+- Method restrictions
+- Source restrictions
+- Request body size limits
+- Header filtering
+- End-to-end encryption
+
+### Request Validation
+
+The webhook endpoint validates:
+- Webhook ID existence
+- API key (for private webhooks)
+- Webhook status (active/inactive)
+- Allowed methods
+- Allowed sources
+- Request body size
+- Required headers
+
+### Request Storage
+
+By default, the webhook endpoint:
+- Stores request headers
+- Stores request body (up to 10MB)
+- Tracks request metadata (source, size, content type)
+- Maintains request history
+- Supports request replay
 
 ## Usage Examples
 
 ### Basic Usage
 
 ```bash
-# Start webhook on port 3000
+# Start webhook with default config
 unhook
 
-# Enable debug logging
+# Start with debug logging
 unhook --debug
+
+# Start with specific config file
+unhook --config ./custom.config.ts
 ```
 
-### Configuration File
+### Multiple Endpoints
 
-Create an `unhook.config.js` file in your project root:
+Configure multiple endpoints in your `unhook.config.ts`:
 
-```javascript
-module.exports = {
-  port: 3000,
-  webhookId: 'your-webhook-id',
-  debug: false,
-  // Add other configuration options
-}
+```typescript
+import { defineWebhookConfig } from '@unhook/cli';
+
+const config = defineWebhookConfig({
+  webhookId: 'wh_your_webhook_id',
+  to: [
+    {
+      name: 'clerk',
+      url: 'http://localhost:3000/api/webhooks/clerk',
+    },
+    {
+      name: 'stripe',
+      url: 'http://localhost:3000/api/webhooks/stripe',
+    },
+    {
+      name: 'github',
+      url: 'http://localhost:3000/api/webhooks/github',
+    }
+  ],
+  forward: [
+    {
+      from: 'clerk',
+      to: 'clerk',
+    },
+    {
+      from: 'stripe',
+      to: 'stripe',
+    },
+    {
+      from: 'github',
+      to: 'github',
+    }
+  ],
+} as const);
+
+export default config;
 ```
+
+### Request Replay
+
+The webhook dashboard allows you to replay previous requests:
+
+1. View request history in the dashboard
+2. Select a request to replay
+3. Choose the target endpoint
+4. Click "Replay Request"
+
+The replayed request will maintain the original:
+- Headers
+- Body
+- Content type
+- Source information
 
 ## Team Development
 
-### One URL, Many Developers
+### Shared Configuration
 
-Unhook simplifies webhook testing for teams by sharing the same webhook URL:
+Teams can share a single webhook configuration:
 
-```bash
-# Webhook URL (shared across the team)
-https://unhook.sh/t_123?e=api/webhooks/stripe
+```typescript
+// team.unhook.config.ts
+import { defineWebhookConfig } from '@unhook/cli';
 
-# Developer 1
-unhook --port 3000 --client-id dev1
+const config = defineWebhookConfig({
+  webhookId: 'wh_team_webhook_id',
+  to: [
+    {
+      name: 'dev1',
+      url: 'http://localhost:3000/api/webhooks',
+    },
+    {
+      name: 'dev2',
+      url: 'http://localhost:3001/api/webhooks',
+    }
+  ],
+  forward: [
+    {
+      from: 'clerk',
+      to: 'dev1',
+    },
+    {
+      from: 'stripe',
+      to: 'dev2',
+    }
+  ],
+} as const);
 
-# Developer 2
-unhook --port 3000 --client-id dev2
-
-# Developer 3 (different port)
-unhook --port 8080 --client-id dev3
+export default config;
 ```
 
-Each developer runs Unhook locally, and the service automatically routes incoming webhooks to the appropriate developer's machine based on their active session and routing rules.
+### Team Features
+
+- **Shared Webhook URL**: All team members use the same webhook URL
+- **Individual Routing**: Each developer can receive specific webhook types
+- **Request History**: View and replay requests across the team
+- **Real-time Monitoring**: See incoming requests in real-time
+- **Team Dashboard**: Monitor team activity and webhook status
 
 ### Team Management
 
@@ -150,26 +278,7 @@ Team leads can:
 - Set up shared configurations
 - Control access with team API keys
 - Share webhook history and logs
-
-### Shared Configuration
-
-Create a team configuration file to standardize settings:
-
-```javascript
-// team.unhook.js
-module.exports = {
-  team: {
-    name: 'frontend-team',
-    webhookPrefix: 'frontend',
-    defaultPort: 3000,
-    // Optional: configure routing rules
-    routing: {
-      'stripe-*': 'payment-team',
-      'github-*': 'devops-team'
-    }
-  }
-}
-```
+- Configure routing rules for team members
 
 ## Dashboard
 

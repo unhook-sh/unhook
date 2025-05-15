@@ -181,8 +181,8 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     },
   },
   {
-    id: 'requests',
-    header: 'Forwarded Requests',
+    id: 'delivered',
+    header: 'Delivered',
     minWidth: 25,
     cell: ({ row, isSelected }) => {
       const color = getSelectedColor(isSelected);

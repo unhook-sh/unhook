@@ -1,9 +1,11 @@
+import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import open from 'open';
 import type { FC } from 'react';
 import { createStore } from 'zustand';
 import type { AppRoutePath } from '~/app/routes';
 import { capture } from '../lib/posthog';
+const log = debug('unhook:cli:router-store');
 
 // Route configuration type
 export interface RouteProps {
@@ -91,6 +93,11 @@ const store = createStore<RouterStore>()((set, get) => ({
 
     // Find the route and open URL if it exists
     const route = routes.find((r) => r.path === path);
+    log('navigate', {
+      fromPath: currentPath,
+      toPath: path,
+      history,
+    });
 
     capture({
       event: 'navigation',

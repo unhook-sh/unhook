@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "bun": "1.2.12",
-    "debug": "4.4.0"
+    "bun": "1.2.13",
+    "debug": "4.4.1"
   },
   "devDependencies": {
-    "@types/bun": "1.2.12",
+    "@types/bun": "1.2.13",
     "@types/debug": "4.1.12",
     "typescript": "5.8.3"
   },

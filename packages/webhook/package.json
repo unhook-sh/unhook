@@ -6,11 +6,11 @@
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
     "@vercel/kv": "3.0.0",
-    "debug": "4.4.0",
+    "debug": "4.4.1",
     "drizzle-orm": "0.43.1",
     "find-up": "7.0.0",
-    "undici": "7.8.0",
-    "yaml": "2.7.1",
+    "undici": "7.9.0",
+    "yaml": "2.8.0",
     "zod": "3.24.4"
   },
   "devDependencies": {

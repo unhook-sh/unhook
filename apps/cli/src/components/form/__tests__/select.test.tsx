@@ -44,11 +44,7 @@ describe('FormSelect', () => {
 
   it('should render select input when active', () => {
     const { lastFrame } = renderWithProvider(
-      <FormSelect
-        id="test-select"
-        items={mockItems}
-        placeholder="Select an option"
-      />,
+      <FormSelect id="test-select" items={mockItems} />,
     );
 
     expect(lastFrame()).toContain('Option 1');
@@ -58,11 +54,7 @@ describe('FormSelect', () => {
 
   it('should not render when not active', () => {
     const { lastFrame } = renderWithProvider(
-      <FormSelect
-        id="test-select"
-        items={mockItems}
-        placeholder="Select an option"
-      />,
+      <FormSelect id="test-select" items={mockItems} />,
     );
 
     // Initially should not show since it's not active

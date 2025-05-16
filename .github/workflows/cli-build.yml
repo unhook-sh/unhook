@@ -4,9 +4,10 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "apps/cli/**"
+      - "apps/**"
       - "packages/**"
-      - ".github/workflows/cli-build.yml"
+      - ".github/workflows/**"
+      - ".changeset/**"
   workflow_dispatch:
 
 env:
@@ -15,9 +16,6 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-  SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-  SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
   NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
   NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST }}
   POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}

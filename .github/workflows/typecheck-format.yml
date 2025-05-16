@@ -3,8 +3,14 @@ name: Typecheck & Format
 on:
   pull_request:
     branches: ["*"]
+    paths:
+      - "apps/**"
+      - "packages/**"
   push:
     branches: ["main"]
+    paths:
+      - "apps/**"
+      - "packages/**"
   merge_group:
 
 concurrency:

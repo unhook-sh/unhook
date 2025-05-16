@@ -14,9 +14,6 @@ env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
   NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
-  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-  SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-  SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
 jobs:
   release:

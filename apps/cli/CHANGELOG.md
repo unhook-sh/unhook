@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- [`9bebbe4`](https://github.com/unhook-sh/unhook/commit/9bebbe458f8270a43054bac0487dd8e41a8c8d3a) Thanks [@seawatts](https://github.com/seawatts)! - Fix issues with cli release
+
 ## 0.5.0
 
 ### Minor Changes

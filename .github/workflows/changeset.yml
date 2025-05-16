@@ -43,5 +43,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NEXT_PUBLIC_APP_TYPE: cli
-          BUN_BUILD_TARGET: bun

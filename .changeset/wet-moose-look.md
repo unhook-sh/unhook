@@ -1,19 +1,5 @@
 ---
 "@unhook/cli": minor
-"@unhook/web-app": minor
-"@unhook/analytics": minor
-"@unhook/api": minor
-"@unhook/db": minor
-"@unhook/id": minor
-"@unhook/logger": minor
-"@unhook/ui": minor
-"@unhook/webhook": minor
-"@unhook/zustand": minor
-"@unhook/commitlint-config": minor
-"@unhook/homebrew": minor
-"@unhook/next-config": minor
-"@unhook/tooling-testing": minor
-"@unhook/tsconfig": minor
 ---
 
 Initial Beta Release

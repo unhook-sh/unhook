@@ -24,11 +24,16 @@ const log = debug('unhook:cli');
 
 async function main() {
   try {
+    const args = await parseArgs();
+    await setupDebug({ isDebugEnabled: args.debug });
+    useCliStore.setState(args);
+
     const config = await useConfigStore.getState().loadConfig();
     void useConfigStore.getState().watchConfig();
 
-    const args = await parseArgs({ debug: config.debug });
-    useCliStore.setState(args);
+    if (config.debug) {
+      await setupDebug({ isDebugEnabled: config.debug });
+    }
 
     capture({
       event: 'cli_loaded',
@@ -41,7 +46,6 @@ async function main() {
       },
     });
 
-    await setupDebug({ isDebugEnabled: args.debug });
     setupProcessHandlers();
 
     log('Starting CLI', {

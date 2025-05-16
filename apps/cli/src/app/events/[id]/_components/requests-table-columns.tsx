@@ -15,7 +15,7 @@ export const columns: ColumnDef<RequestType>[] = [
     header: '',
     minWidth: 3,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
 
       if (row.status === 'pending') {
         return <Spinner dimColor={!isSelected} bold={isSelected} />;
@@ -69,10 +69,10 @@ export const columns: ColumnDef<RequestType>[] = [
   },
   {
     id: 'time',
-    header: 'Created',
+    header: 'Delivered',
     minWidth: 20,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
       const timeText = formatRelativeTime(row.createdAt);
 
       return (
@@ -85,9 +85,9 @@ export const columns: ColumnDef<RequestType>[] = [
   {
     id: 'to',
     header: 'To',
-    minWidth: 25,
+    minWidth: 15,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
 
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
@@ -102,7 +102,7 @@ export const columns: ColumnDef<RequestType>[] = [
     header: 'Code',
     minWidth: 4,
     cell: ({ row, isSelected, width }) => {
-      let color = getSelectedColor(isSelected, 'green');
+      let color = 'green';
       const responseCode = row.response?.status;
 
       if (responseCode && responseCode >= 500) {
@@ -127,7 +127,7 @@ export const columns: ColumnDef<RequestType>[] = [
     header: 'Elapsed (ms)',
     minWidth: 8,
     cell: ({ row, isSelected, width }) => {
-      let color = getSelectedColor(isSelected, 'green');
+      let color = getSelectedColor({ isSelected, defaultColor: 'green' });
       const responseTimeMs = row.responseTimeMs ?? 0;
 
       if (responseTimeMs < 1000) {
@@ -155,9 +155,9 @@ export const columns: ColumnDef<RequestType>[] = [
   {
     id: 'url',
     header: 'URL',
-    minWidth: 25,
+    minWidth: 50,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
 
       let url = row.to?.url;
       if (url) {

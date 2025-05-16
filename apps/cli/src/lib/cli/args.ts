@@ -5,11 +5,7 @@ import { hideBin } from 'yargs/helpers';
 import type { AppRoutePath } from '~/app/routes';
 import type { CliState } from '~/stores/cli-store';
 
-export async function parseArgs({
-  debug,
-}: {
-  debug?: boolean;
-}): Promise<CliState> {
+export async function parseArgs(): Promise<CliState> {
   const pkg = JSON.parse(
     readFileSync(join(__dirname, '../../../package.json'), 'utf-8'),
   ) as { version: string };
@@ -28,7 +24,7 @@ export async function parseArgs({
       alias: 'd',
       type: 'boolean',
       description: 'Enable debug logging',
-      default: debug ?? false,
+      default: false,
     })
     .command(
       'init',

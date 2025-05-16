@@ -41,7 +41,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: '',
     minWidth: 3,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
 
       if (row.status === 'pending') {
         return <Spinner dimColor={!isSelected} bold={isSelected} />;
@@ -98,7 +98,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: 'Created',
     minWidth: 20,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
       const timeText = formatRelativeTime(row.createdAt);
 
       return (
@@ -113,7 +113,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: 'Expires',
     minWidth: 20,
     cell: ({ row, isSelected, width }) => {
-      let color = getSelectedColor(isSelected);
+      let color = getSelectedColor({ isSelected });
       let expiredText = '-';
 
       try {
@@ -159,7 +159,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: 'Method',
     minWidth: 4,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(row.originRequest?.method ?? '', width)}
@@ -172,7 +172,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: 'From',
     minWidth: 25,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
           {truncateText(row.from, width)}
@@ -185,7 +185,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: 'Delivered',
     minWidth: 25,
     cell: ({ row, isSelected }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
 
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
@@ -199,7 +199,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     header: 'Event',
     minWidth: 35,
     cell: ({ row, isSelected, width }) => {
-      const color = getSelectedColor(isSelected);
+      const color = getSelectedColor({ isSelected });
       const originRequest = row.originRequest;
       const eventName = extractEventName(originRequest?.body);
 

@@ -4,7 +4,6 @@ import { Box, Text, useInput } from 'ink';
 import { type FC, useState } from 'react';
 import { Ascii } from '~/components/ascii';
 import { SelectInput } from '~/components/select-input';
-import { useDimensions } from '~/hooks/use-dimensions';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
 import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
@@ -30,13 +29,12 @@ export const MenuPage: FC<RouteProps> = () => {
     showInMenu: boolean;
   }>;
 
-  const dimensions = useDimensions();
   const clientId = useConfigStore.use.clientId?.();
   const version = useCliStore.use.version();
   const webhookId = useConfigStore.use.webhookId();
   const debug = useCliStore.use.debug();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}?from=*`;
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}`;
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   useInput((input) => {
@@ -52,18 +50,10 @@ export const MenuPage: FC<RouteProps> = () => {
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Ascii
-          text="Unhook"
-          width={dimensions.width}
-          font="ANSI Shadow"
-          color="gray"
-        />
+        <Ascii text="Unhook" font="ANSI Shadow" color="gray" />
       </Box>
       <Box marginBottom={1} flexDirection="column">
-        {/* <Box flexDirection="row"> */}
-        {/* <Text dimColor>Webhook URL:</Text> */}
         <Text bold>{webhookUrl}</Text>
-        {/* </Box> */}
         {!copiedToClipboard && (
           <Text dimColor>Press 'c' to copy to clipboard</Text>
         )}

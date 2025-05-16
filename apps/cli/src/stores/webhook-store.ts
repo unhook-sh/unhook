@@ -23,7 +23,7 @@ interface WebhookActions {
   setIsCheckingWebhook: (isChecking: boolean) => void;
   fetchWebhooks: () => Promise<void>;
   fetchWebhookById: (webhookId: string) => Promise<WebhookType | null>;
-  createWebhook: (port: number) => Promise<void>;
+  createWebhook: (name: string) => Promise<WebhookType>;
   checkWebhookAuth: () => Promise<boolean>;
 }
 
@@ -129,7 +129,7 @@ const store = createStore<WebhookStore>()((set, get) => ({
       return false;
     }
   },
-  createWebhook: async () => {
+  createWebhook: async (name: string) => {
     const { user, orgId } = useAuthStore.getState();
 
     if (!user?.id || !orgId) {
@@ -138,8 +138,8 @@ const store = createStore<WebhookStore>()((set, get) => ({
 
     const { api } = useApiStore.getState();
 
-    await api.webhooks.create.mutate({
-      name: 'default',
+    const webhook = await api.webhooks.create.mutate({
+      name,
       status: 'inactive',
       config: {
         storage: {
@@ -154,7 +154,10 @@ const store = createStore<WebhookStore>()((set, get) => ({
       },
     });
 
+    if (!webhook) throw new Error('Failed to create webhook');
+
     await get().fetchWebhooks();
+    return webhook;
   },
 }));
 

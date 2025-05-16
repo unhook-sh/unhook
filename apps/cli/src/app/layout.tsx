@@ -63,7 +63,7 @@ function AppContent() {
 
   if (isValidating) {
     return (
-      <Box flexDirection="column" minHeight={dimensions.height} padding={1}>
+      <Box flexDirection="column" padding={1}>
         <Box marginBottom={1}>
           <Ascii
             text="Unhook"

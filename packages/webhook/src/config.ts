@@ -110,10 +110,9 @@ function loadYamlConfig(configPath: string): WebhookConfig {
   return parseYaml(content);
 }
 
-export async function findUpConfig(): Promise<string> {
+export async function findUpConfig(): Promise<string | null> {
   const cwd = process.cwd();
-  const configPath =
-    (await findUp(CONFIG_FILES, { cwd })) ?? 'unhook.config.ts';
+  const configPath = (await findUp(CONFIG_FILES, { cwd })) ?? null;
   return configPath;
 }
 

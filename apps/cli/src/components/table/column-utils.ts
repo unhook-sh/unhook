@@ -153,9 +153,14 @@ export function truncateText(text: string | null, maxWidth: number) {
   return `${text.slice(0, maxWidth - 1)}…`;
 }
 
-export function getSelectedColor(
-  isSelected: boolean,
+export function getSelectedColor({
+  isSelected,
   defaultColor = 'gray',
-): string {
-  return isSelected ? 'white' : defaultColor;
+  selectedColor = 'white',
+}: {
+  isSelected: boolean;
+  defaultColor?: string;
+  selectedColor?: string;
+}): string {
+  return isSelected ? selectedColor : defaultColor;
 }

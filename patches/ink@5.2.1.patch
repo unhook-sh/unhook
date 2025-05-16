@@ -49,7 +49,7 @@ index a9c444ff161ed4b6ea13909591844909015fe97c..0d0c6b5980c0f4405e93b3291d193186
          // so that it's rerendered every time, not just new static parts, like in non-debug mode
          this.fullStaticOutput = '';
          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
--        this.container = reconciler.createContainer(this.rootNode, 
+-        this.container = reconciler.createContainer(this.rootNode,
 +        this.container = reconciler.createContainer(this.rootNode,
          // Legacy mode
 -        0, null, false, null, 'id', () => { }, null);

@@ -1,21 +1,21 @@
-import { Box, Text, useFocusManager } from 'ink';
+import { Box, useFocusManager } from 'ink';
 import {
-  type FC,
   type ReactNode,
   createContext,
-  useContext,
+  useCallback,
+  useEffect,
   useState,
 } from 'react';
 import { z } from 'zod';
-import { TextInput } from './text-input';
 
 type ZodSchema = z.ZodObject<{
   [key: string]: z.ZodTypeAny;
 }>;
 
-interface FormContextType<T extends ZodSchema> {
+export interface FormContextType<T extends ZodSchema> {
   registerInput: (id: string) => void;
   unregisterInput: (id: string) => void;
+  setInputAvailable: (id: string, available: boolean) => void;
   getNextInput: (currentId: string) => string | undefined;
   setValue: (id: string, value: string) => void;
   getValue: (id: string) => string;
@@ -30,11 +30,14 @@ interface FormContextType<T extends ZodSchema> {
   markInputComplete: (id: string) => void;
   getError: (id: string) => string | undefined;
   setError: (id: string, error: string | undefined) => void;
+  isInputAvailable: (id: string) => boolean;
 }
 
-const FormContext = createContext<FormContextType<ZodSchema> | null>(null);
+export const FormContext = createContext<FormContextType<ZodSchema> | null>(
+  null,
+);
 
-interface FormProviderProps<T extends ZodSchema> {
+export interface FormProviderProps<T extends ZodSchema> {
   children: ReactNode;
   onSubmit: (values: z.infer<T>) => void;
   schema: T;
@@ -48,6 +51,9 @@ export function FormProvider<T extends ZodSchema>({
   initialValues = {},
 }: FormProviderProps<T>) {
   const [inputs, setInputs] = useState<string[]>([]);
+  const [availableInputs, setAvailableInputs] = useState<Set<string>>(
+    new Set(),
+  );
   const [values, setValues] = useState<Record<string, string>>(() => {
     // Convert initialValues to string values
     const stringValues: Record<string, string> = {};
@@ -67,35 +73,68 @@ export function FormProvider<T extends ZodSchema>({
 
   const registerInput = (id: string) => {
     setInputs((prev) => {
-      const newInputs = [...prev, id];
-      if (newInputs.length === 1) {
-        setActiveInput(id);
-        focus(id);
+      if (!prev.includes(id)) {
+        const newInputs = [...prev, id];
+        if (newInputs.length === 1) {
+          setActiveInput(id);
+          focus(id);
+        }
+        return newInputs;
       }
-      return newInputs;
+      return prev;
     });
+    setAvailableInputs((prev) => new Set([...prev, id]));
   };
 
   const unregisterInput = (id: string) => {
     setInputs((prev) => prev.filter((inputId) => inputId !== id));
+    setAvailableInputs((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
   };
+
+  const setInputAvailable = (id: string, available: boolean) => {
+    setAvailableInputs((prev) => {
+      const next = new Set(prev);
+      if (available) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+  };
+
+  const isInputAvailable = (id: string) => availableInputs.has(id);
 
   const getNextInput = (currentId: string) => {
     const currentIndex = inputs.indexOf(currentId);
-    return inputs[currentIndex + 1];
+    // Find the next available input
+    for (let i = currentIndex + 1; i < inputs.length; i++) {
+      const input = inputs[i];
+      if (input && availableInputs.has(input)) {
+        return input;
+      }
+    }
+    return undefined;
   };
 
   const setValue = (id: string, value: string) => {
-    setValues((prev) => ({ ...prev, [id]: value }));
-    // Clear error when value changes
+    setValues((prev) => {
+      // Always update, even if value is the same, to force re-render and validation
+      return { ...prev, [id]: value };
+    });
+    // Always clear error
     setError(id, undefined);
   };
 
   const getValue = (id: string) => values[id] || '';
 
-  const getAllValues = () => values;
+  const getAllValues = useCallback(() => values, [values]);
 
-  const validate = () => {
+  const validate = useCallback(() => {
     try {
       schema.parse(values);
       return { success: true };
@@ -114,7 +153,7 @@ export function FormProvider<T extends ZodSchema>({
       }
       throw error;
     }
-  };
+  }, [values, schema]);
 
   const validateInput = (id: string) => {
     try {
@@ -157,11 +196,27 @@ export function FormProvider<T extends ZodSchema>({
     });
   };
 
+  useEffect(() => {
+    // Only run if all registered inputs are complete and valid
+    if (
+      inputs.length > 0 &&
+      inputs.every((id) => completedInputs.has(id)) &&
+      Object.keys(errors).length === 0
+    ) {
+      const validation = validate();
+      if (validation.success) {
+        onSubmit(getAllValues());
+      }
+    }
+    // Only run when completedInputs, errors, or inputs change
+  }, [completedInputs, errors, inputs, onSubmit, getAllValues, validate]);
+
   return (
     <FormContext.Provider
       value={{
         registerInput,
         unregisterInput,
+        setInputAvailable,
         getNextInput,
         setValue,
         getValue,
@@ -176,165 +231,10 @@ export function FormProvider<T extends ZodSchema>({
         markInputComplete,
         getError,
         setError,
+        isInputAvailable,
       }}
     >
       <Box flexDirection="column">{children}</Box>
     </FormContext.Provider>
   );
 }
-
-interface FormLabelProps {
-  id: string;
-  children: ReactNode;
-}
-
-export const FormLabel: FC<FormLabelProps> = ({ id, children }) => {
-  const context = useContext(FormContext);
-  if (!context) {
-    throw new Error('FormLabel must be used within a FormProvider');
-  }
-
-  const { isInputActive, isInputComplete } = context;
-  const shouldShow = isInputActive(id) || isInputComplete(id);
-
-  if (!shouldShow) {
-    return null;
-  }
-
-  return (
-    <Box marginRight={1}>
-      <Text>{children}</Text>
-    </Box>
-  );
-};
-
-interface FormDescriptionProps {
-  id: string;
-  children: ReactNode;
-}
-
-export const FormDescription: FC<FormDescriptionProps> = ({ id, children }) => {
-  const context = useContext(FormContext);
-  if (!context) {
-    throw new Error('FormDescription must be used within a FormProvider');
-  }
-
-  const { isInputActive, isInputComplete } = context;
-  const shouldShow = isInputActive(id) || isInputComplete(id);
-
-  if (!shouldShow) {
-    return null;
-  }
-
-  return (
-    <Box>
-      <Text dimColor>{children}</Text>
-    </Box>
-  );
-};
-
-interface FormInputProps {
-  id: string;
-  placeholder?: string;
-  mask?: string;
-  showCursor?: boolean;
-  highlightPastedText?: boolean;
-  defaultValue?: string;
-}
-
-export const FormInput: FC<FormInputProps> = ({
-  id,
-  placeholder,
-  mask,
-  showCursor = true,
-  highlightPastedText = false,
-  defaultValue,
-}) => {
-  const context = useContext(FormContext);
-  if (!context) {
-    throw new Error('FormInput must be used within a FormProvider');
-  }
-
-  const {
-    registerInput,
-    unregisterInput,
-    getNextInput,
-    setValue,
-    getValue,
-    onSubmit,
-    getAllValues,
-    validate,
-    validateInput,
-    setActiveInput,
-    isInputActive,
-    isInputComplete,
-    markInputComplete,
-    getError,
-  } = context;
-
-  const { focus } = useFocusManager();
-
-  useState(() => {
-    registerInput(id);
-    // Set default value if provided and no value exists yet
-    if (defaultValue && !getValue(id)) {
-      setValue(id, defaultValue);
-    }
-    return () => unregisterInput(id);
-  });
-
-  const handleSubmit = (value: string) => {
-    setValue(id, value);
-
-    if (validateInput(id)) {
-      markInputComplete(id);
-      const nextInput = getNextInput(id);
-      if (nextInput) {
-        setActiveInput(nextInput);
-        focus(nextInput);
-      } else {
-        // On last input, validate the entire form
-        const validation = validate();
-        if (validation.success) {
-          onSubmit(getAllValues());
-        }
-      }
-    }
-  };
-
-  const shouldShow = isInputActive(id) || isInputComplete(id);
-
-  if (!shouldShow) {
-    return null;
-  }
-
-  if (isInputComplete(id)) {
-    return (
-      <Box>
-        <Text>{mask ? mask.repeat(getValue(id).length) : getValue(id)}</Text>
-      </Box>
-    );
-  }
-
-  const error = getError(id);
-
-  return (
-    <Box flexDirection="column">
-      <TextInput
-        value={getValue(id)}
-        onChange={(value) => setValue(id, value)}
-        onSubmit={handleSubmit}
-        placeholder={placeholder}
-        mask={mask}
-        showCursor={showCursor}
-        highlightPastedText={highlightPastedText}
-        focus={isInputActive(id)}
-      />
-      {error && (
-        <Box>
-          <Text color="red">{error}</Text>
-        </Box>
-      )}
-    </Box>
-  );
-};

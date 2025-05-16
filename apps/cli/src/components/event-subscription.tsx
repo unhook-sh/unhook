@@ -14,7 +14,6 @@ export const EventSubscription = memo(function EventSubscription() {
   const fetchEvents = useEventStore.use.fetchEvents();
   const handlePendingRequest = useEventStore.use.handlePendingRequest();
   const forwardEvent = useEventStore.use.forwardEvent();
-  // const { data: requests, refetch } = api.requests.all.useQuery();
 
   // Memoize subscription callbacks to prevent unnecessary recreations
   const requestCallbacks = useMemo(

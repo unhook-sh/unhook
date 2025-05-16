@@ -12,7 +12,7 @@ function getNestedField(
 
 const knownEventTypeNames = ['event', 'type', 'event_type', 'eventType'];
 
-function tryDecodeBase64(str: string): string {
+export function tryDecodeBase64(str: string): string {
   try {
     return Buffer.from(str, 'base64').toString('utf-8');
   } catch {

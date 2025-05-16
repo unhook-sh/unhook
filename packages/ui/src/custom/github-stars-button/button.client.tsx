@@ -4,11 +4,10 @@ import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 
 export function GitHubStarsButtonClient({
-  stars,
   className,
   repo,
 }: { stars: number; className?: string; repo: string }) {
-  const formater = Intl.NumberFormat('en-US', {
+  const _formater = Intl.NumberFormat('en-US', {
     notation: 'compact',
     maximumFractionDigits: 0,
   });

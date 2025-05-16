@@ -131,31 +131,37 @@ export const SelectInput = <T extends string = string>({
 
         return (
           <Box key={item.value} marginY={0}>
-            <Text>
-              {isSelected ? `${indicatorComponent} ` : '  '}
-              {typeof item.label === 'string' ? item.label : null}
+            <Box>
+              <Text>{isSelected ? `${indicatorComponent} ` : '  '}</Text>
+              {typeof item.label === 'string' ? (
+                <Text>{item.label}</Text>
+              ) : (
+                item.label
+              )}
               {showHotkeys && item.hotkey && (
                 <Text color="cyan" dimColor>
                   {' '}
                   ({item.hotkey})
                 </Text>
               )}
-            </Text>
+            </Box>
           </Box>
         );
       })}
-      <Box marginTop={1}>
-        <Text dimColor>
-          Press{' '}
-          <Text color="cyan">
-            {[...(keyMapping.up ?? []), ...(keyMapping.down ?? [])].join('/')}
-          </Text>{' '}
-          to navigate, <Text color="cyan">{keyMapping.select?.join('/')}</Text>{' '}
-          to select
-          {items.some((item) => item.hotkey) &&
-            ' or press hotkey to select directly'}
-        </Text>
-      </Box>
+      {items.length > 0 && (
+        <Box marginTop={1}>
+          <Text dimColor>
+            Press{' '}
+            <Text color="cyan">
+              {[...(keyMapping.up ?? []), ...(keyMapping.down ?? [])].join('/')}
+            </Text>{' '}
+            to navigate,{' '}
+            <Text color="cyan">{keyMapping.select?.join('/')}</Text> to select
+            {items.some((item) => item.hotkey) &&
+              ' or press hotkey to select directly'}
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

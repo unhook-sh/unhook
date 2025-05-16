@@ -140,7 +140,7 @@ const store = createStore<WebhookStore>()((set, get) => ({
 
     const webhook = await api.webhooks.create.mutate({
       name,
-      status: 'inactive',
+      status: 'active',
       config: {
         storage: {
           storeHeaders: true,

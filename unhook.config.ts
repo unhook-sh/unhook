@@ -8,7 +8,7 @@ const config = defineWebhookConfig({
       url: 'http://localhost:3000/api/webhooks/clerk',
     },
   ],
-  forward: [
+  deliver: [
     {
       from: 'clerk',
       to: 'default',

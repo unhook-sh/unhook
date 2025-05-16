@@ -253,7 +253,7 @@ export function WebhookAnalyticsDashboard({
               <CardHeader>
                 <CardTitle>Request Distribution</CardTitle>
                 <CardDescription>
-                  Requests by forwarding address
+                  Requests by destination address
                 </CardDescription>
               </CardHeader>
               <CardContent>

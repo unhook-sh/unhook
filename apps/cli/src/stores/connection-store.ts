@@ -158,22 +158,22 @@ const createConnectionStore = () => {
     connect: async () => {
       if (isDestroyedRef) return;
 
-      const { forward, to } = useConfigStore.getState();
+      const { deliver, to } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
 
-      // If no forward rules have ping enabled, treat as disabled
+      // If no delivery rules have ping enabled, treat as disabled
       const pingEnabled = to.some((rule) => rule.ping !== false);
 
       capture({
         event: 'connection_attempt',
         properties: {
           pingEnabled,
-          forwardRulesCount: forward.length,
+          deliverRulesCount: deliver.length,
         },
       });
 
       if (!pingEnabled) {
-        log('Connection polling (ping) is disabled for all forward rules.');
+        log('Connection polling (ping) is disabled for all delivery rules.');
         // Clear all rule states if polling is off
         set((state) => ({
           ...state,
@@ -236,7 +236,7 @@ const createConnectionStore = () => {
         return;
       }
 
-      // Check each forward rule that has ping enabled
+      // Check each delivery rule that has ping enabled
       for (const rule of to) {
         if (rule.ping === false) continue;
 

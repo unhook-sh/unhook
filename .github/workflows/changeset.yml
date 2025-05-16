@@ -2,7 +2,7 @@ name: Changeset
 
 on:
   workflow_run:
-    workflows: ["CLI Build","CI"]
+    workflows: ["CLI Build", "Typecheck & Format"]
     types:
       - completed
     branches:

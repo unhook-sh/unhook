@@ -7,7 +7,7 @@ import type {
   RequestType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
-import type { WebhookForward, WebhookTo } from '@unhook/webhook';
+import type { WebhookDeliver, WebhookTo } from '@unhook/webhook';
 import { createSelectors } from '@unhook/zustand';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
@@ -38,7 +38,7 @@ interface EventsActions {
   handlePendingRequest: (webhookRequest: Tables<'requests'>) => Promise<void>;
   replayEvent: (event: EventType) => Promise<void>;
   replayRequest: (request: RequestType) => Promise<void>;
-  forwardEvent: (event: Tables<'events'>) => Promise<void>;
+  deliverEvent: (event: Tables<'events'>) => Promise<void>;
   reset: () => void;
 }
 
@@ -82,22 +82,22 @@ function getUrlString(url: string | URL | RemotePatternSchema): string {
 
 function resolveDestination({
   from,
-  forward,
+  deliver,
   to,
 }: {
   from: string;
-  forward: WebhookForward[];
+  deliver: WebhookDeliver[];
   to: WebhookTo[];
 }): { url: string; to: string } {
-  const matchingForward = forward.find(
+  const matchingDeliver = deliver.find(
     (rule) => rule.from === '*' || rule.from === from,
   );
-  if (!matchingForward) {
-    throw new Error(`No forward rule found for source: ${from}`);
+  if (!matchingDeliver) {
+    throw new Error(`No delivery rule found for source: ${from}`);
   }
-  const toDef = (to ?? []).find((t) => t.name === matchingForward.to);
+  const toDef = (to ?? []).find((t) => t.name === matchingDeliver.to);
   if (!toDef || !toDef.url) {
-    throw new Error(`No 'to' definition found for name: ${matchingForward.to}`);
+    throw new Error(`No 'to' definition found for name: ${matchingDeliver.to}`);
   }
   const destinationUrl = getUrlString(toDef.url);
   return {
@@ -128,7 +128,7 @@ async function createRequestsForEventToAllDestinations({
       `Creating request for event ${event.id} to destination: ${destination.name} (${urlString})`,
     );
     capture({
-      event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_forward',
+      event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_deliver',
       properties: {
         eventId: event.id,
         webhookId: event.webhookId,
@@ -234,13 +234,13 @@ const store = createStore<EventStore>()((set, get) => ({
   },
   handlePendingRequest: async (webhookRequest: Tables<'requests'>) => {
     log(`Handling pending event: ${webhookRequest.id}`);
-    const { forward, to } = useConfigStore.getState();
+    const { deliver, to } = useConfigStore.getState();
     const { api } = useApiStore.getState();
 
     // Use helper to resolve rule and URL
     const destination = resolveDestination({
       from: webhookRequest.from,
-      forward,
+      deliver,
       to,
     });
     const request = webhookRequest.request as unknown as RequestType['request'];
@@ -261,7 +261,7 @@ const store = createStore<EventStore>()((set, get) => ({
 
     if (webhookRequest.status === 'pending') {
       try {
-        log(`Forwarding request to: ${destination.url}`);
+        log(`Delivering request to: ${destination.url}`);
 
         // Decode base64 request body if it exists
         let requestBody: string | undefined;
@@ -348,12 +348,12 @@ const store = createStore<EventStore>()((set, get) => ({
           });
         }
       } catch (error) {
-        log(`Failed to forward request: ${inspect(error)}`);
+        log(`Failed to deliverrequest: ${inspect(error)}`);
 
         const failedReason =
           error instanceof Error
             ? error.message
-            : 'Unknown error occurred while forwarding request';
+            : 'Unknown error occurred while delivering request';
 
         capture({
           event: 'webhook_request_failed',
@@ -471,8 +471,8 @@ const store = createStore<EventStore>()((set, get) => ({
         !!to.find((t) => t.ping && t.name === destination.name),
     });
   },
-  forwardEvent: async (event: Tables<'events'>) => {
-    log(`Forwarding event to all destinations: ${event.id}`);
+  deliverEvent: async (event: Tables<'events'>) => {
+    log(`Delivering event to all destinations: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
 

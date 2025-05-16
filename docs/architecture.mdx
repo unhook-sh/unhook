@@ -22,10 +22,10 @@ Unhook consists of several key components working together to provide seamless w
   <Step title="Real-time Distribution">
     - CLI clients subscribe to new events
     - Database triggers notify connected clients
-    - Events are forwarded to local development servers
+    - Events are delivered to local development servers
   </Step>
   <Step title="Local Processing">
-    - CLI forwards requests to specified port or URL
+    - CLI delivers requests to specified port or URL
     - Responses are captured and stored
     - Results are visible in the dashboard
   </Step>
@@ -132,7 +132,7 @@ The API server handles:
 The CLI client manages:
 - Local webhook connections
 - Event subscription
-- Request forwarding
+- Request delivery
 - Health monitoring
 - Debug logging
 

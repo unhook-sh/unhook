@@ -25,7 +25,7 @@
 # 3. Configuration file
 # 4. Default values
 
-# Port of the local service to forward traffic to
+# Port of the local service to deliver traffic to
 # Can also be set via WEBHOOK_PORT environment variable
 port: 3000
 

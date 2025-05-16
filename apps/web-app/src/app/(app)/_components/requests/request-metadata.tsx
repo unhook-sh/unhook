@@ -316,7 +316,7 @@ export function RequestMetadata({
                     variant="outline"
                     className="bg-black text-white border-zinc-700"
                   >
-                    Forwarded to localhost:
+                    Delivered to localhost:
                     {request.request.headers.port || '3000'}
                   </Badge>
                   <Badge

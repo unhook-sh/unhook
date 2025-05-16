@@ -8,15 +8,15 @@ import { Spinner } from './spinner';
 export function ConnectionStatus() {
   const isConnected = useConnectionStore.use.isAnyConnected();
   const connectionId = useConnectionStore.use.connectionId();
-  const forward = useConfigStore.use.forward();
+  const deliver = useConfigStore.use.deliver();
   const debug = useCliStore.use.debug();
 
-  if (!forward?.length) {
+  if (!deliver?.length) {
     return (
       <Box flexDirection="column">
         <Text>
           <Text color="yellow">{figures.circleFilled} </Text>
-          <Text dimColor>No forwarding rules configured</Text>
+          <Text dimColor>No delivery rules configured</Text>
         </Text>
       </Box>
     );
@@ -28,7 +28,7 @@ export function ConnectionStatus() {
         {isConnected ? (
           <Text>
             <Text color="green">{figures.circleFilled}</Text> Connected
-            {forward.map((rule) => (
+            {deliver.map((rule) => (
               <Text key={`${rule.from}-${rule.to}`}>
                 {' '}
                 to {rule.to.toString()}

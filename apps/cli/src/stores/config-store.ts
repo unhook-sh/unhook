@@ -16,7 +16,7 @@ const log = debug('unhook:cli:config-store');
 const defaultConfigState: WebhookConfig = {
   webhookId: '',
   to: [],
-  forward: [],
+  deliver: [],
   debug: false,
   telemetry: true,
 };
@@ -106,7 +106,7 @@ const store = createStore<ConfigStore>()((set, get) => ({
  *
  * @property {string} webhookId - Unique identifier for your webhook
  * @property {Array<{name: string, url: string|URL|RemotePattern, ping?: boolean|string|URL|RemotePattern}>} to - Array of destination endpoints
- * @property {Array<{from?: string, to: string}>} forward - Array of forwarding rules
+ * @property {Array<{from?: string, to: string}>} deliver - Array of delivery rules
 
  * @typedef {Object} RemotePattern
  * @property {'http'|'https'} [protocol] - URL protocol
@@ -121,7 +121,7 @@ import { defineWebhookConfig } from '@unhook/cli';
 const config = defineWebhookConfig({
   webhookId: '${config.webhookId}',
   to: ${JSON.stringify(config.to, null, 2)},
-  forward: ${JSON.stringify(config.forward, null, 2)},
+  deliver: ${JSON.stringify(config.deliver, null, 2)},
 } as const);
 
 export default config;
@@ -131,10 +131,27 @@ export default config;
       const yamlConfig = {
         webhookId: config.webhookId,
         to: config.to,
-        forward: config.forward,
+        deliver: config.deliver,
       };
       content = `# Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration
+#
+# Schema:
+#   webhookId: string                    # Unique identifier for your webhook
+#   to:                                  # Array of destination endpoints
+#     - name: string                     # Name of the endpoint
+#       url: string|URL|RemotePattern    # URL to forward webhooks to
+#       ping?: boolean|string|URL        # Optional ping configuration
+#   deliver:                             # Array of delivery rules
+#     - from?: string                    # Optional source filter (default: "*")
+#       to: string                       # Name of the destination from 'to' array
+#
+# RemotePattern:
+#   protocol?: "http"|"https"            # URL protocol
+#   hostname: string                     # URL hostname
+#   port?: string                        # URL port
+#   pathname?: string                    # URL pathname
+#   search?: string                      # URL search params
 
 ${yaml.dump(yamlConfig, {
   indent: 2,

@@ -332,11 +332,11 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
 
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-muted-foreground">
-                      HTTP Forwarding URL
+                      HTTP Delivery URL
                     </h3>
                     <div className="flex items-center gap-2">
                       <code className="rounded bg-muted px-1 py-0.5 text-sm truncate max-w-[250px]">
-                        {webhook.forwardingAddress}
+                        {webhook.deliveredAddress}
                       </code>
                       <TooltipProvider>
                         <Tooltip>
@@ -346,7 +346,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               size="icon"
                               className="h-6 w-6"
                               onClick={() =>
-                                handleCopyUrl(webhook.forwardingAddress)
+                                handleCopyUrl(webhook.deliveredAddress)
                               }
                             >
                               <Copy className="h-3 w-3" />
@@ -363,7 +363,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               size="icon"
                               className="h-6 w-6"
                               onClick={() =>
-                                window.open(webhook.forwardingAddress, '_blank')
+                                window.open(webhook.deliveredAddress, '_blank')
                               }
                             >
                               <ExternalLink className="h-3 w-3" />
@@ -377,11 +377,11 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
 
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-muted-foreground">
-                      HTTPS Forwarding URL
+                      HTTPS Delivery URL
                     </h3>
                     <div className="flex items-center gap-2">
                       <code className="rounded bg-muted px-1 py-0.5 text-sm truncate max-w-[250px]">
-                        {webhook.forwardingAddress.replace(
+                        {webhook.deliveredAddress.replace(
                           'http://',
                           'https://',
                         )}
@@ -395,7 +395,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               className="h-6 w-6"
                               onClick={() =>
                                 handleCopyUrl(
-                                  webhook.forwardingAddress.replace(
+                                  webhook.deliveredAddress.replace(
                                     'http://',
                                     'https://',
                                   ),
@@ -417,7 +417,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               className="h-6 w-6"
                               onClick={() =>
                                 window.open(
-                                  webhook.forwardingAddress.replace(
+                                  webhook.deliveredAddress.replace(
                                     'http://',
                                     'https://',
                                   ),

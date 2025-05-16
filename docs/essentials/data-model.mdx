@@ -47,7 +47,7 @@ The primary entity that manages webhook routing and configuration.
 </ParamField>
 
 <ParamField body="port" type="number" required>
-  Local port to forward requests to
+  Local port to deliver requests to
 </ParamField>
 
 <ParamField body="status" type="string" required>
@@ -226,7 +226,7 @@ Represents an attempt to deliver a webhook to a local development environment.
   <Step title="Processing">
     - System creates a Request for delivery attempt
     - Request inherits Event and Webhook properties
-    - System attempts to forward to local environment
+    - System attempts to deliver to local environment
   </Step>
   <Step title="Completion">
     - Request status updated to 'completed' or 'failed'

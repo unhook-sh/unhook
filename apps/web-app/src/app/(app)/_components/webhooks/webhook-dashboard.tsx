@@ -31,7 +31,7 @@ export function WebhookDashboard() {
   const filteredWebhooks = webhooks.filter(
     (webhook) =>
       webhook.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      webhook.forwardingAddress
+      webhook.deliveredAddress
         .toLowerCase()
         .includes(searchQuery.toLowerCase()),
   );

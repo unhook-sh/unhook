@@ -12,7 +12,7 @@ export function ToStep({ value, onChange }: ToStepProps) {
     <div className="space-y-2">
       <H4>Webhook Destination</H4>
       <P>
-        Where should we forward your webhooks? This is typically your local
+        Where should we deliver your webhooks? This is typically your local
         development server.
       </P>
       <div className="space-y-1">

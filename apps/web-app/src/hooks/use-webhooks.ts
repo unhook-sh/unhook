@@ -7,35 +7,35 @@ import type { Webhook } from '~/types/webhook';
 const mockWebhooks: Webhook[] = [
   {
     id: 'tnl_1a2b3c4d5e6f7g8h9i0j',
-    forwardingAddress: 'https://tnl-1a2b3c.webhook.example.com',
+    deliveredAddress: 'https://tnl-1a2b3c.webhook.example.com',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2 days ago
     status: 'active',
     localPort: 3000,
   },
   {
     id: 'tnl_2b3c4d5e6f7g8h9i0j1k',
-    forwardingAddress: 'https://tnl-2b3c4d.webhook.example.com',
+    deliveredAddress: 'https://tnl-2b3c4d.webhook.example.com',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), // 5 days ago
     status: 'inactive',
     localPort: 8080,
   },
   {
     id: 'tnl_3c4d5e6f7g8h9i0j1k2l',
-    forwardingAddress: 'https://tnl-3c4d5e.webhook.example.com',
+    deliveredAddress: 'https://tnl-3c4d5e.webhook.example.com',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
     status: 'active',
     localPort: 4000,
   },
   {
     id: 'tnl_4d5e6f7g8h9i0j1k2l3m',
-    forwardingAddress: 'https://tnl-4d5e6f.webhook.example.com',
+    deliveredAddress: 'https://tnl-4d5e6f.webhook.example.com',
     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
     status: 'active',
     localPort: 5000,
   },
   {
     id: 'tnl_5e6f7g8h9i0j1k2l3m4n',
-    forwardingAddress: 'https://tnl-5e6f7g.webhook.example.com',
+    deliveredAddress: 'https://tnl-5e6f7g.webhook.example.com',
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(), // 10 days ago
     status: 'inactive',
     localPort: 9000,

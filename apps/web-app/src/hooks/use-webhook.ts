@@ -16,7 +16,7 @@ export function useWebhook(id: string) {
       // Mock webhook data
       const mockWebhook: Webhook = {
         id: id,
-        forwardingAddress: `http://webhook-${id.substring(0, 6)}.example.com`,
+        deliveredAddress: `http://webhook-${id.substring(0, 6)}.example.com`,
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2 days ago
         lastActivity: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
         status: 'active',

@@ -10,7 +10,7 @@ export type { WebhookClientOptions } from './types';
  * Starts the webhook client.
  *
  * Connects to Supabase and subscribes to webhook requests.
- * Forwards requests to the local service and updates the response.
+ * Delivers requests to the local service and updates the response.
  */
 export function startWebhookClient(options: WebhookClientOptions): () => void {
   const { port, webhookId, metadata } = options;

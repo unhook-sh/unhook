@@ -13,7 +13,7 @@ export const EventSubscription = memo(function EventSubscription() {
   const unmountingRef = useRef(false);
   const fetchEvents = useEventStore.use.fetchEvents();
   const handlePendingRequest = useEventStore.use.handlePendingRequest();
-  const forwardEvent = useEventStore.use.forwardEvent();
+  const deliverEvent = useEventStore.use.deliverEvent();
 
   // Memoize subscription callbacks to prevent unnecessary recreations
   const requestCallbacks = useMemo(
@@ -64,7 +64,7 @@ export const EventSubscription = memo(function EventSubscription() {
         log('Event inserted');
         if (!unmountingRef.current) {
           fetchEvents();
-          forwardEvent(payload);
+          deliverEvent(payload);
         }
       },
       onStatusChange: (
@@ -79,7 +79,7 @@ export const EventSubscription = memo(function EventSubscription() {
         }
       },
     }),
-    [fetchEvents, forwardEvent],
+    [fetchEvents, deliverEvent],
   );
 
   // Subscribe to requests

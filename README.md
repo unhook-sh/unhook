@@ -93,7 +93,7 @@ pnpm dlx @unhook/cli
 deno run --allow-net --allow-read --allow-write npm:@unhook/cli
 ```
 
-This will create a secure webhook endpoint that forwards requests to your local server based on the configuration.
+This will create a secure webhook endpoint that delivers requests to your local server based on the configuration.
 
 ### 4. Configure Your Webhook Provider
 
@@ -116,11 +116,11 @@ interface WebhookConfig {
   webhookId: string;  // Your unique webhook ID
   to: Array<{
     name: string;     // Name of the endpoint
-    url: string;      // Local URL to forward requests to
+    url: string;      // Local URL to deliver requests to
   }>;
-  forward: Array<{
+  deliver: Array<{
     from: string;     // Source of the webhook (e.g., 'clerk', 'stripe')
-    to: string;       // Name of the endpoint to forward to
+    to: string;       // Name of the endpoint to deliver to
   }>;
 }
 ```
@@ -192,7 +192,7 @@ const config = defineWebhookConfig({
       url: 'http://localhost:3000/api/webhooks/github',
     }
   ],
-  forward: [
+  deliver: [
     {
       from: 'clerk',
       to: 'clerk',
@@ -248,7 +248,7 @@ const config = defineWebhookConfig({
       url: 'http://localhost:3001/api/webhooks',
     }
   ],
-  forward: [
+  deliver: [
     {
       from: 'clerk',
       to: 'dev1',

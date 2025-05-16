@@ -1,6 +1,6 @@
 export interface Webhook {
   id: string;
-  forwardingAddress: string;
+  deliveredAddress: string;
   createdAt: string;
   lastActivity?: string;
   status: 'active' | 'inactive';

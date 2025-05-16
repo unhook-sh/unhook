@@ -106,7 +106,7 @@ export const InitPage: FC<RouteProps> = () => {
     const config = {
       webhookId: usedWebhookId,
       to: [{ name: 'default', url: values.to }],
-      forward: [{ from: values.from ?? '*', to: 'default' }],
+      deliver: [{ from: values.from ?? '*', to: 'default' }],
     };
 
     await writeConfig(config);
@@ -191,7 +191,7 @@ export const InitPage: FC<RouteProps> = () => {
             <Box marginBottom={1} flexDirection="column">
               <FormLabel id="to">Enter your to URL:</FormLabel>
               <FormDescription id="to">
-                The URL where Unhook will forward the webhooks to
+                The URL where Unhook will deliver the webhooks to
               </FormDescription>
               <FormInput
                 id="to"
@@ -208,7 +208,7 @@ export const InitPage: FC<RouteProps> = () => {
           <Text>Your webhook config has been saved.</Text>
           <Text>
             You can now use the <Text color="blue">unhook listen</Text> command
-            to forward webhooks to your service.
+            to deliver webhooks to your service.
           </Text>
           <Text>Redirecting to the home page...</Text>
         </Box>

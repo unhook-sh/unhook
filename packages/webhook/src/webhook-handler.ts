@@ -36,16 +36,16 @@ export class WebhookHandler {
     });
 
     try {
-      await this.forwardRequest(record);
+      await this.deliverRequest(record);
     } catch (error) {
       await this.handleError(record.id, error);
     }
   }
 
   /**
-   * Forwards the request to the local service and updates the response
+   * Delivers the request to the local service and updates the response
    */
-  private async forwardRequest(record: WebhookRecord): Promise<void> {
+  private async deliverRequest(record: WebhookRecord): Promise<void> {
     // Get webhook configuration
     const webhook = await db.query.Webhooks.findFirst({
       where: eq(Webhooks.id, record.webhookId),
@@ -55,7 +55,7 @@ export class WebhookHandler {
       throw new Error(`Webhook ${record.webhookId} not found`);
     }
 
-    // Forward request to local service
+    // Deliver request to local service
     const response = await fetch(
       this.localAddr + new URL(record.request.url).pathname,
       {

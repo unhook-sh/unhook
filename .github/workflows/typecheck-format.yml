@@ -1,4 +1,4 @@
-name: CI
+name: Typecheck & Format
 
 on:
   pull_request:

@@ -18,7 +18,7 @@ export interface WebhookRequest {
  */
 export interface WebhookClientOptions {
   /**
-   * The port of the local service to forward traffic to.
+   * The port of the local service to deliver traffic to.
    * Example: 3000
    */
   port: number;

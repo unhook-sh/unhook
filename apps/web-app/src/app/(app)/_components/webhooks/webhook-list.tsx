@@ -59,7 +59,7 @@ export function WebhookList({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[200px]">Webhook ID</TableHead>
-            <TableHead>Forwarding Address</TableHead>
+            <TableHead>Delivery Address</TableHead>
             <TableHead>Created</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
@@ -105,7 +105,7 @@ export function WebhookList({
                   {webhook.id}
                 </TableCell>
                 <TableCell className="font-mono text-xs">
-                  {webhook.forwardingAddress}
+                  {webhook.deliveredAddress}
                 </TableCell>
                 <TableCell>
                   {formatDistanceToNow(new Date(webhook.createdAt), {

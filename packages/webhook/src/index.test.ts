@@ -120,7 +120,7 @@ describe('startWebhookClient', () => {
     stopClient();
   });
 
-  it('should handle incoming requests and forward them to local service', async () => {
+  it('should handle incoming requests and deliver them to local service', async () => {
     const stopClient = startWebhookClient(options);
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>

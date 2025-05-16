@@ -45,11 +45,6 @@ jobs:
           path: dist
           run-id: ${{ github.event.workflow_run.id }}
 
-      # - name: Create GitHub Release
-      #   uses: ./tooling/github/cli/release
-      #   with:
-      #     version: ${{ steps.version.outputs.version }}
-
       - name: Update Monitoring
         uses: ./tooling/github/cli/monitoring
         with:

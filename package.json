@@ -52,7 +52,7 @@
     "lint:ws": "bunx sherif@latest",
     "postinstall.todo": "bun lint:ws",
     "prepare": "npx lefthook install",
-    "release": "bun run build && changeset publish",
+    "release": "turbo run build --filter=!@unhook/web-app && changeset publish",
     "test": "bun test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",

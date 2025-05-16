@@ -11,8 +11,11 @@ runs:
   steps:
     - name: Create PostHog release annotation
       shell: bash
+      env:
+        POSTHOG_PERSONAL_API_KEY: ${{ env.POSTHOG_PERSONAL_API_KEY }}
+        NEXT_PUBLIC_POSTHOG_HOST: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
       run: |
-        curl -X POST "https://${{ env.NEXT_PUBLIC_POSTHOG_HOST }}/api/projects/@current/annotations/" \
+        curl -X POST https://${{ env.NEXT_PUBLIC_POSTHOG_HOST }}/api/projects/@current/annotations/ \
         -H "Authorization: Bearer ${{ env.POSTHOG_PERSONAL_API_KEY }}" \
         -H "Content-Type: application/json" \
         -d '{

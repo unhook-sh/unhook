@@ -18,10 +18,8 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   changeset:
     name: Changeset
-    # Only run if CI passed and this isn't a version bump commit
-    if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      !contains(github.event.workflow_run.head_commit.message, 'chore: version packages')
+    # Only run if CI passed
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -41,6 +39,7 @@ jobs:
           publish: bun run release
           commit: "chore: version packages"
           title: "chore: version packages"
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

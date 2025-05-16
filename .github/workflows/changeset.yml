@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+# Add permissions configuration
+permissions:
+  contents: write
+  pull-requests: write
+
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:

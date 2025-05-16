@@ -25,5 +25,4 @@ This release marks the first beta version of Unhook, featuring:
 - Database integration for persistent storage
 - Authentication and user management
 - Logging system for debugging
-- UI components for the web interface
 - Webhook handling and processing

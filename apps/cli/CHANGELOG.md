@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.4.2
+
+### Patch Changes
+
+- [`a04c603`](https://github.com/unhook-sh/unhook/commit/a04c603bd885d4403ca9db0c535f0b9544e15d4a) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with cli release
+
 ## 0.4.1
 
 ### Patch Changes

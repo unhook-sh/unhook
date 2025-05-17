@@ -2,7 +2,7 @@ name: CLI Release
 
 on:
   workflow_run:
-    workflows: [CLI Build, Typecheck & Format, Changeset]
+    workflows: ["Changeset"]
     types:
       - completed
     branches:

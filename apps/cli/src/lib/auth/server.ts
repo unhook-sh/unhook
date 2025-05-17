@@ -5,6 +5,7 @@ import {
   createServer,
 } from 'node:http';
 import { debug } from '@unhook/logger';
+import { env } from '~/env';
 import { capture } from '../posthog';
 import { InvalidAuthResponseError } from './errors';
 
@@ -30,7 +31,7 @@ export class AuthServer {
   }
 
   private setCorsHeaders(res: ServerResponse): void {
-    const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:3000';
+    const webAppUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
     res.setHeader('Access-Control-Allow-Origin', webAppUrl);
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -108,7 +109,7 @@ export class AuthServer {
     }
 
     // Redirect to success page
-    const successUrl = `${process.env.NEXT_PUBLIC_API_URL}/cli-token/success`;
+    const successUrl = `${env.NEXT_PUBLIC_API_URL}/cli-token/success`;
     res.writeHead(302, { Location: successUrl });
     res.end();
 

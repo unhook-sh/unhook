@@ -4,6 +4,7 @@ import { Box, Text, useInput } from 'ink';
 import { type FC, useState } from 'react';
 import { Ascii } from '~/components/ascii';
 import { SelectInput } from '~/components/select-input';
+import { env } from '~/env';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
 import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
@@ -34,7 +35,7 @@ export const MenuPage: FC<RouteProps> = () => {
   const webhookId = useConfigStore.use.webhookId();
   const debug = useCliStore.use.debug();
 
-  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/${webhookId}`;
+  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${webhookId}`;
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   useInput((input) => {

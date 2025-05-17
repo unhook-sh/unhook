@@ -9,7 +9,7 @@ import { useCliStore } from '~/stores/cli-store';
 import { useRouterStore } from '~/stores/router-store';
 
 const log = debug('unhook:cli:posthog');
-const nodeEnv = process.env.NODE_ENV;
+const nodeEnv = env.NODE_ENV;
 const isProduction = nodeEnv === 'production';
 
 // // Keep a reference to the original PostHog instance

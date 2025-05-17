@@ -104,6 +104,7 @@
     "build:base": "NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "copy-readme": "cp ${GITHUB_WORKSPACE:-../../}/README.md ./README.md",
+    "dev": "bun run build:base --watch --sourcemap=inline",
     "prepare-publish": "bun run scripts/prepare-publish.js",
     "prepublishOnly": "bun typecheck && bun copy-readme && bun run build && bun run prepare-publish",
     "start": "bun run ./src/cli.tsx",
@@ -112,5 +113,31 @@
     "typecheck": "tsc"
   },
   "type": "module",
-  "version": "0.4.2"
+  "version": "0.4.3",
+  "trustedDependencies": [
+    "@clerk/shared",
+    "browser-tabs-lock",
+    "core-js",
+    "electron",
+    "keytar"
+  ],
+  "pnpm": {
+    "overrides": {
+      "@clerk/shared": {
+        "trusted": true
+      },
+      "browser-tabs-lock": {
+        "trusted": true
+      },
+      "core-js": {
+        "trusted": true
+      },
+      "electron": {
+        "trusted": true
+      },
+      "keytar": {
+        "trusted": true
+      }
+    }
+  }
 }

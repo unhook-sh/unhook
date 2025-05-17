@@ -1,16 +1,19 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { defaultLogger } from '@unhook/logger';
 import { debug } from '@unhook/logger';
 import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file';
 
 defaultLogger.addDestination(
   new RollingFileDestination({
-    filepath: '.unhook/logs/unhook.log',
+    filepath: join(tmpdir(), 'unhook', 'unhook.log'),
     createDirectory: true,
     maxSize: 10 * 1024 * 1024, // 10MB
     maxFiles: 5,
     rotationInterval: 60 * 60 * 1000, // 1 hour
   }),
 );
+
 import { render } from 'ink';
 import { Layout } from './app/layout';
 import { parseArgs } from './lib/cli/args';

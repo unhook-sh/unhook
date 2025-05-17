@@ -6,11 +6,17 @@ on:
     paths:
       - "apps/**"
       - "packages/**"
+      - "tooling/**"
+      - "package.json"
+      - "bun.lockb"
   push:
     branches: ["main"]
     paths:
       - "apps/**"
       - "packages/**"
+      - "tooling/**"
+      - "package.json"
+      - "bun.lockb"
   merge_group:
 
 concurrency:

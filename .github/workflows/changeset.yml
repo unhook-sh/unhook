@@ -2,12 +2,11 @@ name: Changeset
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Typecheck & Format"]
-    types:
-      - completed
+  push:
     branches:
       - main
+    paths:
+      - ".changeset/**"
 
 # Add permissions configuration
 permissions:
@@ -19,8 +18,6 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   changeset:
     name: Changeset
-    # Only run if CI passed
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo

@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.4.1
+
+### Patch Changes
+
+- [`e2350f2`](https://github.com/unhook-sh/unhook/commit/e2350f21ab80485061446a3d22c0634389722210) Thanks [@seawatts](https://github.com/seawatts)! - Test a thing2
+
 ## 0.4.0
 
 ### Minor Changes

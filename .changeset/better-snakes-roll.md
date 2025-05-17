@@ -2,4 +2,4 @@
 "@unhook/cli": patch
 ---
 
-Test a thing
+Test a thing2

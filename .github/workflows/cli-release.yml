@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  packages: write
+  actions: read
+
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
@@ -18,7 +23,7 @@ env:
 jobs:
   release:
     name: Release CLI
-    # Only run if Changeset workflow succeeded and it was a version bump
+    # Only run if CLI Build workflow succeeded and it was a version bump
     if: |
       github.event.workflow_run.conclusion == 'success' &&
       contains(github.event.workflow_run.head_commit.message, 'chore: version packages')
@@ -44,6 +49,13 @@ jobs:
           pattern: unhook-*
           path: dist
           run-id: ${{ github.event.workflow_run.id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+
+      - name: Create GitHub Release
+        uses: ./tooling/github/cli/release
+        with:
+          version: ${{ steps.version.outputs.version }}
 
       - name: Update Monitoring
         uses: ./tooling/github/cli/monitoring

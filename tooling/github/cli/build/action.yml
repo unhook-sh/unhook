@@ -79,10 +79,9 @@ runs:
         NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
         NEXT_PUBLIC_POSTHOG_KEY: ${{ env.NEXT_PUBLIC_POSTHOG_KEY }}
         NEXT_PUBLIC_POSTHOG_HOST: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
-        SENTRY_DSN: ${{ env.SENTRY_DSN }}
-        SENTRY_ORG: ${{ env.SENTRY_ORG }}
-        SENTRY_PROJECT: ${{ env.SENTRY_PROJECT }}
-        SENTRY_AUTH_TOKEN: ${{ env.SENTRY_AUTH_TOKEN }}
+        NEXT_PUBLIC_APP_ENV: ${{ env.NEXT_PUBLIC_APP_ENV }}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+        NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
 
     - name: Rename binary for platform
       shell: bash

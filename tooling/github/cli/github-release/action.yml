@@ -14,12 +14,47 @@ runs:
       with:
         path: dist
 
+    - name: Read changelog
+      id: changelog
+      shell: bash
+      run: |
+        # Read the changelog file
+        CHANGELOG=$(cat apps/cli/CHANGELOG.md)
+        VERSION="${{ inputs.version }}"
+
+        # Find the start of the version section
+        START_LINE=$(echo "$CHANGELOG" | grep -n "^## $VERSION" | cut -d: -f1)
+        if [ -z "$START_LINE" ]; then
+          echo "Could not find version $VERSION in changelog"
+          exit 1
+        fi
+
+        # Find the next version section or end of file
+        NEXT_VERSION_LINE=$(echo "$CHANGELOG" | tail -n +$((START_LINE + 1)) | grep -n "^## " | head -n 1 | cut -d: -f1)
+
+        if [ -z "$NEXT_VERSION_LINE" ]; then
+          # If no next version found, take everything until the end
+          BODY=$(echo "$CHANGELOG" | tail -n +$((START_LINE + 1)))
+        else
+          # Take content until the next version
+          BODY=$(echo "$CHANGELOG" | tail -n +$((START_LINE + 1)) | head -n $((NEXT_VERSION_LINE - 1)))
+        fi
+
+        # Clean up the content
+        BODY=$(echo "$BODY" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+        # Set output
+        echo "body<<EOF" >> $GITHUB_OUTPUT
+        echo "$BODY" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ inputs.version }}
         name: Release v${{ inputs.version }}
+        body: ${{ steps.changelog.outputs.body }}
         draft: false
         prerelease: false
         files: |

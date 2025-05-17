@@ -1,39 +1,39 @@
-import { getApi } from '@unhook/api/server';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
-import { CliLoginButton } from './_components/cli-login-button';
+import Image from 'next/image';
+import { CliTokenContent } from './_components/cli-token-content';
 
 export default async function CliTokenPage() {
-  // TODO: Add a button to switch organizations
-  const api = await getApi();
-  void api.webhooks.all.prefetch();
-
   return (
-    <main className="container grid min-h-screen place-items-center">
-      <div className="w-full max-w-md">
-        <Card>
+    <main className="container grid min-h-screen place-items-center mx-auto">
+      <div className="flex w-full max-w-md flex-col items-center gap-8">
+        <div className="flex items-center flex-col">
+          <Image
+            src="/logo.svg"
+            alt="Unhook Logo"
+            width={120}
+            height={40}
+            priority
+            className="h-32 w-auto"
+          />
+          <div className="text-2xl font-bold">Unhook</div>
+        </div>
+        <Card className="w-full">
           <CardHeader className="space-y-1">
             <CardTitle>Login to CLI</CardTitle>
             <CardDescription>
-              Select a webhook and click the button below to authenticate with
-              our CLI tool.
+              Select or create an organization, then click the button below to
+              authenticate with the Unhook CLI.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            {/* <WebhookSelectorProvider /> */}
-            <CliLoginButton />
+          <CardContent className="flex flex-col gap-4">
+            <CliTokenContent />
           </CardContent>
-          <CardFooter>
-            <span className="text-sm text-muted-foreground">
-              This will generate a secure token valid for 30 days.
-            </span>
-          </CardFooter>
         </Card>
       </div>
     </main>

@@ -9,6 +9,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
@@ -47,7 +48,7 @@ export const RequestStatusType = z.enum(requestStatusEnum.enumValues).Enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
-  clerkId: text('clerkId').unique(),
+  clerkId: text('clerkId').unique().notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   email: text('email').notNull().unique(),
   firstName: text('firstName'),
@@ -86,7 +87,8 @@ export const CreateUserSchema = createInsertSchema(Users, {
 });
 
 export const Orgs = pgTable('orgs', {
-  clerkOrgId: text('clerkOrgId'),
+  clerkOrgId: text('clerkOrgId').unique().notNull(),
+  name: text('name').notNull(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
@@ -127,33 +129,40 @@ export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
 }));
 
 // Company Members Table
-export const OrgMembers = pgTable('orgMembers', {
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).defaultNow(),
-  userId: varchar('userId')
-    .references(() => Users.id, {
-      onDelete: 'cascade',
-    })
-    .notNull()
-    .default(sql`auth.jwt()->>'sub'`),
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'member' }))
-    .notNull()
-    .primaryKey(),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
-  role: userRoleEnum('role').default('user').notNull(),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).$onUpdateFn(() => new Date()),
-});
+export const OrgMembers = pgTable(
+  'orgMembers',
+  {
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).defaultNow(),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'member' }))
+      .notNull()
+      .primaryKey(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
+    role: userRoleEnum('role').default('user').notNull(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).$onUpdateFn(() => new Date()),
+  },
+  (table) => [
+    // Add unique constraint for userId and orgId combination using the simpler syntax
+    unique().on(table.userId, table.orgId),
+  ],
+);
 
 export type OrgMembersType = typeof OrgMembers.$inferSelect & {
   user?: UserType;

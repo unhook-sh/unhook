@@ -63,6 +63,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     await supabase.from('user').insert([
       {
         id: userId,
+        clerkId: userId,
         email: `test-${userId}@example.com`,
         online: true,
       },
@@ -72,6 +73,8 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     await supabase.from('orgs').insert([
       {
         id: orgId,
+        clerkOrgId: orgId,
+        name: 'test-org',
         createdByUserId: userId,
       },
     ]);

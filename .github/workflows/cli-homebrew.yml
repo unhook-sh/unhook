@@ -1,6 +1,7 @@
 name: CLI Homebrew
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ["CLI Release"]
     types:

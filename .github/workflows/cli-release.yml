@@ -144,7 +144,7 @@ jobs:
           github-token: ${{ github.token }}
 
       - name: Create GitHub Release
-        uses: ./tooling/github/cli/release
+        uses: ./tooling/github/cli/github-release
         with:
           version: ${{ steps.version.outputs.version }}
 

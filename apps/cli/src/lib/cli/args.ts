@@ -88,6 +88,10 @@ export async function parseArgs(): Promise<CliState> {
         command = commandToPath['login' as keyof typeof commandToPath];
       },
     )
+    .command('version', 'Display the current version', {}, () => {
+      console.log(`Unhook CLI v${pkg.version}`);
+      process.exit(0);
+    })
     .usage('Usage: $0 <command> [options]')
     .help()
     .alias('help', 'h')

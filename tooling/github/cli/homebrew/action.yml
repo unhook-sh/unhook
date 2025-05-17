@@ -16,8 +16,8 @@ runs:
       with:
         formula-name: unhook
         formula-path: tooling/homebrew/unhook.rb
-        homebrew-tap: seawatts/homebrew-tap
-        download-url: https://github.com/seawatts/webhook/releases/download/v${{ inputs.version }}/unhook-darwin-{arch}
+        homebrew-tap: unhook-sh/homebrew-tap
+        download-url: https://github.com/unhook-sh/unhook/releases/download/v${{ inputs.version }}/unhook-darwin-{arch}
         tag-name: v${{ inputs.version }}
       env:
         COMMITTER_TOKEN: ${{ env.COMMITTER_TOKEN }}

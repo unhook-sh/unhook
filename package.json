@@ -70,7 +70,6 @@
     "bufferutil",
     "bun",
     "core-js",
-    "core-js-pure",
     "electron",
     "esbuild",
     "keytar",

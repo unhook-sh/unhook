@@ -114,13 +114,49 @@ The `unhook.config.ts` file supports the following options:
 ```typescript
 interface WebhookConfig {
   webhookId: string;  // Your unique webhook ID
-  to: Array<{
+  clientId?: string;  // Optional client ID
+  debug?: boolean;    // Enable debug mode
+  telemetry?: boolean; // Enable telemetry
+  destination: Array<{
     name: string;     // Name of the endpoint
-    url: string;      // Local URL to deliver requests to
+    url: string | URL | {  // Local URL to deliver requests to
+      protocol?: 'http' | 'https';
+      hostname: string;
+      port?: string;
+      pathname?: string;
+      search?: string;
+    };
+    ping?: boolean | string | URL | {  // Optional ping configuration
+      protocol?: 'http' | 'https';
+      hostname: string;
+      port?: string;
+      pathname?: string;
+      search?: string;
+    };
+  }>;
+  source?: Array<{
+    name: string;     // Name of the source
+    agent?: {         // Optional agent header configuration
+      type: 'header';
+      key: string;
+      value: string;
+    };
+    timestamp?: {     // Optional timestamp header configuration
+      type: 'header';
+      key: string;
+      value: string;
+    };
+    verification?: {  // Optional verification header configuration
+      type: 'header';
+      key: string;
+      value: string;
+    };
+    secret?: string;  // Optional secret for verification
+    defaultTimeout?: number; // Default timeout in milliseconds
   }>;
   deliver: Array<{
-    from: string;     // Source of the webhook (e.g., 'clerk', 'stripe')
-    to: string;       // Name of the endpoint to deliver to
+    source?: string;  // Source of the webhook (defaults to '*')
+    destination: string; // Name of the destination to deliver to
   }>;
 }
 ```
@@ -178,34 +214,50 @@ import { defineWebhookConfig } from '@unhook/cli';
 
 const config = defineWebhookConfig({
   webhookId: 'wh_your_webhook_id',
-  to: [
+  destination: [
     {
       name: 'clerk',
       url: 'http://localhost:3000/api/webhooks/clerk',
+      ping: true
     },
     {
       name: 'stripe',
       url: 'http://localhost:3000/api/webhooks/stripe',
+      ping: {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/webhooks/stripe/health'
+      }
     },
     {
       name: 'github',
       url: 'http://localhost:3000/api/webhooks/github',
+      ping: false
+    }
+  ],
+  source: [
+    {
+      name: 'clerk',
+    },
+    {
+      name: 'stripe',
     }
   ],
   deliver: [
     {
-      from: 'clerk',
-      to: 'clerk',
+      source: 'clerk',
+      destination: 'clerk'
     },
     {
-      from: 'stripe',
-      to: 'stripe',
+      source: 'stripe',
+      destination: 'stripe'
     },
     {
-      from: 'github',
-      to: 'github',
+      source: 'github',
+      destination: 'github'
     }
-  ],
+  ]
 } as const);
 
 export default config;
@@ -238,26 +290,36 @@ import { defineWebhookConfig } from '@unhook/cli';
 
 const config = defineWebhookConfig({
   webhookId: 'wh_team_webhook_id',
-  to: [
+  destination: [
     {
       name: 'dev1',
       url: 'http://localhost:3000/api/webhooks',
+      ping: true
     },
     {
       name: 'dev2',
       url: 'http://localhost:3001/api/webhooks',
+      ping: true
+    }
+  ],
+  source: [
+    {
+      name: 'clerk',
+    },
+    {
+      name: 'stripe',
     }
   ],
   deliver: [
     {
-      from: 'clerk',
-      to: 'dev1',
+      source: 'clerk',
+      destination: 'dev1'
     },
     {
-      from: 'stripe',
-      to: 'dev2',
+      source: 'stripe',
+      destination: 'dev2'
     }
-  ],
+  ]
 } as const);
 
 export default config;

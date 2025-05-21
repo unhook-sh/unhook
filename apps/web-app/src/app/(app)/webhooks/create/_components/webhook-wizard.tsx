@@ -49,7 +49,9 @@ export function WebhookWizard() {
               organization: result.id,
             });
           }
-        } else {
+        }
+
+        if (!organization) {
           return;
         }
 

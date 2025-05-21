@@ -36,6 +36,7 @@ export const createWebhook = action
         clerkOrgId: user.orgId,
         name: orgName,
         createdByUserId: user.userId,
+        id: user.orgId,
       })
       .onConflictDoUpdate({
         target: Orgs.clerkOrgId,

@@ -38,6 +38,7 @@ export const createAuthCode = action.action(async () => {
     };
   }
 
+  console.log('creating auth code', user.orgId, user.userId, user.sessionId);
   // If no valid auth code exists, create a new one
   const [authCode] = await db
     .insert(AuthCodes)

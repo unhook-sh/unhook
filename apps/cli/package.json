@@ -69,11 +69,7 @@
       "types": "./dist/src/exports.d.ts"
     }
   },
-  "files": [
-    "bin",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["bin", "README.md", "LICENSE"],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",

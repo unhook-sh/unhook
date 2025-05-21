@@ -8,10 +8,10 @@ import { Spinner } from './spinner';
 export function ConnectionStatus() {
   const isConnected = useConnectionStore.use.isAnyConnected();
   const connectionId = useConnectionStore.use.connectionId();
-  const deliver = useConfigStore.use.deliver();
+  const delivery = useConfigStore.use.delivery();
   const debug = useCliStore.use.debug();
 
-  if (!deliver?.length) {
+  if (!delivery?.length) {
     return (
       <Box flexDirection="column">
         <Text>
@@ -28,7 +28,7 @@ export function ConnectionStatus() {
         {isConnected ? (
           <Text>
             <Text color="green">{figures.circleFilled}</Text> Connected
-            {deliver.map((rule) => (
+            {delivery.map((rule) => (
               <Text key={`${rule.source}-${rule.destination}`}>
                 {' '}
                 to {rule.destination.toString()}

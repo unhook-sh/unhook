@@ -64,7 +64,7 @@ export const configSchema = z
         }),
       )
       .optional(),
-    deliver: z.array(
+    delivery: z.array(
       z.object({
         source: z.string().default('*').optional(),
         destination: z.string(),
@@ -72,22 +72,22 @@ export const configSchema = z
     ),
   })
   .superRefine((data, ctx) => {
-    // Runtime validation: ensure all deliver.destination values exist in destination[].name
-    if (data.destination && data.deliver) {
+    // Runtime validation: ensure all delivery.destination values exist in destination[].name
+    if (data.destination && data.delivery) {
       const validNames = new Set(data.destination.map((t) => t.name));
-      data.deliver.forEach((f, idx) => {
+      data.delivery.forEach((f, idx) => {
         if (!validNames.has(f.destination)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Invalid deliver.destination: "${f.destination}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'deliver.destination' matches a 'destination[].name'.\nSee https://docs.unhook.sh/config for examples.`,
-            path: ['deliver', idx, 'destination'],
+            message: `Invalid delivery.destination: "${f.destination}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'delivery.destination' matches a 'destination[].name'.\nSee https://docs.unhook.sh/config for examples.`,
+            path: ['delivery', idx, 'destination'],
           });
         }
       });
     }
   });
 
-export type WebhookDeliver = z.infer<typeof configSchema>['deliver'][number];
+export type WebhookDelivery = z.infer<typeof configSchema>['delivery'][number];
 export type WebhookDestination = NonNullable<
   z.infer<typeof configSchema>['destination']
 >[number];
@@ -124,7 +124,7 @@ export async function loadConfig(configPath: string): Promise<WebhookConfig> {
     destination: [] as Array<
       z.infer<typeof configSchema>['destination'][number]
     >,
-    deliver: [] as Array<z.infer<typeof configSchema>['deliver'][number]>,
+    delivery: [] as Array<z.infer<typeof configSchema>['delivery'][number]>,
   };
 
   if (configPath) {
@@ -160,9 +160,9 @@ export async function loadConfig(configPath: string): Promise<WebhookConfig> {
 export function defineWebhookConfig<
   T extends readonly { name: string }[],
   D extends readonly { source?: string; destination: T[number]['name'] }[],
-  Rest extends Omit<WebhookConfig, 'destination' | 'deliver'>,
+  Rest extends Omit<WebhookConfig, 'destination' | 'delivery'>,
 >(
-  config: { destination: T; deliver: D } & Rest,
-): { destination: T; deliver: D } & Rest {
+  config: { destination: T; delivery: D } & Rest,
+): { destination: T; delivery: D } & Rest {
   return config;
 }

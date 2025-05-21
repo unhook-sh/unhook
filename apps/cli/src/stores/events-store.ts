@@ -1,5 +1,5 @@
 import { inspect } from 'node:util';
-import type { WebhookDeliver, WebhookDestination } from '@unhook/client';
+import type { WebhookDelivery, WebhookDestination } from '@unhook/client';
 import type { Tables } from '@unhook/db';
 import type {
   EventType,
@@ -82,14 +82,14 @@ function getUrlString(url: string | URL | RemotePatternSchema): string {
 
 function resolveDestination({
   source,
-  deliver,
+  delivery,
   destination,
 }: {
   source: string;
-  deliver: WebhookDeliver[];
+  delivery: WebhookDelivery[];
   destination: WebhookDestination[];
 }): { url: string; destination: string } | null {
-  const matchingDeliver = deliver.find(
+  const matchingDeliver = delivery.find(
     (rule) => rule.source === '*' || rule.source === source,
   );
   if (!matchingDeliver) {
@@ -236,13 +236,13 @@ const store = createStore<EventStore>()((set, get) => ({
   },
   handlePendingRequest: async (webhookRequest: Tables<'requests'>) => {
     log(`Handling pending event: ${webhookRequest.id}`);
-    const { deliver, destination } = useConfigStore.getState();
+    const { delivery, destination } = useConfigStore.getState();
     const { api } = useApiStore.getState();
 
     // Use helper to resolve rule and URL
     const dest = resolveDestination({
       source: webhookRequest.source,
-      deliver,
+      delivery,
       destination,
     });
     if (!dest) {

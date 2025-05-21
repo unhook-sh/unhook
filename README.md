@@ -154,7 +154,7 @@ interface WebhookConfig {
     secret?: string;  // Optional secret for verification
     defaultTimeout?: number; // Default timeout in milliseconds
   }>;
-  deliver: Array<{
+  delivery: Array<{
     source?: string;  // Source of the webhook (defaults to '*')
     destination: string; // Name of the destination to deliver to
   }>;
@@ -244,7 +244,7 @@ const config = defineWebhookConfig({
       name: 'stripe',
     }
   ],
-  deliver: [
+  delivery: [
     {
       source: 'clerk',
       destination: 'clerk'
@@ -310,7 +310,7 @@ const config = defineWebhookConfig({
       name: 'stripe',
     }
   ],
-  deliver: [
+  delivery: [
     {
       source: 'clerk',
       destination: 'dev1'

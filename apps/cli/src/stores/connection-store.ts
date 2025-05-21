@@ -158,7 +158,7 @@ const createConnectionStore = () => {
     connect: async () => {
       if (isDestroyedRef) return;
 
-      const { deliver, destination } = useConfigStore.getState();
+      const { delivery, destination } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
 
       // If no delivery rules have ping enabled, treat as disabled
@@ -168,7 +168,7 @@ const createConnectionStore = () => {
         event: 'connection_attempt',
         properties: {
           pingEnabled,
-          deliverRulesCount: deliver.length,
+          deliverRulesCount: delivery.length,
         },
       });
 

@@ -55,7 +55,7 @@ export class WebhookHandler {
       throw new Error(`Webhook ${record.webhookId} not found`);
     }
 
-    // Deliver request to local service
+    // Delivery request to local service
     const response = await fetch(
       this.localAddr + new URL(record.request.url).pathname,
       {

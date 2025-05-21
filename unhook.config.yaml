@@ -7,7 +7,7 @@
 #     - name: string                     # Name of the endpoint
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
 #       ping?: boolean|string|URL        # Optional ping configuration
-#   deliver:                             # Array of delivery rules
+#   delivery:                             # Array of delivery rules
 #     - source?: string                  # Optional source filter (default: "*")
 #       destination: string              # Name of the destination from 'destination' array
 #
@@ -22,6 +22,6 @@ webhookId: wh_s9z0x59l9mb1nuomjf58lxuj
 destination:
   - name: default
     url: http://localhost:3000
-deliver:
+delivery:
   - source: Stripe
     destination: default

@@ -41,7 +41,7 @@ const config = {
       url: 'http://localhost:3000/api/webhooks/clerk',
     },
   ],
-  deliver: [
+  delivery: [
     {
       source: 'clerk',
       destination: 'clerk',

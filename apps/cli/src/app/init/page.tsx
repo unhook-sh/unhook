@@ -116,7 +116,7 @@ export const InitPage: FC<RouteProps> = () => {
     const config = {
       webhookId: usedWebhookId,
       destination: [{ name: 'default', url: values.destination }],
-      deliver: [{ source: values.source ?? '*', destination: 'default' }],
+      delivery: [{ source: values.source ?? '*', destination: 'default' }],
     };
 
     const { path } = await writeConfig(config);

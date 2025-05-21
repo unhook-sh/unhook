@@ -16,7 +16,7 @@ const log = debug('unhook:cli:config-store');
 const defaultConfigState: WebhookConfig = {
   webhookId: '',
   destination: [],
-  deliver: [],
+  delivery: [],
   debug: false,
   telemetry: true,
 };
@@ -127,7 +127,7 @@ const store = createStore<ConfigStore>()((set, get) => ({
  *
  * @property {string} webhookId - Unique identifier for your webhook
  * @property {Array<{name: string, url: string|URL|RemotePattern, ping?: boolean|string|URL|RemotePattern}>} destination - Array of destination endpoints
- * @property {Array<{source?: string, destination: string}>} deliver - Array of delivery rules
+ * @property {Array<{source?: string, destination: string}>} delivery - Array of delivery rules
 
  * @typedef {Object} RemotePattern
  * @property {'http'|'https'} [protocol] - URL protocol
@@ -142,7 +142,7 @@ import { defineWebhookConfig } from '@unhook/cli';
 const config = defineWebhookConfig({
   webhookId: '${config.webhookId}',
   destination: ${JSON.stringify(config.destination, null, 2)},
-  deliver: ${JSON.stringify(config.deliver, null, 2)},
+  delivery: ${JSON.stringify(config.delivery, null, 2)},
 } as const);
 
 export default config;
@@ -152,7 +152,7 @@ export default config;
       const yamlConfig = {
         webhookId: config.webhookId,
         destination: config.destination,
-        deliver: config.deliver,
+        delivery: config.delivery,
       };
       content = `# Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration
@@ -163,7 +163,7 @@ export default config;
 #     - name: string                     # Name of the endpoint
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
 #       ping?: boolean|string|URL        # Optional ping configuration
-#   deliver:                             # Array of delivery rules
+#   delivery:                             # Array of delivery rules
 #     - source?: string                  # Optional source filter (default: "*")
 #       destination: string              # Name of the destination from 'destination' array
 #

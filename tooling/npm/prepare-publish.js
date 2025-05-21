@@ -12,8 +12,8 @@ const clientPackageJsonPath = join(
 
 // Copy README and LICENSE
 try {
-  const readmePath = join(workspaceRoot, 'README.md');
-  const licensePath = join(workspaceRoot, 'LICENSE');
+  const readmePath = join(workspaceRoot, '../../', 'README.md');
+  const licensePath = join(workspaceRoot, '../../', 'LICENSE');
   const targetDir = join(workspaceRoot, 'package.json', '..');
 
   copyFileSync(readmePath, join(targetDir, 'README.md'));

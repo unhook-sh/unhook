@@ -50,7 +50,7 @@ export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
   clerkId: text('clerkId').unique().notNull(),
   createdAt: timestamp('createdAt').defaultNow().notNull(),
-  email: text('email').notNull().unique(),
+  email: text('email').notNull(),
   firstName: text('firstName'),
   id: varchar('id', { length: 128 }).notNull().primaryKey(),
   lastLoggedInAt: timestamp('lastLoggedInAt', {

@@ -51,7 +51,6 @@
     "knip": "knip --include files,dependencies",
     "lint:ws": "bunx sherif@latest",
     "postinstall.todo": "bun lint:ws",
-    "prepare": "npx lefthook install",
     "release": "turbo run build --filter=!@unhook/web-app && changeset publish",
     "test": "bun test",
     "typecheck": "turbo run typecheck",

@@ -1,8 +1,8 @@
 'use server';
 
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { db } from '@unhook/db/client';
-import { OrgMembers, Orgs, Webhooks } from '@unhook/db/schema';
+import { OrgMembers, Orgs, Users, Webhooks } from '@unhook/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
@@ -27,6 +27,40 @@ export const createWebhook = action
 
     if (!user.orgId) {
       throw new Error('Organization not found');
+    }
+
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      throw new Error('User details not found');
+    }
+
+    // Upsert user
+    const [dbUser] = await db
+      .insert(Users)
+      .values({
+        id: user.userId,
+        clerkId: user.userId,
+        email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+        firstName: clerkUser.firstName ?? null,
+        lastName: clerkUser.lastName ?? null,
+        avatarUrl: clerkUser.imageUrl ?? null,
+        lastLoggedInAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: Users.clerkId,
+        set: {
+          email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+          firstName: clerkUser.firstName ?? null,
+          lastName: clerkUser.lastName ?? null,
+          avatarUrl: clerkUser.imageUrl ?? null,
+          lastLoggedInAt: new Date(),
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+
+    if (!dbUser) {
+      throw new Error('Failed to create/update user');
     }
 
     // Upsert organization

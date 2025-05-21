@@ -16,7 +16,7 @@
  * 3. Configuration file
  * 4. Default values
  *
- * @type {import('@unhook/webhook/config').WebhookConfig}
+ * @type {import('@unhook/client/config').WebhookConfig}
  */
 const config = {
   // Webhook ID for authentication with the webhook server

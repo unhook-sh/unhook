@@ -1,10 +1,15 @@
 {
+  "author": "Unhook Team (https://github.com/unhook-sh)",
+  "bugs": {
+    "url": "https://github.com/unhook-sh/unhook/issues"
+  },
   "dependencies": {
     "@supabase/supabase-js": "2.49.4",
     "@t3-oss/env-core": "0.13.4",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
+    "@unhook/npm": "workspace:*",
     "@vercel/kv": "3.0.0",
     "debug": "4.4.1",
     "drizzle-orm": "0.43.1",
@@ -32,13 +37,42 @@
       "types": "./dist/utils/headers.d.ts"
     }
   },
+  "files": ["dist", "README.md", "LICENSE"],
+  "homepage": "https://github.com/unhook-sh/unhook#readme",
+  "keywords": [
+    "webhook",
+    "development",
+    "testing",
+    "cli",
+    "webhook",
+    "local-development",
+    "webhook-testing",
+    "webhook-development",
+    "team-collaboration",
+    "real-time",
+    "monitoring",
+    "debugging",
+    "stripe-webhooks",
+    "github-webhooks",
+    "slack-webhooks",
+    "clerk-webhooks"
+  ],
   "license": "MIT",
-  "name": "@unhook/webhook",
-  "private": true,
+  "name": "@unhook/client",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "directory": "packages/client",
+    "type": "git",
+    "url": "git+https://github.com/unhook-sh/unhook.git"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "bun build ./src/bundle.ts --outdir ./dist --target node --format esm",
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc --watch",
+    "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

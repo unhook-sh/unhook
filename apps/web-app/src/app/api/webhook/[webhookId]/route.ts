@@ -1,8 +1,8 @@
 import { posthog } from '@unhook/analytics/posthog/server';
+import { filterHeaders } from '@unhook/client';
 import { db } from '@unhook/db/client';
 import { Events, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
-import { filterHeaders } from '@unhook/webhook';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 

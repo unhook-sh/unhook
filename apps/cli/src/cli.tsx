@@ -37,6 +37,7 @@ async function main() {
     void useConfigStore.getState().watchConfig();
 
     if (config.debug) {
+      // TODO: this is causing logging to not work for some reason
       // await setupDebug({ isDebugEnabled: config.debug });
     }
 

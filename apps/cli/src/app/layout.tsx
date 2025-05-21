@@ -78,12 +78,13 @@ function AppContent() {
     );
   }
 
-  if (!webhookId && currentPath !== '/init') {
+  if (!webhookId && currentPath !== '/init' && currentPath !== '/login') {
     log('No webhook ID, navigating to /init');
     navigate('/init', { resetHistory: true });
   } else if (
     command &&
     currentPath !== command &&
+    currentPath !== '/login' &&
     !hasNavigatedToCommand.current
   ) {
     log('Navigating to command:', command);

@@ -11,7 +11,7 @@ const nextConfig = {
     '@unhook/db',
     '@unhook/id',
     '@unhook/ui',
-    '@unhook/webhook',
+    '@unhook/client',
     '@unhook/logger',
   ],
 };

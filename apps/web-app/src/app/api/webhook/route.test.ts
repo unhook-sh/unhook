@@ -76,7 +76,7 @@ describe('Webhook Route Handler', () => {
       createId: () => 'test-id',
     }));
 
-    vi.doMock('@unhook/webhook', () => ({
+    vi.doMock('@unhook/client', () => ({
       filterHeaders: vi.fn().mockReturnValue({}),
     }));
 

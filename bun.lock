@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.6.0",
+      "version": "0.6.3",
       "bin": {
         "unhook": "./bin/unhook",
       },
@@ -34,10 +34,11 @@
         "@clerk/types": "4.59.0",
         "@t3-oss/env-core": "0.13.4",
         "@unhook/api": "workspace:*",
+        "@unhook/client": "workspace:*",
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/logger": "workspace:*",
-        "@unhook/webhook": "workspace:*",
+        "@unhook/npm": "workspace:*",
         "@unhook/zustand": "workspace:*",
         "chalk": "5.4.1",
         "cli-highlight": "2.1.11",
@@ -100,10 +101,10 @@
         "@trpc/server": "11.1.2",
         "@unhook/analytics": "workspace:*",
         "@unhook/api": "workspace:*",
+        "@unhook/client": "workspace:*",
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/ui": "workspace:*",
-        "@unhook/webhook": "workspace:*",
         "@vercel/kv": "3.0.0",
         "color-bits": "1.1.0",
         "date-fns": "4.1.0",
@@ -191,6 +192,30 @@
       "devDependencies": {
         "@types/react": "19.1.4",
         "@types/react-dom": "19.1.5",
+        "@unhook/tsconfig": "workspace:*",
+        "typescript": "5.8.3",
+      },
+    },
+    "packages/client": {
+      "name": "@unhook/client",
+      "version": "0.1.0",
+      "dependencies": {
+        "@supabase/supabase-js": "2.49.4",
+        "@t3-oss/env-core": "0.13.4",
+        "@unhook/db": "workspace:*",
+        "@unhook/id": "workspace:*",
+        "@unhook/logger": "workspace:*",
+        "@unhook/npm": "workspace:*",
+        "@vercel/kv": "3.0.0",
+        "debug": "4.4.1",
+        "drizzle-orm": "0.43.1",
+        "find-up": "7.0.0",
+        "undici": "7.9.0",
+        "yaml": "2.8.0",
+        "zod": "3.24.4",
+      },
+      "devDependencies": {
+        "@types/debug": "4.1.12",
         "@unhook/tsconfig": "workspace:*",
         "typescript": "5.8.3",
       },
@@ -337,29 +362,6 @@
         "zod": "3.24.4",
       },
     },
-    "packages/webhook": {
-      "name": "@unhook/webhook",
-      "version": "0.1.0",
-      "dependencies": {
-        "@supabase/supabase-js": "2.49.4",
-        "@t3-oss/env-core": "0.13.4",
-        "@unhook/db": "workspace:*",
-        "@unhook/id": "workspace:*",
-        "@unhook/logger": "workspace:*",
-        "@vercel/kv": "3.0.0",
-        "debug": "4.4.1",
-        "drizzle-orm": "0.43.1",
-        "find-up": "7.0.0",
-        "undici": "7.9.0",
-        "yaml": "2.8.0",
-        "zod": "3.24.4",
-      },
-      "devDependencies": {
-        "@types/debug": "4.1.12",
-        "@unhook/tsconfig": "workspace:*",
-        "typescript": "5.8.3",
-      },
-    },
     "packages/zuzstand": {
       "name": "@unhook/zustand",
       "version": "0.1.0",
@@ -398,6 +400,13 @@
       "devDependencies": {
         "@unhook/tsconfig": "workspace:*",
         "typescript": "5.8.3",
+      },
+    },
+    "tooling/npm": {
+      "name": "@unhook/npm",
+      "version": "0.1.0",
+      "bin": {
+        "prepare-publish": "./prepare-publish.js",
       },
     },
     "tooling/testing": {
@@ -1710,6 +1719,8 @@
 
     "@unhook/cli": ["@unhook/cli@workspace:apps/cli"],
 
+    "@unhook/client": ["@unhook/client@workspace:packages/client"],
+
     "@unhook/commitlint-config": ["@unhook/commitlint-config@workspace:tooling/commitlint"],
 
     "@unhook/db": ["@unhook/db@workspace:packages/db"],
@@ -1724,6 +1735,8 @@
 
     "@unhook/next-config": ["@unhook/next-config@workspace:tooling/next"],
 
+    "@unhook/npm": ["@unhook/npm@workspace:tooling/npm"],
+
     "@unhook/tooling-testing": ["@unhook/tooling-testing@workspace:tooling/testing"],
 
     "@unhook/tsconfig": ["@unhook/tsconfig@workspace:tooling/typescript"],
@@ -1731,8 +1744,6 @@
     "@unhook/ui": ["@unhook/ui@workspace:packages/ui"],
 
     "@unhook/web-app": ["@unhook/web-app@workspace:apps/web-app"],
-
-    "@unhook/webhook": ["@unhook/webhook@workspace:packages/webhook"],
 
     "@unhook/zustand": ["@unhook/zustand@workspace:packages/zuzstand"],
 

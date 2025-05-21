@@ -1,4 +1,5 @@
 import { inspect } from 'node:util';
+import type { WebhookDeliver, WebhookDestination } from '@unhook/client';
 import type { Tables } from '@unhook/db';
 import type {
   EventType,
@@ -7,7 +8,6 @@ import type {
   RequestType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
-import type { WebhookDeliver, WebhookDestination } from '@unhook/webhook';
 import { createSelectors } from '@unhook/zustand';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';

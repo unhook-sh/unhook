@@ -23,7 +23,7 @@ const initFormSchema = z.object({
   webhookId: z.string().optional(),
   webhookName: z.string().optional(),
   destination: z.string().url('Please enter a valid URL'),
-  source: z.string().min(1, 'From is required'),
+  source: z.string().optional(),
 });
 
 type InitFormValues = z.infer<typeof initFormSchema>;
@@ -52,7 +52,11 @@ export const InitPage: FC<RouteProps> = () => {
 
   // Fetch webhooks on mount
   useState(() => {
-    fetchWebhooks();
+    fetchWebhooks().then((webhooks) => {
+      if (webhooks.length === 0) {
+        setShowNewWebhookInput(true);
+      }
+    });
   });
 
   // Add useInput hook to handle Enter key press after submission

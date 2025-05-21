@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import Path from 'node:path';
+import type { WebhookConfig } from '@unhook/client/config';
+import { findUpConfig, loadConfig } from '@unhook/client/config';
 import { debug } from '@unhook/logger';
-import type { WebhookConfig } from '@unhook/webhook/config';
-import { findUpConfig, loadConfig } from '@unhook/webhook/config';
 import { createSelectors } from '@unhook/zustand';
 import { watch } from 'chokidar';
 import { findUp } from 'find-up';

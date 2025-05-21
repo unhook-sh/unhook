@@ -1,1 +1,1 @@
-export * from '@unhook/webhook/config';
+export { defineWebhookConfig } from '@unhook/client/config';

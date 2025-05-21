@@ -21,7 +21,7 @@ interface WebhookActions {
   setIsLoading: (isLoading: boolean) => void;
   setIsAuthorizedForWebhook: (isAuthorized: boolean) => void;
   setIsCheckingWebhook: (isChecking: boolean) => void;
-  fetchWebhooks: () => Promise<void>;
+  fetchWebhooks: () => Promise<WebhookType[]>;
   fetchWebhookById: (webhookId: string) => Promise<WebhookType | null>;
   createWebhook: (name: string) => Promise<WebhookType>;
   checkWebhookAuth: () => Promise<boolean>;
@@ -70,20 +70,26 @@ const store = createStore<WebhookStore>()((set, get) => ({
   fetchWebhooks: async () => {
     const { api } = useApiStore.getState();
 
-    const webhooks = await api.webhooks.all.query();
-
-    set((state) => {
+    try {
+      const webhooks = await api.webhooks.all.query();
       const selectedWebhookId =
-        !state.selectedWebhookId && webhooks.length > 0
+        !get().selectedWebhookId && webhooks.length > 0
           ? (webhooks[0]?.id ?? null)
-          : state.selectedWebhookId;
+          : get().selectedWebhookId;
 
-      return {
+      set({
         webhooks,
         selectedWebhookId,
         isLoading: false,
-      };
-    });
+      });
+
+      return webhooks;
+    } catch (error) {
+      log('Error fetching webhooks: %O', error);
+      return [];
+    } finally {
+      set({ isLoading: false });
+    }
   },
   checkWebhookAuth: async () => {
     const { isSignedIn } = useAuthStore.getState();

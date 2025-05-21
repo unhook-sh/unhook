@@ -69,7 +69,11 @@
       "types": "./dist/src/exports.d.ts"
     }
   },
-  "files": ["bin", "README.md", "LICENSE"],
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",
@@ -113,7 +117,7 @@
     "typecheck": "tsc"
   },
   "type": "module",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "trustedDependencies": [
     "@clerk/shared",
     "browser-tabs-lock",

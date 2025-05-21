@@ -395,6 +395,7 @@ export function useSubscription<T extends TableName>(
 ): {
   status: SubscriptionStatus;
   unsubscribe: () => void;
+  subscribe: () => void;
   isInitialized: boolean;
   networkStatus: NetworkStatus;
 } {
@@ -539,6 +540,9 @@ export function useSubscription<T extends TableName>(
     unsubscribe: () => {
       unsubscribe(subscriptionKey, callbacksRef.current);
       cleanupReconnect();
+    },
+    subscribe: () => {
+      subscribe(subscriptionKey, callbacksRef.current);
     },
     isInitialized,
     networkStatus,

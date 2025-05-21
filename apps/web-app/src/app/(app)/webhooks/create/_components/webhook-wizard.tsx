@@ -118,11 +118,11 @@ export function WebhookWizard() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="space-y-4">
-          {isCreatingWebhook || isCreatingAuthCode || !webhook || !authCode ? (
+          {isCreatingWebhook || isCreatingAuthCode ? (
             <div className="flex items-center justify-center py-8">
               <Icons.Spinner className="size-8 animate-spin text-muted-foreground" />
             </div>
-          ) : (
+          ) : webhook && authCode ? (
             <>
               <WebhookUrlStep webhookUrl={webhookUrl} from={from} />
               <FromStep value={from} onChange={setFrom} />
@@ -132,7 +132,7 @@ export function WebhookWizard() {
                 source={from}
               />
             </>
-          )}
+          ) : null}
         </div>
       </CardContent>
     </Card>

@@ -2,6 +2,7 @@ import type { Tables } from '@unhook/db';
 import { useSubscription } from '@unhook/db/supabase/client';
 import { debug } from '@unhook/logger';
 import { memo, useEffect, useMemo, useRef } from 'react';
+import { useWebhookStore } from '~/stores/webhook-store';
 import { setRequestSubscriptionCleanup } from '../lib/cli/process';
 import { useEventStore } from '../stores/events-store';
 
@@ -14,6 +15,7 @@ export const EventSubscription = memo(function EventSubscription() {
   const fetchEvents = useEventStore.use.fetchEvents();
   const handlePendingRequest = useEventStore.use.handlePendingRequest();
   const deliverEvent = useEventStore.use.deliverEvent();
+  const isAuthorizedForWebhook = useWebhookStore.use.isAuthorizedForWebhook();
 
   // Memoize subscription callbacks to prevent unnecessary recreations
   const requestCallbacks = useMemo(
@@ -83,20 +85,33 @@ export const EventSubscription = memo(function EventSubscription() {
   );
 
   // Subscribe to requests
-  const { status: requestStatus, unsubscribe: unsubscribeRequests } =
-    useSubscription({
-      ...requestCallbacks,
-      event: '*',
-      table: 'requests',
-    });
+  const {
+    status: requestStatus,
+    unsubscribe: unsubscribeRequests,
+    subscribe: subscribeRequests,
+  } = useSubscription({
+    ...requestCallbacks,
+    event: '*',
+    table: 'requests',
+  });
 
   // // Subscribe to events
-  const { status: eventStatus, unsubscribe: unsubscribeEvents } =
-    useSubscription({
-      ...eventCallbacks,
-      event: '*',
-      table: 'events',
-    });
+  const {
+    status: eventStatus,
+    unsubscribe: unsubscribeEvents,
+    subscribe: subscribeEvents,
+  } = useSubscription({
+    ...eventCallbacks,
+    event: '*',
+    table: 'events',
+  });
+
+  useEffect(() => {
+    if (isAuthorizedForWebhook) {
+      subscribeRequests();
+      subscribeEvents();
+    }
+  }, [isAuthorizedForWebhook, subscribeRequests, subscribeEvents]);
 
   // Log combined subscription status
   useEffect(() => {

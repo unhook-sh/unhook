@@ -79,7 +79,7 @@ export const siteConfig = {
     cta: {
       primary: {
         text: 'Create Webhook URL',
-        href: '/webhooks/create?utm_source=marketing-site',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
       },
       secondary: {
         text: 'View Docs',
@@ -685,7 +685,7 @@ export const siteConfig = {
     backgroundImage: '/agent-cta-background.png',
     button: {
       text: 'Create Your Webhook URL Today',
-      href: '/webhooks/create?utm_source=marketing-site',
+      href: '/webhooks/create?utm_source=marketing-site&utm_medium=cta-button',
     },
     subtext: 'Start testing webhooks in minutes',
   },

@@ -7,7 +7,7 @@ import type {
   RequestType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
-import type { WebhookDeliver, WebhookTo } from '@unhook/webhook';
+import type { WebhookDeliver, WebhookDestination } from '@unhook/webhook';
 import { createSelectors } from '@unhook/zustand';
 import { request as undiciRequest } from 'undici';
 import { createStore } from 'zustand';
@@ -81,28 +81,34 @@ function getUrlString(url: string | URL | RemotePatternSchema): string {
 }
 
 function resolveDestination({
-  from,
+  source,
   deliver,
-  to,
+  destination,
 }: {
-  from: string;
+  source: string;
   deliver: WebhookDeliver[];
-  to: WebhookTo[];
-}): { url: string; to: string } {
+  destination: WebhookDestination[];
+}): { url: string; destination: string } | null {
   const matchingDeliver = deliver.find(
-    (rule) => rule.from === '*' || rule.from === from,
+    (rule) => rule.source === '*' || rule.source === source,
   );
   if (!matchingDeliver) {
-    throw new Error(`No delivery rule found for source: ${from}`);
+    log(`No delivery rule found for source: ${source}`);
+    return null;
   }
-  const toDef = (to ?? []).find((t) => t.name === matchingDeliver.to);
-  if (!toDef || !toDef.url) {
-    throw new Error(`No 'to' definition found for name: ${matchingDeliver.to}`);
+  const destinationDef = (destination ?? []).find(
+    (t) => t.name === matchingDeliver.destination,
+  );
+  if (!destinationDef || !destinationDef.url) {
+    log(
+      `No 'destination' definition found for name: ${matchingDeliver.destination}`,
+    );
+    return null;
   }
-  const destinationUrl = getUrlString(toDef.url);
+  const destinationUrl = getUrlString(destinationDef.url);
   return {
     url: destinationUrl,
-    to: toDef.name,
+    destination: destinationDef.name,
   };
 }
 
@@ -116,16 +122,16 @@ async function createRequestsForEventToAllDestinations({
   event: EventType;
   connectionId?: string | null;
   isEventRetry?: boolean;
-  pingEnabledFn?: (destination: WebhookTo) => boolean;
+  pingEnabledFn?: (destination: WebhookDestination) => boolean;
 }) {
-  const { to } = useConfigStore.getState();
+  const { destination } = useConfigStore.getState();
   const { api } = useApiStore.getState();
   const originRequest = event.originRequest;
 
-  for (const destination of to) {
-    const urlString = getUrlString(destination.url);
+  for (const dest of destination) {
+    const urlString = getUrlString(dest.url);
     log(
-      `Creating request for event ${event.id} to destination: ${destination.name} (${urlString})`,
+      `Creating request for event ${event.id} to destination: ${dest.name} (${urlString})`,
     );
     capture({
       event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_deliver',
@@ -134,13 +140,11 @@ async function createRequestsForEventToAllDestinations({
         webhookId: event.webhookId,
         method: originRequest.method,
         connectionId: connectionId ?? undefined,
-        pingEnabled: pingEnabledFn
-          ? pingEnabledFn(destination)
-          : !!destination.ping,
+        pingEnabled: pingEnabledFn ? pingEnabledFn(dest) : !!dest.ping,
         isEventRetry,
-        source: event.from,
-        to: destination.name,
-        destination: urlString,
+        source: event.source,
+        destination: dest.name,
+        url: urlString,
       },
     });
 
@@ -150,9 +154,9 @@ async function createRequestsForEventToAllDestinations({
       apiKey: event.apiKey ?? undefined,
       connectionId: connectionId ?? undefined,
       request: originRequest,
-      from: event.from,
-      to: {
-        name: destination.name,
+      source: event.source,
+      destination: {
+        name: dest.name,
         url: urlString,
       },
       timestamp:
@@ -169,9 +173,7 @@ async function createRequestsForEventToAllDestinations({
         webhookId: event.webhookId,
       });
     }
-    log(
-      `Created request for event ${event.id} to destination: ${destination.name}`,
-    );
+    log(`Created request for event ${event.id} to destination: ${dest.name}`);
   }
 }
 
@@ -234,15 +236,19 @@ const store = createStore<EventStore>()((set, get) => ({
   },
   handlePendingRequest: async (webhookRequest: Tables<'requests'>) => {
     log(`Handling pending event: ${webhookRequest.id}`);
-    const { deliver, to } = useConfigStore.getState();
+    const { deliver, destination } = useConfigStore.getState();
     const { api } = useApiStore.getState();
 
     // Use helper to resolve rule and URL
-    const destination = resolveDestination({
-      from: webhookRequest.from,
+    const dest = resolveDestination({
+      source: webhookRequest.source,
       deliver,
-      to,
+      destination,
     });
+    if (!dest) {
+      log(`No destination found for source: ${webhookRequest.source}`);
+      return;
+    }
     const request = webhookRequest.request as unknown as RequestType['request'];
 
     capture({
@@ -253,15 +259,15 @@ const store = createStore<EventStore>()((set, get) => ({
         eventId: webhookRequest.eventId,
         method: (webhookRequest.request as unknown as RequestType['request'])
           ?.method,
-        source: webhookRequest.from,
-        to: destination.to,
-        destination: destination.url,
+        source: webhookRequest.source,
+        destination: dest.destination,
+        url: dest.url,
       },
     });
 
     if (webhookRequest.status === 'pending') {
       try {
-        log(`Delivering request to: ${destination.url}`);
+        log(`Delivering request to: ${dest.url}`);
 
         // Decode base64 request body if it exists
         let requestBody: string | undefined;
@@ -278,12 +284,12 @@ const store = createStore<EventStore>()((set, get) => ({
         const startTime = Date.now();
         log('Sending request', {
           method: request.method,
-          url: destination.url,
+          url: dest.url,
         });
 
         const { host, ...headers } = request.headers;
 
-        const response = await undiciRequest(destination.url, {
+        const response = await undiciRequest(dest.url, {
           method: request.method,
           headers,
           body: requestBody,
@@ -397,10 +403,10 @@ const store = createStore<EventStore>()((set, get) => ({
                 webhookId: webhookRequest.webhookId,
                 eventId: event.id,
                 apiKey: webhookRequest.apiKey ?? undefined,
-                from: event.from,
-                to: {
-                  name: destination.to,
-                  url: destination.url,
+                source: event.source,
+                destination: {
+                  name: dest.destination,
+                  url: dest.url,
                 },
                 request: event.originRequest,
                 status: 'pending',
@@ -428,7 +434,6 @@ const store = createStore<EventStore>()((set, get) => ({
     log(`Replaying event: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
-    const { to } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     if (!user?.id || !orgId) {
       log('Authentication error: missing user or org ID');
@@ -467,8 +472,7 @@ const store = createStore<EventStore>()((set, get) => ({
       event: normalizedEvent,
       connectionId,
       isEventRetry: true,
-      pingEnabledFn: (destination) =>
-        !!to.find((t) => t.ping && t.name === destination.name),
+      pingEnabledFn: (destination) => !!destination.ping,
     });
   },
   deliverEvent: async (event: Tables<'events'>) => {
@@ -509,7 +513,7 @@ const store = createStore<EventStore>()((set, get) => ({
     log(`Replaying request: ${request.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
-    const { to } = useConfigStore.getState();
+    const { destination } = useConfigStore.getState();
 
     capture({
       event: 'webhook_request_replay',
@@ -519,8 +523,8 @@ const store = createStore<EventStore>()((set, get) => ({
         eventId: request.eventId,
         method: request.request.method,
         connectionId,
-        pingEnabled: !!to.find((t) => t.ping),
-        source: request.from,
+        pingEnabled: !!destination.find((t) => t.ping),
+        source: request.source,
       },
     });
 

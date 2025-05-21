@@ -158,11 +158,11 @@ const createConnectionStore = () => {
     connect: async () => {
       if (isDestroyedRef) return;
 
-      const { deliver, to } = useConfigStore.getState();
+      const { deliver, destination } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
 
       // If no delivery rules have ping enabled, treat as disabled
-      const pingEnabled = to.some((rule) => rule.ping !== false);
+      const pingEnabled = destination.some((rule) => rule.ping !== false);
 
       capture({
         event: 'connection_attempt',
@@ -237,7 +237,7 @@ const createConnectionStore = () => {
       }
 
       // Check each delivery rule that has ping enabled
-      for (const rule of to) {
+      for (const rule of destination) {
         if (rule.ping === false) continue;
 
         // Generate a stable ID for the rule based on from/to

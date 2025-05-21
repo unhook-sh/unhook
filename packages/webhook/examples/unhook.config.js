@@ -35,7 +35,7 @@ const config = {
   // Default: false
   debug: false,
 
-  to: [
+  destination: [
     {
       name: 'clerk',
       url: 'http://localhost:3000/api/webhooks/clerk',
@@ -43,8 +43,8 @@ const config = {
   ],
   deliver: [
     {
-      from: 'clerk',
-      to: 'clerk',
+      source: 'clerk',
+      destination: 'clerk',
     },
   ],
 };

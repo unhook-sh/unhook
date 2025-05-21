@@ -116,7 +116,7 @@ await seed(db, {
           contentType: 'application/json',
         },
       }),
-      from: funcs.valuesFromArray({
+      source: funcs.valuesFromArray({
         values: ['stripe', 'clerk'],
       }),
     },
@@ -161,10 +161,10 @@ await seed(db, {
         maxDate: new Date(),
       }),
       responseTimeMs: funcs.int({ maxValue: 10000, minValue: 0 }),
-      from: funcs.valuesFromArray({
+      source: funcs.valuesFromArray({
         values: ['stripe', 'clerk', '*'],
       }),
-      to: funcs.default({
+      destination: funcs.default({
         defaultValue: [
           {
             name: 'clerk',

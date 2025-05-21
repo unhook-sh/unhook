@@ -70,7 +70,7 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
       <Box flexDirection="column" width="60%" minWidth={60}>
         <Box borderStyle="round" flexDirection="column">
           <Box gap={1}>
-            <Text bold>{event.from}</Text>
+            <Text bold>{event.source}</Text>
             <Text bold>
               {extractEventName(event.originRequest.body)} -{' '}
               {event.originRequest.method}

@@ -6,15 +6,15 @@ import { CopyButton } from '@unhook/ui/custom/copy-button';
 interface InstallationCommandProps {
   authCode: string;
   webhookId: string;
-  from: string;
+  source: string;
 }
 
 export function InstallationCommand({
   authCode,
   webhookId,
-  from,
+  source,
 }: InstallationCommandProps) {
-  const command = `npx @unhook/cli init --webhook ${webhookId}${from ? ` --from ${from}` : ''} --code ${authCode}`;
+  const command = `npx @unhook/cli init --webhook ${webhookId}${source ? ` --source ${source}` : ''} --code ${authCode}`;
 
   return (
     <div className="space-y-2">

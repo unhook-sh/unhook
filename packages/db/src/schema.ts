@@ -199,8 +199,8 @@ export type WebhookConfig = {
   // Request Filtering
   requests: {
     allowedMethods?: string[]; // Only allow specific HTTP methods
-    allowedFrom?: string[]; // Only allow specific paths/patterns
-    blockedFrom?: string[]; // Block specific paths/patterns
+    allowedSource?: string[]; // Only allow specific paths/patterns
+    blockedSource?: string[]; // Block specific paths/patterns
     maxRequestsPerMinute?: number; // Rate limiting
     maxRetries?: number; // Maximum number of retries for failed requests
   };
@@ -227,7 +227,7 @@ export const Webhooks = pgTable('webhooks', {
       requests: {},
     })
     .notNull(),
-  status: webhookStatusEnum('status').notNull().default('inactive'),
+  status: webhookStatusEnum('status').notNull().default('active'),
   isPrivate: boolean('isPrivate').notNull().default(false),
   apiKey: text('apiKey')
     .$defaultFn(() => createId({ prefix: 'whsk' }))
@@ -260,7 +260,7 @@ export type WebhookType = typeof Webhooks.$inferSelect;
 export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
   name: z.string(),
   isPrivate: z.boolean().default(false).optional(),
-  status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
+  status: z.enum(webhookStatusEnum.enumValues).default('active'),
   config: z.object({
     storage: z.object({
       storeHeaders: z.boolean(),
@@ -276,8 +276,8 @@ export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
     }),
     requests: z.object({
       allowedMethods: z.array(z.string()).optional(),
-      allowedFrom: z.array(z.string()).optional(),
-      blockedFrom: z.array(z.string()).optional(),
+      allowedSource: z.array(z.string()).optional(),
+      blockedSource: z.array(z.string()).optional(),
       maxRequestsPerMinute: z.number().optional(),
       maxRetries: z.number().optional(),
     }),
@@ -350,7 +350,7 @@ export const Events = pgTable(
       .notNull(),
     // Original request payload that created this event
     originRequest: json('originRequest').$type<RequestPayload>().notNull(),
-    from: text('from').notNull().default('*'),
+    source: text('source').notNull().default('*'),
     // Number of retry attempts made
     retryCount: integer('retryCount').notNull().default(0),
     // Maximum number of retries allowed
@@ -411,7 +411,7 @@ export type EventTypeWithRequest = EventType & {
 export const CreateEventTypeSchema = createInsertSchema(Events, {
   apiKey: z.string().optional(),
   failedReason: z.string().optional(),
-  from: z.string().default('*'),
+  source: z.string().default('*'),
   maxRetries: z.number().default(3),
   originRequest: RequestPayloadSchema,
   retryCount: z.number().default(0),
@@ -476,8 +476,8 @@ export const Requests = pgTable(
       },
     ),
     request: json('request').notNull().$type<RequestPayload>(),
-    from: text('from').notNull().default('*'),
-    to: json('to').notNull().$type<{
+    source: text('source').notNull().default('*'),
+    destination: json('destination').notNull().$type<{
       name: string;
       url: string;
     }>(),
@@ -544,13 +544,13 @@ export const CreateRequestTypeSchema = createInsertSchema(Requests, {
   connectionId: z.string().optional(),
   eventId: z.string().optional(),
   failedReason: z.string().optional(),
-  from: z.string().default('*'),
+  source: z.string().default('*'),
   request: RequestPayloadSchema,
   response: ResponsePayloadSchema.optional(),
   responseTimeMs: z.number().default(0),
   status: z.enum(requestStatusEnum.enumValues).default('pending'),
   timestamp: z.date(),
-  to: z.object({
+  destination: z.object({
     name: z.string(),
     url: z.string(),
   }),

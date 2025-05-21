@@ -22,8 +22,8 @@ const log = debug('unhook:cli:init');
 const initFormSchema = z.object({
   webhookId: z.string().optional(),
   webhookName: z.string().optional(),
-  to: z.string().url('Please enter a valid URL'),
-  from: z.string().min(1, 'From is required'),
+  destination: z.string().url('Please enter a valid URL'),
+  source: z.string().min(1, 'From is required'),
 });
 
 type InitFormValues = z.infer<typeof initFormSchema>;
@@ -31,8 +31,8 @@ type InitFormValues = z.infer<typeof initFormSchema>;
 export const InitPage: FC<RouteProps> = () => {
   const dimensions = useDimensions();
   const [submitted, setSubmitted] = useState(false);
-  const from = useCliStore.use.from?.();
-  const to = useCliStore.use.to?.();
+  const source = useCliStore.use.source?.();
+  const destination = useCliStore.use.destination?.();
   const navigate = useRouterStore.use.navigate();
   const writeConfig = useConfigStore.use.writeConfig();
   const setConfig = useConfigStore.use.setConfig();
@@ -103,16 +103,16 @@ export const InitPage: FC<RouteProps> = () => {
     capture({
       event: 'init_config_created',
       properties: {
-        from: values.from,
-        to: values.to,
+        source: values.source,
+        destination: values.destination,
         webhookId: usedWebhookId,
       },
     });
 
     const config = {
       webhookId: usedWebhookId,
-      to: [{ name: 'default', url: values.to }],
-      deliver: [{ from: values.from ?? '*', to: 'default' }],
+      destination: [{ name: 'default', url: values.destination }],
+      deliver: [{ source: values.source ?? '*', destination: 'default' }],
     };
 
     const { path } = await writeConfig(config);
@@ -137,8 +137,8 @@ export const InitPage: FC<RouteProps> = () => {
         initialValues={{
           webhookId: webhookId ?? '',
           webhookName: webhookName,
-          to: to ?? '',
-          from: from ?? '',
+          destination: destination ?? '',
+          source: source ?? '',
         }}
       >
         {isLoading && <Text>Loading webhooks...</Text>}
@@ -185,22 +185,28 @@ export const InitPage: FC<RouteProps> = () => {
               </>
             )}
             <Box marginBottom={1} flexDirection="column">
-              <FormLabel id="from">Enter your from service:</FormLabel>
-              <FormDescription id="from">
+              <FormLabel id="source">Enter your source service:</FormLabel>
+              <FormDescription id="source">
                 The service that will send webhooks to Unhook (e.g., Stripe,
                 GitHub)
               </FormDescription>
-              <FormInput id="from" placeholder="Stripe" defaultValue={from} />
+              <FormInput
+                id="source"
+                placeholder="Stripe"
+                defaultValue={source}
+              />
             </Box>
             <Box marginBottom={1} flexDirection="column">
-              <FormLabel id="to">Enter your to URL:</FormLabel>
-              <FormDescription id="to">
+              <FormLabel id="destination">
+                Enter your destination URL:
+              </FormLabel>
+              <FormDescription id="destination">
                 The URL where Unhook will deliver the webhooks to
               </FormDescription>
               <FormInput
-                id="to"
+                id="destination"
                 placeholder="http://localhost:3000"
-                defaultValue={to ?? 'http://localhost:3000'}
+                defaultValue={destination ?? 'http://localhost:3000'}
               />
             </Box>
           </>
@@ -215,7 +221,7 @@ export const InitPage: FC<RouteProps> = () => {
           </Text>
           <Text>
             You can now use the <Text color="blue">npx @unhook/cli listen</Text>{' '}
-            command to deliver webhooks to {to}.
+            command to deliver webhooks to {destination}.
           </Text>
           <Box marginTop={1}>
             <Text>Press Enter to continue...</Text>

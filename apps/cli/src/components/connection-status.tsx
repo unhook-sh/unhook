@@ -29,9 +29,9 @@ export function ConnectionStatus() {
           <Text>
             <Text color="green">{figures.circleFilled}</Text> Connected
             {deliver.map((rule) => (
-              <Text key={`${rule.from}-${rule.to}`}>
+              <Text key={`${rule.source}-${rule.destination}`}>
                 {' '}
-                to {rule.to.toString()}
+                to {rule.destination.toString()}
               </Text>
             ))}
           </Text>

@@ -79,8 +79,8 @@ export function WebhookRequestsTable({
                 contentType: 'application/json',
                 clientIp: '127.0.0.1',
               },
-              from: '*',
-              to: {
+              source: '*',
+              destination: {
                 name: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
                   Math.floor(Math.random() * 4)
                 ] as string,
@@ -208,8 +208,8 @@ export function WebhookRequestsTable({
                         {request.request.method}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-xs truncate max-w-[300px]">
-                      {request.to.name}
+                    <TableCell className="max-w-[300px] truncate font-mono text-xs">
+                      {request.destination.name}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

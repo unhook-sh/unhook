@@ -34,15 +34,16 @@ export async function POST(
     );
   }
 
-  let from =
-    req.headers.get('x-unhook-from') ?? req.nextUrl.searchParams.get('from');
+  let source =
+    req.headers.get('x-unhook-source') ??
+    req.nextUrl.searchParams.get('source');
   const apiKey =
     req.headers.get('x-unhook-api-key') ??
     req.nextUrl.searchParams.get('apiKey');
 
-  // If no from is provided, send to all endpoints that match from = *
-  if (!from) {
-    from = '*';
+  // If no source is provided, send to all endpoints that match source = *
+  if (!source) {
+    source = '*';
   }
 
   // Get webhook configuration
@@ -137,8 +138,8 @@ export async function POST(
     requests: {
       ...webhook.config.requests,
       allowedMethods: webhook.config.requests?.allowedMethods ?? [],
-      blockedFrom: webhook.config.requests?.blockedFrom ?? [],
-      allowedFrom: webhook.config.requests?.allowedFrom ?? [],
+      blockedSource: webhook.config.requests?.blockedSource ?? [],
+      allowedSource: webhook.config.requests?.allowedSource ?? [],
     },
     storage: {
       ...webhook.config.storage,
@@ -177,46 +178,46 @@ export async function POST(
   }
 
   // Sanitize and check path restrictions
-  if (config.requests.blockedFrom?.some((p) => from?.match(p))) {
+  if (config.requests.blockedSource?.some((p) => source?.match(p))) {
     posthog.capture({
       event: 'webhook_error',
       distinctId: userId,
       properties: {
-        error: 'from_blocked',
+        error: 'source_blocked',
         webhookId,
-        from,
-        blockedFrom: config.requests.blockedFrom,
+        source,
+        blockedSource: config.requests.blockedSource,
       },
     });
     return NextResponse.json(
       {
-        error: 'From not allowed',
+        error: 'Source not allowed',
         help: 'The source of this request is blocked by the webhook configuration',
-        from,
+        source,
         docs: 'https://docs.unhook.sh',
       },
       { status: 403 },
     );
   }
   if (
-    config.requests.allowedFrom?.length > 0 &&
-    !config.requests.allowedFrom.some((p) => from?.match(p))
+    config.requests.allowedSource?.length > 0 &&
+    !config.requests.allowedSource.some((p) => source?.match(p))
   ) {
     posthog.capture({
       event: 'webhook_error',
       distinctId: userId,
       properties: {
-        error: 'from_not_allowed',
+        error: 'source_not_allowed',
         webhookId,
-        from,
-        allowedFrom: config.requests.allowedFrom,
+        source,
+        allowedSource: config.requests.allowedSource,
       },
     });
     return NextResponse.json(
       {
-        error: 'From not allowed',
+        error: 'Source not allowed',
         help: 'The source of this request is not in the allowed list',
-        from,
+        source,
         docs: 'https://docs.unhook.sh',
       },
       { status: 403 },
@@ -270,7 +271,7 @@ export async function POST(
         userId: webhook.userId,
         orgId: webhook.orgId,
         originRequest: request,
-        from,
+        source,
         status: 'pending',
         retryCount: 0,
         maxRetries: config.requests.maxRetries ?? 3,
@@ -285,7 +286,7 @@ export async function POST(
         properties: {
           error: 'failed_to_create_event',
           webhookId,
-          from,
+          source,
         },
       });
       return NextResponse.json(
@@ -304,7 +305,7 @@ export async function POST(
       distinctId: userId,
       properties: {
         webhookId,
-        from,
+        source,
         apiKey,
       },
     });
@@ -323,7 +324,7 @@ export async function POST(
     posthog.captureException(error, userId, {
       properties: {
         webhookId,
-        from,
+        source,
         apiKey,
       },
     });

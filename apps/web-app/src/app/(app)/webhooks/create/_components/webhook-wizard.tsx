@@ -103,7 +103,7 @@ export function WebhookWizard() {
                 <InstallationCommand
                   authCode={authCode.id}
                   webhookId={webhook.id}
-                  from={from}
+                  source={from}
                 />
               )}
             </>

@@ -79,7 +79,7 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
               <Text bold color="cyan">
                 {event.originRequest.method}{' '}
               </Text>
-              <Text>{lastRequest?.to?.name}</Text>
+              <Text>{lastRequest?.destination?.name}</Text>
               <Box>
                 <Text dimColor>
                   Size: {event.originRequest.size} bytes • IP:{' '}

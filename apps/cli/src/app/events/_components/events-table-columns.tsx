@@ -168,14 +168,14 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     },
   },
   {
-    id: 'from',
-    header: 'From',
+    id: 'source',
+    header: 'Source',
     minWidth: 25,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(row.from, width)}
+          {truncateText(row.source, width)}
         </Text>
       );
     },

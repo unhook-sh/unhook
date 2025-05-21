@@ -83,15 +83,15 @@ export const columns: ColumnDef<RequestType>[] = [
     },
   },
   {
-    id: 'to',
-    header: 'To',
+    id: 'destination',
+    header: 'Destination',
     minWidth: 15,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
       return (
         <Text color={color} dimColor={!isSelected} bold={isSelected}>
-          {truncateText(row.to?.name, width)}
+          {truncateText(row.destination?.name, width)}
         </Text>
       );
     },
@@ -159,7 +159,7 @@ export const columns: ColumnDef<RequestType>[] = [
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
-      let url = row.to?.url;
+      let url = row.destination?.url;
       if (url) {
         url = new URL(url).toString();
       }

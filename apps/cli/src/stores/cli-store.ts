@@ -10,8 +10,8 @@ export type CliState = {
   command?: AppRoutePath;
   path?: string;
   webhookId?: string;
-  from?: string;
-  to?: string;
+  source?: string;
+  destination?: string;
   configPath?: string;
 };
 
@@ -31,8 +31,8 @@ const defaultCliState: Partial<CliState> = {
   code: undefined,
   command: undefined,
   webhookId: undefined,
-  from: undefined,
-  to: undefined,
+  source: undefined,
+  destination: undefined,
   configPath: undefined,
 };
 

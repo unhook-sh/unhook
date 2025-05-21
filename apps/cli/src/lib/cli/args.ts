@@ -40,12 +40,12 @@ export async function parseArgs(): Promise<CliState> {
           type: 'string',
           description: 'Webhook ID to use',
         },
-        from: {
-          alias: 'f',
+        source: {
+          alias: 's',
           type: 'string',
           description: 'Source URL or path',
         },
-        to: {
+        destination: {
           alias: 't',
           type: 'string',
           description: 'Destination URL or path',
@@ -108,8 +108,8 @@ export async function parseArgs(): Promise<CliState> {
     command,
     path: parsedConfig.path as string,
     webhookId: parsedConfig.webhook as string,
-    from: parsedConfig.from as string,
-    to: parsedConfig.to as string,
+    source: parsedConfig.source as string,
+    destination: parsedConfig.destination as string,
     configPath: parsedConfig.configPath as string,
   };
 }

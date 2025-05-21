@@ -33,7 +33,7 @@ export const configSchema = z
     clientId: z.string().optional(),
     debug: z.boolean().default(false).optional(),
     telemetry: z.boolean().default(true).optional(),
-    to: z.array(
+    destination: z.array(
       z.object({
         name: z.string(),
         url: z.union([
@@ -52,7 +52,7 @@ export const configSchema = z
           .optional(),
       }),
     ),
-    from: z
+    source: z
       .array(
         z.object({
           name: z.string(),
@@ -66,21 +66,21 @@ export const configSchema = z
       .optional(),
     deliver: z.array(
       z.object({
-        from: z.string().default('*').optional(),
-        to: z.string(),
+        source: z.string().default('*').optional(),
+        destination: z.string(),
       }),
     ),
   })
   .superRefine((data, ctx) => {
-    // Runtime validation: ensure all deliver.to values exist in to[].name
-    if (data.to && data.deliver) {
-      const validNames = new Set(data.to.map((t) => t.name));
+    // Runtime validation: ensure all deliver.destination values exist in destination[].name
+    if (data.destination && data.deliver) {
+      const validNames = new Set(data.destination.map((t) => t.name));
       data.deliver.forEach((f, idx) => {
-        if (!validNames.has(f.to)) {
+        if (!validNames.has(f.destination)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Invalid deliver.to: "${f.to}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'deliver.to' matches a 'to[].name'.\nSee https://docs.unhook.sh/config for examples.`,
-            path: ['deliver', idx, 'to'],
+            message: `Invalid deliver.destination: "${f.destination}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'deliver.destination' matches a 'destination[].name'.\nSee https://docs.unhook.sh/config for examples.`,
+            path: ['deliver', idx, 'destination'],
           });
         }
       });
@@ -88,9 +88,11 @@ export const configSchema = z
   });
 
 export type WebhookDeliver = z.infer<typeof configSchema>['deliver'][number];
-export type WebhookTo = NonNullable<z.infer<typeof configSchema>['to']>[number];
-export type WebhookFrom = NonNullable<
-  z.infer<typeof configSchema>['from']
+export type WebhookDestination = NonNullable<
+  z.infer<typeof configSchema>['destination']
+>[number];
+export type WebhookSource = NonNullable<
+  z.infer<typeof configSchema>['source']
 >[number];
 
 export type WebhookConfig = z.infer<typeof configSchema>;
@@ -119,7 +121,9 @@ export async function findUpConfig(): Promise<string | null> {
 export async function loadConfig(configPath: string): Promise<WebhookConfig> {
   let config = {
     webhookId: '',
-    to: [] as Array<z.infer<typeof configSchema>['to'][number]>,
+    destination: [] as Array<
+      z.infer<typeof configSchema>['destination'][number]
+    >,
     deliver: [] as Array<z.infer<typeof configSchema>['deliver'][number]>,
   };
 
@@ -155,8 +159,10 @@ export async function loadConfig(configPath: string): Promise<WebhookConfig> {
 
 export function defineWebhookConfig<
   T extends readonly { name: string }[],
-  D extends readonly { from?: string; to: T[number]['name'] }[],
-  Rest extends Omit<WebhookConfig, 'to' | 'deliver'>,
->(config: { to: T; deliver: D } & Rest): { to: T; deliver: D } & Rest {
+  D extends readonly { source?: string; destination: T[number]['name'] }[],
+  Rest extends Omit<WebhookConfig, 'destination' | 'deliver'>,
+>(
+  config: { destination: T; deliver: D } & Rest,
+): { destination: T; deliver: D } & Rest {
   return config;
 }

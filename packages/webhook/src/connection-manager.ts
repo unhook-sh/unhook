@@ -123,12 +123,6 @@ export class ConnectionManager {
 
       await Promise.all([
         db
-          .update(Webhooks)
-          .set({
-            status: 'inactive',
-          })
-          .where(eq(Webhooks.id, webhook.id)),
-        db
           .update(Connections)
           .set({
             disconnectedAt: new Date(),

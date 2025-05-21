@@ -15,7 +15,7 @@ const log = debug('unhook:cli:config-store');
 // Default state matching WebhookConfig shape
 const defaultConfigState: WebhookConfig = {
   webhookId: '',
-  to: [],
+  destination: [],
   deliver: [],
   debug: false,
   telemetry: true,
@@ -126,8 +126,8 @@ const store = createStore<ConfigStore>()((set, get) => ({
  * For more information, visit: https://docs.unhook.sh/configuration
  *
  * @property {string} webhookId - Unique identifier for your webhook
- * @property {Array<{name: string, url: string|URL|RemotePattern, ping?: boolean|string|URL|RemotePattern}>} to - Array of destination endpoints
- * @property {Array<{from?: string, to: string}>} deliver - Array of delivery rules
+ * @property {Array<{name: string, url: string|URL|RemotePattern, ping?: boolean|string|URL|RemotePattern}>} destination - Array of destination endpoints
+ * @property {Array<{source?: string, destination: string}>} deliver - Array of delivery rules
 
  * @typedef {Object} RemotePattern
  * @property {'http'|'https'} [protocol] - URL protocol
@@ -141,7 +141,7 @@ import { defineWebhookConfig } from '@unhook/cli';
 
 const config = defineWebhookConfig({
   webhookId: '${config.webhookId}',
-  to: ${JSON.stringify(config.to, null, 2)},
+  destination: ${JSON.stringify(config.destination, null, 2)},
   deliver: ${JSON.stringify(config.deliver, null, 2)},
 } as const);
 
@@ -151,7 +151,7 @@ export default config;
       // Use YAML format if not TypeScript
       const yamlConfig = {
         webhookId: config.webhookId,
-        to: config.to,
+        destination: config.destination,
         deliver: config.deliver,
       };
       content = `# Unhook Webhook Configuration
@@ -159,13 +159,13 @@ export default config;
 #
 # Schema:
 #   webhookId: string                    # Unique identifier for your webhook
-#   to:                                  # Array of destination endpoints
+#   destination:                         # Array of destination endpoints
 #     - name: string                     # Name of the endpoint
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
 #       ping?: boolean|string|URL        # Optional ping configuration
 #   deliver:                             # Array of delivery rules
-#     - from?: string                    # Optional source filter (default: "*")
-#       to: string                       # Name of the destination from 'to' array
+#     - source?: string                  # Optional source filter (default: "*")
+#       destination: string              # Name of the destination from 'destination' array
 #
 # RemotePattern:
 #   protocol?: "http"|"https"            # URL protocol

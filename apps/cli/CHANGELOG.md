@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- [`9432f0c`](https://github.com/unhook-sh/unhook/commit/9432f0c9736bba9c68d9cc44cce27c5d81d7df2b) Thanks [@seawatts](https://github.com/seawatts)! - New Onboarding Flow
+
 ## 0.4.2
 
 ### Patch Changes

@@ -1,5 +1,6 @@
 'use client';
 
+import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
 import type { AuthCodeType, WebhookType } from '@unhook/db/schema';
 import {
   Card,
@@ -27,6 +28,9 @@ export function WebhookWizard() {
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { organization } = useOrganization();
+  const { createOrganization, setActive } = useOrganizationList();
+  const { user } = useUser();
 
   const { executeAsync: executeCreateWebhook } = useAction(createWebhook);
   const { executeAsync: executeCreateAuthCode } = useAction(createAuthCode);
@@ -34,6 +38,16 @@ export function WebhookWizard() {
   useEffect(() => {
     async function initializeWebhook() {
       try {
+        if (user && createOrganization && !organization) {
+          const result = await createOrganization({
+            name: `${user.firstName}'s Team`,
+          });
+          if (result) {
+            setActive({
+              organization: result.id,
+            });
+          }
+        }
         const result = await executeCreateWebhook({});
         if (result?.data) {
           setWebhook(result.data.webhook);
@@ -68,7 +82,14 @@ export function WebhookWizard() {
     }
 
     initializeWebhook();
-  }, [executeCreateWebhook, executeCreateAuthCode]);
+  }, [
+    executeCreateWebhook,
+    executeCreateAuthCode,
+    organization,
+    createOrganization,
+    setActive,
+    user,
+  ]);
 
   const webhookUrl = (() => {
     if (!webhook) return '';

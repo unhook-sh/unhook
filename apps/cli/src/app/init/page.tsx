@@ -1,5 +1,5 @@
 import { debug } from '@unhook/logger';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import { type FC, useState } from 'react';
 import { z } from 'zod';
 import { Ascii } from '~/components/ascii';
@@ -37,6 +37,7 @@ export const InitPage: FC<RouteProps> = () => {
   const writeConfig = useConfigStore.use.writeConfig();
   const setConfig = useConfigStore.use.setConfig();
   const webhookId = useCliStore.use.webhookId?.();
+  const [configPath, setConfigPath] = useState<string | undefined>(undefined);
   const [webhookName] = useState('Default');
   const [selectedWebhookId, setSelectedWebhookId] = useState<
     string | undefined
@@ -52,6 +53,13 @@ export const InitPage: FC<RouteProps> = () => {
   // Fetch webhooks on mount
   useState(() => {
     fetchWebhooks();
+  });
+
+  // Add useInput hook to handle Enter key press after submission
+  useInput((_input, key) => {
+    if (submitted && key.return) {
+      navigate('/', { resetHistory: true });
+    }
   });
 
   const webhookOptions = webhooks.map((wh) => ({
@@ -77,8 +85,6 @@ export const InitPage: FC<RouteProps> = () => {
       : webhookOptions;
 
   const handleSubmit = async (values: InitFormValues) => {
-    setSubmitted(true);
-
     let usedWebhookId = values.webhookId;
     // If no webhooks exist or '+ New Webhook' is selected, create one with the provided name
     if (webhooks.length === 0 || values.webhookId === NEW_WEBHOOK_VALUE) {
@@ -109,12 +115,10 @@ export const InitPage: FC<RouteProps> = () => {
       deliver: [{ from: values.from ?? '*', to: 'default' }],
     };
 
-    await writeConfig(config);
+    const { path } = await writeConfig(config);
+    setConfigPath(path);
     setConfig(config);
-
-    setTimeout(() => {
-      navigate('/');
-    }, 1000);
+    setSubmitted(true);
   };
 
   return (
@@ -205,12 +209,17 @@ export const InitPage: FC<RouteProps> = () => {
       {submitted && (
         <Box marginBottom={1} flexDirection="column">
           <Text>Success!</Text>
-          <Text>Your webhook config has been saved.</Text>
           <Text>
-            You can now use the <Text color="blue">unhook listen</Text> command
-            to deliver webhooks to your service.
+            Your webhook config has been saved at{' '}
+            <Text color="blue">{configPath}</Text>
           </Text>
-          <Text>Redirecting to the home page...</Text>
+          <Text>
+            You can now use the <Text color="blue">npx @unhook/cli listen</Text>{' '}
+            command to deliver webhooks to {to}.
+          </Text>
+          <Box marginTop={1}>
+            <Text>Press Enter to continue...</Text>
+          </Box>
         </Box>
       )}
     </Box>

@@ -50,8 +50,13 @@ interface RouterActions {
   navigate: {
     <T extends AppRoutePath>(
       path: T extends `${string}:${string}` ? never : T,
+      options?: { resetHistory?: boolean; replace?: boolean },
     ): void;
-    <T extends AppRoutePath>(template: T, params?: PathParams<T>): void;
+    <T extends AppRoutePath>(
+      template: T,
+      params?: PathParams<T>,
+      options?: { resetHistory?: boolean; replace?: boolean },
+    ): void;
   };
   goBack: () => void;
   setRoutes: (routes: Route[]) => void;
@@ -85,11 +90,16 @@ const store = createStore<RouterStore>()((set, get) => ({
   navigate: (<T extends AppRoutePath>(
     pathOrTemplate: T,
     params?: PathParams<T>,
+    options?: { resetHistory?: boolean; replace?: boolean },
   ) => {
     const path = params ? buildPath(pathOrTemplate, params) : pathOrTemplate;
     const { currentPath, history, routes } = get();
+
     // Don't add to history if navigating to the same path
-    if (path === currentPath) return;
+    if (path === currentPath) {
+      log('navigate: already on path', { path });
+      return;
+    }
 
     // Find the route and open URL if it exists
     const route = routes.find((r) => r.path === path);
@@ -115,7 +125,11 @@ const store = createStore<RouterStore>()((set, get) => ({
 
     set((state) => ({
       currentPath: path as AppRoutePath,
-      history: [...state.history, currentPath],
+      history: options?.resetHistory
+        ? [currentPath]
+        : options?.replace
+          ? [...state.history.slice(0, -1), currentPath]
+          : [...state.history, currentPath],
     }));
   }) as RouterActions['navigate'],
   goBack: () => {

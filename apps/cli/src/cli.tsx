@@ -4,9 +4,11 @@ import { defaultLogger } from '@unhook/logger';
 import { debug } from '@unhook/logger';
 import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file';
 
+const logDir = join(tmpdir(), 'unhook');
+console.log(logDir);
 defaultLogger.addDestination(
   new RollingFileDestination({
-    filepath: join(tmpdir(), 'unhook', 'unhook.log'),
+    filepath: join(logDir, 'unhook.log'),
     createDirectory: true,
     maxSize: 10 * 1024 * 1024, // 10MB
     maxFiles: 5,
@@ -35,7 +37,7 @@ async function main() {
     void useConfigStore.getState().watchConfig();
 
     if (config.debug) {
-      await setupDebug({ isDebugEnabled: config.debug });
+      // await setupDebug({ isDebugEnabled: config.debug });
     }
 
     capture({

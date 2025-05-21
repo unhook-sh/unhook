@@ -1,0 +1,27 @@
+# Unhook Webhook Configuration
+# For more information, visit: https://docs.unhook.sh/configuration
+#
+# Schema:
+#   webhookId: string                    # Unique identifier for your webhook
+#   to:                                  # Array of destination endpoints
+#     - name: string                     # Name of the endpoint
+#       url: string|URL|RemotePattern    # URL to forward webhooks to
+#       ping?: boolean|string|URL        # Optional ping configuration
+#   deliver:                             # Array of delivery rules
+#     - from?: string                    # Optional source filter (default: "*")
+#       to: string                       # Name of the destination from 'to' array
+#
+# RemotePattern:
+#   protocol?: "http"|"https"            # URL protocol
+#   hostname: string                     # URL hostname
+#   port?: string                        # URL port
+#   pathname?: string                    # URL pathname
+#   search?: string                      # URL search params
+
+webhookId: wh_s9z0x59l9mb1nuomjf58lxuj
+to:
+  - name: default
+    url: http://localhost:3000
+deliver:
+  - from: Stripe
+    to: default

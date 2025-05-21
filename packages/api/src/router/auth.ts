@@ -32,7 +32,7 @@ export const authRouter = {
         code: z.string(),
       }),
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       const { code } = input;
 
       const authCode = await db.transaction(async (tx) => {

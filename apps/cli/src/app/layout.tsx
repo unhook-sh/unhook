@@ -3,7 +3,7 @@ import { SubscriptionProvider } from '@unhook/db/supabase/client';
 
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
-import { type FC, useEffect } from 'react';
+import { type FC, useEffect, useRef } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Ascii } from '~/components/ascii';
 import { ConnectToWebhook } from '~/components/connect-to-webhook';
@@ -50,6 +50,7 @@ function AppContent() {
   const navigate = useRouterStore.use.navigate();
   const command = useCliStore.use.command?.();
   const currentPath = useRouterStore.use.currentPath();
+  const hasNavigatedToCommand = useRef(false);
 
   useEffect(() => {
     capture({
@@ -79,10 +80,15 @@ function AppContent() {
 
   if (!webhookId && currentPath !== '/init') {
     log('No webhook ID, navigating to /init');
-    navigate('/init');
-  } else if (command && currentPath !== command) {
+    navigate('/init', { resetHistory: true });
+  } else if (
+    command &&
+    currentPath !== command &&
+    !hasNavigatedToCommand.current
+  ) {
     log('Navigating to command:', command);
-    navigate(command);
+    hasNavigatedToCommand.current = true;
+    navigate(command, { resetHistory: true });
   }
 
   return (

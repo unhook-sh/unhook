@@ -20,6 +20,25 @@ export const createAuthCode = action.action(async () => {
     throw new Error('Organization not found');
   }
 
+  // First check for an existing unused and non-expired auth code
+  const existingAuthCode = await db.query.AuthCodes.findFirst({
+    where: (authCode, { and, eq, isNull, gt }) =>
+      and(
+        eq(authCode.userId, user.userId),
+        eq(authCode.orgId, user.orgId as string),
+        isNull(authCode.usedAt),
+        gt(authCode.expiresAt, new Date()),
+      ),
+  });
+
+  if (existingAuthCode) {
+    return {
+      isNew: false,
+      authCode: existingAuthCode,
+    };
+  }
+
+  // If no valid auth code exists, create a new one
   const [authCode] = await db
     .insert(AuthCodes)
     .values({
@@ -33,7 +52,10 @@ export const createAuthCode = action.action(async () => {
     throw new Error('Failed to create auth code');
   }
 
-  return authCode;
+  return {
+    isNew: true,
+    authCode,
+  };
 });
 
 export const upsertOrg = action

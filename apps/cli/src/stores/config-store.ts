@@ -25,7 +25,7 @@ interface ConfigActions {
   setConfig: (config: Partial<WebhookConfig>) => void;
   getConfig: () => WebhookConfig;
   watchConfig: () => Promise<void>;
-  writeConfig: (config: WebhookConfig) => Promise<void>;
+  writeConfig: (config: WebhookConfig) => Promise<{ path?: string }>;
   loadConfig: () => Promise<WebhookConfig>;
 }
 
@@ -97,7 +97,28 @@ const store = createStore<ConfigStore>()((set, get) => ({
     }
 
     let content: string;
-    if (hasCliInstalled) {
+    let configPath = await findUpConfig();
+    let isTypeScriptConfig = false;
+
+    // If we found a config path, check its extension
+    if (configPath) {
+      isTypeScriptConfig = configPath.endsWith('.ts');
+    } else {
+      // If no config found, determine format based on CLI installation
+      isTypeScriptConfig = hasCliInstalled;
+      configPath = Path.resolve(
+        process.cwd(),
+        isTypeScriptConfig ? 'unhook.config.ts' : 'unhook.config.yaml',
+      );
+    }
+
+    // If CLI is not installed but we found a TypeScript config, we should convert to YAML
+    if (!hasCliInstalled && isTypeScriptConfig) {
+      isTypeScriptConfig = false;
+      configPath = Path.resolve(process.cwd(), 'unhook.config.yaml');
+    }
+
+    if (isTypeScriptConfig) {
       content = `/**
  * Unhook Webhook Configuration
  *
@@ -127,7 +148,7 @@ const config = defineWebhookConfig({
 export default config;
 `;
     } else {
-      // Use YAML format if @unhook/cli is not installed
+      // Use YAML format if not TypeScript
       const yamlConfig = {
         webhookId: config.webhookId,
         to: config.to,
@@ -162,21 +183,14 @@ ${yaml.dump(yamlConfig, {
     }
 
     try {
-      let configPath = await findUpConfig();
-
-      if (!configPath && !hasCliInstalled) {
-        configPath = Path.resolve(process.cwd(), 'unhook.config.yaml');
-      }
-
-      if (!configPath && hasCliInstalled) {
-        configPath = Path.resolve(process.cwd(), 'unhook.config.ts');
-      }
-
       if (!configPath) {
         log('No config file found to write.');
-        return;
+        return { path: undefined };
       }
       await writeFile(configPath, content);
+      set(config);
+
+      return { path: configPath };
     } catch (error) {
       log('Error writing config:', error);
       throw error;

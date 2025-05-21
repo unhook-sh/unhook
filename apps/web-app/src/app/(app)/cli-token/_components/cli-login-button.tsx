@@ -36,7 +36,7 @@ export function CliLoginButton() {
       const redirectUrl = new URL(`http://localhost:${port ?? 54321}`);
 
       // Add the token to the redirect URL
-      redirectUrl.searchParams.set('code', result.data.id);
+      redirectUrl.searchParams.set('code', result.data.authCode.id);
       redirectUrl.searchParams.set('csrf', csrfToken || '');
 
       posthog?.capture('cli_login_success', {

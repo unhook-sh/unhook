@@ -1,5 +1,4 @@
 import { Input } from '@unhook/ui/components/input';
-import { Label } from '@unhook/ui/components/label';
 
 interface NameStepProps {
   value: string;
@@ -8,14 +7,11 @@ interface NameStepProps {
 
 export function NameStep({ value, onChange }: NameStepProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor="name">Webhook Name</Label>
-      <Input
-        id="name"
-        placeholder="Enter a name for your webhook"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </div>
+    <Input
+      id="name"
+      placeholder="e.g. Prod, Staging, etc."
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
   );
 }

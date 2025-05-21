@@ -65,7 +65,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
           {value
             ? userMemberships.find((org) => org.organization.id === value)
                 ?.organization.name
-            : 'Select organization...'}
+            : 'Select or create an organization...'}
           <ChevronsUpDown className="opacity-50 ml-2" size="sm" />
         </Button>
       </PopoverTrigger>

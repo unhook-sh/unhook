@@ -70,7 +70,12 @@
       "types": "./dist/src/exports.d.ts"
     }
   },
-  "files": ["bin", "README.md", "LICENSE", "dist/src/exports.d.ts"],
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE",
+    "dist/src/exports.d.ts"
+  ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",
@@ -139,5 +144,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.6.6"
+  "version": "0.7.0"
 }

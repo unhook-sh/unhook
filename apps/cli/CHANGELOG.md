@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.6.1
+
+### Patch Changes
+
+- [`e0da95c`](https://github.com/unhook-sh/unhook/commit/e0da95c315eb7578ad2f6ef2b118337ff128b466) Thanks [@seawatts](https://github.com/seawatts)! - Fix binary
+
 ## 0.6.0
 
 ### Minor Changes

@@ -118,7 +118,9 @@ export function WebhookWizard() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="space-y-4">
-          {isCreatingWebhook || isCreatingAuthCode ? (
+          {(isCreatingWebhook || isCreatingAuthCode) &&
+          !webhook &&
+          !authCode ? (
             <div className="flex items-center justify-center py-8">
               <Icons.Spinner className="size-8 animate-spin text-muted-foreground" />
             </div>

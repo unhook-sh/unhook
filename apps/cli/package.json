@@ -113,7 +113,7 @@
     "typecheck": "tsc"
   },
   "type": "module",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "trustedDependencies": [
     "@clerk/shared",
     "browser-tabs-lock",

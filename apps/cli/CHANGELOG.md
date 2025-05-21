@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- [`a043255`](https://github.com/unhook-sh/unhook/commit/a04325591929094e040b0562036ade007c0499b8) Thanks [@seawatts](https://github.com/seawatts)! - Rename To and From to Source and Destination
+
 ## 0.5.0
 
 ### Minor Changes

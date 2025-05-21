@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { db } from './client';
+import { db } from '../src/client';
 
 type PolicyOperation = 'SELECT' | 'INSERT' | 'UPDATE' | 'DELETE' | 'ALL';
 

@@ -27,13 +27,14 @@ export function WebhookWizard() {
   const [from, setFrom] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const { organization } = useOrganization();
   const { createOrganization, setActive } = useOrganizationList();
   const { user } = useUser();
 
-  const { executeAsync: executeCreateWebhook } = useAction(createWebhook);
-  const { executeAsync: executeCreateAuthCode } = useAction(createAuthCode);
+  const { executeAsync: executeCreateWebhook, isPending: isCreatingWebhook } =
+    useAction(createWebhook);
+  const { executeAsync: executeCreateAuthCode, isPending: isCreatingAuthCode } =
+    useAction(createAuthCode);
 
   useEffect(() => {
     async function initializeWebhook() {
@@ -85,8 +86,6 @@ export function WebhookWizard() {
         toast.error('Failed to create webhook', {
           description: 'Please try again.',
         });
-      } finally {
-        setIsLoading(false);
       }
     }
 
@@ -119,23 +118,19 @@ export function WebhookWizard() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="space-y-4">
-          {isLoading ? (
+          {isCreatingWebhook || isCreatingAuthCode || !webhook || !authCode ? (
             <div className="flex items-center justify-center py-8">
               <Icons.Spinner className="size-8 animate-spin text-muted-foreground" />
             </div>
           ) : (
             <>
-              {webhook && (
-                <WebhookUrlStep webhookUrl={webhookUrl} from={from} />
-              )}
+              <WebhookUrlStep webhookUrl={webhookUrl} from={from} />
               <FromStep value={from} onChange={setFrom} />
-              {webhook && authCode && (
-                <InstallationCommand
-                  authCode={authCode.id}
-                  webhookId={webhook.id}
-                  source={from}
-                />
-              )}
+              <InstallationCommand
+                authCode={authCode.id}
+                webhookId={webhook.id}
+                source={from}
+              />
             </>
           )}
         </div>

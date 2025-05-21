@@ -148,9 +148,9 @@ jobs:
         with:
           version: ${{ steps.version.outputs.version }}
 
-      - name: Update Monitoring
-        uses: ./tooling/github/cli/monitoring
-        with:
-          version: ${{ steps.version.outputs.version }}
-          posthog_host: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
-          posthog_api_key: ${{ env.POSTHOG_PERSONAL_API_KEY }}
+      # - name: Update Monitoring
+      #   uses: ./tooling/github/cli/monitoring
+      #   with:
+      #     version: ${{ steps.version.outputs.version }}
+      #     posthog_host: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
+      #     posthog_api_key: ${{ env.POSTHOG_PERSONAL_API_KEY }}

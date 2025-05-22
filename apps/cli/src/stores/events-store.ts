@@ -124,11 +124,35 @@ async function createRequestsForEventToAllDestinations({
   isEventRetry?: boolean;
   pingEnabledFn?: (destination: WebhookDestination) => boolean;
 }) {
-  const { destination } = useConfigStore.getState();
+  const { delivery, destination } = useConfigStore.getState();
   const { api } = useApiStore.getState();
   const originRequest = event.originRequest;
 
-  for (const dest of destination) {
+  for (const deliveryRule of delivery) {
+    const dest = destination.find((t) => t.name === deliveryRule.destination);
+    if (!dest) {
+      log(
+        `No destination found for delivery rule: ${deliveryRule.destination}`,
+      );
+      continue;
+    }
+
+    if (event.source !== deliveryRule.source) {
+      log(
+        `Skipping event source: ${event.source} does not match delivery rule source: ${deliveryRule.source}`,
+      );
+      capture({
+        event: 'webhook_event_skipped',
+        properties: {
+          eventId: event.id,
+          webhookId: event.webhookId,
+          source: event.source,
+          destination: dest.name,
+        },
+      });
+      continue;
+    }
+
     const urlString = getUrlString(dest.url);
     log(
       `Creating request for event ${event.id} to destination: ${dest.name} (${urlString})`,
@@ -148,7 +172,7 @@ async function createRequestsForEventToAllDestinations({
       },
     });
 
-    await api.events.create.mutate({
+    await api.requests.create.mutate({
       webhookId: event.webhookId,
       eventId: event.id,
       apiKey: event.apiKey ?? undefined,
@@ -184,7 +208,6 @@ const store = createStore<EventStore>()((set, get) => ({
     set({ events });
   },
   setSelectedEventId: (id) => {
-    log(`Setting selected event ID: ${id}`);
     set({ selectedEventId: id });
   },
   setIsLoading: (isLoading) => {
@@ -205,10 +228,10 @@ const store = createStore<EventStore>()((set, get) => ({
     limit = 25,
     offset = 0,
   }: { limit?: number; offset?: number } = {}) => {
-    log('Fetching events from database', { limit, offset });
     const { webhookId } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     const currentState = get();
+    log('Fetching events from database', { limit, offset, webhookId });
 
     try {
       // Fetch requests with their associated events
@@ -399,7 +422,7 @@ const store = createStore<EventStore>()((set, get) => ({
               });
 
               // Create a new retry request
-              await api.events.create.mutate({
+              await api.requests.create.mutate({
                 webhookId: webhookRequest.webhookId,
                 eventId: event.id,
                 apiKey: webhookRequest.apiKey ?? undefined,
@@ -438,11 +461,6 @@ const store = createStore<EventStore>()((set, get) => ({
     if (!user?.id || !orgId) {
       log('Authentication error: missing user or org ID');
       throw new Error('User or org not authenticated');
-    }
-
-    if (!connectionId) {
-      log('Connection error: no active connection');
-      throw new Error('Connection not found');
     }
 
     // Normalize timestamp to Date

@@ -6,7 +6,6 @@ import { createStore } from 'zustand';
 import { capture } from '../lib/posthog';
 import { useAuthStore } from './auth-store';
 import { useConfigStore } from './config-store';
-import { useWebhookStore } from './webhook-store';
 
 const log = debug('unhook:cli:connection-store');
 
@@ -125,8 +124,8 @@ const createConnectionStore = () => {
       });
 
       // Update webhook record with connection status
-      const { selectedWebhookId } = useWebhookStore.getState();
-      if (selectedWebhookId) {
+      const { webhookId } = useConfigStore.getState();
+      if (webhookId) {
         const _isAnyConnected = Object.values({
           ...currentState.ruleStates,
           [ruleId]: updatedRuleState,
@@ -182,14 +181,14 @@ const createConnectionStore = () => {
         return;
       }
 
-      const { selectedWebhookId } = useWebhookStore.getState();
+      const { webhookId } = useConfigStore.getState();
 
       if (!user?.id) {
         log('User must be authenticated to connect');
         return;
       }
 
-      if (!selectedWebhookId) {
+      if (!webhookId) {
         log('No webhook selected');
         return;
       }

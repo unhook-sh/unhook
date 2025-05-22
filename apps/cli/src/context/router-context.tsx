@@ -1,7 +1,6 @@
 import { useInput } from 'ink';
 import { type FC, useEffect } from 'react';
 import { useRoutes } from '~/app/routes';
-import { capture } from '~/lib/posthog';
 import { useRouterStore } from '~/stores/router-store';
 
 interface RouterProviderProps {
@@ -11,35 +10,34 @@ interface RouterProviderProps {
 function NavigationHandler() {
   const goBack = useRouterStore.use.goBack();
   const canGoBack = useRouterStore.use.canGoBack()();
-  const navigate = useRouterStore.use.navigate();
-  useInput((input, key) => {
+  useInput((_, key) => {
     if (key.escape && canGoBack) {
       goBack();
     }
 
     // Add global hotkey handlers
-    if (input === '?') {
-      capture({
-        event: 'hotkey_pressed',
-        properties: {
-          hotkey: '?',
-          hokeyName: 'Help',
-        },
-      });
+    // if (input === '?') {
+    //   capture({
+    //     event: 'hotkey_pressed',
+    //     properties: {
+    //       hotkey: '?',
+    //       hokeyName: 'Help',
+    //     },
+    //   });
 
-      navigate('/hotkeys');
-    }
+    //   navigate('/hotkeys');
+    // }
 
-    if (input === 'h') {
-      capture({
-        event: 'hotkey_pressed',
-        properties: {
-          hotkey: 'h',
-          hokeyName: 'Help',
-        },
-      });
-      navigate('/help');
-    }
+    // if (input === 'h') {
+    //   capture({
+    //     event: 'hotkey_pressed',
+    //     properties: {
+    //       hotkey: 'h',
+    //       hokeyName: 'Help',
+    //     },
+    //   });
+    //   navigate('/help');
+    // }
   });
 
   return null;

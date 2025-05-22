@@ -4,12 +4,12 @@ import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
 import { useApiStore } from './api-store';
 import { useAuthStore } from './auth-store';
+import { useConfigStore } from './config-store';
 
 const log = debug('unhook:cli:webhook-store');
 
 interface WebhookState {
   webhooks: WebhookType[];
-  selectedWebhookId: string | null;
   isLoading: boolean;
   isAuthorizedForWebhook: boolean;
   isCheckingWebhook: boolean;
@@ -17,7 +17,6 @@ interface WebhookState {
 
 interface WebhookActions {
   setWebhooks: (webhooks: WebhookType[]) => void;
-  setSelectedWebhookId: (id: string | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   setIsAuthorizedForWebhook: (isAuthorized: boolean) => void;
   setIsCheckingWebhook: (isChecking: boolean) => void;
@@ -31,7 +30,6 @@ type WebhookStore = WebhookState & WebhookActions;
 
 const defaultWebhookState: WebhookState = {
   webhooks: [],
-  selectedWebhookId: null,
   isLoading: true,
   isAuthorizedForWebhook: false,
   isCheckingWebhook: true,
@@ -40,7 +38,6 @@ const defaultWebhookState: WebhookState = {
 const store = createStore<WebhookStore>()((set, get) => ({
   ...defaultWebhookState,
   setWebhooks: (webhooks) => set({ webhooks }),
-  setSelectedWebhookId: (id) => set({ selectedWebhookId: id }),
   setIsLoading: (isLoading) => set({ isLoading }),
   setIsAuthorizedForWebhook: (isAuthorized) =>
     set({ isAuthorizedForWebhook: isAuthorized }),
@@ -51,35 +48,45 @@ const store = createStore<WebhookStore>()((set, get) => ({
 
     log('fetchWebhookById', { id, orgId });
 
-    const webhook = await api.webhooks.byId.query({ id });
+    try {
+      const webhook = await api.webhooks.byId.query({ id });
 
-    if (webhook) {
-      set((state) => ({
-        webhooks: state.webhooks.some((t) => t.id === webhook.id)
-          ? state.webhooks.map((t) => (t.id === webhook.id ? webhook : t))
-          : [...state.webhooks, webhook],
-        selectedWebhookId: webhook.id,
-        isLoading: false,
-      }));
+      if (webhook) {
+        log('Webhook found, updating store state', { webhookId: webhook.id });
+        set((state) => ({
+          webhooks: state.webhooks.some((t) => t.id === webhook.id)
+            ? state.webhooks.map((t) => (t.id === webhook.id ? webhook : t))
+            : [...state.webhooks, webhook],
+          isLoading: false,
+          isAuthorizedForWebhook: true,
+          isCheckingWebhook: false,
+        }));
 
-      return webhook;
+        return webhook;
+      }
+
+      log('Webhook not found', { id });
+      set({
+        isAuthorizedForWebhook: false,
+        isCheckingWebhook: false,
+      });
+      return null;
+    } catch (error) {
+      log('Error fetching webhook:', error);
+      set({
+        isAuthorizedForWebhook: false,
+        isCheckingWebhook: false,
+      });
+      return null;
     }
-
-    return null;
   },
   fetchWebhooks: async () => {
     const { api } = useApiStore.getState();
 
     try {
       const webhooks = await api.webhooks.all.query();
-      const selectedWebhookId =
-        !get().selectedWebhookId && webhooks.length > 0
-          ? (webhooks[0]?.id ?? null)
-          : get().selectedWebhookId;
-
       set({
         webhooks,
-        selectedWebhookId,
         isLoading: false,
       });
 
@@ -93,17 +100,17 @@ const store = createStore<WebhookStore>()((set, get) => ({
   },
   checkWebhookAuth: async () => {
     const { isSignedIn } = useAuthStore.getState();
-    const { selectedWebhookId } = get();
+    const { webhookId } = useConfigStore.getState();
 
     log('checkWebhookAuth called', {
       isSignedIn,
-      selectedWebhookId,
+      webhookId,
     });
 
-    if (!isSignedIn || !selectedWebhookId || selectedWebhookId === '') {
+    if (!isSignedIn || !webhookId || webhookId === '') {
       log('checkWebhookAuth - missing required state', {
         isSignedIn,
-        selectedWebhookId,
+        webhookId,
       });
       set({
         isAuthorizedForWebhook: false,
@@ -115,7 +122,7 @@ const store = createStore<WebhookStore>()((set, get) => ({
     try {
       log('checkWebhookAuth - setting isCheckingWebhook to true');
       set({ isCheckingWebhook: true });
-      const webhook = await get().fetchWebhookById(selectedWebhookId);
+      const webhook = await get().fetchWebhookById(webhookId);
       const isAuthorized = !!webhook;
       log('checkWebhookAuth - completed check', {
         isAuthorized,

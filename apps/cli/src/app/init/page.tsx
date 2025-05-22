@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { Ascii } from '~/components/ascii';
 import { capture } from '~/lib/posthog';
 
+import type { WebhookConfig } from '@unhook/client';
 import {
   FormDescription,
   FormInput,
@@ -117,7 +118,7 @@ export const InitPage: FC<RouteProps> = () => {
       webhookId: usedWebhookId,
       destination: [{ name: 'default', url: values.destination }],
       delivery: [{ source: values.source ?? '*', destination: 'default' }],
-    };
+    } satisfies WebhookConfig;
 
     const { path } = await writeConfig(config);
     setConfigPath(path);

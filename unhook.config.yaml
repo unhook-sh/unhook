@@ -18,10 +18,10 @@
 #   pathname?: string                    # URL pathname
 #   search?: string                      # URL search params
 
-webhookId: wh_s9z0x59l9mb1nuomjf58lxuj
+webhookId: wh_ta5fshla14s4l4tfe1p9poia
 destination:
   - name: default
-    url: http://localhost:3000
+    url: http://localhost:3000/webhooks/clerk
 delivery:
-  - source: Stripe
+  - source: clerk
     destination: default

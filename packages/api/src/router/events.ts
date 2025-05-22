@@ -2,7 +2,7 @@ import { and, count, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import {
-  CreateRequestTypeSchema,
+  CreateEventTypeSchema,
   Events,
   Requests,
   UpdateEventTypeSchema,
@@ -185,13 +185,13 @@ export const eventsRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(CreateRequestTypeSchema)
+    .input(CreateEventTypeSchema)
     .mutation(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
       if (!ctx.auth.userId) throw new Error('User ID is required');
 
       const [request] = await ctx.db
-        .insert(Requests)
+        .insert(Events)
         .values({
           ...input,
           orgId: ctx.auth.orgId,

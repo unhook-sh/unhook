@@ -24,15 +24,23 @@ interface OrgSelectorProps {
 
 export function OrgSelector({ onSelect }: OrgSelectorProps) {
   const { user } = useUser();
-  const { organization } = useOrganization();
+  const { organization: activeOrg } = useOrganization();
   const { setActive } = useOrganizationList();
   const userMemberships = user?.organizationMemberships ?? [];
 
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState<string>(organization?.id || '');
+  const [value, setValue] = React.useState<string>(activeOrg?.id || '');
   const [input, setInput] = React.useState('');
   const [isCreating, setIsCreating] = React.useState(false);
   const posthog = usePostHog();
+
+  // Update value when activeOrg changes
+  React.useEffect(() => {
+    if (activeOrg?.id) {
+      setValue(activeOrg.id);
+      onSelect?.(activeOrg.id);
+    }
+  }, [activeOrg?.id, onSelect]);
 
   const filteredOrgs = input
     ? userMemberships.filter((membership) =>

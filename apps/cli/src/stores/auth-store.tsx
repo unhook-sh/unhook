@@ -4,7 +4,6 @@ import { createId } from '@unhook/id';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import clipboard from 'clipboardy';
-import open from 'open';
 import { createStore } from 'zustand';
 import { env } from '../env';
 import { handleAuthError } from '../lib/auth/errors';
@@ -270,13 +269,6 @@ const store = createStore<AuthStore>()((set, get) => ({
       const authPromise = authServer.start({
         csrfToken,
         port,
-      });
-
-      // Open browser for authentication
-      log('Opening browser for authentication');
-      await open(authUrl.toString());
-      capture({
-        event: 'auth_browser_opened',
       });
 
       // Wait for authentication response

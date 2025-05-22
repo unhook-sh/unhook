@@ -1,19 +1,22 @@
+import { debug } from '@unhook/logger';
 import { useEffect } from 'react';
 import { useAuthStore } from '~/stores/auth-store';
+import { useConfigStore } from '~/stores/config-store';
 import { useConnectionStore } from '~/stores/connection-store';
-import { useWebhookStore } from '~/stores/webhook-store';
+
+const log = debug('unhook:cli:connect-to-webhook');
 
 export function ConnectToWebhook() {
-  const isConnected = useConnectionStore.use.isAnyConnected();
   const connect = useConnectionStore.use.connect();
+  const webhookId = useConfigStore.use.webhookId();
   const isSignedIn = useAuthStore.use.isSignedIn();
-  const selectedWebhookId = useWebhookStore.use.selectedWebhookId();
 
   useEffect(() => {
-    if (!isConnected && selectedWebhookId && isSignedIn) {
-      connect();
+    if (webhookId && isSignedIn) {
+      log('Connecting to webhook', { webhookId });
+      void connect();
     }
-  }, [isConnected, selectedWebhookId, connect, isSignedIn]);
+  }, [webhookId, connect, isSignedIn]);
 
   return null;
 }

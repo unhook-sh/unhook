@@ -1,8 +1,8 @@
 import { debug } from '@unhook/logger';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
+import open from 'open';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
-import { Spinner } from '~/components/spinner';
 import { useAuthStore } from '~/stores/auth-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
 
@@ -11,6 +11,7 @@ const log = debug('unhook:cli:login-page');
 export const LoginPage: FC<RouteProps> = () => {
   // State management
   const [error, setError] = useState<string | null>(null);
+  const [isBrowserOpened, setIsBrowserOpened] = useState(false);
 
   // Store access
   const navigate = useRouterStore.use.navigate();
@@ -18,12 +19,20 @@ export const LoginPage: FC<RouteProps> = () => {
   const signIn = useAuthStore.use.signIn();
   const authUrl = useAuthStore.use.authUrl();
 
+  // Handle input
+  useInput((_, key) => {
+    if (key.return && authUrl && !isBrowserOpened) {
+      log('Opening browser for authentication');
+      void open(authUrl);
+      setIsBrowserOpened(true);
+    }
+  });
+
   // Start authentication when ready
   useEffect(() => {
     async function startAuthentication() {
       try {
         await signIn();
-
         navigate('/');
       } catch (error) {
         setError(`Authentication failed: ${(error as Error).message}`);
@@ -38,20 +47,20 @@ export const LoginPage: FC<RouteProps> = () => {
   return (
     <Box flexDirection="column" gap={1}>
       <Box flexDirection="column" gap={1}>
-        <Box flexDirection="row" gap={1}>
-          <Spinner />
-          <Text>Opening browser for authentication...</Text>
-          <Text dimColor>Copied to clipboard</Text>
-        </Box>
         {authUrl && (
           <Box flexDirection="column" gap={1}>
-            <Text>
-              Copied to clipboard. If the browser doesn't open automatically,
-              click here.
-            </Text>
-            <Text dimColor underline>
-              {authUrl}
-            </Text>
+            <Box flexDirection="column" gap={1}>
+              <Text>
+                If the browser doesn't open automatically, click here:
+              </Text>
+              <Text dimColor underline>
+                {authUrl}
+              </Text>
+            </Box>
+            <Box flexDirection="row" gap={1}>
+              <Text>Press Enter to open browser for authentication...</Text>
+              {isBrowserOpened && <Text dimColor>Browser opened</Text>}
+            </Box>
           </Box>
         )}
       </Box>

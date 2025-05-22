@@ -49,7 +49,7 @@
   },
   "description": "A CLI tool for testing webhooks locally with team collaboration features.",
   "devDependencies": {
-    "@types/bun": "1.2.13",
+    "@types/bun": "1.2.14",
     "@types/figlet": "1.7.0",
     "@types/js-yaml": "4.0.9",
     "@types/jsonwebtoken": "9.0.9",
@@ -70,12 +70,7 @@
       "types": "./dist/src/exports.d.ts"
     }
   },
-  "files": [
-    "bin",
-    "README.md",
-    "LICENSE",
-    "dist/src/exports.d.ts"
-  ],
+  "files": ["bin", "README.md", "LICENSE", "dist/src/exports.d.ts"],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",
@@ -144,5 +139,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.7.0"
+  "version": "0.7.1"
 }

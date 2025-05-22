@@ -1,13 +1,11 @@
 import { Box, Text } from 'ink';
 import { env } from '~/env';
-import { useCliStore } from '~/stores/cli-store';
-import { useWebhookStore } from '~/stores/webhook-store';
+import { useConfigStore } from '~/stores/config-store';
 
 export function HelpPage() {
-  const selectedWebhookId = useWebhookStore.use.selectedWebhookId();
-  const version = useCliStore.use.version();
+  const webhookId = useConfigStore.use.webhookId();
 
-  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${selectedWebhookId}`;
+  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${webhookId}`;
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -22,7 +20,7 @@ export function HelpPage() {
         </Text>
         <Text>
           Unhook is a modern webhook development tool that enables teams to
-          easily test webhooks locally. Version: {version}
+          easily test webhooks locally.
         </Text>
       </Box>
 

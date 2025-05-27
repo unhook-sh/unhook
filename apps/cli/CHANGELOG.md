@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.9.0
+
+### Minor Changes
+
+- [`5cc5c2d`](https://github.com/unhook-sh/unhook/commit/5cc5c2d2ca6b5981cba7009d977e96230666bb48) Thanks [@seawatts](https://github.com/seawatts)! - Fix cross platform install
+
 ## 0.8.0
 
 ### Minor Changes

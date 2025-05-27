@@ -1,7 +1,3 @@
-'use client';
-
-import { useClerk } from '@clerk/nextjs';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -9,15 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { CliTokenContent } from './_components/cli-token-content';
+import { SignInDifferentAccountButton } from './_components/sign-in-different-account-button';
 
 export default function CliTokenPage() {
-  const { signOut } = useClerk();
-  const searchParams = useSearchParams();
-  const currentQueryString = searchParams.toString();
-  const redirectUrl = `/cli-token${currentQueryString ? `?${currentQueryString}` : ''}`;
-
   return (
     <div className="flex flex-col gap-4 items-center justify-center">
       <Card className="w-full">
@@ -32,17 +24,9 @@ export default function CliTokenPage() {
           <CliTokenContent />
         </CardContent>
       </Card>
-      <Button
-        variant="link"
-        onClick={() =>
-          signOut({
-            redirectUrl,
-          })
-        }
-        className="w-fit"
-      >
-        Sign in with different account
-      </Button>
+      <Suspense>
+        <SignInDifferentAccountButton />
+      </Suspense>
     </div>
   );
 }

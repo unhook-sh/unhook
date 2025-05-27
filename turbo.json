@@ -1,64 +1,5 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "ui": "tui",
-  "tasks": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "next-env.d.ts",
-        ".expo/**",
-        ".output/**",
-        ".vercel/output/**",
-        "dist/**"
-      ]
-    },
-    "dev": {
-      "persistent": true,
-      "cache": false
-    },
-    "format": {
-      "dependsOn": ["^topo", "^build"]
-    },
-    "typecheck": {
-      "dependsOn": ["^topo", "^build"],
-      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
-    },
-    "clean": {
-      "cache": false
-    },
-    "//#clean": {
-      "cache": false
-    },
-    "push": {
-      "cache": false,
-      "interactive": true
-    },
-    "migrate": {
-      "cache": false,
-      "interactive": true
-    },
-    "gen-migration": {
-      "cache": false,
-      "interactive": true
-    },
-    "seed": {
-      "cache": false,
-      "interactive": true
-    },
-    "studio": {
-      "cache": false,
-      "persistent": true
-    },
-    "ui-add": {
-      "cache": false,
-      "interactive": true
-    }
-  },
   "globalEnv": [
     "DATABASE_URL",
     "PORT",
@@ -95,6 +36,10 @@
     "NEXT_PUBLIC_POSTHOG_KEY",
     "NEXT_PUBLIC_POSTHOG_HOST",
     "NEXT_PUBLIC_APP_ENV",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT",
+    "SENTRY_AUTH_TOKEN",
+    "COMMITTER_TOKEN",
     "APPLE_TEAM_ID",
     "APPLE_ID",
     "APPLE_PASSWORD",
@@ -113,5 +58,64 @@
     "VERCEL_ENV",
     "VERCEL_URL",
     "npm_lifecycle_event"
-  ]
+  ],
+  "tasks": {
+    "//#clean": {
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "next-env.d.ts",
+        ".expo/**",
+        ".output/**",
+        ".vercel/output/**",
+        "dist/**"
+      ]
+    },
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "format": {
+      "dependsOn": ["^topo", "^build"]
+    },
+    "gen-migration": {
+      "cache": false,
+      "interactive": true
+    },
+    "migrate": {
+      "cache": false,
+      "interactive": true
+    },
+    "push": {
+      "cache": false,
+      "interactive": true
+    },
+    "seed": {
+      "cache": false,
+      "interactive": true
+    },
+    "studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
+    "typecheck": {
+      "dependsOn": ["^topo", "^build"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+    },
+    "ui-add": {
+      "cache": false,
+      "interactive": true
+    }
+  },
+  "ui": "tui"
 }

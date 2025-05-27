@@ -1,8 +1,8 @@
 'use server';
 
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { db } from '@unhook/db/client';
-import { AuthCodes, OrgMembers, Orgs } from '@unhook/db/schema';
+import { AuthCodes, OrgMembers, Orgs, Users } from '@unhook/db/schema';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -18,6 +18,88 @@ export const createAuthCode = action.action(async () => {
 
   if (!user.orgId) {
     throw new Error('Organization not found');
+  }
+
+  const clerkUser = await currentUser();
+  if (!clerkUser) {
+    throw new Error('User details not found');
+  }
+
+  // Upsert user
+  const [dbUser] = await db
+    .insert(Users)
+    .values({
+      id: user.userId,
+      clerkId: user.userId,
+      email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+      firstName: clerkUser.firstName ?? null,
+      lastName: clerkUser.lastName ?? null,
+      avatarUrl: clerkUser.imageUrl ?? null,
+      lastLoggedInAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: Users.clerkId,
+      set: {
+        email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+        firstName: clerkUser.firstName ?? null,
+        lastName: clerkUser.lastName ?? null,
+        avatarUrl: clerkUser.imageUrl ?? null,
+        lastLoggedInAt: new Date(),
+        updatedAt: new Date(),
+      },
+    })
+    .returning();
+
+  if (!dbUser) {
+    throw new Error('Failed to create/update user');
+  }
+
+  const clerk = await clerkClient();
+  const clerkOrg = await clerk.organizations.getOrganization({
+    organizationId: user.orgId,
+  });
+
+  // Upsert organization
+  const [org] = await db
+    .insert(Orgs)
+    .values({
+      clerkOrgId: user.orgId,
+      name: clerkOrg.name,
+      createdByUserId: user.userId,
+      id: user.orgId,
+    })
+    .onConflictDoUpdate({
+      target: Orgs.clerkOrgId,
+      set: {
+        name: clerkOrg.name,
+        updatedAt: new Date(),
+      },
+    })
+    .returning();
+
+  if (!org) {
+    throw new Error('Failed to create/update organization');
+  }
+
+  // Upsert organization member
+  const [orgMember] = await db
+    .insert(OrgMembers)
+    .values({
+      userId: user.userId,
+      orgId: org.id,
+      role: 'admin',
+    })
+    .onConflictDoUpdate({
+      target: [OrgMembers.userId, OrgMembers.orgId],
+      set: {
+        role: 'admin',
+        updatedAt: new Date(),
+      },
+    })
+    .returning();
+
+  if (!orgMember) {
+    throw new Error('Failed to create/update organization member');
   }
 
   // First check for an existing unused and non-expired auth code

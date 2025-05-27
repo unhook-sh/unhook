@@ -1,4 +1,4 @@
-name: CLI Build and Release
+name: CLI Github Release
 
 on:
   workflow_dispatch:

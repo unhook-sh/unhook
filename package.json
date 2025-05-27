@@ -52,6 +52,7 @@
     "lint:ws": "bunx sherif@latest",
     "postinstall.todo": "bun lint:ws",
     "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... && changeset publish",
+    "publish1": "turbo run build --filter=./apps/cli... --filter=./packages/client...",
     "test": "bun test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",

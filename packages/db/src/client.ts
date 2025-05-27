@@ -6,7 +6,7 @@ import { Pool } from 'pg';
 import { env } from './env.server';
 import * as schema from './schema';
 
-const isProd = env.VERCEL === true;
+const isProd = env.VERCEL_ENV === 'production';
 
 export const db = isProd
   ? drizzleVercel(sql, { schema })

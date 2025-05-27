@@ -28,6 +28,15 @@ export const LoginPage: FC<RouteProps> = () => {
     }
   });
 
+  // Open browser when authUrl is available
+  useEffect(() => {
+    if (authUrl && !isBrowserOpened) {
+      log('Opening browser for authentication');
+      void open(authUrl);
+      setIsBrowserOpened(true);
+    }
+  }, [authUrl, isBrowserOpened]);
+
   // Start authentication when ready
   useEffect(() => {
     async function startAuthentication() {

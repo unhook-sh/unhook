@@ -10,7 +10,7 @@ const clientPackageJsonPath = join(
   workspaceRoot,
   '../../packages/client/package.json',
 );
-const installScriptPath = join(cliPath, 'scripts', 'install.js');
+const installScriptPath = join(cliPath, 'scripts', 'install.cjs');
 
 // Copy README and LICENSE
 try {

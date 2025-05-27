@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.4.0
+
+### Minor Changes
+
+- [`bb8ef63`](https://github.com/unhook-sh/unhook/commit/bb8ef6322063190b66cf08987a7cecc971001bc3) Thanks [@seawatts](https://github.com/seawatts)! - Fixed realtime events and requests handling
+
 ## 0.3.0
 
 ### Minor Changes

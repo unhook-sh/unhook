@@ -66,6 +66,11 @@ if (packageJson.devDependencies?.['@unhook/client'] === 'workspace:*') {
 // Write the modified package.json back
 writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
+// Run format:fix on the package
+const { execSync } = await import('node:child_process');
+execSync('bun biome check --write', { stdio: 'inherit' });
+console.log('✅ Formatted package.json');
+
 console.log(
   `✅ Removed ${unhookDeps.length} workspace dependencies from package.json:`,
   unhookDeps.join(', '),

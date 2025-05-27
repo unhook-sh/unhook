@@ -5,156 +5,250 @@ description: 'Configure Unhook for your development environment'
 
 ## Configuration File
 
-Unhook supports multiple configuration file formats. Create any of these files in your project root:
-
-```plaintext
-.webhookrc
-.webhookrc.json
-.webhookrc.yaml
-.webhookrc.yml
-.webhookrc.js
-.webhookrc.cjs
-webhook.config.js
-webhook.config.cjs
-webhook.config.json
-webhook.config.yaml
-webhook.config.yml
-```
-
-### Configuration Options
+The `unhook.config.yaml` file is the primary way to configure Unhook. It supports the following options:
 
 ```typescript
 interface WebhookConfig {
-  // Port to forward webhooks to (1-65535)
-  port?: number;
-
-  // Your Unhook API key
-  webhookId?: string;
-
-  // Custom client identifier
-  clientId?: string;
-
-  // Enable debug logging
-  debug?: boolean;
-
-  // URL to redirect webhooks to (alternative to port)
-  redirect?: string;
-
-  // Connection health check configuration
-  ping?: boolean | string | number;
+  webhookId: string;  // Your unique webhook ID
+  debug?: boolean;    // Enable debug mode
+  telemetry?: boolean; // Enable telemetry
+  destination: Array<{
+    name: string;     // Name of the endpoint
+    url: string | URL | {  // Local URL to deliver requests to
+      protocol?: 'http' | 'https';
+      hostname: string;
+      port?: string;
+      pathname?: string;
+      search?: string;
+    };
+    ping?: boolean | string | URL; // Health check configuration
+  }>;
+  source?: Array<{
+    name: string;     // Name of the source
+  }>;
+  delivery: Array<{
+    source?: string;  // Source of the webhook (defaults to '*')
+    destination: string; // Name of the destination to deliver to
+  }>;
 }
 ```
 
-### Example Configurations
+## Basic Configuration
 
-<CodeGroup>
+Here's a basic configuration example:
 
-```javascript JavaScript
-// webhook.config.js
-module.exports = {
-  port: 3000,
-  webhookId: 'your_webhook_id',
-  clientId: 'dev-machine-1',
-  debug: true,
-  ping: true
-}
+```yaml
+webhookId: "wh_your_webhook_id"
+debug: false
+telemetry: true
+destination:
+  - name: "your-endpoint"
+    url: "http://localhost:3000/api/webhooks"
+source:
+  - name: "stripe"
+  - name: "github"
+delivery:
+  - source: "stripe"
+    destination: "your-endpoint"
+  - source: "github"
+    destination: "your-endpoint"
 ```
 
-```json JSON
-{
-  "port": 3000,
-  "webhookId": "your_webhook_id",
-  "clientId": "dev-machine-1",
-  "debug": true,
-  "ping": true
-}
+## Advanced Configuration
+
+### Multiple Destinations
+
+Configure multiple endpoints for different webhook types:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+destination:
+  - name: "stripe-endpoint"
+    url: "http://localhost:3000/api/webhooks/stripe"
+  - name: "github-endpoint"
+    url: "http://localhost:3000/api/webhooks/github"
+  - name: "clerk-endpoint"
+    url: "http://localhost:3000/api/webhooks/clerk"
+source:
+  - name: "stripe"
+  - name: "github"
+  - name: "clerk"
+delivery:
+  - source: "stripe"
+    destination: "stripe-endpoint"
+  - source: "github"
+    destination: "github-endpoint"
+  - source: "clerk"
+    destination: "clerk-endpoint"
 ```
 
-```yaml YAML
-port: 3000
-webhookId: your_webhook_id
-clientId: dev-machine-1
-debug: true
-ping: true
+### Health Checks
+
+Configure health checks for your endpoints:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+destination:
+  - name: "your-endpoint"
+    url: "http://localhost:3000/api/webhooks"
+    ping: true  # Enable default health check
+  - name: "custom-endpoint"
+    url: "http://localhost:3001/api/webhooks"
+    ping: "http://localhost:3001/health"  # Custom health check URL
 ```
 
-</CodeGroup>
+### URL Configuration
 
-### Environment Variables
+Configure URLs with different formats:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+destination:
+  - name: "simple-url"
+    url: "http://localhost:3000/api/webhooks"
+  - name: "detailed-url"
+    url:
+      protocol: "https"
+      hostname: "localhost"
+      port: "3000"
+      pathname: "/api/webhooks"
+      search: "?debug=true"
+```
+
+## Environment Variables
 
 All configuration options can be set via environment variables:
 
 ```bash
-WEBHOOK_PORT=3000
-WEBHOOK_WEBHOOK_ID=your_webhook_id
-WEBHOOK_CLIENT_ID=dev-machine-1
+# Core settings
+WEBHOOK_ID=wh_your_webhook_id
 WEBHOOK_DEBUG=true
-WEBHOOK_REDIRECT=https://api.example.com
-WEBHOOK_PING=true
+WEBHOOK_TELEMETRY=true
+
+# Destination settings
+WEBHOOK_DESTINATION_0_NAME=your-endpoint
+WEBHOOK_DESTINATION_0_URL=http://localhost:3000/api/webhooks
+WEBHOOK_DESTINATION_0_PING=true
+
+# Source settings
+WEBHOOK_SOURCE_0_NAME=stripe
+WEBHOOK_SOURCE_1_NAME=github
+
+# Delivery settings
+WEBHOOK_DELIVERY_0_SOURCE=stripe
+WEBHOOK_DELIVERY_0_DESTINATION=your-endpoint
 ```
 
-## CLI Options
+## Team Configuration
 
-All configuration options can also be set via command line arguments:
+### Shared Configuration
 
-```bash
-unhook --port 3000 \
-       --webhook-id your_webhook_id \
-       --client-id dev-machine-1 \
-       --debug \
-       --ping true
+Teams can share a single webhook configuration:
+
+```yaml
+webhookId: "wh_team_webhook_id"
+destination:
+  - name: "dev1"
+    url: "http://localhost:3000/api/webhooks"
+    ping: true
+  - name: "dev2"
+    url: "http://localhost:3001/api/webhooks"
+    ping: true
+source:
+  - name: "clerk"
+  - name: "stripe"
+delivery:
+  - source: "clerk"
+    destination: "dev1"
+  - source: "stripe"
+    destination: "dev2"
 ```
 
-### Available Options
+### Individual Configuration
 
-| Option | Alias | Description | Default |
-|--------|-------|-------------|---------|
-| `--port` | `-p` | Local service port | From config |
-| `--webhook-id` | `-t` | Webhook ID | From config |
-| `--client-id` | `-c` | Unique client ID | Auto-generated |
-| `--redirect` | `-r` | Redirect URL | From config |
-| `--debug` | `-d` | Enable debug logs | `false` |
-| `--ping` | - | Health check config | `true` |
+Each developer can have their own configuration:
 
-### Configuration Priority
-
-1. Command line arguments (highest priority)
-2. Environment variables
-3. Configuration file
-4. Default values (lowest priority)
-
-## Advanced Configuration
-
-### Health Checks
-
-The `ping` option supports multiple formats:
-
-```typescript
-// Disable health checks
-ping: false
-
-// Enable with default settings
-ping: true
-
-// Check specific port
-ping: 3000
-
-// Check specific URL
-ping: "https://api.example.com/health"
+```yaml
+webhookId: "wh_your_webhook_id"
+clientId: "dev1"  # Unique client ID
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+source:
+  - name: "stripe"
+delivery:
+  - source: "stripe"
+    destination: "local"
 ```
 
-### Port vs Redirect
+## Security Configuration
 
-You must specify either `port` or `redirect`, but not both:
+### API Key Authentication
 
-```javascript
-// Forward to local port
-{
-  port: 3000
-}
+Configure API key authentication for private webhooks:
 
-// Redirect to remote URL
-{
-  redirect: "https://api.example.com"
-}
+```yaml
+webhookId: "wh_your_webhook_id"
+apiKey: "your_api_key"  # Required for private webhooks
+destination:
+  - name: "secure-endpoint"
+    url: "http://localhost:3000/api/webhooks"
 ```
+
+### Method Restrictions
+
+Restrict allowed HTTP methods:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+methods: ["POST", "PUT"]  # Only allow POST and PUT requests
+destination:
+  - name: "restricted-endpoint"
+    url: "http://localhost:3000/api/webhooks"
+```
+
+### Source Restrictions
+
+Restrict allowed webhook sources:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+source:
+  - name: "stripe"
+    allowed: true
+  - name: "github"
+    allowed: false
+```
+
+## Best Practices
+
+1. **Use Meaningful Names**: Choose descriptive names for your endpoints
+2. **Enable Health Checks**: Configure health checks for all endpoints
+3. **Use Environment Variables**: Store sensitive information in environment variables
+4. **Version Control**: Keep your configuration in version control
+5. **Documentation**: Document your configuration for team members
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Configuration Loading**
+   - Check file permissions
+   - Verify YAML syntax
+   - Ensure required fields are present
+
+2. **URL Configuration**
+   - Verify URL format
+   - Check port availability
+   - Test endpoint accessibility
+
+3. **Health Checks**
+   - Verify health check endpoint
+   - Check response format
+   - Monitor health check logs
+
+## Support
+
+- [Documentation](https://docs.unhook.sh)
+- [GitHub Issues](https://github.com/unhook-sh/unhook/issues)
+- [Discord Community](https://discord.gg/unhook)

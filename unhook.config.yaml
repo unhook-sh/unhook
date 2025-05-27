@@ -18,10 +18,10 @@
 #   pathname?: string                    # URL pathname
 #   search?: string                      # URL search params
 
-webhookId: wh_ta5fshla14s4l4tfe1p9poia
+webhookId: wh_cg9z0gal3qyniqtqq9ytiopd
 destination:
   - name: default
-    url: http://localhost:3000/webhooks/clerk
+    url: http://localhost:3000/api/webhooks/clerk
 delivery:
   - source: clerk
     destination: default

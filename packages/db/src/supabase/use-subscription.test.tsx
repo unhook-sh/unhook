@@ -174,7 +174,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     };
 
     render(
-      <SubscriptionProvider token={supabaseKey} url={supabaseUrl}>
+      <SubscriptionProvider authToken={supabaseKey} url={supabaseUrl}>
         <TestComponent table="events" onInsert={onInsert} />
       </SubscriptionProvider>,
     );
@@ -254,7 +254,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     };
 
     render(
-      <SubscriptionProvider token={supabaseKey} url={supabaseUrl}>
+      <SubscriptionProvider authToken={supabaseKey} url={supabaseUrl}>
         <TestComponent table="events" onUpdate={onUpdate} />
       </SubscriptionProvider>,
     );
@@ -285,7 +285,7 @@ describe('SubscriptionProvider and useSubscription Integration', () => {
     };
 
     render(
-      <SubscriptionProvider token={supabaseKey} url={supabaseUrl}>
+      <SubscriptionProvider authToken={supabaseKey} url={supabaseUrl}>
         <TestComponent table="events" onDelete={onDelete} />
       </SubscriptionProvider>,
     );

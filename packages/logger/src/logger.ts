@@ -11,7 +11,7 @@ export interface LoggerProps {
 }
 
 // Store original console methods
-const originalConsole: Record<ConsoleMethod, typeof console.log> = {
+export const originalConsole: Record<ConsoleMethod, typeof console.log> = {
   debug: console.debug,
   info: console.info,
   warn: console.warn,
@@ -22,32 +22,21 @@ const originalConsole: Record<ConsoleMethod, typeof console.log> = {
 const isBrowser = typeof window !== 'undefined';
 
 function formatMessage(template: string, ...args: unknown[]): string {
-  let index = 0;
-  return template.replace(/%[sdjoO]/g, (match) => {
-    if (index >= args.length) {
-      return match;
-    }
-    const value = args[index++];
-    switch (match) {
-      case '%s':
-        return String(value);
-      case '%d':
-        return Number(value).toString();
-      case '%j':
-        try {
-          return JSON.stringify(value);
-        } catch {
-          return '[Circular]';
-        }
-      case '%o':
-      case '%O':
-        return typeof value === 'object' && value !== null
-          ? JSON.stringify(value, null, 2)
-          : String(value);
-      default:
-        return match;
-    }
-  });
+  if (args.length === 0) return template;
+
+  try {
+    return args
+      .map((arg) => {
+        if (arg === null) return 'null';
+        if (arg === undefined) return '';
+        if (typeof arg === 'object') return JSON.stringify(arg, null, 2);
+        return String(arg);
+      })
+      .filter(Boolean) // Remove empty strings
+      .join(' ');
+  } catch {
+    return template;
+  }
 }
 
 interface BufferedLogMessage extends LogMessage {
@@ -120,7 +109,8 @@ export class UnhookLogger {
     const logMessage: BufferedLogMessage = {
       level,
       namespace,
-      message,
+      message:
+        typeof message === 'string' ? message : formatMessage('%O', message),
       metadata,
       timestamp: new Date(),
       sequence: this.sequence++,
@@ -131,7 +121,7 @@ export class UnhookLogger {
     // If buffer gets too large, trigger an immediate flush
     if (this.logBuffer.length > 1000) {
       this.flush().catch((error) => {
-        console.error('Failed to flush logs:', error);
+        originalConsole.error('Failed to flush logs:', error);
       });
     }
   }

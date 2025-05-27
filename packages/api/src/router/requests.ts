@@ -1,7 +1,11 @@
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { CreateRequestTypeSchema, Requests } from '@unhook/db/schema';
+import {
+  CreateRequestTypeSchema,
+  type RequestType,
+  Requests,
+} from '@unhook/db/schema';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
@@ -69,7 +73,9 @@ export const requestsRouter = createTRPCRouter({
         })
         .returning();
 
-      return request;
+      if (!request) throw new Error('Failed to create request');
+
+      return request satisfies RequestType;
     }),
 
   delete: protectedProcedure
@@ -82,6 +88,62 @@ export const requestsRouter = createTRPCRouter({
         .where(
           and(eq(Requests.id, input.id), eq(Requests.orgId, ctx.auth.orgId)),
         )
+        .returning();
+
+      return request;
+    }),
+
+  markCompleted: protectedProcedure
+    .input(
+      z.object({
+        requestId: z.string(),
+        response: z.object({
+          status: z.number(),
+          headers: z.record(z.string()),
+          body: z.string(),
+        }),
+        responseTimeMs: z.number(),
+        connectionId: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [request] = await ctx.db
+        .update(Requests)
+        .set({
+          status: 'completed',
+          response: input.response,
+          responseTimeMs: input.responseTimeMs,
+          completedAt: new Date(),
+          connectionId: input.connectionId ?? undefined,
+        })
+        .where(eq(Requests.id, input.requestId))
+        .returning();
+
+      return request;
+    }),
+
+  markFailed: protectedProcedure
+    .input(
+      z.object({
+        requestId: z.string(),
+        failedReason: z.string(),
+        connectionId: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [request] = await ctx.db
+        .update(Requests)
+        .set({
+          status: 'failed',
+          failedReason: input.failedReason,
+          completedAt: new Date(),
+          connectionId: input.connectionId ?? undefined,
+        })
+        .where(eq(Requests.id, input.requestId))
         .returning();
 
       return request;

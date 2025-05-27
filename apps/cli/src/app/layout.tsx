@@ -1,5 +1,4 @@
 import { TRPCReactProvider } from '@unhook/api/client';
-import { SubscriptionProvider } from '@unhook/db/supabase/client';
 
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
@@ -12,7 +11,6 @@ import { Router } from '~/components/router';
 import { AuthProvider } from '~/context/auth-context';
 import { RouterProvider } from '~/context/router-context';
 import { WebhookProvider } from '~/context/webhook-context';
-import { env } from '~/env';
 import { SignedIn, WebhookAuthorized } from '~/guards';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {
@@ -44,7 +42,7 @@ function ErrorFallback({ error }: { error: Error }) {
 
 function AppContent() {
   const dimensions = useDimensions();
-  const token = useAuthStore.use.token();
+  const token = useAuthStore.use.authToken();
   const isValidating = useAuthStore.use.isValidatingSession();
   const webhookId = useConfigStore.use.webhookId();
   const navigate = useRouterStore.use.navigate();
@@ -103,12 +101,9 @@ function AppContent() {
         <WebhookAuthorized>
           <ConnectToWebhook />
           {token && (
-            <SubscriptionProvider
-              token={token}
-              url={env.NEXT_PUBLIC_SUPABASE_URL}
-            >
+            <Box flexDirection="column" gap={1}>
               <EventSubscription />
-            </SubscriptionProvider>
+            </Box>
           )}
         </WebhookAuthorized>
       </SignedIn>

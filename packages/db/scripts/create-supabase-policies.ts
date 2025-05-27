@@ -219,7 +219,10 @@ async function dropTablePolicies(config: PolicyConfig) {
 async function setupAllPolicies() {
   return withErrorHandling(
     async () => {
-      await Promise.all(Object.values(policyConfigs).map(setupTablePolicies));
+      // Process tables sequentially to avoid deadlocks
+      for (const config of Object.values(policyConfigs)) {
+        await setupTablePolicies(config);
+      }
     },
     'All policies have been set up successfully',
     'Error setting up policies',

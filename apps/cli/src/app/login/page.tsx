@@ -50,6 +50,7 @@ export const LoginPage: FC<RouteProps> = () => {
         {authUrl && (
           <Box flexDirection="column" gap={1}>
             <Box flexDirection="column" gap={1}>
+              <Text>Please go to the link to authenticate the Unhook CLI.</Text>
               <Text>
                 If the browser doesn't open automatically, click here:
               </Text>

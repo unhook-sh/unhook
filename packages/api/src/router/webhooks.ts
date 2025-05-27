@@ -11,7 +11,6 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const webhooksRouter = createTRPCRouter({
   all: protectedProcedure.query(async ({ ctx }) => {
-    // console.log('ctx.auth', ctx.auth);
     if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
     const webhooks = await ctx.db

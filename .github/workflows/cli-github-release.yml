@@ -3,7 +3,7 @@ name: CLI Build and Release
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Changeset"]
+    workflows: ["Changeset NPM Release"]
     types:
       - completed
     branches:

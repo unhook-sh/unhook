@@ -2,8 +2,8 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
-  '/api/webhooks(.*)',
-  '/api/webhook(.*)',
+  '/api/webhooks/clerk',
+  '/api/webhooks/stripe',
   '/api/trpc(.*)',
   // Match webhook paths that start with /wh_ and end there
   '/wh_([^/]+)',

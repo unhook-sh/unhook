@@ -42,8 +42,9 @@ export const useClient = () => {
   return client;
 };
 
-export const createClient = (accessToken: string, url?: string) => {
-  if (!accessToken) {
+export function createClient(props: { authToken: string; url?: string }) {
+  const { authToken, url } = props;
+  if (!authToken) {
     log('Warning: No access token provided to createClient');
   }
 
@@ -51,7 +52,7 @@ export const createClient = (accessToken: string, url?: string) => {
 
   log('Creating Supabase client with config:', {
     url: supabaseUrl,
-    hasToken: !!accessToken,
+    hasToken: !!authToken,
   });
 
   const client = createBrowserClient<Database>(
@@ -59,7 +60,7 @@ export const createClient = (accessToken: string, url?: string) => {
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       async accessToken() {
-        return accessToken;
+        return authToken;
       },
       realtime: {
         params: {
@@ -73,4 +74,4 @@ export const createClient = (accessToken: string, url?: string) => {
   client.realtime.connect();
 
   return client;
-};
+}

@@ -2,7 +2,7 @@
   "dependencies": {
     "@clerk/nextjs": "6.19.4",
     "@supabase/ssr": "0.6.1",
-    "@supabase/supabase-js": "2.49.4",
+    "@supabase/supabase-js": "2.49.8",
     "@t3-oss/env-core": "0.13.4",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
@@ -14,6 +14,7 @@
     "drizzle-zod": "0.7.1",
     "lodash-es": "4.17.21",
     "next": "15.3.2",
+    "pg": "8.16.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "zod": "3.24.4",
@@ -23,12 +24,13 @@
     "@t3-oss/env-core": "0.13.4",
     "@t3-oss/env-nextjs": "0.13.4",
     "@types/lodash-es": "4.17.12",
+    "@types/pg": "8.15.2",
     "@types/react": "19.1.4",
     "@types/react-dom": "19.1.5",
     "@unhook/tsconfig": "workspace:*",
     "chokidar": "4.0.3",
     "drizzle-kit": "0.31.1",
-    "supabase": "2.22.12",
+    "supabase": "2.23.4",
     "tsx": "4.19.4",
     "typescript": "5.8.3",
     "zx": "8.5.4"
@@ -46,9 +48,17 @@
       "default": "./src/schema.ts",
       "types": "./dist/schema.d.ts"
     },
+    "./supabase/cli": {
+      "default": "./src/supabase/cli.ts",
+      "types": "./dist/supabase/cli.d.ts"
+    },
     "./supabase/client": {
       "default": "./src/supabase/client-exports.ts",
       "types": "./dist/supabase/client-exports.d.ts"
+    },
+    "./supabase/create-channel": {
+      "default": "./src/supabase/create-channel.ts",
+      "types": "./dist/supabase/create-channel.d.ts"
     },
     "./supabase/rcs": {
       "default": "./src/supabase/server.rcs.ts",
@@ -66,14 +76,16 @@
     "build": "tsc",
     "build.todo": "bun gen-types && tsc",
     "clean": "rm -rf .turbo node_modules dist",
+    "create-supabase-policies": "tsx scripts/create-supabase-policies.ts",
     "dev": "tsx ./scripts/watch.ts",
+    "enable-supabase-realtime": "tsx scripts/enable-supabase-realtime.ts",
     "gen-migration": "drizzle-kit generate",
     "gen-supabase-types": "tsx ./scripts/generate-supabase-types.ts",
-    "create-supabase-policies": "tsx scripts/create-supabase-policies.ts",
     "migrate": "drizzle-kit migrate && bun gen-supabase-types",
-    "push": "drizzle-kit push && bun gen-supabase-types && bun create-supabase-policies",
+    "push": "drizzle-kit push && bun gen-supabase-types && bun create-supabase-policies && bun enable-supabase-realtime",
     "seed": "tsx src/seed.ts",
     "studio": "drizzle-kit studio",
+    "supabase:local": "supabase start",
     "typecheck": "tsc --noEmit"
   },
   "type": "module",

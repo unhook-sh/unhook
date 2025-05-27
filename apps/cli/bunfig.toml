@@ -7,6 +7,8 @@ target = "${BUN_BUILD_TARGET:-bun}"  # Default to 'bun' if BUN_BUILD_TARGET is n
 main-fields = ["bin", "module", "main"]
 # bytecode = true
 
+preload = ["./test/testing-library.ts"]
+
 [env]
 process.env.NEXT_PUBLIC_SUPABASE_URL = "${NEXT_PUBLIC_SUPABASE_URL}"
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"

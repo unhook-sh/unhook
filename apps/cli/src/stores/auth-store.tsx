@@ -21,7 +21,7 @@ export interface AuthState {
   isSignedIn: boolean;
   user: RouterOutputs['auth']['verifySessionToken']['user'] | null;
   orgId: string | null;
-  token: string | null;
+  authToken: string | null;
   sessionId: string;
   isValidatingSession: boolean;
   authUrl: string | null;
@@ -40,7 +40,7 @@ interface AuthActions {
   reset: () => void;
   signIn: () => Promise<void>;
   exchangeAuthCode: (code: string) => Promise<{
-    token: string;
+    authToken: string;
     user: RouterOutputs['auth']['verifySessionToken']['user'];
     orgId: string;
     sessionId: string;
@@ -53,7 +53,7 @@ const defaultInitState: AuthState = {
   isSignedIn: false,
   user: null,
   orgId: null,
-  token: null,
+  authToken: null,
   sessionId: createId({ prefix: 'session' }),
   isValidatingSession: false,
   authUrl: null,
@@ -164,7 +164,7 @@ const store = createStore<AuthStore>()((set, get) => ({
         isSignedIn: true,
         user: token.user,
         orgId: token.orgId,
-        token: storedToken,
+        authToken: storedToken,
       });
       return true;
     } catch (error) {
@@ -181,17 +181,17 @@ const store = createStore<AuthStore>()((set, get) => ({
 
     try {
       // Handle authentication
-      const { token, user, orgId, sessionId } =
+      const { authToken, user, orgId, sessionId } =
         await api.auth.exchangeAuthCode.mutate({
           code,
         });
 
-      await state.secureStorage.setItem('token', token);
+      await state.secureStorage.setItem('token', authToken);
       await state.fileStorage.setItem('sessionId', sessionId);
 
       const apiClient = createClient({
-        authToken: token,
-        sessionCookie: token,
+        authToken: authToken,
+        sessionCookie: authToken,
       });
 
       useApiStore.setState({
@@ -199,7 +199,7 @@ const store = createStore<AuthStore>()((set, get) => ({
       });
 
       set({
-        token,
+        authToken,
         sessionId,
         user,
         orgId,
@@ -218,7 +218,7 @@ const store = createStore<AuthStore>()((set, get) => ({
       });
 
       return {
-        token,
+        authToken,
         user,
         orgId,
         sessionId,
@@ -285,8 +285,8 @@ const store = createStore<AuthStore>()((set, get) => ({
 
       useApiStore.setState({
         api: createClient({
-          authToken: exchangedAuthCode.token,
-          sessionCookie: exchangedAuthCode.token,
+          authToken: exchangedAuthCode.authToken,
+          sessionCookie: exchangedAuthCode.authToken,
         }),
       });
 
@@ -294,7 +294,7 @@ const store = createStore<AuthStore>()((set, get) => ({
         isSigningIn: false,
         authUrl: null,
         isValidatingSession: false,
-        token: null,
+        authToken: null,
       });
     } catch (error) {
       handleAuthError(error);

@@ -1,4 +1,4 @@
-name: Changeset
+name: Changeset NPM Release
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   changeset:
-    name: Changeset
+    name: Changeset NPM Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -34,7 +34,7 @@ jobs:
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: bun run release
+          publish: bun run publish
           commit: "chore: version packages"
           title: "chore: version packages"
           createGithubReleases: false

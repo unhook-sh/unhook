@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import {
   CreateEventTypeSchema,
+  type EventTypeWithRequest,
   Events,
   Requests,
   UpdateEventTypeSchema,
@@ -69,7 +70,7 @@ export const eventsRouter = createTRPCRouter({
         },
       });
 
-      return events;
+      return events satisfies EventTypeWithRequest[];
     }),
 
   update: protectedProcedure
@@ -98,62 +99,6 @@ export const eventsRouter = createTRPCRouter({
         .returning();
 
       return event;
-    }),
-
-  markCompleted: protectedProcedure
-    .input(
-      z.object({
-        requestId: z.string(),
-        response: z.object({
-          status: z.number(),
-          headers: z.record(z.string()),
-          body: z.string(),
-        }),
-        responseTimeMs: z.number(),
-        connectionId: z.string().optional(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-
-      const [request] = await ctx.db
-        .update(Requests)
-        .set({
-          status: 'completed',
-          response: input.response,
-          responseTimeMs: input.responseTimeMs,
-          completedAt: new Date(),
-          connectionId: input.connectionId ?? undefined,
-        })
-        .where(eq(Requests.id, input.requestId))
-        .returning();
-
-      return request;
-    }),
-
-  markFailed: protectedProcedure
-    .input(
-      z.object({
-        requestId: z.string(),
-        failedReason: z.string(),
-        connectionId: z.string().optional(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-
-      const [request] = await ctx.db
-        .update(Requests)
-        .set({
-          status: 'failed',
-          failedReason: input.failedReason,
-          completedAt: new Date(),
-          connectionId: input.connectionId ?? undefined,
-        })
-        .where(eq(Requests.id, input.requestId))
-        .returning();
-
-      return request;
     }),
 
   updateEventStatus: protectedProcedure

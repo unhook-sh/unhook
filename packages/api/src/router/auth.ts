@@ -1,7 +1,7 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import type { TRPCRouterRecord } from '@trpc/server';
 import { db } from '@unhook/db/client';
-import { AuthCodes } from '@unhook/db/schema';
+import { AuthCodes, OrgMembers, Orgs, Users } from '@unhook/db/schema';
 import { and, eq, gte, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 import { protectedProcedure, publicProcedure } from '../trpc';
@@ -16,6 +16,87 @@ export const authRouter = {
       const emailAddress = user.emailAddresses.find(
         (email) => email.id === user.primaryEmailAddressId,
       );
+
+      if (!session.lastActiveOrganizationId) {
+        throw new Error('No active organization found');
+      }
+
+      // Get organization details from Clerk
+      const organization = await clerk.organizations.getOrganization({
+        organizationId: session.lastActiveOrganizationId,
+      });
+
+      // Upsert user
+      const [dbUser] = await db
+        .insert(Users)
+        .values({
+          id: ctx.auth.userId,
+          clerkId: ctx.auth.userId,
+          email: emailAddress?.emailAddress ?? '',
+          firstName: user.firstName ?? null,
+          lastName: user.lastName ?? null,
+          avatarUrl: user.imageUrl ?? null,
+          lastLoggedInAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: Users.clerkId,
+          set: {
+            email: emailAddress?.emailAddress ?? '',
+            firstName: user.firstName ?? null,
+            lastName: user.lastName ?? null,
+            avatarUrl: user.imageUrl ?? null,
+            lastLoggedInAt: new Date(),
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+
+      if (!dbUser) {
+        throw new Error('Failed to create/update user');
+      }
+
+      // Upsert organization
+      const [org] = await db
+        .insert(Orgs)
+        .values({
+          clerkOrgId: session.lastActiveOrganizationId,
+          name: organization.name,
+          createdByUserId: ctx.auth.userId,
+          id: session.lastActiveOrganizationId,
+        })
+        .onConflictDoUpdate({
+          target: Orgs.clerkOrgId,
+          set: {
+            name: organization.name,
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+
+      if (!org) {
+        throw new Error('Failed to create/update organization');
+      }
+
+      // Upsert organization member
+      const [orgMember] = await db
+        .insert(OrgMembers)
+        .values({
+          userId: ctx.auth.userId,
+          orgId: org.id,
+          role: 'admin',
+        })
+        .onConflictDoUpdate({
+          target: [OrgMembers.userId, OrgMembers.orgId],
+          set: {
+            role: 'admin',
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+
+      if (!orgMember) {
+        throw new Error('Failed to create/update organization member');
+      }
 
       return {
         user: {
@@ -72,8 +153,86 @@ export const authRouter = {
       const emailAddress = user.emailAddresses.find(
         (email) => email.id === user.primaryEmailAddressId,
       );
+
+      // Get organization details from Clerk
+      const organization = await clerk.organizations.getOrganization({
+        organizationId: authCode.orgId,
+      });
+
+      // Upsert user
+      const [dbUser] = await db
+        .insert(Users)
+        .values({
+          id: authCode.userId,
+          clerkId: authCode.userId,
+          email: emailAddress?.emailAddress ?? '',
+          firstName: user.firstName ?? null,
+          lastName: user.lastName ?? null,
+          avatarUrl: user.imageUrl ?? null,
+          lastLoggedInAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: Users.clerkId,
+          set: {
+            email: emailAddress?.emailAddress ?? '',
+            firstName: user.firstName ?? null,
+            lastName: user.lastName ?? null,
+            avatarUrl: user.imageUrl ?? null,
+            lastLoggedInAt: new Date(),
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+
+      if (!dbUser) {
+        throw new Error('Failed to create/update user');
+      }
+
+      // Upsert organization
+      const [org] = await db
+        .insert(Orgs)
+        .values({
+          clerkOrgId: authCode.orgId,
+          name: organization.name,
+          createdByUserId: authCode.userId,
+          id: authCode.orgId,
+        })
+        .onConflictDoUpdate({
+          target: Orgs.clerkOrgId,
+          set: {
+            name: organization.name,
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+
+      if (!org) {
+        throw new Error('Failed to create/update organization');
+      }
+
+      // Upsert organization member
+      const [orgMember] = await db
+        .insert(OrgMembers)
+        .values({
+          userId: authCode.userId,
+          orgId: org.id,
+          role: 'admin',
+        })
+        .onConflictDoUpdate({
+          target: [OrgMembers.userId, OrgMembers.orgId],
+          set: {
+            role: 'admin',
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+
+      if (!orgMember) {
+        throw new Error('Failed to create/update organization member');
+      }
+
       const response = {
-        token: sessionToken.jwt,
+        authToken: sessionToken.jwt,
         sessionId: authCode.sessionId,
         orgId: authCode.orgId,
         user: {

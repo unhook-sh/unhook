@@ -1,6 +1,5 @@
 import { inspect } from 'node:util';
 import type { WebhookDelivery, WebhookDestination } from '@unhook/client';
-import type { Tables } from '@unhook/db';
 import type {
   EventType,
   EventTypeWithRequest,
@@ -34,11 +33,11 @@ interface EventsActions {
   fetchEvents: (props?: {
     limit?: number;
     offset?: number;
-  }) => Promise<void>;
-  handlePendingRequest: (webhookRequest: Tables<'requests'>) => Promise<void>;
+  }) => Promise<EventTypeWithRequest[]>;
+  handlePendingRequest: (webhookRequest: RequestType) => Promise<void>;
   replayEvent: (event: EventType) => Promise<void>;
   replayRequest: (request: RequestType) => Promise<void>;
-  deliverEvent: (event: Tables<'events'>) => Promise<void>;
+  deliverEvent: (event: EventType) => Promise<void>;
   reset: () => void;
 }
 
@@ -137,7 +136,7 @@ async function createRequestsForEventToAllDestinations({
       continue;
     }
 
-    if (event.source !== deliveryRule.source) {
+    if (deliveryRule.source !== '*' && event.source !== deliveryRule.source) {
       log(
         `Skipping event source: ${event.source} does not match delivery rule source: ${deliveryRule.source}`,
       );
@@ -172,7 +171,7 @@ async function createRequestsForEventToAllDestinations({
       },
     });
 
-    await api.requests.create.mutate({
+    const request = await api.requests.create.mutate({
       webhookId: event.webhookId,
       eventId: event.id,
       apiKey: event.apiKey ?? undefined,
@@ -198,6 +197,11 @@ async function createRequestsForEventToAllDestinations({
       });
     }
     log(`Created request for event ${event.id} to destination: ${dest.name}`);
+
+    // Handle the pending request immediately
+    if (request) {
+      await store.getState().handlePendingRequest(request);
+    }
   }
 }
 
@@ -252,12 +256,15 @@ const store = createStore<EventStore>()((set, get) => ({
         isLoading: false,
         totalCount: Number(totalEventCount),
       });
+
+      return events;
     } catch (error) {
       log('Error fetching events:', error);
       set({ isLoading: false });
+      return [];
     }
   },
-  handlePendingRequest: async (webhookRequest: Tables<'requests'>) => {
+  handlePendingRequest: async (webhookRequest: RequestType) => {
     log(`Handling pending event: ${webhookRequest.id}`);
     const { delivery, destination } = useConfigStore.getState();
     const { api } = useApiStore.getState();
@@ -342,7 +349,7 @@ const store = createStore<EventStore>()((set, get) => ({
           },
         });
 
-        await api.events.markCompleted.mutate({
+        await api.requests.markCompleted.mutate({
           requestId: webhookRequest.id,
           response: {
             status: response.statusCode,
@@ -395,7 +402,7 @@ const store = createStore<EventStore>()((set, get) => ({
           },
         });
 
-        await api.events.markFailed.mutate({
+        await api.requests.markFailed.mutate({
           requestId: webhookRequest.id,
           failedReason,
         });
@@ -493,7 +500,7 @@ const store = createStore<EventStore>()((set, get) => ({
       pingEnabledFn: (destination) => !!destination.ping,
     });
   },
-  deliverEvent: async (event: Tables<'events'>) => {
+  deliverEvent: async (event: EventType) => {
     log(`Delivering event to all destinations: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();

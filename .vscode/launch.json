@@ -2,16 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "node-terminal",
       "request": "launch",
       "name": "Debug Current Test File",
-      "autoAttachChildProcesses": true,
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "program": "${workspaceRoot}/node_modules/bun:test/bun:test.mjs",
-      "args": ["run", "${relativeFile}"],
-      "envFile": "${workspaceFolder}/.env",
-      "smartStep": true,
-      "console": "integratedTerminal"
+      "command": "infisical run -- bun test ${relativeFile}",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "INFISICAL_RUN": "true"
+      }
+      // "envFile": "${workspaceFolder}/.env",
+      // "smartStep": true,
+      // "console": "integratedTerminal"
     },
     {
       "name": "Next.js",

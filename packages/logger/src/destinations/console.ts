@@ -1,3 +1,4 @@
+import { originalConsole } from '../logger';
 import type { LogDestination, LogMessage } from '../types';
 
 export class ConsoleDestination implements LogDestination {
@@ -7,16 +8,24 @@ export class ConsoleDestination implements LogDestination {
 
     switch (level) {
       case 'debug':
-        console.debug(formattedMessage, metadata);
+        metadata
+          ? originalConsole.debug(formattedMessage, metadata)
+          : originalConsole.debug(formattedMessage);
         break;
       case 'info':
-        console.info(formattedMessage, metadata);
+        metadata
+          ? originalConsole.info(formattedMessage, metadata)
+          : originalConsole.info(formattedMessage);
         break;
       case 'warn':
-        console.warn(formattedMessage, metadata);
+        metadata
+          ? originalConsole.warn(formattedMessage, metadata)
+          : originalConsole.warn(formattedMessage);
         break;
       case 'error':
-        console.error(formattedMessage, metadata);
+        metadata
+          ? originalConsole.error(formattedMessage, metadata)
+          : originalConsole.error(formattedMessage);
         break;
     }
   }

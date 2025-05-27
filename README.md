@@ -6,7 +6,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@unhook/cli.svg)](https://www.npmjs.com/package/@unhook/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/unhook-sh/unhook/cli-release.yml?branch=main)](https://github.com/unhook-sh/unhook/actions/workflows/cli-release.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/unhook-sh/unhook/cli-github-release.yml?branch=main)](https://github.com/unhook-sh/unhook/actions/workflows/cli-github-release.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 </div>
@@ -38,23 +38,7 @@
 
 ## Quick Start
 
-### 1. Install Unhook
-
-```bash
-# Using npm
-npm install -g @unhook/cli
-
-# Using yarn
-yarn global add @unhook/cli
-
-# Using bun
-bun add -g @unhook/cli
-
-# Using pnpm
-pnpm add -g @unhook/cli
-```
-
-### 2. Initialize Your Project
+### 1. Initialize Your Project
 
 Run the initialization command using your preferred package runner:
 
@@ -74,10 +58,10 @@ deno run --allow-net --allow-read --allow-write npm:@unhook/cli init
 
 This will:
 1. Open your browser to authenticate with Unhook
-2. Create an `unhook.config.ts` file in your project
+2. Create an `unhook.config.yaml` file in your project
 3. Configure your webhook endpoints
 
-### 3. Start the Webhook
+### 2. Start the Webhook
 
 ```bash
 # Using npx
@@ -95,7 +79,7 @@ deno run --allow-net --allow-read --allow-write npm:@unhook/cli
 
 This will create a secure webhook endpoint that delivers requests to your local server based on the configuration.
 
-### 4. Configure Your Webhook Provider
+### 3. Configure Your Webhook Provider
 
 Use the webhook URL in your provider's settings:
 
@@ -103,18 +87,17 @@ Use the webhook URL in your provider's settings:
 https://unhook.sh/wh_your_webhook_id
 ```
 
-The webhook will automatically route requests based on the `from` and `to` configuration in your `unhook.config.ts`.
+The webhook will automatically route requests based on the `source` and `destination` configuration in your `unhook.config.yaml`.
 
 ## Configuration
 
 ### Webhook Configuration
 
-The `unhook.config.ts` file supports the following options:
+The `unhook.config.yaml` file supports the following options:
 
 ```typescript
 interface WebhookConfig {
   webhookId: string;  // Your unique webhook ID
-  clientId?: string;  // Optional client ID
   debug?: boolean;    // Enable debug mode
   telemetry?: boolean; // Enable telemetry
   destination: Array<{
@@ -126,33 +109,9 @@ interface WebhookConfig {
       pathname?: string;
       search?: string;
     };
-    ping?: boolean | string | URL | {  // Optional ping configuration
-      protocol?: 'http' | 'https';
-      hostname: string;
-      port?: string;
-      pathname?: string;
-      search?: string;
-    };
   }>;
   source?: Array<{
     name: string;     // Name of the source
-    agent?: {         // Optional agent header configuration
-      type: 'header';
-      key: string;
-      value: string;
-    };
-    timestamp?: {     // Optional timestamp header configuration
-      type: 'header';
-      key: string;
-      value: string;
-    };
-    verification?: {  // Optional verification header configuration
-      type: 'header';
-      key: string;
-      value: string;
-    };
-    secret?: string;  // Optional secret for verification
-    defaultTimeout?: number; // Default timeout in milliseconds
   }>;
   delivery: Array<{
     source?: string;  // Source of the webhook (defaults to '*')
@@ -197,17 +156,11 @@ By default, the webhook endpoint:
 ```bash
 # Start webhook with default config
 unhook
-
-# Start with debug logging
-unhook --debug
-
-# Start with specific config file
-unhook --config ./custom.config.ts
 ```
 
 ### Multiple Endpoints
 
-Configure multiple endpoints in your `unhook.config.ts`:
+Configure multiple endpoints in your `unhook.config.yaml`:
 
 ```typescript
 import { defineWebhookConfig } from '@unhook/cli';
@@ -218,32 +171,17 @@ const config = defineWebhookConfig({
     {
       name: 'clerk',
       url: 'http://localhost:3000/api/webhooks/clerk',
-      ping: true
     },
     {
       name: 'stripe',
       url: 'http://localhost:3000/api/webhooks/stripe',
-      ping: {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '3000',
-        pathname: '/api/webhooks/stripe/health'
-      }
     },
     {
       name: 'github',
       url: 'http://localhost:3000/api/webhooks/github',
-      ping: false
     }
   ],
-  source: [
-    {
-      name: 'clerk',
-    },
-    {
-      name: 'stripe',
-    }
-  ],
+  source: [{ name: 'clerk' }, { name: 'stripe' }],
   delivery: [
     {
       source: 'clerk',

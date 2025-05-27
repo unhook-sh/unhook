@@ -1,7 +1,7 @@
 {
   "author": "Unhook Team (https://github.com/unhook-sh)",
   "bin": {
-    "unhook": "./bin/unhook"
+    "unhook": "./scripts/install.cjs"
   },
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
@@ -76,10 +76,10 @@
     }
   },
   "files": [
-    "bin",
     "README.md",
     "LICENSE",
-    "dist/src/exports.d.ts"
+    "dist/src/exports.d.ts",
+    "scripts/install.cjs"
   ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
@@ -102,6 +102,8 @@
   ],
   "license": "MIT",
   "name": "@unhook/cli",
+  "os": ["darwin", "linux"],
+  "cpu": ["x64", "arm64"],
   "pnpm": {
     "overrides": {
       "@clerk/shared": {
@@ -136,6 +138,7 @@
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
+    "postinstall": "node ./scripts/install.cjs",
     "start": "bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun run ./src/cli.tsx",
     "test": "bun test",

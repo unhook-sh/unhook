@@ -5,10 +5,12 @@ import { join } from 'node:path';
 
 const workspaceRoot = process.cwd();
 const packageJsonPath = join(workspaceRoot, 'package.json');
+const cliPath = join(workspaceRoot, '../../apps/cli');
 const clientPackageJsonPath = join(
   workspaceRoot,
   '../../packages/client/package.json',
 );
+const installScriptPath = join(cliPath, 'scripts', 'install.js');
 
 // Copy README and LICENSE
 try {
@@ -31,6 +33,20 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 const clientPackageJson = JSON.parse(
   readFileSync(clientPackageJsonPath, 'utf8'),
 );
+
+// Update install script with package version
+try {
+  const installScript = readFileSync(installScriptPath, 'utf8');
+  const updatedScript = installScript.replace(
+    "'{{ PACKAGE_VERSION }}'",
+    `'v${packageJson.version}'`,
+  );
+  writeFileSync(installScriptPath, updatedScript);
+  console.log(`✅ Updated install script with version v${packageJson.version}`);
+} catch (error) {
+  console.error('❌ Failed to update install script:', error.message);
+  process.exit(1);
+}
 
 // Get all @unhook/* dependencies from both dependencies and devDependencies
 const unhookDeps = [

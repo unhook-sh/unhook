@@ -6,6 +6,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
+  "cpu": ["x64", "arm64"],
   "dependencies": {
     "@clerk/backend": "1.28.0",
     "@clerk/clerk-js": "5.67.0",
@@ -63,6 +64,7 @@
     "@types/yargs": "17.0.33",
     "@unhook/tsconfig": "workspace:*",
     "ink-testing-library": "4.0.0",
+    "is-ci": "4.1.0",
     "typescript": "5.8.3",
     "ws": "^8.18.2"
   },
@@ -103,7 +105,6 @@
   "license": "MIT",
   "name": "@unhook/cli",
   "os": ["darwin", "linux"],
-  "cpu": ["x64", "arm64"],
   "pnpm": {
     "overrides": {
       "@clerk/shared": {
@@ -137,8 +138,8 @@
     "build:base": "NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
+    "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
-    "postinstall": "node ./scripts/install.cjs",
     "start": "bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun run ./src/cli.tsx",
     "test": "bun test",

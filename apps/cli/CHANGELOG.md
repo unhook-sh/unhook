@@ -1,5 +1,16 @@
 # @unhook/cli
 
+## 0.8.0
+
+### Minor Changes
+
+- [`bb8ef63`](https://github.com/unhook-sh/unhook/commit/bb8ef6322063190b66cf08987a7cecc971001bc3) Thanks [@seawatts](https://github.com/seawatts)! - Fixed realtime events and requests handling
+
+### Patch Changes
+
+- Updated dependencies [[`bb8ef63`](https://github.com/unhook-sh/unhook/commit/bb8ef6322063190b66cf08987a7cecc971001bc3)]:
+  - @unhook/client@0.4.0
+
 ## 0.7.0
 
 ### Minor Changes

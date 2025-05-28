@@ -1,7 +1,7 @@
 {
   "author": "Unhook Team (https://github.com/unhook-sh)",
   "bin": {
-    "unhook": "./scripts/install.cjs"
+    "unhook": "./bin/unhook"
   },
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
@@ -138,7 +138,7 @@
     "build:base": "NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
-    "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
+    "postinstall.skip": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
     "start": "bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun run ./src/cli.tsx",
@@ -153,5 +153,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.9.0"
+  "version": "0.9.1"
 }

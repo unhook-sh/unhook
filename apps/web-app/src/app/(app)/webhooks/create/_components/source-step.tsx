@@ -6,7 +6,7 @@ interface FromStepProps {
   onChange: (value: string) => void;
 }
 
-export function FromStep({ value, onChange }: FromStepProps) {
+export function SourceStep({ value, onChange }: FromStepProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor="from">Source Service (Optional)</Label>

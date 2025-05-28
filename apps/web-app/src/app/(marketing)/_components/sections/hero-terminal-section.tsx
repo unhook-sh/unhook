@@ -163,7 +163,7 @@ export function HeroTerminalSection() {
   return (
     <div className="w-full relative px-2 lg:px-24 mt-10">
       <Terminal className="w-full max-w-full min-h-[500px]">
-        <TypingAnimation delay={1000}>$ unhook --port 3000</TypingAnimation>
+        <TypingAnimation delay={1000}>$ unhook listen</TypingAnimation>
         <AnimatedSpan delay={2500}>https://unhook.sh/wh_AH21J</AnimatedSpan>
         <AnimatedSpan delay={2500}>
           <span className="text-muted-foreground">Press r to replay event</span>

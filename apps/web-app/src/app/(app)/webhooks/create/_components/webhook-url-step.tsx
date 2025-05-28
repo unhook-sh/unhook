@@ -5,10 +5,10 @@ import { CopyButton } from '@unhook/ui/custom/copy-button';
 
 interface WebhookUrlStepProps {
   webhookUrl: string;
-  from: string;
+  source: string;
 }
 
-export function WebhookUrlStep({ webhookUrl, from }: WebhookUrlStepProps) {
+export function WebhookUrlStep({ webhookUrl, source }: WebhookUrlStepProps) {
   return (
     <div className="space-y-2">
       <div className="flex gap-1 w-full flex-col">
@@ -25,7 +25,7 @@ export function WebhookUrlStep({ webhookUrl, from }: WebhookUrlStepProps) {
       </div>
       <Alert>
         <AlertDescription>
-          Add this URL to your {from} webhook settings, to start receiving
+          Add this URL to your {source} webhook settings, to start receiving
           webhooks.
         </AlertDescription>
       </Alert>

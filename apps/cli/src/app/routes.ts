@@ -79,7 +79,7 @@ export function useRoutes() {
         component: CreateMockEventLayout,
         label: 'Mock Event',
         hotkey: 'm',
-        showInMenu: isSignedIn && isAuthorizedForWebhook && !isCheckingWebhook,
+        showInMenu: false,
       },
       {
         path: '/logout',

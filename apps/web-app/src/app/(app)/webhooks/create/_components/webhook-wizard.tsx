@@ -15,8 +15,8 @@ import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { createAuthCode } from '~/app/(app)/cli-token/actions';
 import { createWebhook } from './actions';
-import { FromStep } from './from-step';
 import { InstallationCommand } from './installation-command';
+import { SourceStep } from './source-step';
 import { WebhookUrlStep } from './webhook-url-step';
 
 const STEP_TITLE = 'Welcome to Unhook';
@@ -24,7 +24,7 @@ const STEP_DESCRIPTION =
   'Your webhook URL is ready! Use it to receive webhooks locally.';
 
 export function WebhookWizard() {
-  const [from, setFrom] = useState('');
+  const [source, setSource] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
   const { organization } = useOrganization();
@@ -103,7 +103,7 @@ export function WebhookWizard() {
     if (!webhook) return '';
 
     const url = new URL(`https://unhook.sh/${webhook.id}`);
-    url.searchParams.set('from', from);
+    url.searchParams.set('source', source);
     if (webhook.isPrivate) {
       url.searchParams.set('key', webhook.apiKey);
     }
@@ -126,12 +126,12 @@ export function WebhookWizard() {
             </div>
           ) : webhook && authCode ? (
             <>
-              <WebhookUrlStep webhookUrl={webhookUrl} from={from} />
-              <FromStep value={from} onChange={setFrom} />
+              <WebhookUrlStep webhookUrl={webhookUrl} source={source} />
+              <SourceStep value={source} onChange={setSource} />
               <InstallationCommand
                 authCode={authCode.id}
                 webhookId={webhook.id}
-                source={from}
+                source={source}
               />
             </>
           ) : null}

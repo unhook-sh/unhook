@@ -78,6 +78,7 @@
     }
   },
   "files": [
+    "bin",
     "README.md",
     "LICENSE",
     "dist/src/exports.d.ts",
@@ -153,5 +154,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.9.1"
+  "version": "0.9.2"
 }

@@ -11,7 +11,12 @@ import { Router } from '~/components/router';
 import { AuthProvider } from '~/context/auth-context';
 import { RouterProvider } from '~/context/router-context';
 import { WebhookProvider } from '~/context/webhook-context';
-import { SignedIn, WebhookAuthorized } from '~/guards';
+import {
+  SignedIn,
+  WebhookAuthorized,
+  WebhookChecking,
+  WebhookUnauthorized,
+} from '~/guards';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {
   PostHogIdentifyUser,
@@ -106,6 +111,12 @@ function AppContent() {
             </Box>
           )}
         </WebhookAuthorized>
+        <WebhookUnauthorized>
+          <Text>You are not authorized to use this webhook.</Text>
+        </WebhookUnauthorized>
+        <WebhookChecking>
+          <Text>Verifying webhook...</Text>
+        </WebhookChecking>
       </SignedIn>
       <Router />
     </Box>

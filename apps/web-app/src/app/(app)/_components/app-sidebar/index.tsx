@@ -15,161 +15,248 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from '@unhook/ui/sidebar';
-import { BookOpen, Code, ExternalLink, Link, Logs } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { ToggleGroup, ToggleGroupItem } from '@unhook/ui/toggle-group';
+import {
+  ArrowLeft,
+  BookOpen,
+  Code,
+  ExternalLink,
+  ShieldCheck,
+  TestTube2,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { ProjectDropdownMenu } from './project-dropdown-menu';
+import { type SidebarSection, defaultSections } from './sections';
 import { UserDropdownMenu } from './user-dropdown-menu';
 
-const pagesWithSecondarySidebar = ['/settings'];
+export interface AppSidebarProps {
+  sectionKeys: (keyof typeof defaultSections)[];
+  showProjectSelector?: boolean;
+  showEnvironmentSelector?: boolean;
+  showFooter?: boolean;
+  variant?: 'inset' | 'sidebar' | 'floating';
+  className?: string;
+  showBackButton?: boolean;
+  backButtonHref?: string;
+  backButtonLabel?: string;
+}
 
-export function AppSidebar() {
+export function AppSidebar({
+  sectionKeys = [],
+  showProjectSelector = true,
+  showEnvironmentSelector = true,
+  showFooter = true,
+  variant = 'sidebar',
+  className,
+  showBackButton = false,
+  backButtonHref,
+  backButtonLabel = 'Back',
+}: AppSidebarProps) {
   const pathname = usePathname();
+  const params = useParams();
+  const router = useRouter();
 
-  // Menu items.
-  const monitoringItems = [
-    {
-      icon: Link,
-      title: 'Webhooks',
-      url: '/webhooks',
-    },
-    {
-      icon: Logs,
-      title: 'Requests',
-      url: '/requests',
-    },
-  ];
+  const orgId = params.orgId as string;
+  const projectId = params.projectId as string;
+  const envName = params.envId as string;
 
-  // I don't love this, but it's a quick way to check if we're on the settings page which has it's own sidebar.
-  const hasSecondarySidebar = pagesWithSecondarySidebar.some((page) =>
-    pathname.includes(page),
+  // Build sections array from keys
+  const sections: SidebarSection[] = sectionKeys.map(
+    (key) => defaultSections[key],
   );
 
+  console.log('AppSidebar sections prop:', sections);
+
+  const handleEnvironmentChange = (value: string) => {
+    if (!value) return;
+    const newPath = pathname.replace(`/${envName}/`, `/${value}/`);
+    router.push(newPath);
+  };
+
   return (
-    <Sidebar
-      collapsible="icon"
-      variant={hasSecondarySidebar ? undefined : 'inset'}
-      className={cn({
-        'mt-2 pb-4 pr-4 ml-2': hasSecondarySidebar, // NOTE: This is a hack to get the sidebar to fit the design.
-      })}
-    >
-      <SidebarHeader className="flex-row items-gap-1">
-        <SidebarTrigger className="h-8 w-8" />
-        <div className="flex-1 group-data-[collapsible=icon]:hidden">
-          <UserDropdownMenu />
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Monitor</SidebarGroupLabel>
-          <SidebarGroupContent>
+    <Sidebar collapsible="icon" variant={variant} className={cn(className)}>
+      <SidebarHeader className="flex-row items-gap-1 items-center">
+        <SidebarTrigger />
+        {showBackButton ? (
+          <div className="flex-1 group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
-              {monitoringItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.url === pathname}>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  {backButtonHref ? (
+                    <Link
+                      href={backButtonHref}
+                      className="flex items-center gap-2"
+                    >
+                      <ArrowLeft className="size-4" />
+                      <span>{backButtonLabel}</span>
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => router.back()}
+                      className="flex items-center gap-2 w-full"
+                      type="button"
+                    >
+                      <ArrowLeft className="size-4" />
+                      <span>{backButtonLabel}</span>
+                    </button>
+                  )}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        {/* <SidebarGroup>
-          <SidebarGroupLabel>Develop</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {isLoading
-                ? ['skeleton-1', 'skeleton-2', 'skeleton-3'].map((id) => (
-                    <SidebarMenuItem key={id}>
-                      <SidebarMenuSkeleton showIcon />
-                    </SidebarMenuItem>
-                  ))
-                : developmentItems.map((item) => (
+          </div>
+        ) : (
+          showProjectSelector && (
+            <div className="flex-1 group-data-[collapsible=icon]:hidden">
+              <ProjectDropdownMenu />
+            </div>
+          )
+        )}
+      </SidebarHeader>
+
+      {showEnvironmentSelector && projectId && (
+        <div className="px-4 py-2">
+          <ToggleGroup
+            type="single"
+            value={envName}
+            onValueChange={handleEnvironmentChange}
+            variant="outline"
+            size="sm"
+            className="w-full bg-muted/50 group-data-[collapsible=icon]:hidden"
+          >
+            <ToggleGroupItem
+              value="dev"
+              className="flex items-center justify-center gap-1.5 data-[state=on]:!bg-sidebar-primary data-[state=on]:!text-sidebar-primary-foreground"
+            >
+              <TestTube2 className="size-3.5" />
+              <span>Dev</span>
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="prod"
+              className="flex items-center justify-center gap-1.5 data-[state=on]:!bg-sidebar-primary data-[state=on]:!text-sidebar-primary-foreground"
+            >
+              <ShieldCheck className="size-3.5" />
+              <span>Prod</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      )}
+
+      <SidebarContent>
+        {sections.map((section) => (
+          <SidebarGroup key={section.label || 'unnamed-section'}>
+            {section.label && (
+              <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {section.items.map((item) => {
+                  const resolvedUrl = item.url.replace(
+                    /\${(\w+)}/g,
+                    (_, key) => {
+                      switch (key) {
+                        case 'orgId':
+                          return orgId;
+                        case 'projectId':
+                          return projectId;
+                        case 'envName':
+                          return envName;
+                        default:
+                          return '';
+                      }
+                    },
+                  );
+                  return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         asChild
-                        isActive={item.url === pathname}
+                        isActive={resolvedUrl === pathname}
                       >
-                        <a href={item.url}>
-                          <item.icon />
+                        <Link href={resolvedUrl}>
+                          <item.icon className="size-4" />
                           <span>{item.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a
-                href="https://docs.unhook.com"
-                target="_blank"
-                className="flex items-center justify-between"
-                rel="noreferrer"
-              >
-                <span className="flex items-center gap-2">
-                  <BookOpen className="size-4" />
-                  <span>Docs</span>
-                </span>
-                <ExternalLink className="size-4" />
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a
-                href="https://docs.unhook.com/ref/overview"
-                target="_blank"
-                className="flex items-center justify-between"
-                rel="noreferrer"
-              >
-                <span className="flex items-center gap-2">
-                  <Code className="size-4 shrink-0" />
-                  <span>API Reference</span>
-                </span>
-                <ExternalLink className="size-4" />
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a
-                href="https://discord.gg/BTNBeXGuaS"
-                target="_blank"
-                className="flex items-center justify-between"
-                rel="noreferrer"
-              >
-                <span className="flex items-center gap-2">
-                  <Icons.Discord className="size-4" />
-                  <span>Discord</span>
-                </span>
-                <ExternalLink className="size-4" />
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <a
-                href="https://github.com/unhook-sh/unhook/blob/main/CHANGELOG.md"
-                target="_blank"
-                className="flex items-center justify-between"
-                rel="noreferrer"
-              >
-                <span className="flex items-center gap-2">
-                  <Icons.Rocket className="size-4" />
-                  <span>Changelog</span>
-                </span>
-                <ExternalLink className="size-4" />
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+
+      {showFooter && (
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a
+                  href="https://docs.unhook.com"
+                  target="_blank"
+                  className="flex items-center justify-between"
+                  rel="noreferrer"
+                >
+                  <span className="flex items-center gap-2">
+                    <BookOpen className="size-4" />
+                    <span>Docs</span>
+                  </span>
+                  <ExternalLink className="size-4" />
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a
+                  href="https://docs.unhook.com/ref/overview"
+                  target="_blank"
+                  className="flex items-center justify-between"
+                  rel="noreferrer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Code className="size-4 shrink-0" />
+                    <span>API Reference</span>
+                  </span>
+                  <ExternalLink className="size-4" />
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a
+                  href="https://discord.gg/BTNBeXGuaS"
+                  target="_blank"
+                  className="flex items-center justify-between"
+                  rel="noreferrer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Icons.Discord className="size-4" />
+                    <span>Discord</span>
+                  </span>
+                  <ExternalLink className="size-4" />
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a
+                  href="https://github.com/unhook/baml/blob/canary/CHANGELOG.md"
+                  target="_blank"
+                  className="flex items-center justify-between"
+                  rel="noreferrer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Icons.Rocket className="size-4" />
+                    <span>Changelog</span>
+                  </span>
+                  <ExternalLink className="size-4" />
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <UserDropdownMenu />
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }

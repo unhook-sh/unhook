@@ -67,7 +67,7 @@ export function FirstBentoAnimation() {
       <div className="max-w-md w-full mx-auto bg-background border border-border rounded-xl shadow-lg p-0 overflow-hidden">
         <div className="px-4 pt-4 pb-2">
           <div className="font-mono text-xs text-muted-foreground">
-            $ unhook --port 3000
+            $ unhook listen
           </div>
           <div className="font-mono text-xs text-primary">
             https://unhook.sh/wh_AH21J

@@ -1,5 +1,6 @@
 'use client';
 
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import { Button } from '@unhook/ui/components/button';
 import { GitHubStarsButtonWrapper } from '@unhook/ui/custom/github-stars-button/button-wrapper';
 import { ThemeToggle } from '@unhook/ui/custom/theme';
@@ -135,15 +136,28 @@ export function Navbar({
                 >
                   Create Webhook URL
                 </Link>
-                <Button
-                  variant="outline"
-                  className="hidden md:flex rounded-full"
-                  asChild
-                >
-                  <Link href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
-                    Sign In
-                  </Link>
-                </Button>
+                <SignedIn>
+                  <Button
+                    variant="outline"
+                    className="hidden md:flex rounded-full"
+                    asChild
+                  >
+                    <Link href="/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+                      Dashboard
+                    </Link>
+                  </Button>
+                </SignedIn>
+                <SignedOut>
+                  <Button
+                    variant="outline"
+                    className="hidden md:flex rounded-full"
+                    asChild
+                  >
+                    <Link href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                      Sign In
+                    </Link>
+                  </Button>
+                </SignedOut>
               </div>
               <GitHubStarsButtonWrapper
                 repo="unhook-sh/unhook"
@@ -245,9 +259,20 @@ export function Navbar({
                   >
                     Create Webhook URL
                   </Link>
-                  <Button variant="outline" className="rounded-full" asChild>
-                    <Link href="/app">Sign In</Link>
-                  </Button>
+                  <SignedIn>
+                    <Button variant="outline" className="rounded-full" asChild>
+                      <Link href="/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+                        Dashboard
+                      </Link>
+                    </Button>
+                  </SignedIn>
+                  <SignedOut>
+                    <Button variant="outline" className="rounded-full" asChild>
+                      <Link href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                        Sign In
+                      </Link>
+                    </Button>
+                  </SignedOut>
                 </div>
               </div>
             </motion.div>

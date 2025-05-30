@@ -44,7 +44,7 @@ npx @unhook/cli init
 
 2. Start the webhook:
 ```bash
-unhook --port 3000
+unhook listen
 ```
 
 3. Use the generated webhook URL in your provider's settings:
@@ -57,13 +57,13 @@ https://unhook.sh/wh_your_webhook_id
 ### Start Webhook
 ```bash
 # Basic usage
-unhook --port 3000
+unhook listen
 
 # With custom client ID
-unhook --port 3000 --client-id dev-1
+unhook listen --client-id dev-1
 
 # With debug logging
-unhook --port 3000 --debug
+unhook listen --debug
 
 # Redirect to remote URL
 unhook --redirect https://api.example.com
@@ -163,13 +163,13 @@ The `--ping` option configures connection health monitoring:
 
 ```bash
 # Disable health checks
-unhook --port 3000 --ping false
+unhook listen --ping false
 
 # Check specific port
-unhook --port 3000 --ping 3001
+unhook listen --ping 3001
 
 # Check specific URL
-unhook --port 3000 --ping https://api.example.com/health
+unhook listen --ping https://api.example.com/health
 ```
 
 ## Authentication
@@ -200,16 +200,16 @@ rm ~/.unhook/auth-storage.json
 ### Basic Development Setup
 ```bash
 # Start webhook on default port
-unhook --port 3000 --webhook-id your_webhook_id
+unhook listen --webhook-id your_webhook_id
 ```
 
 ### Team Development
 ```bash
 # Developer 1
-unhook --port 3000 --client-id dev1 --webhook-id team_webhook_id
+unhook listen --client-id dev1 --webhook-id team_webhook_id
 
 # Developer 2
-unhook --port 3000 --client-id dev2 --webhook-id team_webhook_id
+unhook listen --client-id dev2 --webhook-id team_webhook_id
 ```
 
 ### Production Redirect
@@ -221,7 +221,7 @@ unhook --redirect https://api.production.com --webhook-id prod_webhook_id
 ### Custom Health Checks
 ```bash
 # Check specific health endpoint
-unhook --port 3000 --ping https://localhost:3000/health
+unhook listen --ping https://localhost:3000/health
 ```
 
 ## Best Practices
@@ -246,7 +246,7 @@ unhook --port 3000 --ping https://localhost:3000/health
    - Re-run initialization: `npx @unhook/cli init`
 
 3. **Debug Mode**
-   - Enable debug logging: `unhook --port 3000 --debug`
+   - Enable debug logging: `unhook listen --debug`
    - Check the debug panel for detailed information
 
 ## Support

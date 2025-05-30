@@ -5,6 +5,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/clerk',
   '/api/webhooks/stripe',
   '/api/trpc(.*)',
+  '/blog(.*)',
   // Match webhook paths that start with /wh_ and end there
   '/wh_([^/]+)',
   '/',

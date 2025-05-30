@@ -1,0 +1,98 @@
+{
+  "activationEvents": ["onStartupFinished"],
+  "bugs": {
+    "url": "https://github.com/unhook-sh/unhook/issues"
+  },
+  "categories": ["Debuggers", "Testing", "Other"],
+  "contributes": {
+    "commands": [
+      {
+        "category": "Unhook",
+        "command": "unhook.showApiEvents",
+        "title": "Show API Events"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.addApiEvent",
+        "title": "Add API Event"
+      }
+    ],
+    "views": {
+      "unhook-sidebar-view": [
+        {
+          "id": "unhook.apiEventsWebview",
+          "name": "Events",
+          "type": "webview"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "icon": "$(radio-tower)",
+          "id": "unhook-sidebar-view",
+          "title": "Unhook"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "@unhook/api": "workspace:*",
+    "@unhook/client": "workspace:*",
+    "@unhook/id": "workspace:*",
+    "@unhook/logger": "workspace:*",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "ws": "^8.16.0"
+  },
+  "description": "Webhook Development",
+  "devDependencies": {
+    "@types/bun": "1.2.14",
+    "@types/node": "22.15.26",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
+    "@types/vscode": "1.96.0",
+    "@unhook/tsconfig": "workspace:*",
+    "@vitejs/plugin-react": "4.5.0",
+    "@vscode/test-cli": "0.0.11",
+    "@vscode/test-electron": "2.5.2",
+    "@vscode/vsce": "3.4.2",
+    "concurrently": "9.1.2",
+    "globals": "16.2.0",
+    "mocha": "11.5.0",
+    "typescript": "5.8.3",
+    "vite": "6.3.5"
+  },
+  "displayName": "Unhook - Webhook Development",
+  "engines": {
+    "vscode": ">=1.96.0"
+  },
+  "homepage": "https://github.com/unhook-sh/unhook#readme",
+  "keywords": ["webhook", "development", "testing", "debugging"],
+  "main": "./dist/extension.js",
+  "name": "vscode-extension",
+  "private": true,
+  "publisher": "unhook",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unhook-sh/unhook"
+  },
+  "scripts": {
+    "build": "bun run typecheck && bun run build:webview && bun run build:base --minify --production",
+    "build:base": "bun build ./src/extension.ts --outfile ./dist/extension.js --target node --bundle --external vscode --format cjs",
+    "build:debug": "bun run typecheck && bun run build:webview && bun run build:base --sourcemap=inline",
+    "build:webview": "vite build",
+    "clean": "rm -rf .turbo node_modules dist media",
+    "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
+    "dev:webview": "NODE_ENV=development vite build --config vite.dev.config.ts",
+    "dev:extension": "NODE_ENV=development bun run build:base --watch --sourcemap=inline",
+    "package": "bun run typecheck && bun run build",
+    "pretest": "bun run build:base",
+    "test": "vscode-test",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "vsce": "bunx vsce package",
+    "vscode:prepublish": "bun run package"
+  },
+  "type": "commonjs",
+  "version": "0.0.1"
+}

@@ -62,12 +62,12 @@
   "private": true,
   "scripts": {
     "build": "NEXT_PUBLIC_APP_TYPE=nextjs next build",
-    "clean": "git clean -xdf .next .turbo node_modules dist",
+    "clean": "rm -rf .turbo node_modules dist .next",
     "dev": "next dev --turbo",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "start": "next start",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",
   "version": "0.1.2"

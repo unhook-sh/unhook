@@ -67,3 +67,5 @@ certificates/
 *.txt
 
 .unhook
+
+.vscode-test/

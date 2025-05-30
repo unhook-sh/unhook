@@ -28,6 +28,18 @@
       "name": "Bun",
       "program": "${workspaceFolder}/apps/cli/src/cli.ink.tsx",
       "args": ["-p", "3000", "-k", "1234567890"]
+    },
+    {
+      "name": "Run VSCode Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
+      ],
+      "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
+      "cwd": "${workspaceFolder}/apps/vscode-extension",
+      "preLaunchTask": "prepare-extension"
     }
   ]
 }

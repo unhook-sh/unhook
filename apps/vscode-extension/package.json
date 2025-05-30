@@ -8,21 +8,64 @@
     "commands": [
       {
         "category": "Unhook",
-        "command": "unhook.showApiEvents",
-        "title": "Show API Events"
+        "command": "unhook.showWebhookEvents",
+        "title": "Show Webhook Events"
       },
       {
         "category": "Unhook",
-        "command": "unhook.addApiEvent",
-        "title": "Add API Event"
+        "command": "unhook.addWebhookEvent",
+        "title": "Add Webhook Event"
+      },
+      {
+        "command": "unhook.replayEvent",
+        "icon": "$(play)",
+        "title": "Replay Event"
+      },
+      {
+        "command": "unhook.webhookEvents.refresh",
+        "icon": "$(refresh)",
+        "title": "Refresh"
+      },
+      {
+        "command": "unhook.copyStatusIcon",
+        "icon": "$(copy)",
+        "title": "Copy Status Icon"
+      },
+      {
+        "command": "unhook.openRequestDetails",
+        "title": "Open Request Details"
       }
     ],
-    "views": {
-      "unhook-sidebar-view": [
+    "menus": {
+      "view/item/context": [
         {
-          "id": "unhook.apiEventsWebview",
-          "name": "Events",
-          "type": "webview"
+          "command": "unhook.copyStatusIcon",
+          "group": "inline",
+          "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
+        },
+        {
+          "command": "unhook.copyStatusIcon",
+          "group": "inline",
+          "when": "view == unhook.webhookEvents && viewItem == webhookRequest"
+        },
+        {
+          "command": "unhook.replayEvent",
+          "group": "inline",
+          "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
+        }
+      ]
+    },
+    "views": {
+      "unhook": [
+        {
+          "contextualTitle": "Webhook Events",
+          "id": "unhook.webhookEvents",
+          "name": "Webhook Events"
+        },
+        {
+          "contextualTitle": "Settings",
+          "id": "unhook.settings",
+          "name": "Settings"
         }
       ]
     },
@@ -30,7 +73,7 @@
       "activitybar": [
         {
           "icon": "$(radio-tower)",
-          "id": "unhook-sidebar-view",
+          "id": "unhook",
           "title": "Unhook"
         }
       ]
@@ -39,6 +82,7 @@
   "dependencies": {
     "@unhook/api": "workspace:*",
     "@unhook/client": "workspace:*",
+    "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
     "react": "19.1.0",
@@ -48,16 +92,21 @@
   "description": "Webhook Development",
   "devDependencies": {
     "@types/bun": "1.2.14",
+    "@types/glob": "^8.1.0",
     "@types/node": "22.15.26",
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5",
     "@types/vscode": "1.96.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
     "@unhook/tsconfig": "workspace:*",
     "@vitejs/plugin-react": "4.5.0",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.4.2",
     "concurrently": "9.1.2",
+    "eslint": "^8.56.0",
+    "glob": "^10.3.10",
     "globals": "16.2.0",
     "mocha": "11.5.0",
     "typescript": "5.8.3",
@@ -82,10 +131,10 @@
     "build:base": "bun build ./src/extension.ts --outfile ./dist/extension.js --target node --bundle --external vscode --format cjs",
     "build:debug": "bun run typecheck && bun run build:webview && bun run build:base --sourcemap=inline",
     "build:webview": "vite build",
-    "clean": "rm -rf .turbo node_modules dist media",
+    "clean": "rm -rf .turbo node_modules dist",
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
-    "dev:webview": "NODE_ENV=development vite build --config vite.dev.config.ts",
     "dev:extension": "NODE_ENV=development bun run build:base --watch --sourcemap=inline",
+    "dev:webview": "NODE_ENV=development vite build --config vite.dev.config.ts",
     "package": "bun run typecheck && bun run build",
     "pretest": "bun run build:base",
     "test": "vscode-test",

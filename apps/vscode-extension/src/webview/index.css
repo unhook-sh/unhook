@@ -15,21 +15,96 @@
 }
 
 .app {
-  padding: 2rem;
-  max-width: 1280px;
-  margin: 0 auto;
+  padding: 20px;
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-editor-foreground);
+  background-color: var(--vscode-editor-background);
 }
 
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--vscode-editor-foreground);
+  font-size: 1.1em;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: var(--vscode-editor-background);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--vscode-panel-border);
+}
+
+.key {
+  color: var(--vscode-textLink-foreground);
+  font-weight: 500;
+}
+
+.value {
+  color: var(--vscode-editor-foreground);
+}
+
+.status {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.status-200 {
+  background-color: var(--vscode-testing-iconPassed);
+  color: var(--vscode-editor-background);
+}
+
+.status-4xx {
+  background-color: var(--vscode-testing-iconFailed);
+  color: var(--vscode-editor-background);
+}
+
+.status-5xx {
+  background-color: var(--vscode-testing-iconFailed);
+  color: var(--vscode-editor-background);
+}
+
+/* Main view styles */
 .content {
-  margin-top: 2rem;
+  margin-top: 20px;
 }
 
 .card {
-  padding: 2rem;
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 8px;
   background-color: var(--vscode-editor-background);
-  margin-top: 1rem;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.card button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.card button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.card code {
+  background-color: var(--vscode-textBlockQuote-background);
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-family: var(--vscode-editor-font-family);
 }
 
 a {

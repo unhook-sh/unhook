@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Optional: subtle track -->
+  <circle cx="8" cy="8" r="6.5" stroke="#8B949E" stroke-width="1" opacity="1"/>
+  <!-- Animated dot with gap -->
+  <g>
+    <circle cx="8" cy="4" r="1.5" fill="#8B949E">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        from="0 8 8"
+        to="360 8 8"
+        dur="1s"
+        repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

@@ -39,7 +39,9 @@ export function WebhookWizard() {
   useEffect(() => {
     async function initializeWebhook() {
       try {
-        const orgName = `${user?.firstName}'s Team`;
+        const orgName = user?.firstName
+          ? `${user.firstName}'s Team`
+          : 'Personal Team';
         if (user && createOrganization && !organization) {
           const result = await createOrganization({
             name: orgName,

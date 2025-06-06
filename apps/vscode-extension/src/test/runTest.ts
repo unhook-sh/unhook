@@ -1,3 +1,4 @@
+// biome-ignore lint/style/useFilenamingConvention: <explanation>
 import * as path from 'node:path';
 import { runTests } from '@vscode/test-electron';
 
@@ -15,7 +16,7 @@ async function main() {
       extensionTestsPath,
       launchArgs: ['--disable-extensions'],
     });
-  } catch (err) {
+  } catch (_err) {
     console.error('Failed to run tests');
     process.exit(1);
   }

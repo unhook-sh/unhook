@@ -8,29 +8,23 @@
     "@changesets/cli": "2.29.4",
     "@commitlint/cli": "19.8.1",
     "@testing-library/react": "16.3.0",
-    "@turbo/gen": "2.5.3",
-    "@types/bun": "1.2.14",
+    "@turbo/gen": "2.5.4",
+    "@types/bun": "1.2.15",
     "@unhook/commitlint-config": "workspace:*",
-    "bun": "1.2.14",
-    "checkly": "5.4.1",
-    "knip": "5.57.1",
+    "bun": "1.2.15",
+    "checkly": "5.5.0",
+    "knip": "5.60.2",
     "lefthook": "1.11.13",
-    "mintlify": "4.0.548",
-    "turbo": "2.5.3",
+    "mintlify": "4.0.574",
+    "turbo": "2.5.4",
     "typescript": "5.8.3",
-    "vitest": "3.1.4"
+    "vitest": "3.2.2"
   },
   "engines": {
     "node": ">=20.12.0"
   },
   "name": "@unhook/root",
-  "overrides": {
-    "react-reconciler": "0.32.0"
-  },
-  "packageManager": "bun@1.2.13",
-  "patchedDependencies": {
-    "ink@5.2.1": "patches/ink@5.2.1.patch"
-  },
+  "packageManager": "bun@1.2.15",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -50,7 +44,7 @@
     "format:fix": "biome check --write",
     "knip": "knip --include files,dependencies",
     "lint:ws": "bunx sherif@latest",
-    "postinstall.todo": "bun lint:ws",
+    "postinstall": "bun lint:ws",
     "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... && changeset publish",
     "test": "bun test",
     "typecheck": "turbo run typecheck",

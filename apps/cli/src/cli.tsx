@@ -5,7 +5,6 @@ import { debug } from '@unhook/logger';
 import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file';
 
 const logDir = join(tmpdir(), 'unhook');
-console.log(logDir);
 defaultLogger.addDestination(
   new RollingFileDestination({
     filepath: join(logDir, 'unhook.log'),

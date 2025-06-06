@@ -14,7 +14,8 @@
       },
       "presentation": {
         "reveal": "always",
-        "panel": "new"
+        "panel": "new",
+        "close": true
       }
     },
     {

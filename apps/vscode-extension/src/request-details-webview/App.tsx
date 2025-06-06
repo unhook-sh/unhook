@@ -1,3 +1,4 @@
+// biome-ignore lint/style/useFilenamingConvention: <explanation>
 import type { RequestType } from '@unhook/db/schema';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useEffect, useRef, useState } from 'react';

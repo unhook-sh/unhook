@@ -1,13 +1,20 @@
 import * as vscode from 'vscode';
-import type { EventType } from '../types';
+import type { EventTypeWithRequest } from '../types';
 import { getStatusIconPath } from '../utils/status-icon.utils';
 
 export class WebhookEventItem extends vscode.TreeItem {
   constructor(
-    public event: EventType,
+    public event: EventTypeWithRequest,
     context: vscode.ExtensionContext,
   ) {
-    super(`Event ${event.id}`, vscode.TreeItemCollapsibleState.Expanded);
+    // Get the event name from the origin request source URL
+    const sourceUrl = new URL(event.originRequest.sourceUrl);
+    const eventName = sourceUrl.pathname.split('/').pop() || 'Unknown Event';
+
+    super(
+      `${eventName} (${event.source})`,
+      vscode.TreeItemCollapsibleState.Expanded,
+    );
     this.description = `${event.status} - ${event.timestamp.toLocaleString()}`;
     this.iconPath = getStatusIconPath(
       event.status === 'completed'

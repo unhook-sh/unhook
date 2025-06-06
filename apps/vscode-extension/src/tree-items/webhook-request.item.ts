@@ -9,7 +9,7 @@ export class WebhookRequestItem extends vscode.TreeItem {
     public parent: WebhookEventItem,
     context: vscode.ExtensionContext,
   ) {
-    super(`Request ${request.id}`, vscode.TreeItemCollapsibleState.None);
+    super(request.destination.name, vscode.TreeItemCollapsibleState.None);
     this.description = `${request.status} - ${request.timestamp.toLocaleString()}`;
     this.iconPath = getStatusIconPath(request.response?.status, context);
     this.command = {

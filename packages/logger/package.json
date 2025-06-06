@@ -1,11 +1,13 @@
 {
   "dependencies": {
-    "bun": "1.2.14",
-    "debug": "4.4.1"
+    "bun": "1.2.15",
+    "debug": "4.4.1",
+    "node-inspect-extracted": "3.1.0"
   },
   "devDependencies": {
-    "@types/bun": "1.2.14",
+    "@types/bun": "1.2.15",
     "@types/debug": "4.1.12",
+    "@types/vscode": "1.100.0",
     "typescript": "5.8.3"
   },
   "exports": {
@@ -20,6 +22,10 @@
     "./destinations/console": {
       "default": "./src/destinations/console.ts",
       "types": "./dist/destinations/console.d.ts"
+    },
+    "./destinations/vscode-output": {
+      "default": "./src/destinations/vscode-output.ts",
+      "types": "./dist/destinations/vscode-output.d.ts"
     }
   },
   "license": "MIT",

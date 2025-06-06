@@ -6,7 +6,7 @@ export type LogWriter = {
 
 // Logger module interface
 export type LoggerModule = {
-  debug: (namespace: string) => (formatter: string, ...args: unknown[]) => void;
+  debug: (namespace: string) => (...args: unknown[]) => void;
   enableDebug: (namespace: string) => void;
 };
 
@@ -15,9 +15,8 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export interface LogMessage {
   level: LogLevel;
   namespace: string;
-  message: string;
+  args: unknown[];
   timestamp: Date;
-  metadata?: Record<string, unknown>;
 }
 
 export interface LogDestination {
@@ -31,8 +30,8 @@ export interface LoggerProps {
 }
 
 export interface ILogger {
-  debug(message: string, metadata?: Record<string, unknown>): void;
-  info(message: string, metadata?: Record<string, unknown>): void;
-  warn(message: string, metadata?: Record<string, unknown>): void;
-  error(message: string, metadata?: Record<string, unknown>): void;
+  debug(...args: unknown[]): void;
+  info(...args: unknown[]): void;
+  warn(...args: unknown[]): void;
+  error(...args: unknown[]): void;
 }

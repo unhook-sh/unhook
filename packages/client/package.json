@@ -4,19 +4,19 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.49.8",
-    "@t3-oss/env-core": "0.13.4",
+    "@supabase/supabase-js": "2.50.0",
+    "@t3-oss/env-core": "0.13.6",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
     "@unhook/npm": "workspace:*",
     "@vercel/kv": "3.0.0",
     "debug": "4.4.1",
-    "drizzle-orm": "0.43.1",
+    "drizzle-orm": "0.44.2",
     "find-up": "7.0.0",
-    "undici": "7.9.0",
+    "undici": "7.10.0",
     "yaml": "2.8.0",
-    "zod": "3.24.4"
+    "zod": "3.25.56"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",

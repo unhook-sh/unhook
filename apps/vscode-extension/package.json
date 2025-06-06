@@ -1,10 +1,22 @@
 {
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished",
+    "onUri:vscode",
+    "onUri:vscode-insiders",
+    "onUri:cursor",
+    "onUri:windsurf"
+  ],
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "categories": ["Debuggers", "Testing", "Other"],
   "contributes": {
+    "authentication": [
+      {
+        "id": "unhook",
+        "label": "Unhook"
+      }
+    ],
     "commands": [
       {
         "category": "Unhook",
@@ -22,36 +34,138 @@
         "title": "Replay Event"
       },
       {
+        "command": "unhook.viewEvent",
+        "icon": "$(eye)",
+        "title": "View Event"
+      },
+      {
+        "command": "unhook.viewRequest",
+        "icon": "$(eye)",
+        "title": "View Request"
+      },
+      {
+        "command": "unhook.replayRequest",
+        "icon": "$(play)",
+        "title": "Replay Request"
+      },
+      {
+        "command": "unhook.copyEvent",
+        "icon": "$(copy)",
+        "title": "Copy Event"
+      },
+      {
         "command": "unhook.webhookEvents.refresh",
         "icon": "$(refresh)",
         "title": "Refresh"
       },
       {
-        "command": "unhook.copyStatusIcon",
-        "icon": "$(copy)",
-        "title": "Copy Status Icon"
-      },
-      {
         "command": "unhook.openRequestDetails",
         "title": "Open Request Details"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.quickPick",
+        "title": "Quick Pick Webhook Event",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "unhook.webhookEvents.filter",
+        "title": "Filter Webhook Events",
+        "icon": "$(filter)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.focusOutput",
+        "title": "Focus Output",
+        "icon": "$(output)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.clearOutput",
+        "title": "Clear Output",
+        "icon": "$(clear-all)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.toggleOutput",
+        "title": "Toggle Output",
+        "icon": "$(eye)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.openSettings",
+        "title": "Open Settings",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.toggleAutoShowOutput",
+        "title": "Toggle Auto-Show Output",
+        "icon": "$(eye)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.toggleAutoClearEvents",
+        "title": "Toggle Auto-Clear Events",
+        "icon": "$(trash)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.toggleRequestDetailsView",
+        "title": "Toggle Request Details View",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.signIn",
+        "title": "Sign in to Unhook",
+        "icon": "$(sign-in)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.signOut",
+        "title": "Sign out of Unhook",
+        "icon": "$(sign-out)"
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "unhook.quickPick",
+          "when": "view == unhook.webhookEvents",
+          "group": "navigation"
+        },
+        {
+          "command": "unhook.webhookEvents.filter",
+          "when": "view == unhook.webhookEvents",
+          "group": "navigation@1"
+        }
+      ],
       "view/item/context": [
         {
-          "command": "unhook.copyStatusIcon",
+          "command": "unhook.copyEvent",
           "group": "inline",
           "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
         },
         {
-          "command": "unhook.copyStatusIcon",
+          "command": "unhook.viewEvent",
           "group": "inline",
-          "when": "view == unhook.webhookEvents && viewItem == webhookRequest"
+          "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
         },
         {
           "command": "unhook.replayEvent",
           "group": "inline",
           "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
+        },
+        {
+          "command": "unhook.viewRequest",
+          "group": "inline",
+          "when": "view == unhook.webhookEvents && viewItem == webhookRequest"
+        },
+        {
+          "command": "unhook.replayRequest",
+          "group": "inline",
+          "when": "view == unhook.webhookEvents && viewItem == webhookRequest"
         }
       ]
     },
@@ -66,6 +180,12 @@
           "contextualTitle": "Settings",
           "id": "unhook.settings",
           "name": "Settings"
+        },
+        {
+          "contextualTitle": "Request Details",
+          "id": "unhook.requestDetails",
+          "name": "Request Details",
+          "visibility": "hidden"
         }
       ]
     },
@@ -77,6 +197,37 @@
           "title": "Unhook"
         }
       ]
+    },
+    "configuration": {
+      "title": "Unhook",
+      "properties": {
+        "unhook.output.autoShow": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically show the output panel when new webhook events are received"
+        },
+        "unhook.output.maxLines": {
+          "type": "number",
+          "default": 1000,
+          "description": "Maximum number of lines to keep in the output panel"
+        },
+        "unhook.webhookEvents.maxHistory": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of webhook events to keep in history"
+        },
+        "unhook.webhookEvents.autoClear": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically clear old webhook events when the maximum history is reached"
+        },
+        "unhook.requestDetails.defaultView": {
+          "type": "string",
+          "enum": ["raw", "formatted"],
+          "default": "formatted",
+          "description": "Default view mode for request details"
+        }
+      }
     }
   },
   "dependencies": {
@@ -87,26 +238,23 @@
     "@unhook/logger": "workspace:*",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "ws": "^8.16.0"
+    "ws": "8.18.2"
   },
   "description": "Webhook Development",
   "devDependencies": {
-    "@types/bun": "1.2.14",
-    "@types/glob": "^8.1.0",
-    "@types/node": "22.15.26",
+    "@types/bun": "1.2.15",
+    "@types/glob": "8.1.0",
+    "@types/node": "22.15.30",
     "@types/react": "19.1.6",
-    "@types/react-dom": "19.1.5",
-    "@types/vscode": "1.96.0",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
+    "@types/react-dom": "19.1.6",
+    "@types/vscode": "1.100.0",
     "@unhook/tsconfig": "workspace:*",
-    "@vitejs/plugin-react": "4.5.0",
+    "@vitejs/plugin-react": "4.5.1",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
-    "@vscode/vsce": "3.4.2",
+    "@vscode/vsce": "3.5.0",
     "concurrently": "9.1.2",
-    "eslint": "^8.56.0",
-    "glob": "^10.3.10",
+    "glob": "11.0.2",
     "globals": "16.2.0",
     "mocha": "11.5.0",
     "typescript": "5.8.3",
@@ -119,7 +267,7 @@
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
-  "name": "vscode-extension",
+  "name": "unhook-vscode",
   "private": true,
   "publisher": "unhook",
   "repository": {

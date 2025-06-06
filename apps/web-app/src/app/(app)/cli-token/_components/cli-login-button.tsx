@@ -29,24 +29,28 @@ export function CliLoginButton() {
       }
 
       const currentUrl = new URL(window.location.href);
-      const port = currentUrl.searchParams.get('port');
-      const csrfToken = currentUrl.searchParams.get('csrf');
+      const redirectUri = currentUrl.searchParams.get('redirect_uri');
 
-      // Get the redirect URL from search params, defaulting to current URL if not provided
-      const redirectUrl = new URL(`http://localhost:${port ?? 54321}`);
-
-      // Add the token to the redirect URL
-      redirectUrl.searchParams.set('code', result.data.authCode.id);
-      redirectUrl.searchParams.set('csrf', csrfToken || '');
+      if (redirectUri) {
+        // Handle VS Code OAuth flow
+        const redirectUrl = new URL(redirectUri);
+        redirectUrl.searchParams.set('code', result.data.authCode.id);
+        window.location.href = redirectUrl.href;
+      } else {
+        // Handle CLI flow
+        const port = currentUrl.searchParams.get('port');
+        const csrfToken = currentUrl.searchParams.get('csrf');
+        const redirectUrl = new URL(`http://localhost:${port ?? 54321}`);
+        redirectUrl.searchParams.set('code', result.data.authCode.id);
+        redirectUrl.searchParams.set('csrf', csrfToken || '');
+        window.location.href = redirectUrl.href;
+      }
 
       posthog?.capture('cli_login_success', {
-        port,
-        hasCsrfToken: !!csrfToken,
+        isVSCode: !!redirectUri,
+        port: currentUrl.searchParams.get('port'),
+        hasCsrfToken: !!currentUrl.searchParams.get('csrf'),
       });
-
-      // If we have a redirect URL in the search params, redirect to it
-      window.location.href = redirectUrl.href;
-      return;
     } catch (error) {
       console.error('Failed to generate token:', error);
       setError('Failed to authenticate. Please try again.');
@@ -85,7 +89,7 @@ export function CliLoginButton() {
       )}
       {isPending && (
         <span className="text-sm text-muted-foreground animate-in fade-in">
-          You'll be redirected back to the CLI shortly...
+          You'll be redirected back shortly...
         </span>
       )}
     </div>

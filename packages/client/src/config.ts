@@ -11,6 +11,13 @@ const CONFIG_FILES = [
   'unhook.config.json',
   'unhook.config.yaml',
   'unhook.config.yml',
+  'unhook.yml',
+  'unhook.js',
+  'unhook.cjs',
+  'unhook.ts',
+  'unhook.json',
+  'unhook.yaml',
+  'unhook.yml',
 ];
 
 const headerSchema = z.object({

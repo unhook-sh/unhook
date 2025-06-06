@@ -39,7 +39,7 @@ import { NewOrgDialog } from './new-org-dialog';
 export function UserDropdownMenu() {
   const { isMobile } = useSidebar();
   const logoutFn = useLogoutFunction();
-  const { redirectToLoginPage, redirectToAccountPage } = useRedirectFunctions();
+  const { redirectToLoginPage } = useRedirectFunctions();
   const { setTheme } = useTheme();
   const router = useRouter();
   const { user, setActiveOrg } = useUser();

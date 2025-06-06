@@ -1,3 +1,4 @@
+import { inspect } from 'node-inspect-extracted';
 import type { LogDestination, LogLevel, LogMessage } from './types';
 
 type ConsoleMethod = 'debug' | 'info' | 'warn' | 'error' | 'log';
@@ -21,21 +22,22 @@ export const originalConsole: Record<ConsoleMethod, typeof console.log> = {
 
 const isBrowser = typeof window !== 'undefined';
 
-function formatMessage(template: string, ...args: unknown[]): string {
-  if (args.length === 0) return template;
+function formatMessage(message: string, ...args: unknown[]): string {
+  if (args.length === 0) return message;
 
   try {
     return args
       .map((arg) => {
         if (arg === null) return 'null';
-        if (arg === undefined) return '';
-        if (typeof arg === 'object') return JSON.stringify(arg, null, 2);
+        if (arg === undefined) return 'undefined';
+        if (typeof arg === 'object') {
+          return inspect(arg, { colors: false, depth: null });
+        }
         return String(arg);
       })
-      .filter(Boolean) // Remove empty strings
       .join(' ');
   } catch {
-    return template;
+    return message;
   }
 }
 
@@ -50,7 +52,7 @@ export class UnhookLogger {
   private destinations: Set<LogDestination>;
   private logBuffer: BufferedLogMessage[] = [];
   private flushInterval: number;
-  private flushTimer: Timer | null = null;
+  private flushTimer: NodeJS.Timeout | null = null;
   private sequence = 0;
 
   constructor(props: LoggerProps = {}) {
@@ -103,15 +105,12 @@ export class UnhookLogger {
   private writeToDestinations(
     level: LogLevel,
     namespace: string,
-    message: string,
-    metadata?: Record<string, unknown>,
+    args: unknown[],
   ): void {
     const logMessage: BufferedLogMessage = {
       level,
       namespace,
-      message:
-        typeof message === 'string' ? message : formatMessage('%O', message),
-      metadata,
+      args,
       timestamp: new Date(),
       sequence: this.sequence++,
     };
@@ -192,17 +191,17 @@ export class UnhookLogger {
         const formattedMessage =
           typeof messageArgs[0] === 'string'
             ? formatMessage(messageArgs[0], ...messageArgs.slice(1))
-            : messageArgs[0];
+            : String(messageArgs[0]);
 
         // Write to destinations with all metadata
-        const metadata: Record<string, unknown> = {};
-        messageArgs.slice(1).forEach((arg, index) => {
+        const metadata: unknown[] = [];
+        for (const arg of messageArgs.slice(1)) {
           if (arg !== null && typeof arg === 'object') {
-            Object.assign(metadata, arg as Record<string, unknown>);
+            metadata.push(arg);
           } else {
-            metadata[`arg${index + 1}`] = arg;
+            metadata.push(arg);
           }
-        });
+        }
 
         const timestamp = new Date();
         const prefix = `[${timestamp.toISOString()}] [${namespace}]`;
@@ -211,10 +210,7 @@ export class UnhookLogger {
         self.writeToDestinations(
           method === 'log' ? 'info' : (method as LogLevel),
           namespace,
-          typeof formattedMessage === 'string'
-            ? formattedMessage
-            : formatMessage('%O', formattedMessage),
-          Object.keys(metadata).length > 0 ? metadata : undefined,
+          args,
         );
 
         // Immediately write to console
@@ -265,21 +261,9 @@ export class UnhookLogger {
   debug(namespace: string): (...args: unknown[]) => Promise<void> {
     return async (...args: unknown[]) => {
       if (!this.isNamespaceEnabled(namespace)) return;
-      const message =
-        typeof args[0] === 'string'
-          ? formatMessage(args[0] as string, ...args.slice(1))
-          : args[0];
-
-      // Extract metadata if present
-      const metadata = args.length > 1 ? args[1] : undefined;
 
       // Write to destinations with metadata
-      this.writeToDestinations(
-        'debug',
-        namespace,
-        String(message),
-        metadata as Record<string, unknown>,
-      );
+      this.writeToDestinations('debug', namespace, args);
     };
   }
 

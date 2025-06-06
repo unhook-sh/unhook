@@ -4,76 +4,23 @@ import { join } from 'node:path';
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-interface ApiEvent {
-  timestamp: number;
-  method: string;
-  path: string;
-  status?: number;
-  duration?: number;
+interface RequestData {
+  id: string;
+  [key: string]: unknown;
 }
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-  console.log('Unhook extension is activating...');
-
-  // Register the webview view provider
-  const apiEventsWebviewProvider = new ApiEventsWebviewProvider(
-    context.extensionUri,
-  );
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      ApiEventsWebviewProvider.viewType,
-      apiEventsWebviewProvider,
-    ),
-  );
-
-  console.log('Unhook extension activation complete');
-}
-
-// This method is called when your extension is deactivated
-export function deactivate() {}
-
-class ApiEventsWebviewProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = 'unhook.apiEventsWebview';
+export class RequestDetailsWebviewProvider
+  implements vscode.WebviewViewProvider
+{
+  public static readonly viewType = 'unhook.requestDetails';
   private _view?: vscode.WebviewView;
-  private _events: ApiEvent[] = [];
   private _disposables: vscode.Disposable[] = [];
   private _lastHtml?: string;
   private _devServerUrl?: string;
+  private _currentRequestData: RequestData | null = null;
 
   constructor(private readonly _extensionUri: vscode.Uri) {
     // Add some mock events
-    this._events = [
-      {
-        timestamp: Date.now() - 5000,
-        method: 'GET',
-        path: '/api/users',
-        status: 200,
-        duration: 150,
-      },
-      {
-        timestamp: Date.now() - 10000,
-        method: 'POST',
-        path: '/api/auth/login',
-        status: 401,
-        duration: 200,
-      },
-      {
-        timestamp: Date.now() - 15000,
-        method: 'PUT',
-        path: '/api/settings',
-        status: 200,
-        duration: 180,
-      },
-      {
-        timestamp: Date.now() - 20000,
-        method: 'DELETE',
-        path: '/api/posts/123',
-        status: 404,
-        duration: 120,
-      },
-    ];
 
     // In development mode, set up file watching
     if (process.env.NODE_ENV === 'development') {
@@ -83,7 +30,7 @@ class ApiEventsWebviewProvider implements vscode.WebviewViewProvider {
       const webviewPath = vscode.Uri.joinPath(
         this._extensionUri,
         'src',
-        'webview',
+        'request-details-webview',
       );
 
       const watcher = vscode.workspace.createFileSystemWatcher(
@@ -110,14 +57,18 @@ class ApiEventsWebviewProvider implements vscode.WebviewViewProvider {
 
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
-    context: vscode.WebviewViewResolveContext,
-    token: vscode.CancellationToken,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken,
   ) {
     this._view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [
-        vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview'),
+        vscode.Uri.joinPath(
+          this._extensionUri,
+          'dist',
+          'request-details-webview',
+        ),
         vscode.Uri.parse('http://localhost:5173'),
       ],
     };
@@ -131,7 +82,13 @@ class ApiEventsWebviewProvider implements vscode.WebviewViewProvider {
       (message) => {
         switch (message.type) {
           case 'ready':
-            // Webview is ready
+            // If we have request data, send it to the webview
+            if (this._currentRequestData) {
+              webviewView.webview.postMessage({
+                type: 'requestData',
+                data: this._currentRequestData,
+              });
+            }
             break;
         }
       },
@@ -145,13 +102,17 @@ class ApiEventsWebviewProvider implements vscode.WebviewViewProvider {
     const htmlPath = join(
       this._extensionUri.fsPath,
       'dist',
-      'webview',
+      'request-details-webview',
       'index.html',
     );
     let html = readFileSync(htmlPath, 'utf8');
 
     const baseUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview'),
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        'dist',
+        'request-details-webview',
+      ),
     );
 
     html = html.replace(
@@ -160,6 +121,17 @@ class ApiEventsWebviewProvider implements vscode.WebviewViewProvider {
     );
 
     return html;
+  }
+
+  // Add method to set request data
+  public setRequestData(data: RequestData) {
+    this._currentRequestData = data;
+    if (this._view) {
+      this._view.webview.postMessage({
+        type: 'requestData',
+        data: this._currentRequestData,
+      });
+    }
   }
 
   dispose() {

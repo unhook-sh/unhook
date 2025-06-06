@@ -8,11 +8,11 @@
   },
   "cpu": ["x64", "arm64"],
   "dependencies": {
-    "@clerk/backend": "1.28.0",
-    "@clerk/clerk-js": "5.67.0",
-    "@clerk/express": "1.5.0",
-    "@clerk/types": "4.59.0",
-    "@t3-oss/env-core": "0.13.4",
+    "@clerk/backend": "2.0.0",
+    "@clerk/clerk-js": "5.68.0",
+    "@clerk/express": "1.6.0",
+    "@clerk/types": "4.60.0",
+    "@t3-oss/env-core": "0.13.6",
     "@unhook/api": "workspace:*",
     "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
@@ -26,16 +26,16 @@
     "clipboardy": "4.0.0",
     "date-fns": "4.1.0",
     "dedent-js": "1.0.1",
-    "drizzle-orm": "0.43.1",
+    "drizzle-orm": "0.44.2",
     "figlet": "1.8.1",
     "figures": "6.1.0",
-    "ink": "5.2.1",
+    "ink": "6.0.0",
     "js-yaml": "4.1.0",
     "jsonwebtoken": "9.0.2",
     "keytar": "7.9.0",
     "meow": "13.2.0",
     "open": "10.1.2",
-    "posthog-js": "1.242.2",
+    "posthog-js": "1.249.4",
     "react": "19.1.0",
     "react-devtools": "6.1.2",
     "react-devtools-core": "6.1.2",
@@ -43,30 +43,30 @@
     "react-error-boundary": "6.0.0",
     "react-reconciler": "0.32.0",
     "type-fest": "4.41.0",
-    "undici": "7.9.0",
-    "yargs": "17.7.2",
-    "zod": "3.24.4",
-    "zustand": "5.0.4",
-    "zx": "8.5.4"
+    "undici": "7.10.0",
+    "yargs": "18.0.0",
+    "zod": "3.25.56",
+    "zustand": "5.0.5",
+    "zx": "8.5.5"
   },
   "description": "A CLI tool for testing webhooks locally with team collaboration features.",
   "devDependencies": {
-    "@happy-dom/global-registrator": "17.4.7",
-    "@playwright/test": "^1.52.0",
-    "@types/bun": "1.2.14",
+    "@happy-dom/global-registrator": "17.6.3",
+    "@playwright/test": "1.52.0",
+    "@types/bun": "1.2.15",
     "@types/figlet": "1.7.0",
     "@types/js-yaml": "4.0.9",
     "@types/jsonwebtoken": "9.0.9",
-    "@types/react": "19.1.4",
+    "@types/react": "19.1.6",
     "@types/react-devtools": "3.6.2",
-    "@types/react-dom": "19.1.5",
-    "@types/ws": "^8.18.1",
+    "@types/react-dom": "19.1.6",
+    "@types/ws": "8.18.1",
     "@types/yargs": "17.0.33",
     "@unhook/tsconfig": "workspace:*",
     "ink-testing-library": "4.0.0",
     "is-ci": "4.1.0",
     "typescript": "5.8.3",
-    "ws": "^8.18.2"
+    "ws": "8.18.2"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -101,30 +101,13 @@
     "stripe-webhooks",
     "github-webhooks",
     "slack-webhooks",
-    "clerk-webhooks"
+    "clerk-webhooks",
+    "ngrok",
+    "svix"
   ],
   "license": "MIT",
   "name": "@unhook/cli",
   "os": ["darwin", "linux"],
-  "pnpm": {
-    "overrides": {
-      "@clerk/shared": {
-        "trusted": true
-      },
-      "browser-tabs-lock": {
-        "trusted": true
-      },
-      "core-js": {
-        "trusted": true
-      },
-      "electron": {
-        "trusted": true
-      },
-      "keytar": {
-        "trusted": true
-      }
-    }
-  },
   "private": false,
   "publishConfig": {
     "access": "public"

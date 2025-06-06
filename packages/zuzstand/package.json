@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "zustand": "5.0.4"
+    "zustand": "5.0.5"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",

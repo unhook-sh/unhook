@@ -1,7 +1,7 @@
 import { appendFile, mkdir, rename } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { inspect } from 'node:util';
 import type { LogDestination, LogMessage } from '../types';
+import { formatLogArgs } from '../utils';
 
 export interface RollingFileDestinationProps {
   /**
@@ -130,13 +130,9 @@ export class RollingFileDestination implements LogDestination {
   }
 
   async write(message: LogMessage): Promise<void> {
-    const { level, namespace, message: msg, metadata, timestamp } = message;
-    const metadataStr = metadata
-      ? typeof metadata === 'object' && metadata !== null
-        ? ` ${inspect(metadata)}`
-        : ` ${metadata}`
-      : '';
-    const formattedMessage = `[${timestamp.toISOString()}] [${level.toUpperCase()}] ${namespace}: ${msg}${metadataStr}\n`;
+    const { level, namespace, args, timestamp } = message;
+    const formattedArgs = formatLogArgs(args);
+    const formattedMessage = `[${timestamp.toISOString()}] [${level.toUpperCase()}] ${namespace}: ${formattedArgs}\n`;
     const messageSize = new TextEncoder().encode(formattedMessage).length;
 
     try {

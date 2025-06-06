@@ -71,6 +71,7 @@ export const UsersRelations = relations(Users, ({ many }) => ({
   connections: many(Connections),
   requests: many(Requests),
   events: many(Events),
+  authCodes: many(AuthCodes),
 }));
 
 export type UserType = typeof Users.$inferSelect;
@@ -126,6 +127,7 @@ export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
   webhooks: many(Webhooks),
   connections: many(Connections),
   requests: many(Requests),
+  authCodes: many(AuthCodes),
 }));
 
 // Company Members Table
@@ -683,7 +685,7 @@ export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
   clientVersion: z.string().optional(),
   clientOs: z.string().optional(),
   clientHostname: z.string().optional(),
-  connectedAt: z.date(),
+  cobnnectedAt: z.date(),
   disconnectedAt: z.date().optional(),
   lastPingAt: z.date(),
   userId: z.string(),

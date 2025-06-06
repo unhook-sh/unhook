@@ -13,6 +13,7 @@ export interface UnhookSettings {
   requestDetails: {
     defaultView: 'raw' | 'formatted';
   };
+  configFilePath: string;
 }
 
 export class SettingsService {
@@ -52,6 +53,7 @@ export class SettingsService {
       requestDetails: {
         defaultView: config.get('requestDetails.defaultView') ?? 'formatted',
       },
+      configFilePath: config.get('configFilePath') ?? '',
     };
   }
 

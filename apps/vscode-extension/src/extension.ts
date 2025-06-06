@@ -2,11 +2,11 @@ import { debug, defaultLogger } from '@unhook/logger';
 import { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-output';
 import * as vscode from 'vscode';
 import { registerAuthCommands } from './auth/commands';
+import { registerUriHandler } from './auth/register-uri-handler';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
 import { registerWebhookEventCommands } from './commands/webhook-events.commands';
-import { env } from './env';
 import { SettingsProvider } from './providers/settings.provider';
 import { WebhookEventsProvider } from './providers/webhook-events.provider';
 import { WebhookEventQuickPick } from './quickPick';
@@ -62,9 +62,9 @@ export async function activate(context: vscode.ExtensionContext) {
       statusBarItem.tooltip = 'Validating your Unhook session...';
       statusBarItem.command = undefined;
     } else if (authStore.isSignedIn) {
-      statusBarItem.text = `$(check) ${authStore.user?.email ?? 'Signed in'}`;
-      statusBarItem.tooltip = 'Click to sign out of Unhook';
-      statusBarItem.command = 'unhook.signOut';
+      statusBarItem.text = '$(check) Unhook';
+      statusBarItem.tooltip = 'Click to open Unhook Quick Actions';
+      statusBarItem.command = 'unhook.showQuickPick';
     } else {
       statusBarItem.text = '$(sign-in) Sign in to Unhook';
       statusBarItem.tooltip = 'Click to sign in to Unhook';
@@ -106,30 +106,7 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.window.registerTreeDataProvider('unhook.settings', settingsProvider);
 
   // Register the custom URI scheme handler
-  context.subscriptions.push(
-    vscode.window.registerUriHandler({
-      handleUri(uri: vscode.Uri) {
-        log('Handling URI:', uri.toString());
-        // Handle any of our supported editor schemes
-        if (
-          uri.authority === env.NEXT_PUBLIC_VSCODE_EXTENSION_ID &&
-          uri.path === '/auth/callback'
-        ) {
-          const code = uri.query.split('=')[1];
-          if (code) {
-            // The auth provider will handle the code exchange
-            vscode.authentication.getSession(
-              'unhook',
-              ['openid', 'email', 'profile'],
-              {
-                createIfNone: true,
-              },
-            );
-          }
-        }
-      },
-    }),
-  );
+  registerUriHandler(context, authStore, log);
 
   // Create the webview provider
   context.subscriptions.push(
@@ -144,6 +121,15 @@ export async function activate(context: vscode.ExtensionContext) {
   registerQuickPickCommand(context);
 
   registerSettingsCommands(context);
+
+  // Register the new command to show the Quick Pick from the status bar
+  const showQuickPickCommand = vscode.commands.registerCommand(
+    'unhook.showQuickPick',
+    () => {
+      WebhookEventQuickPick.getInstance().showQuickPick();
+    },
+  );
+  context.subscriptions.push(showQuickPickCommand);
 
   // Register the webhook events provider
   const treeView = vscode.window.createTreeView('unhook.webhookEvents', {

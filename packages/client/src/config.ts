@@ -119,8 +119,10 @@ function loadYamlConfig(configPath: string): WebhookConfig {
   return parseYaml(content);
 }
 
-export async function findUpConfig(): Promise<string | null> {
-  const cwd = process.cwd();
+export async function findUpConfig(
+  props: { cwd?: string } = {},
+): Promise<string | null> {
+  const cwd = props.cwd ?? process.cwd();
   const configPath = (await findUp(CONFIG_FILES, { cwd })) ?? null;
   return configPath;
 }

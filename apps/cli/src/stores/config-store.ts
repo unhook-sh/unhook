@@ -108,14 +108,14 @@ const store = createStore<ConfigStore>()((set, get) => ({
       isTypeScriptConfig = hasCliInstalled;
       configPath = Path.resolve(
         process.cwd(),
-        isTypeScriptConfig ? 'unhook.config.ts' : 'unhook.config.yaml',
+        isTypeScriptConfig ? 'unhook.ts' : 'unhook.yaml',
       );
     }
 
     // If CLI is not installed but we found a TypeScript config, we should convert to YAML
     if (!hasCliInstalled && isTypeScriptConfig) {
       isTypeScriptConfig = false;
-      configPath = Path.resolve(process.cwd(), 'unhook.config.yaml');
+      configPath = Path.resolve(process.cwd(), 'unhook.yaml');
     }
 
     if (isTypeScriptConfig) {

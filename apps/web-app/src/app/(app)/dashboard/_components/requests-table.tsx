@@ -98,20 +98,15 @@ export function VaultTable() {
             <TableCell>{vault.startDate}</TableCell>
             <TableCell>
               <div className="flex gap-1">
-                {Array.from({ length: 3 }).map((_, i) => (
+                {['high', 'medium', 'low'].map((liquidity) => (
                   <div
-                    key={i}
+                    key={liquidity}
                     className={`h-1.5 w-3 rounded-full ${
-                      i <
-                      (
-                        vault.liquidity === 'high'
-                          ? 3
-                          : vault.liquidity === 'medium'
-                            ? 2
-                            : 1
-                      )
+                      liquidity === 'high'
                         ? 'bg-primary'
-                        : 'bg-muted'
+                        : liquidity === 'medium'
+                          ? 'bg-yellow-500'
+                          : 'bg-red-500'
                     }`}
                   />
                 ))}

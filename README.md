@@ -58,7 +58,7 @@ deno run --allow-net --allow-read --allow-write npm:@unhook/cli init
 
 This will:
 1. Open your browser to authenticate with Unhook
-2. Create an `unhook.config.yaml` file in your project
+2. Create an `unhook.yaml` file in your project
 3. Configure your webhook endpoints
 
 ### 2. Start the Webhook
@@ -87,13 +87,13 @@ Use the webhook URL in your provider's settings:
 https://unhook.sh/wh_your_webhook_id
 ```
 
-The webhook will automatically route requests based on the `source` and `destination` configuration in your `unhook.config.yaml`.
+The webhook will automatically route requests based on the `source` and `destination` configuration in your `unhook.yaml`.
 
 ## Configuration
 
 ### Webhook Configuration
 
-The `unhook.config.yaml` file supports the following options:
+The `unhook.yaml` file supports the following options:
 
 ```typescript
 interface WebhookConfig {

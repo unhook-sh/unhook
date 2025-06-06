@@ -107,8 +107,8 @@ export class UnhookAuthProvider implements AuthenticationProvider {
         });
 
       // Update auth store
-      await this.authStore.setAuthToken(authToken);
-      await this.authStore.setSessionId(sessionId);
+      await this.authStore.setAuthToken({ token: authToken });
+      await this.authStore.setSessionId({ sessionId });
       this.authStore.setUser(user);
 
       const newSession: vscode.AuthenticationSession = {

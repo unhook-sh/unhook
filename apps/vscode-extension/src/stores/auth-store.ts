@@ -47,7 +47,16 @@ export class AuthStore implements vscode.Disposable {
     return this._api;
   }
 
-  async setAuthToken(token: string | null) {
+  async exchangeAuthCode({ code }: { code: string }) {
+    const { authToken, sessionId, user } =
+      await this._api.auth.exchangeAuthCode.mutate({ code });
+    await this.setAuthToken({ token: authToken });
+    await this.setSessionId({ sessionId });
+    this.setUser(user);
+    return { authToken, sessionId, user };
+  }
+
+  async setAuthToken({ token }: { token: string | null }) {
     log('Setting auth token', { hasToken: !!token });
     if (token) {
       await this.context.secrets.store(TOKEN_KEY, token);
@@ -62,7 +71,7 @@ export class AuthStore implements vscode.Disposable {
     log('Auth token updated', { isSignedIn: this._isSignedIn });
   }
 
-  async setSessionId(sessionId: string | null) {
+  async setSessionId({ sessionId }: { sessionId: string | null }) {
     log('Setting session ID', { hasSessionId: !!sessionId });
     if (sessionId) {
       await this.context.secrets.store(SESSION_ID_KEY, sessionId);
@@ -89,8 +98,8 @@ export class AuthStore implements vscode.Disposable {
 
   async signOut() {
     log('Signing out user');
-    await this.setAuthToken(null);
-    await this.setSessionId(null);
+    await this.setAuthToken({ token: null });
+    await this.setSessionId({ sessionId: null });
     this.setUser(null);
     log('User signed out');
   }
@@ -137,10 +146,10 @@ export class AuthStore implements vscode.Disposable {
     });
 
     if (token) {
-      await this.setAuthToken(token);
+      await this.setAuthToken({ token });
     }
     if (sessionId) {
-      await this.setSessionId(sessionId);
+      await this.setSessionId({ sessionId });
     }
 
     // Validate session if we have both token and sessionId

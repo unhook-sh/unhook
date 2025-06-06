@@ -226,6 +226,11 @@
           "enum": ["raw", "formatted"],
           "default": "formatted",
           "description": "Default view mode for request details"
+        },
+        "unhook.configFilePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root."
         }
       }
     }

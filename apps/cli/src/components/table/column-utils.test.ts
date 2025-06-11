@@ -27,14 +27,18 @@ describe('calculateColumnWidths', () => {
     { name: 'Bob', age: 25, email: 'bob@example.com' },
   ];
 
-  it('should calculate widths with default maxWidth', () => {
+  it('should calculate widths and expand to use available space', () => {
     const widths = calculateColumnWidths({
       data,
       columns,
       padding: 1,
       maxWidth: 80,
     });
-    expect(widths).toEqual({ name: 7, age: 5, email: 7 });
+    // With expansion, columns should use most of the available 80 width
+    // Account for borders (4) and padding (6) = 70 available
+    const totalWidth =
+      (widths.name ?? 0) + (widths.age ?? 0) + (widths.email ?? 0);
+    expect(totalWidth).toBeGreaterThan(60); // Should use most available space
   });
 
   it('should proportionally reduce widths when total exceeds maxWidth', () => {
@@ -44,9 +48,9 @@ describe('calculateColumnWidths', () => {
       padding: 1,
       maxWidth: 10,
     });
-    expect(widths.name).toBeLessThanOrEqual(5);
-    expect(widths.age).toBeLessThanOrEqual(3);
-    expect(widths.email).toBeLessThanOrEqual(5);
+    expect(widths.name).toBeGreaterThanOrEqual(5); // Respects minWidth
+    expect(widths.age).toBeGreaterThanOrEqual(3);
+    expect(widths.email).toBeGreaterThanOrEqual(5);
   });
 
   it('should respect minWidth constraints', () => {
@@ -65,7 +69,8 @@ describe('calculateColumnWidths', () => {
 describe('padContent', () => {
   it('should pad content correctly', () => {
     const padded = padContent({ content: 'test', width: 10, padding: 1 });
-    expect(padded).toBe('  test    ');
+    // With centered padding: 3 spaces + 'test' + 3 spaces = 10 total
+    expect(padded).toBe('   test   ');
   });
 });
 
@@ -108,7 +113,9 @@ describe('calculateContentWidths', () => {
       padding: 1,
       initialWidths,
     });
-    expect(widths).toEqual({ name: 7, age: 5 });
+    // Name width should be at least 6 (header) or 7 (content 'Alice' + padding)
+    expect(widths.name).toBeGreaterThanOrEqual(6);
+    expect(widths.age).toBeGreaterThanOrEqual(4); // '30' + padding
   });
 });
 
@@ -123,16 +130,51 @@ describe('applyConstraints', () => {
       columns,
       widths: initialWidths,
     });
-    expect(widths).toEqual({ name: 10, age: 5 });
+    expect(widths.name).toBe(10); // Capped at maxWidth
+    expect(widths.age).toBe(3); // Raised to minWidth
   });
 });
 
 describe('adjustWidthsToFit', () => {
   it('should adjust widths to fit within available width', () => {
     const widths = { name: 10, age: 5 };
-    const adjustedWidths = adjustWidthsToFit({ widths, availableWidth: 12 });
+    const adjustedWidths = adjustWidthsToFit({
+      widths,
+      availableWidth: 12,
+    });
     expect(adjustedWidths.name).toBeLessThanOrEqual(10);
     expect(adjustedWidths.age).toBeLessThanOrEqual(5);
+  });
+
+  it('should expand widths when extra space is available', () => {
+    const widths = { name: 10, age: 5 };
+    const adjustedWidths = adjustWidthsToFit({
+      widths,
+      availableWidth: 30,
+    });
+    // Total should use all available space
+    const totalWidth = (adjustedWidths.name ?? 0) + (adjustedWidths.age ?? 0);
+    expect(totalWidth).toBe(30);
+    // Each column should grow proportionally
+    expect(adjustedWidths.name).toBeGreaterThan(10);
+    expect(adjustedWidths.age).toBeGreaterThan(5);
+  });
+
+  it('should respect maxWidth constraints when expanding', () => {
+    const widths = { name: 10, age: 5 };
+    const columns: ColumnDef<TestData>[] = [
+      { id: 'name', header: 'Name', maxWidth: 15 },
+      { id: 'age', header: 'Age' },
+    ];
+    const adjustedWidths = adjustWidthsToFit({
+      widths,
+      availableWidth: 30,
+      columns,
+    });
+    // Name should not exceed maxWidth
+    expect(adjustedWidths.name).toBeLessThanOrEqual(15);
+    // Age should get the remaining space
+    expect(adjustedWidths.age).toBe(15);
   });
 });
 

@@ -30,7 +30,11 @@ export function calculateColumnWidths<T extends ScalarDict>({
     widths: contentWidths,
   });
 
-  return adjustWidthsToFit({ widths: constrainedWidths, availableWidth });
+  return adjustWidthsToFit({
+    widths: constrainedWidths,
+    availableWidth,
+    columns,
+  });
 }
 
 export function calculateInitialWidths<T>({
@@ -97,24 +101,104 @@ export function applyConstraints<T>({
   return widths;
 }
 
-export function adjustWidthsToFit({
+export function adjustWidthsToFit<T>({
   widths,
   availableWidth,
-}: { widths: Record<string, number>; availableWidth: number }): Record<
-  string,
-  number
-> {
+  columns,
+}: {
+  widths: Record<string, number>;
+  availableWidth: number;
+  columns?: ColumnDef<T>[];
+}): Record<string, number> {
   const totalContentWidth = Object.values(widths).reduce(
     (sum, width) => sum + width,
     0,
   );
 
   if (totalContentWidth > availableWidth) {
+    // Shrink columns proportionally when content exceeds available width
     const ratio = availableWidth / totalContentWidth;
     for (const key in widths) {
       if (widths[key] !== undefined) {
         const minWidth = widths[key];
         widths[key] = Math.max(Math.floor(widths[key] * ratio), minWidth);
+      }
+    }
+  } else if (totalContentWidth < availableWidth) {
+    // Expand columns proportionally when we have extra space
+    const extraSpace = availableWidth - totalContentWidth;
+
+    // Calculate max widths for each column if columns are provided
+    const maxWidths: Record<string, number | undefined> = {};
+    if (columns) {
+      for (const column of columns) {
+        maxWidths[column.id] = column.maxWidth;
+      }
+    }
+
+    // Calculate how much each column can grow
+    const growthPotential: Record<string, number> = {};
+    let totalGrowthPotential = 0;
+
+    for (const key in widths) {
+      if (widths[key] !== undefined) {
+        const currentWidth = widths[key];
+        const maxWidth = maxWidths[key];
+        const potential = maxWidth
+          ? Math.max(0, maxWidth - currentWidth)
+          : Number.POSITIVE_INFINITY;
+        growthPotential[key] = potential;
+        if (potential !== Number.POSITIVE_INFINITY) {
+          totalGrowthPotential += potential;
+        }
+      }
+    }
+
+    // If we have constrained growth potential, use it; otherwise distribute proportionally
+    if (totalGrowthPotential > 0 && totalGrowthPotential < extraSpace) {
+      // Some columns have max width constraints
+      // First, grow constrained columns to their max
+      for (const key in widths) {
+        if (
+          widths[key] !== undefined &&
+          growthPotential[key] !== Number.POSITIVE_INFINITY &&
+          growthPotential[key] !== undefined
+        ) {
+          widths[key] += growthPotential[key];
+        }
+      }
+
+      // Distribute remaining space among unconstrained columns
+      const remainingSpace = extraSpace - totalGrowthPotential;
+      const unconstrainedColumns = Object.keys(widths).filter(
+        (key) => growthPotential[key] === Number.POSITIVE_INFINITY,
+      );
+
+      if (unconstrainedColumns.length > 0) {
+        const spacePerColumn = Math.floor(
+          remainingSpace / unconstrainedColumns.length,
+        );
+        for (const key of unconstrainedColumns) {
+          if (widths[key] !== undefined) {
+            widths[key] += spacePerColumn;
+          }
+        }
+      }
+    } else {
+      // Distribute space proportionally based on current widths
+      for (const key in widths) {
+        if (widths[key] !== undefined) {
+          const currentWidth = widths[key];
+          const proportion = currentWidth / totalContentWidth;
+          const additionalWidth = Math.floor(extraSpace * proportion);
+          const maxWidth = maxWidths[key];
+
+          if (maxWidth) {
+            widths[key] = Math.min(currentWidth + additionalWidth, maxWidth);
+          } else {
+            widths[key] = currentWidth + additionalWidth;
+          }
+        }
       }
     }
   }

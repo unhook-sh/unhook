@@ -40,6 +40,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'status',
     header: '',
     minWidth: 3,
+    maxWidth: 3, // Status icon doesn't need to grow
     priority: 1, // Always show status
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
@@ -98,6 +99,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'time',
     header: 'Created',
     minWidth: 10,
+    maxWidth: 25, // Reasonable max for time display
     priority: 2, // Show early
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
@@ -114,6 +116,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'expired',
     header: 'Expires',
     minWidth: 10,
+    maxWidth: 25, // Reasonable max for time display
     priority: 5, // Less important, hide on smaller screens
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor({ isSelected });
@@ -161,6 +164,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'method',
     header: 'Method',
     minWidth: 4,
+    maxWidth: 10, // HTTP methods are short
     priority: 6, // Can be hidden on very small screens
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
@@ -175,6 +179,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'source',
     header: 'Source',
     minWidth: 10,
+    maxWidth: 40, // Allow source to grow but not too much
     priority: 4, // Important but can be hidden if needed
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
@@ -189,6 +194,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'delivered',
     header: 'Delivered',
     minWidth: 8,
+    maxWidth: 12, // Numbers don't need much space
     priority: 7, // Can be hidden on smaller screens
     cell: ({ row, isSelected }) => {
       const color = getSelectedColor({ isSelected });

@@ -14,6 +14,8 @@ export const columns: ColumnDef<RequestType>[] = [
     id: 'status',
     header: '',
     minWidth: 3,
+    maxWidth: 3,
+    priority: 1,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
@@ -70,7 +72,9 @@ export const columns: ColumnDef<RequestType>[] = [
   {
     id: 'time',
     header: 'Delivered',
-    minWidth: 20,
+    minWidth: 10,
+    maxWidth: 25,
+    priority: 2,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       const timeText = formatRelativeTime(row.createdAt);
@@ -85,7 +89,9 @@ export const columns: ColumnDef<RequestType>[] = [
   {
     id: 'destination',
     header: 'Destination',
-    minWidth: 15,
+    minWidth: 10,
+    maxWidth: 30,
+    priority: 3,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
@@ -101,6 +107,8 @@ export const columns: ColumnDef<RequestType>[] = [
     id: 'responseCode',
     header: 'Code',
     minWidth: 4,
+    maxWidth: 6,
+    priority: 4,
     cell: ({ row, isSelected, width }) => {
       let color = 'green';
       const responseCode = row.response?.status;
@@ -126,6 +134,8 @@ export const columns: ColumnDef<RequestType>[] = [
     id: 'elapsedMs',
     header: 'Elapsed (ms)',
     minWidth: 8,
+    maxWidth: 15,
+    priority: 5,
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor({ isSelected, defaultColor: 'green' });
       const responseTimeMs = row.responseTimeMs ?? 0;
@@ -155,7 +165,8 @@ export const columns: ColumnDef<RequestType>[] = [
   {
     id: 'url',
     header: 'URL',
-    minWidth: 50,
+    minWidth: 20,
+    priority: 6,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 

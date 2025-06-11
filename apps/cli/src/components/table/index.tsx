@@ -2,7 +2,7 @@ import figures from 'figures';
 import { Box, Text } from 'ink';
 import React, { useEffect, useMemo } from 'react';
 import { useDimensions } from '~/hooks/use-dimensions';
-import { calculateColumnWidths, padContent } from './column-utils';
+import { calculateColumnWidths, padContent, getVisibleColumns } from './column-utils';
 import { ActionBar } from './components/action-bar';
 import { Cell } from './components/cell';
 import { Header } from './components/header';
@@ -118,15 +118,26 @@ export function Table<T extends ScalarDict>({
     return tableData.slice(start, start + pageSize);
   }, [tableData, currentPage, pageSize]);
 
+  // Determine which columns to show based on available width
+  const visibleColumns = React.useMemo(
+    () =>
+      getVisibleColumns({
+        columns,
+        availableWidth: dimensions.width,
+        padding,
+      }),
+    [columns, dimensions.width, padding],
+  );
+
   const columnWidths = React.useMemo(
     () =>
       calculateColumnWidths({
         data,
-        columns,
+        columns: visibleColumns,
         padding,
         maxWidth: dimensions.width,
       }),
-    [data, columns, padding, dimensions.width],
+    [data, visibleColumns, padding, dimensions.width],
   );
 
   const renderCell = React.useCallback(
@@ -201,13 +212,13 @@ export function Table<T extends ScalarDict>({
           <Box width={width || 0}>
             {isHeader ? <Header {...cellProps} /> : <Cell {...cellProps} />}
           </Box>
-          {colIndex < columns.length - 1 && (
+          {colIndex < visibleColumns.length - 1 && (
             <Text dimColor>{figures.lineVertical}</Text>
           )}
         </React.Fragment>
       );
     },
-    [columnWidths, padding, selectedIndex, columns.length],
+    [columnWidths, padding, selectedIndex, visibleColumns.length],
   );
 
   const renderRow = React.useCallback(
@@ -221,8 +232,7 @@ export function Table<T extends ScalarDict>({
       rowIndex?: number;
     }) => (
       <Box flexDirection="row">
-        {columns
-          .filter((column) => !column.enableHiding)
+        {visibleColumns
           .map((column, colIndex) => (
             <React.Fragment key={`${column.id}-${rowIndex}`}>
               {renderCell({
@@ -236,14 +246,13 @@ export function Table<T extends ScalarDict>({
           ))}
       </Box>
     ),
-    [columns, renderCell],
+    [visibleColumns, renderCell],
   );
 
   const renderBorder = React.useCallback(() => {
     return (
       <Box flexDirection="row">
-        {columns
-          .filter((column) => !column.enableHiding)
+        {visibleColumns
           .map((column, index) => (
             <React.Fragment key={`border-${column.id}`}>
               <Box width={columnWidths[column.id] || 0}>
@@ -251,14 +260,14 @@ export function Table<T extends ScalarDict>({
                   {figures.line.repeat(columnWidths[column.id] || 0)}
                 </Text>
               </Box>
-              {index < columns.length - 1 && (
+              {index < visibleColumns.length - 1 && (
                 <Text dimColor>{figures.lineUpDownLeftRight}</Text>
               )}
             </React.Fragment>
           ))}
       </Box>
     );
-  }, [columns, columnWidths]);
+  }, [visibleColumns, columnWidths]);
 
   return (
     <Box flexDirection="column">

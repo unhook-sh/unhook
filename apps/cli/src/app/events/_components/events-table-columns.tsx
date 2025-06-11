@@ -40,6 +40,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'status',
     header: '',
     minWidth: 3,
+    priority: 1, // Always show status
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
@@ -96,7 +97,8 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
   {
     id: 'time',
     header: 'Created',
-    minWidth: 20,
+    minWidth: 10,
+    priority: 2, // Show early
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       const timeText = formatRelativeTime(row.createdAt);
@@ -111,7 +113,8 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
   {
     id: 'expired',
     header: 'Expires',
-    minWidth: 20,
+    minWidth: 10,
+    priority: 5, // Less important, hide on smaller screens
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor({ isSelected });
       let expiredText = '-';
@@ -158,6 +161,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
     id: 'method',
     header: 'Method',
     minWidth: 4,
+    priority: 6, // Can be hidden on very small screens
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       return (
@@ -170,7 +174,8 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
   {
     id: 'source',
     header: 'Source',
-    minWidth: 25,
+    minWidth: 10,
+    priority: 4, // Important but can be hidden if needed
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       return (
@@ -183,7 +188,8 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
   {
     id: 'delivered',
     header: 'Delivered',
-    minWidth: 25,
+    minWidth: 8,
+    priority: 7, // Can be hidden on smaller screens
     cell: ({ row, isSelected }) => {
       const color = getSelectedColor({ isSelected });
 
@@ -197,7 +203,8 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
   {
     id: 'event',
     header: 'Event',
-    minWidth: 35,
+    minWidth: 15,
+    priority: 3, // Important to show event name
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       const originRequest = row.originRequest;

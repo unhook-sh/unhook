@@ -7,6 +7,7 @@ import {
   calculateInitialWidths,
   inferColumns,
   padContent,
+  getVisibleColumns,
 } from './column-utils';
 import type { ColumnDef } from './types';
 
@@ -132,5 +133,51 @@ describe('adjustWidthsToFit', () => {
     const adjustedWidths = adjustWidthsToFit({ widths, availableWidth: 12 });
     expect(adjustedWidths.name).toBeLessThanOrEqual(10);
     expect(adjustedWidths.age).toBeLessThanOrEqual(5);
+  });
+});
+
+describe('getVisibleColumns', () => {
+  it('should show all columns when there is enough width', () => {
+    const columns: ColumnDef<TestData>[] = [
+      { id: 'name', header: 'Name', minWidth: 10, priority: 1 },
+      { id: 'age', header: 'Age', minWidth: 5, priority: 2 },
+      { id: 'email', header: 'Email', minWidth: 15, priority: 3 },
+    ];
+    const visibleCols = getVisibleColumns({
+      columns,
+      availableWidth: 100,
+      padding: 1,
+    });
+    expect(visibleCols).toHaveLength(3);
+  });
+
+  it('should hide lower priority columns when width is limited', () => {
+    const columns: ColumnDef<TestData>[] = [
+      { id: 'name', header: 'Name', minWidth: 20, priority: 1 },
+      { id: 'age', header: 'Age', minWidth: 10, priority: 3 },
+      { id: 'email', header: 'Email', minWidth: 20, priority: 2 },
+    ];
+    const visibleCols = getVisibleColumns({
+      columns,
+      availableWidth: 50,
+      padding: 1,
+    });
+    expect(visibleCols).toHaveLength(2);
+    expect(visibleCols[0].id).toBe('name');
+    expect(visibleCols[1].id).toBe('email');
+  });
+
+  it('should show at least one column even if width is very small', () => {
+    const columns: ColumnDef<TestData>[] = [
+      { id: 'name', header: 'Name', minWidth: 50, priority: 1 },
+      { id: 'age', header: 'Age', minWidth: 50, priority: 2 },
+    ];
+    const visibleCols = getVisibleColumns({
+      columns,
+      availableWidth: 10,
+      padding: 1,
+    });
+    expect(visibleCols).toHaveLength(1);
+    expect(visibleCols[0].id).toBe('name');
   });
 });

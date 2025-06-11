@@ -164,3 +164,51 @@ export function getSelectedColor({
 }): string {
   return isSelected ? selectedColor : defaultColor;
 }
+
+/**
+ * Determine which columns to display based on available width and column priorities.
+ * Columns with lower priority values are shown first.
+ */
+export function getVisibleColumns<T extends ScalarDict>({
+  columns,
+  availableWidth,
+  padding,
+}: {
+  columns: ColumnDef<T>[];
+  availableWidth: number;
+  padding: number;
+}): ColumnDef<T>[] {
+  // Sort columns by priority (lower priority = more important)
+  const sortedColumns = [...columns].sort((a, b) => {
+    const priorityA = (a as any).priority ?? 100;
+    const priorityB = (b as any).priority ?? 100;
+    return priorityA - priorityB;
+  });
+
+  const borderChars = 1; // Start with just the outer borders
+  let totalWidth = borderChars;
+  const visibleColumns: ColumnDef<T>[] = [];
+
+  for (const column of sortedColumns) {
+    // Calculate the minimum width this column would need
+    const columnMinWidth = column.minWidth || 10;
+    const columnBorder = visibleColumns.length > 0 ? 1 : 0; // Border between columns
+    const columnTotalWidth = columnMinWidth + padding * 2 + columnBorder;
+
+    // Check if adding this column would exceed available width
+    if (totalWidth + columnTotalWidth <= availableWidth) {
+      visibleColumns.push(column);
+      totalWidth += columnTotalWidth;
+    } else {
+      // Mark remaining columns as hidden
+      (column as any).enableHiding = true;
+    }
+  }
+
+  // Ensure at least one column is visible
+  if (visibleColumns.length === 0 && sortedColumns.length > 0) {
+    visibleColumns.push(sortedColumns[0]);
+  }
+
+  return visibleColumns;
+}

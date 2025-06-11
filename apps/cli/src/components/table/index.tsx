@@ -2,7 +2,11 @@ import figures from 'figures';
 import { Box, Text } from 'ink';
 import React, { useEffect, useMemo } from 'react';
 import { useDimensions } from '~/hooks/use-dimensions';
-import { calculateColumnWidths, padContent, getVisibleColumns } from './column-utils';
+import {
+  calculateColumnWidths,
+  getVisibleColumns,
+  padContent,
+} from './column-utils';
 import { ActionBar } from './components/action-bar';
 import { Cell } from './components/cell';
 import { Header } from './components/header';
@@ -232,18 +236,17 @@ export function Table<T extends ScalarDict>({
       rowIndex?: number;
     }) => (
       <Box flexDirection="row">
-        {visibleColumns
-          .map((column, colIndex) => (
-            <React.Fragment key={`${column.id}-${rowIndex}`}>
-              {renderCell({
-                column,
-                row,
-                isHeader,
-                colIndex,
-                rowIndex,
-              })}
-            </React.Fragment>
-          ))}
+        {visibleColumns.map((column, colIndex) => (
+          <React.Fragment key={`${column.id}-${rowIndex}`}>
+            {renderCell({
+              column,
+              row,
+              isHeader,
+              colIndex,
+              rowIndex,
+            })}
+          </React.Fragment>
+        ))}
       </Box>
     ),
     [visibleColumns, renderCell],
@@ -252,19 +255,18 @@ export function Table<T extends ScalarDict>({
   const renderBorder = React.useCallback(() => {
     return (
       <Box flexDirection="row">
-        {visibleColumns
-          .map((column, index) => (
-            <React.Fragment key={`border-${column.id}`}>
-              <Box width={columnWidths[column.id] || 0}>
-                <Text dimColor>
-                  {figures.line.repeat(columnWidths[column.id] || 0)}
-                </Text>
-              </Box>
-              {index < visibleColumns.length - 1 && (
-                <Text dimColor>{figures.lineUpDownLeftRight}</Text>
-              )}
-            </React.Fragment>
-          ))}
+        {visibleColumns.map((column, index) => (
+          <React.Fragment key={`border-${column.id}`}>
+            <Box width={columnWidths[column.id] || 0}>
+              <Text dimColor>
+                {figures.line.repeat(columnWidths[column.id] || 0)}
+              </Text>
+            </Box>
+            {index < visibleColumns.length - 1 && (
+              <Text dimColor>{figures.lineUpDownLeftRight}</Text>
+            )}
+          </React.Fragment>
+        ))}
       </Box>
     );
   }, [visibleColumns, columnWidths]);

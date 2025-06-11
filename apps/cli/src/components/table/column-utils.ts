@@ -180,8 +180,8 @@ export function getVisibleColumns<T extends ScalarDict>({
 }): ColumnDef<T>[] {
   // Sort columns by priority (lower priority = more important)
   const sortedColumns = [...columns].sort((a, b) => {
-    const priorityA = (a as any).priority ?? 100;
-    const priorityB = (b as any).priority ?? 100;
+    const priorityA = a.priority ?? 100;
+    const priorityB = b.priority ?? 100;
     return priorityA - priorityB;
   });
 
@@ -199,15 +199,15 @@ export function getVisibleColumns<T extends ScalarDict>({
     if (totalWidth + columnTotalWidth <= availableWidth) {
       visibleColumns.push(column);
       totalWidth += columnTotalWidth;
-    } else {
-      // Mark remaining columns as hidden
-      (column as any).enableHiding = true;
     }
   }
 
   // Ensure at least one column is visible
   if (visibleColumns.length === 0 && sortedColumns.length > 0) {
-    visibleColumns.push(sortedColumns[0]);
+    const firstColumn = sortedColumns[0];
+    if (firstColumn) {
+      visibleColumns.push(firstColumn);
+    }
   }
 
   return visibleColumns;

@@ -5,9 +5,9 @@ import {
   calculateColumnWidths,
   calculateContentWidths,
   calculateInitialWidths,
+  getVisibleColumns,
   inferColumns,
   padContent,
-  getVisibleColumns,
 } from './column-utils';
 import type { ColumnDef } from './types';
 
@@ -163,8 +163,8 @@ describe('getVisibleColumns', () => {
       padding: 1,
     });
     expect(visibleCols).toHaveLength(2);
-    expect(visibleCols[0].id).toBe('name');
-    expect(visibleCols[1].id).toBe('email');
+    expect(visibleCols[0]?.id).toBe('name');
+    expect(visibleCols[1]?.id).toBe('email');
   });
 
   it('should show at least one column even if width is very small', () => {
@@ -178,6 +178,6 @@ describe('getVisibleColumns', () => {
       padding: 1,
     });
     expect(visibleCols).toHaveLength(1);
-    expect(visibleCols[0].id).toBe('name');
+    expect(visibleCols[0]?.id).toBe('name');
   });
 });

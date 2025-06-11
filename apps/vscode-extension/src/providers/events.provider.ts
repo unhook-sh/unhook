@@ -3,26 +3,24 @@ import {
   findUpConfig,
   loadConfig,
 } from '@unhook/client/config';
+import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import type { AuthStore } from '../services/auth.service';
 import { SettingsService } from '../services/settings.service';
-import type { AuthStore } from '../stores/auth-store';
-import { WebhookEventItem } from '../tree-items/webhook-event.item';
-import { WebhookRequestItem } from '../tree-items/webhook-request.item';
-import type { EventTypeWithRequest } from '../types';
+import { EventItem } from '../tree-items/event.item';
+import { RequestItem } from '../tree-items/request.item';
 
-const log = debug('unhook:vscode:webhook-events-provider');
+const log = debug('unhook:vscode:events-provider');
 
-export class WebhookEventsProvider
-  implements vscode.TreeDataProvider<WebhookEventItem | WebhookRequestItem>
+export class EventsProvider
+  implements vscode.TreeDataProvider<EventItem | RequestItem>
 {
   private _onDidChangeTreeData: vscode.EventEmitter<
-    WebhookEventItem | WebhookRequestItem | undefined
-  > = new vscode.EventEmitter<
-    WebhookEventItem | WebhookRequestItem | undefined
-  >();
+    EventItem | RequestItem | undefined
+  > = new vscode.EventEmitter<EventItem | RequestItem | undefined>();
   readonly onDidChangeTreeData: vscode.Event<
-    WebhookEventItem | WebhookRequestItem | undefined
+    EventItem | RequestItem | undefined
   > = this._onDidChangeTreeData.event;
 
   private filterText = '';
@@ -34,7 +32,7 @@ export class WebhookEventsProvider
   private configWatcher: vscode.FileSystemWatcher | null = null;
 
   constructor(private context: vscode.ExtensionContext) {
-    log('Initializing WebhookEventsProvider');
+    log('Initializing EventsProvider');
   }
 
   public setAuthStore(authStore: AuthStore) {
@@ -57,26 +55,29 @@ export class WebhookEventsProvider
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  public getTreeItem(
-    element: WebhookEventItem | WebhookRequestItem,
-  ): vscode.TreeItem {
+  public getTreeItem(element: EventItem | RequestItem): vscode.TreeItem {
     return element;
   }
 
   public async getChildren(
-    element?: WebhookEventItem | WebhookRequestItem,
-  ): Promise<(WebhookEventItem | WebhookRequestItem)[]> {
-    if (element instanceof WebhookEventItem) {
+    element?: EventItem | RequestItem,
+  ): Promise<(EventItem | RequestItem)[]> {
+    if (element instanceof EventItem) {
       // Return requests for this event
       return (element.event.requests ?? []).map(
-        (request) => new WebhookRequestItem(request, element, this.context),
+        (request) => new RequestItem(request, element, this.context),
       );
     }
 
-    if (element instanceof WebhookRequestItem) {
-      // No children for requests
-      return [];
-    }
+    // if (element instanceof RequestItem) {
+    //   // Return request details
+    //   // return element.getChildren();
+    // }
+
+    // if (element instanceof RequestDetailItem) {
+    //   // Return detail item children
+    //   return element.children ?? [];
+    // }
 
     // Root level - show auth state or events
     if (!this.authStore) {
@@ -101,9 +102,7 @@ export class WebhookEventsProvider
         )
       : this.events;
 
-    return filteredEvents.map(
-      (event) => new WebhookEventItem(event, this.context),
-    );
+    return filteredEvents.map((event) => new EventItem(event, this.context));
   }
 
   public refresh(): void {
@@ -202,5 +201,21 @@ export class WebhookEventsProvider
     } catch (error) {
       log('Failed to fetch events', { error });
     }
+  }
+
+  async getRequestDetails(requestId: string) {
+    const events = await this.getChildren();
+    for (const event of events) {
+      if ('event' in event) {
+        const requests = await this.getChildren(event);
+        const request = requests.find(
+          (r): r is RequestItem => 'request' in r && r.request.id === requestId,
+        );
+        if (request) {
+          return request.request;
+        }
+      }
+    }
+    throw new Error(`Request ${requestId} not found`);
   }
 }

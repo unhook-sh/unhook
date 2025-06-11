@@ -6,30 +6,20 @@ export interface UnhookSettings {
     autoShow: boolean;
     maxLines: number;
   };
-  webhookEvents: {
+  events: {
     maxHistory: number;
     autoClear: boolean;
-  };
-  requestDetails: {
-    defaultView: 'raw' | 'formatted';
   };
   configFilePath: string;
 }
 
-export class SettingsService {
+export class SettingsService extends EventEmitter implements vscode.Disposable {
   private static instance: SettingsService;
-  private disposables: vscode.Disposable[] = [];
-  private settingsChanged = new EventEmitter();
+  private _settings: UnhookSettings;
 
   private constructor() {
-    // Listen for configuration changes
-    this.disposables.push(
-      vscode.workspace.onDidChangeConfiguration((e) => {
-        if (e.affectsConfiguration('unhook')) {
-          this.onSettingsChanged();
-        }
-      }),
-    );
+    super();
+    this._settings = this.loadSettings();
   }
 
   public static getInstance(): SettingsService {
@@ -40,35 +30,34 @@ export class SettingsService {
   }
 
   public getSettings(): UnhookSettings {
+    return this._settings;
+  }
+
+  private loadSettings(): UnhookSettings {
     const config = vscode.workspace.getConfiguration('unhook');
     return {
       output: {
         autoShow: config.get('output.autoShow') ?? true,
         maxLines: config.get('output.maxLines') ?? 1000,
       },
-      webhookEvents: {
-        maxHistory: config.get('webhookEvents.maxHistory') ?? 100,
-        autoClear: config.get('webhookEvents.autoClear') ?? false,
-      },
-      requestDetails: {
-        defaultView: config.get('requestDetails.defaultView') ?? 'formatted',
+      events: {
+        maxHistory: config.get('events.maxHistory') ?? 100,
+        autoClear: config.get('events.autoClear') ?? false,
       },
       configFilePath: config.get('configFilePath') ?? '',
     };
   }
 
-  private onSettingsChanged() {
-    this.settingsChanged.emit('change', this.getSettings());
-  }
-
   public onSettingsChange(callback: (settings: UnhookSettings) => void): void {
-    this.settingsChanged.on('change', callback);
+    this.on('settingsChanged', callback);
   }
 
-  public dispose() {
-    for (const disposable of this.disposables) {
-      disposable.dispose();
-    }
-    this.settingsChanged.removeAllListeners();
+  public updateSettings(settings: Partial<UnhookSettings>): void {
+    this._settings = { ...this._settings, ...settings };
+    this.emit('settingsChanged', this._settings);
+  }
+
+  public dispose(): void {
+    this.removeAllListeners();
   }
 }

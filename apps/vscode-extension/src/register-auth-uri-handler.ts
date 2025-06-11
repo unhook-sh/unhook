@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { env } from '../env';
-import type { AuthStore } from '../stores/auth-store';
+import { env } from './env';
+import type { AuthStore } from './services/auth.service';
 
 /**
  * Registers the VS Code URI handler for Unhook authentication.

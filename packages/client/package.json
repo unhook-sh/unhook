@@ -35,6 +35,14 @@
     "./utils/headers": {
       "default": "./src/utils/headers.ts",
       "types": "./dist/utils/headers.d.ts"
+    },
+    "./utils/delivery": {
+      "default": "./src/utils/delivery.ts",
+      "types": "./dist/utils/delivery.d.ts"
+    },
+    "./utils/extract-event-name": {
+      "default": "./src/utils/extract-event-name.ts",
+      "types": "./dist/utils/extract-event-name.d.ts"
     }
   },
   "files": ["dist", "README.md", "LICENSE"],

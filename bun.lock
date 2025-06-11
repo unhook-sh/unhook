@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.9.2",
+      "version": "0.9.3",
       "bin": {
         "unhook": "./bin/unhook",
       },
@@ -98,6 +98,7 @@
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/logger": "workspace:*",
+        "date-fns": "4.1.0",
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "ws": "8.18.2",

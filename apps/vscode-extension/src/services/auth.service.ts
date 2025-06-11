@@ -1,6 +1,6 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
-import { type ApiClient, type AuthUser, createApiClient } from '../api/client';
+import { type ApiClient, type AuthUser, createApiClient } from '../api';
 
 const TOKEN_KEY = 'unhook.auth.token';
 const SESSION_ID_KEY = 'unhook.auth.sessionId';
@@ -66,7 +66,7 @@ export class AuthStore implements vscode.Disposable {
 
     this._authToken = token;
     this._isSignedIn = !!token;
-    this._api = createApiClient(token ?? undefined);
+    this._api = createApiClient({ authToken: token ?? undefined });
     this._onDidChangeAuth.fire();
     log('Auth token updated', { isSignedIn: this._isSignedIn });
   }

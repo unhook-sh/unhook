@@ -1,9 +1,7 @@
-import { WebhookEventItem } from '../tree-items/webhook-event.item';
-import type { WebhookRequestItem } from '../tree-items/webhook-request.item';
+import { EventItem } from '../tree-items/event.item';
+import type { RequestItem } from '../tree-items/request.item';
 
-export function getStatusIcon(
-  item: WebhookEventItem | WebhookRequestItem,
-): string {
+export function getStatusIcon(item: EventItem | RequestItem): string {
   const status = getStatusCode(item);
 
   switch (status) {
@@ -20,10 +18,8 @@ export function getStatusIcon(
   }
 }
 
-function getStatusCode(
-  item: WebhookEventItem | WebhookRequestItem,
-): number | undefined {
-  if (item instanceof WebhookEventItem) {
+function getStatusCode(item: EventItem | RequestItem): number | undefined {
+  if (item instanceof EventItem) {
     switch (item.event.status) {
       case 'completed':
         return 200;

@@ -1,5 +1,7 @@
-import { inspect } from 'node:util';
-import type { WebhookDelivery, WebhookDestination } from '@unhook/client';
+import {
+  createRequestsForEventToAllDestinations,
+  handlePendingRequest,
+} from '@unhook/client/utils/delivery';
 import type {
   EventType,
   EventTypeWithRequest,
@@ -49,162 +51,6 @@ const defaultEventState: EventState = {
   isLoading: true,
   totalCount: 0,
 };
-
-type RemotePatternSchema = {
-  protocol?: string;
-  hostname: string;
-  port?: string;
-  pathname?: string;
-  search?: string;
-};
-
-function getUrlString(url: string | URL | RemotePatternSchema): string {
-  if (typeof url === 'string') return url;
-  if (typeof URL !== 'undefined' && url instanceof URL) return url.toString();
-  if (
-    typeof url === 'object' &&
-    url !== null &&
-    'hostname' in url &&
-    typeof (url as RemotePatternSchema).hostname === 'string'
-  ) {
-    const {
-      protocol = 'http',
-      hostname,
-      port,
-      pathname = '',
-      search = '',
-    } = url as RemotePatternSchema;
-    return `${protocol}://${hostname}${port ? `:${port}` : ''}${pathname}${search}`;
-  }
-  return '';
-}
-
-function resolveDestination({
-  source,
-  delivery,
-  destination,
-}: {
-  source: string;
-  delivery: WebhookDelivery[];
-  destination: WebhookDestination[];
-}): { url: string; destination: string } | null {
-  const matchingDeliver = delivery.find(
-    (rule) => rule.source === '*' || rule.source === source,
-  );
-  if (!matchingDeliver) {
-    log(`No delivery rule found for source: ${source}`);
-    return null;
-  }
-  const destinationDef = (destination ?? []).find(
-    (t) => t.name === matchingDeliver.destination,
-  );
-  if (!destinationDef || !destinationDef.url) {
-    log(
-      `No 'destination' definition found for name: ${matchingDeliver.destination}`,
-    );
-    return null;
-  }
-  const destinationUrl = getUrlString(destinationDef.url);
-  return {
-    url: destinationUrl,
-    destination: destinationDef.name,
-  };
-}
-
-// Helper to create requests for all destinations in 'to' for a given event
-async function createRequestsForEventToAllDestinations({
-  event,
-  connectionId,
-  isEventRetry = false,
-  pingEnabledFn,
-}: {
-  event: EventType;
-  connectionId?: string | null;
-  isEventRetry?: boolean;
-  pingEnabledFn?: (destination: WebhookDestination) => boolean;
-}) {
-  const { delivery, destination } = useConfigStore.getState();
-  const { api } = useApiStore.getState();
-  const originRequest = event.originRequest;
-
-  for (const deliveryRule of delivery) {
-    const dest = destination.find((t) => t.name === deliveryRule.destination);
-    if (!dest) {
-      log(
-        `No destination found for delivery rule: ${deliveryRule.destination}`,
-      );
-      continue;
-    }
-
-    if (deliveryRule.source !== '*' && event.source !== deliveryRule.source) {
-      log(
-        `Skipping event source: ${event.source} does not match delivery rule source: ${deliveryRule.source}`,
-      );
-      capture({
-        event: 'webhook_event_skipped',
-        properties: {
-          eventId: event.id,
-          webhookId: event.webhookId,
-          source: event.source,
-          destination: dest.name,
-        },
-      });
-      continue;
-    }
-
-    const urlString = getUrlString(dest.url);
-    log(
-      `Creating request for event ${event.id} to destination: ${dest.name} (${urlString})`,
-    );
-    capture({
-      event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_deliver',
-      properties: {
-        eventId: event.id,
-        webhookId: event.webhookId,
-        method: originRequest.method,
-        connectionId: connectionId ?? undefined,
-        pingEnabled: pingEnabledFn ? pingEnabledFn(dest) : !!dest.ping,
-        isEventRetry,
-        source: event.source,
-        destination: dest.name,
-        url: urlString,
-      },
-    });
-
-    const request = await api.requests.create.mutate({
-      webhookId: event.webhookId,
-      eventId: event.id,
-      apiKey: event.apiKey ?? undefined,
-      connectionId: connectionId ?? undefined,
-      request: originRequest,
-      source: event.source,
-      destination: {
-        name: dest.name,
-        url: urlString,
-      },
-      timestamp:
-        typeof event.timestamp === 'string'
-          ? new Date(event.timestamp)
-          : event.timestamp,
-      status: 'pending',
-      responseTimeMs: 0,
-    });
-
-    // Update webhook's requestCount
-    if (typeof event.webhookId === 'string') {
-      await api.webhooks.updateStats.mutate({
-        webhookId: event.webhookId,
-      });
-    }
-    log(`Created request for event ${event.id} to destination: ${dest.name}`);
-
-    // Handle the pending request immediately
-    if (request) {
-      await store.getState().handlePendingRequest(request);
-    }
-  }
-}
-
 const store = createStore<EventStore>()((set, get) => ({
   ...defaultEventState,
   setEvents: (events) => {
@@ -264,213 +110,34 @@ const store = createStore<EventStore>()((set, get) => ({
       return [];
     }
   },
-  handlePendingRequest: async (webhookRequest: RequestType) => {
-    log(`Handling pending event: ${webhookRequest.id}`);
+  handlePendingRequest: async (request: RequestType) => {
     const { delivery, destination } = useConfigStore.getState();
     const { api } = useApiStore.getState();
-
-    // Use helper to resolve rule and URL
-    const dest = resolveDestination({
-      source: webhookRequest.source,
+    await handlePendingRequest({
+      request,
       delivery,
       destination,
-    });
-    if (!dest) {
-      log(`No destination found for source: ${webhookRequest.source}`);
-      return;
-    }
-    const request = webhookRequest.request as unknown as RequestType['request'];
+      api,
+      capture,
 
-    capture({
-      event: 'webhook_request_received',
-      properties: {
-        requestId: webhookRequest.id,
-        webhookId: webhookRequest.webhookId,
-        eventId: webhookRequest.eventId,
-        method: (webhookRequest.request as unknown as RequestType['request'])
-          ?.method,
-        source: webhookRequest.source,
-        destination: dest.destination,
-        url: dest.url,
+      requestFn: async (url, options) => {
+        const { body, statusCode, headers } = await undiciRequest(url, options);
+        // Remove undefined values from headers
+        const filteredHeaders = Object.fromEntries(
+          Object.entries(headers).filter(([, v]) => v !== undefined),
+        ) as Record<string, string | string[]>;
+        return { body, statusCode, headers: filteredHeaders };
       },
     });
-
-    if (webhookRequest.status === 'pending') {
-      try {
-        log(`Delivering request to: ${dest.url}`);
-
-        // Decode base64 request body if it exists
-        let requestBody: string | undefined;
-        if (request.body) {
-          try {
-            requestBody = Buffer.from(request.body, 'base64').toString('utf-8');
-            log('Decoded request body successfully');
-          } catch {
-            log('Failed to decode base64 body, using raw body');
-            requestBody = request.body;
-          }
-        }
-
-        const startTime = Date.now();
-        log('Sending request', {
-          method: request.method,
-          url: dest.url,
-        });
-
-        const { host, ...headers } = request.headers;
-
-        const response = await undiciRequest(dest.url, {
-          method: request.method,
-          headers,
-          body: requestBody,
-        });
-
-        const responseText = await response.body.text();
-        const responseBodyBase64 = Buffer.from(responseText).toString('base64');
-        const responseTimeMs = Date.now() - startTime;
-
-        log('Request completed', {
-          status: response.statusCode,
-          responseTimeMs,
-          requestId: webhookRequest.id,
-          webhookId: webhookRequest.webhookId,
-          eventId: webhookRequest.eventId,
-        });
-
-        capture({
-          event: 'webhook_request_completed',
-          properties: {
-            requestId: webhookRequest.id,
-            webhookId: webhookRequest.webhookId,
-            eventId: webhookRequest.eventId,
-            method: request.method,
-            responseStatus: response.statusCode,
-            responseTimeMs,
-          },
-        });
-
-        await api.requests.markCompleted.mutate({
-          requestId: webhookRequest.id,
-          response: {
-            status: response.statusCode,
-            headers: Object.fromEntries(
-              Object.entries(response.headers).map(([k, v]) => [
-                k,
-                Array.isArray(v) ? v.join(', ') : v || '',
-              ]),
-            ),
-            body: responseBodyBase64,
-          },
-          responseTimeMs,
-        });
-
-        log('Updated request status to completed in database');
-
-        // If this request is part of an event, update the event status
-        if (typeof webhookRequest.eventId === 'string') {
-          log(`Updating associated event: ${webhookRequest.eventId}`);
-          await api.events.updateEventStatus.mutate({
-            eventId: webhookRequest.eventId,
-            status: 'completed',
-          });
-        }
-
-        // Update webhook's lastRequestAt
-        if (typeof webhookRequest.webhookId === 'string') {
-          log(`Updating webhook stats: ${webhookRequest.webhookId}`);
-          await api.webhooks.updateStats.mutate({
-            webhookId: webhookRequest.webhookId,
-            updateLastRequest: true,
-          });
-        }
-      } catch (error) {
-        log(`Failed to deliverrequest: ${inspect(error)}`);
-
-        const failedReason =
-          error instanceof Error
-            ? error.message
-            : 'Unknown error occurred while delivering request';
-
-        capture({
-          event: 'webhook_request_failed',
-          properties: {
-            requestId: webhookRequest.id,
-            webhookId: webhookRequest.webhookId,
-            eventId: webhookRequest.eventId,
-            method: request.method,
-            failedReason,
-          },
-        });
-
-        await api.requests.markFailed.mutate({
-          requestId: webhookRequest.id,
-          failedReason,
-        });
-
-        log('Updated request status to failed in database');
-
-        // If this request is part of an event, check if we should retry or mark as failed
-        if (typeof webhookRequest.eventId === 'string') {
-          log(`Checking event retry status: ${webhookRequest.eventId}`);
-          const event = await api.events.byId.query({
-            id: webhookRequest.eventId,
-          });
-
-          if (event && typeof event.id === 'string') {
-            if (event.retryCount < event.maxRetries) {
-              log(
-                `Retrying event: attempt ${event.retryCount + 1}/${event.maxRetries}`,
-              );
-              // Update event for retry
-              await api.events.updateEventStatus.mutate({
-                eventId: event.id,
-                status: 'processing',
-                retryCount: event.retryCount + 1,
-              });
-
-              // Create a new retry request
-              await api.requests.create.mutate({
-                webhookId: webhookRequest.webhookId,
-                eventId: event.id,
-                apiKey: webhookRequest.apiKey ?? undefined,
-                source: event.source,
-                destination: {
-                  name: dest.destination,
-                  url: dest.url,
-                },
-                request: event.originRequest,
-                status: 'pending',
-                timestamp: new Date(),
-                responseTimeMs: 0,
-              });
-              log('Created new retry request for event');
-            } else {
-              log('Event failed: max retries reached');
-              // Mark event as failed if max retries reached
-              await api.events.updateEventStatus.mutate({
-                eventId: event.id,
-                status: 'failed',
-                failedReason: `Max retries (${event.maxRetries}) reached. Last error: ${failedReason}`,
-              });
-            }
-          }
-        }
-
-        await get().fetchEvents();
-      }
-    }
   },
   replayEvent: async (event: EventType) => {
-    log(`Replaying event: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
     const { api } = useApiStore.getState();
+    const { delivery, destination } = useConfigStore.getState();
     if (!user?.id || !orgId) {
-      log('Authentication error: missing user or org ID');
       throw new Error('User or org not authenticated');
     }
-
-    // Normalize timestamp to Date
     const normalizedEvent = {
       ...event,
       timestamp:
@@ -478,39 +145,35 @@ const store = createStore<EventStore>()((set, get) => ({
           ? new Date(event.timestamp)
           : event.timestamp,
     };
-    log(`Using timestamp for replay: ${normalizedEvent.timestamp}`);
-
-    // If the request is part of an event, increment its retry count
     if (event.retryCount && typeof event.id === 'string') {
-      log(`Processing event for replay: ${event.id}`);
-      log(`Updating event retry count: ${event.retryCount + 1}`);
-      // Update event status and retry count
       await api.events.updateEventStatus.mutate({
         eventId: event.id,
         status: 'processing',
         retryCount: event.retryCount + 1,
       });
     }
-
-    log('Creating new requests for replay to all destinations');
     await createRequestsForEventToAllDestinations({
       event: normalizedEvent,
+      delivery,
+      destination,
+      api,
       connectionId,
       isEventRetry: true,
       pingEnabledFn: (destination) => !!destination.ping,
+      capture,
+      onRequestCreated: async (request) => {
+        await store.getState().handlePendingRequest(request);
+      },
     });
   },
   deliverEvent: async (event: EventType) => {
-    log(`Delivering event to all destinations: ${event.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
-
+    const { api } = useApiStore.getState();
+    const { delivery, destination } = useConfigStore.getState();
     if (!user?.id || !orgId) {
-      log('Authentication error: missing user or org ID');
       throw new Error('User or org not authenticated');
     }
-
-    // Normalize timestamp, createdAt, and updatedAt to Date, and cast originRequest
     const normalizedEvent = {
       ...event,
       timestamp:
@@ -527,11 +190,17 @@ const store = createStore<EventStore>()((set, get) => ({
           : event.updatedAt,
       originRequest: event.originRequest as unknown as RequestPayload,
     } as EventType;
-
     await createRequestsForEventToAllDestinations({
       event: normalizedEvent,
+      delivery,
+      destination,
+      api,
       connectionId,
       isEventRetry: false,
+      capture,
+      onRequestCreated: async (request) => {
+        await store.getState().handlePendingRequest(request);
+      },
     });
   },
   replayRequest: async (request: RequestType) => {

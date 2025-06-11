@@ -1,11 +1,13 @@
 import { createTRPCClient } from '@trpc/client';
-import type { AppRouter } from '../root';
-import { type ClientConfig, createDefaultLinks } from './config';
+import { type ClientConfig, createDefaultLinks } from './react/config';
+import type { AppRouter } from './root';
+
+export type ApiClient = ReturnType<typeof createClient>;
 
 export const createClient = (config?: ClientConfig) => {
   return createTRPCClient<AppRouter>({
     links: createDefaultLinks({
-      sourceHeader: config?.sourceHeader ?? 'cli-client',
+      sourceHeader: config?.sourceHeader,
       authToken: config?.authToken,
       sessionCookie: config?.sessionCookie,
     }),

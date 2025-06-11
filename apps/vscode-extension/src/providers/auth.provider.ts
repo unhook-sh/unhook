@@ -1,7 +1,7 @@
 import * as http from 'node:http';
 import * as vscode from 'vscode';
 import { env } from '../env';
-import type { AuthStore } from '../stores/auth-store';
+import type { AuthStore } from '../services/auth.service';
 
 interface AuthenticationProvider {
   onDidChangeSessions: vscode.Event<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>;

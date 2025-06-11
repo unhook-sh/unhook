@@ -1,6 +1,6 @@
 'use client';
 
-import { api } from '@unhook/api/client';
+import { api } from '@unhook/api/react';
 import type { RequestType } from '@unhook/db/schema';
 import { useSubscription } from '@unhook/db/supabase/client';
 import { Button } from '@unhook/ui/components/button';

@@ -14,7 +14,7 @@ import '@unhook/ui/globals.css';
 
 import { ClerkProvider } from '@clerk/nextjs';
 
-import { TRPCReactProvider } from '@unhook/api/client';
+import { TRPCReactProvider } from '@unhook/api/react';
 import { env } from '~/env.server';
 
 export const metadata: Metadata = {

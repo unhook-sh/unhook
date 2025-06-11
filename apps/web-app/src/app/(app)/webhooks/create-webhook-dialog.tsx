@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { api } from '@unhook/api/client';
+import { api } from '@unhook/api/react';
 import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import {

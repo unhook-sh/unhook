@@ -1,3 +1,4 @@
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { differenceInMinutes, format } from 'date-fns';
 import figureSet from 'figures';
@@ -8,7 +9,6 @@ import {
   truncateText,
 } from '~/components/table/column-utils';
 import type { ColumnDef } from '~/components/table/types';
-import { extractEventName } from '~/utils/extract-event-name';
 import { formatRelativeTime } from '~/utils/format-relative-time';
 
 // Service configuration for webhook verification windows

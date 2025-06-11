@@ -34,6 +34,8 @@ const remotePatternSchema = z.object({
   search: z.string().optional(),
 });
 
+export type RemotePatternSchema = z.infer<typeof remotePatternSchema>;
+
 export const configSchema = z
   .object({
     webhookId: z.string(),

@@ -1,23 +1,26 @@
 import { debug, defaultLogger } from '@unhook/logger';
 import { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-output';
 import * as vscode from 'vscode';
-import { registerAuthCommands } from './auth/commands';
-import { registerUriHandler } from './auth/register-uri-handler';
+import { registerAuthCommands } from './commands/auth.commands';
+import { registerDeliveryCommands } from './commands/delivery.commands';
+import { registerEventCommands } from './commands/events.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
-import { registerWebhookEventCommands } from './commands/webhook-events.commands';
-import { SettingsProvider } from './providers/settings.provider';
-import { WebhookEventsProvider } from './providers/webhook-events.provider';
-import { WebhookEventQuickPick } from './quickPick';
+import { EventsProvider } from './providers/events.provider';
+import { EventQuickPick } from './quick-pick';
+import { registerUriHandler } from './register-auth-uri-handler';
 import { RequestDetailsWebviewProvider } from './request-details-webview/request-details.webview';
+import { AuthStore } from './services/auth.service';
 import { SettingsService } from './services/settings.service';
-import { AuthStore } from './stores/auth-store';
 
 defaultLogger.enableNamespace('*');
 defaultLogger.enableNamespace('unhook:vscode');
 defaultLogger.enableNamespace('unhook:vscode:*');
 const log = debug('unhook:vscode');
+
+let eventsTreeView: vscode.TreeView<any> | undefined;
+let requestDetailsWebviewProvider: RequestDetailsWebviewProvider;
 
 export async function activate(context: vscode.ExtensionContext) {
   log('Unhook extension is activating...');
@@ -87,63 +90,55 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // Initialize webhook events provider
-  const webhookEventsProvider = new WebhookEventsProvider(context);
-  webhookEventsProvider.setAuthStore(authStore);
-
-  // Initialize webview provider
-  const webviewProvider = new RequestDetailsWebviewProvider(
-    context.extensionUri,
-  );
+  const eventsProvider = new EventsProvider(context);
+  eventsProvider.setAuthStore(authStore);
 
   // Register webhook event commands
-  registerWebhookEventCommands(context, webhookEventsProvider, webviewProvider);
+  registerEventCommands(context, eventsProvider);
 
   // Set up quick pick
-  const quickPick = WebhookEventQuickPick.getInstance();
+  const quickPick = EventQuickPick.getInstance();
   quickPick.setAuthStore(authStore);
-
-  const settingsProvider = new SettingsProvider();
-  vscode.window.registerTreeDataProvider('unhook.settings', settingsProvider);
 
   // Register the custom URI scheme handler
   registerUriHandler(context, authStore, log);
 
-  // Create the webview provider
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      RequestDetailsWebviewProvider.viewType,
-      webviewProvider,
-    ),
-  );
-
   // Register commands
   registerOutputCommands(context, outputDestination);
   registerQuickPickCommand(context);
-
   registerSettingsCommands(context);
+  registerDeliveryCommands(context);
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(
     'unhook.showQuickPick',
     () => {
-      WebhookEventQuickPick.getInstance().showQuickPick();
+      EventQuickPick.getInstance().showQuickPick();
     },
   );
   context.subscriptions.push(showQuickPickCommand);
 
   // Register the webhook events provider
-  const treeView = vscode.window.createTreeView('unhook.webhookEvents', {
-    treeDataProvider: webhookEventsProvider,
+  eventsTreeView = vscode.window.createTreeView('unhook.events', {
+    treeDataProvider: eventsProvider,
     showCollapseAll: true,
   });
 
-  treeView.onDidChangeVisibility(() => {
-    webhookEventsProvider.refresh();
+  eventsTreeView.onDidChangeVisibility(() => {
+    eventsProvider.refresh();
   });
 
-  context.subscriptions.push(treeView);
+  // Initialize the request details webview provider
+  requestDetailsWebviewProvider = new RequestDetailsWebviewProvider(
+    context.extensionUri,
+  );
+  context.subscriptions.push(requestDetailsWebviewProvider);
+
+  context.subscriptions.push(eventsTreeView);
 
   log('Unhook extension activation complete');
 }
 
 export function deactivate() {}
+
+export { eventsTreeView, requestDetailsWebviewProvider };

@@ -1,3 +1,4 @@
+import { tryDecodeBase64 } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
@@ -8,14 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/tabs';
 import { useEventStore } from '~/stores/events-store';
 
 const log = debug('unhook:cli:event-details');
-
-function tryDecodeBase64(str: string): string {
-  try {
-    return Buffer.from(str, 'base64').toString('utf-8');
-  } catch {
-    return str;
-  }
-}
 
 function tryParseJson(str: string): string {
   try {

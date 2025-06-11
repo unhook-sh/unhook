@@ -1,7 +1,7 @@
 'use client';
 
 import { HydrationBoundary } from '@tanstack/react-query';
-import { api } from '@unhook/api/client';
+import { api } from '@unhook/api/react';
 import {
   Select,
   SelectContent,

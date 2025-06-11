@@ -20,7 +20,7 @@ export default defineConfig({
   build: {
     ...baseConfig.build,
     watch: {
-      include: ['src/webview/**/*'],
+      include: ['src/request-details-webview/**/*'],
     },
     minify: false,
     sourcemap: true,

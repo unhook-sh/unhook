@@ -1,4 +1,4 @@
-import { createClient } from '@unhook/api/cli';
+import { createClient } from '@unhook/api/client';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
 // Combine base and exclusive properties into the final state type

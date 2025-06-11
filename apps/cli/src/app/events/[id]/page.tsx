@@ -1,3 +1,7 @@
+import {
+  extractEventName,
+  tryDecodeBase64,
+} from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { Box, Text } from 'ink';
 import { type FC, useCallback, useState } from 'react';
@@ -7,7 +11,6 @@ import { useForceUpdate } from '~/hooks/use-force-update';
 import { capture } from '~/lib/posthog';
 import { useEventStore } from '~/stores/events-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
-import { extractEventName, tryDecodeBase64 } from '~/utils/extract-event-name';
 import { formatRelativeTime } from '~/utils/format-relative-time';
 import { columns } from './_components/requests-table-columns';
 

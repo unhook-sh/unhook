@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import type { AuthStore } from '../stores/auth-store';
-import { UnhookAuthProvider } from './provider';
+import { UnhookAuthProvider } from '../providers/auth.provider';
+import type { AuthStore } from '../services/auth.service';
 
 export function registerAuthCommands(
   context: vscode.ExtensionContext,

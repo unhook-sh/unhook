@@ -1,4 +1,4 @@
-import { TRPCReactProvider } from '@unhook/api/client';
+import { TRPCReactProvider } from '@unhook/api/react';
 
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';

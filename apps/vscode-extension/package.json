@@ -20,13 +20,13 @@
     "commands": [
       {
         "category": "Unhook",
-        "command": "unhook.showWebhookEvents",
-        "title": "Show Webhook Events"
+        "command": "unhook.showEvents",
+        "title": "Show Events"
       },
       {
         "category": "Unhook",
-        "command": "unhook.addWebhookEvent",
-        "title": "Add Webhook Event"
+        "command": "unhook.addEvent",
+        "title": "Add Event"
       },
       {
         "command": "unhook.replayEvent",
@@ -54,7 +54,7 @@
         "title": "Copy Event"
       },
       {
-        "command": "unhook.webhookEvents.refresh",
+        "command": "unhook.events.refresh",
         "icon": "$(refresh)",
         "title": "Refresh"
       },
@@ -65,12 +65,12 @@
       {
         "category": "Unhook",
         "command": "unhook.quickPick",
-        "title": "Quick Pick Webhook Event",
+        "title": "Quick Pick Event",
         "icon": "$(list-selection)"
       },
       {
-        "command": "unhook.webhookEvents.filter",
-        "title": "Filter Webhook Events",
+        "command": "unhook.events.filter",
+        "title": "Filter Events",
         "icon": "$(filter)"
       },
       {
@@ -93,12 +93,6 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.openSettings",
-        "title": "Open Settings",
-        "icon": "$(settings-gear)"
-      },
-      {
-        "category": "Unhook",
         "command": "unhook.toggleAutoShowOutput",
         "title": "Toggle Auto-Show Output",
         "icon": "$(eye)"
@@ -111,9 +105,9 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.toggleRequestDetailsView",
-        "title": "Toggle Request Details View",
-        "icon": "$(split-horizontal)"
+        "command": "unhook.toggleDelivery",
+        "title": "Toggle Event Delivery",
+        "icon": "$(play)"
       },
       {
         "category": "Unhook",
@@ -132,12 +126,12 @@
       "view/title": [
         {
           "command": "unhook.quickPick",
-          "when": "view == unhook.webhookEvents",
+          "when": "view == unhook.events",
           "group": "navigation"
         },
         {
-          "command": "unhook.webhookEvents.filter",
-          "when": "view == unhook.webhookEvents",
+          "command": "unhook.events.filter",
+          "when": "view == unhook.events",
           "group": "navigation@1"
         }
       ],
@@ -145,54 +139,43 @@
         {
           "command": "unhook.copyEvent",
           "group": "inline",
-          "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
+          "when": "view == unhook.events && viewItem == event"
         },
         {
           "command": "unhook.viewEvent",
           "group": "inline",
-          "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
+          "when": "view == unhook.events && viewItem == event"
         },
         {
           "command": "unhook.replayEvent",
           "group": "inline",
-          "when": "view == unhook.webhookEvents && viewItem == webhookEvent"
+          "when": "view == unhook.events && viewItem == event"
         },
         {
           "command": "unhook.viewRequest",
           "group": "inline",
-          "when": "view == unhook.webhookEvents && viewItem == webhookRequest"
+          "when": "view == unhook.events && viewItem == request"
         },
         {
           "command": "unhook.replayRequest",
           "group": "inline",
-          "when": "view == unhook.webhookEvents && viewItem == webhookRequest"
+          "when": "view == unhook.events && viewItem == request"
         }
       ]
     },
     "views": {
       "unhook": [
         {
-          "contextualTitle": "Webhook Events",
-          "id": "unhook.webhookEvents",
-          "name": "Webhook Events"
-        },
-        {
-          "contextualTitle": "Settings",
-          "id": "unhook.settings",
-          "name": "Settings"
-        },
-        {
-          "contextualTitle": "Request Details",
-          "id": "unhook.requestDetails",
-          "name": "Request Details",
-          "visibility": "hidden"
+          "contextualTitle": "Events",
+          "id": "unhook.events",
+          "name": "Events"
         }
       ]
     },
     "viewsContainers": {
       "activitybar": [
         {
-          "icon": "$(radio-tower)",
+          "icon": "src/media/logo.svg",
           "id": "unhook",
           "title": "Unhook"
         }
@@ -204,28 +187,22 @@
         "unhook.output.autoShow": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically show the output panel when new webhook events are received"
+          "description": "Automatically show the output panel when new events are received"
         },
         "unhook.output.maxLines": {
           "type": "number",
           "default": 1000,
           "description": "Maximum number of lines to keep in the output panel"
         },
-        "unhook.webhookEvents.maxHistory": {
+        "unhook.events.maxHistory": {
           "type": "number",
           "default": 100,
-          "description": "Maximum number of webhook events to keep in history"
+          "description": "Maximum number of events to keep in history"
         },
-        "unhook.webhookEvents.autoClear": {
+        "unhook.events.autoClear": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically clear old webhook events when the maximum history is reached"
-        },
-        "unhook.requestDetails.defaultView": {
-          "type": "string",
-          "enum": ["raw", "formatted"],
-          "default": "formatted",
-          "description": "Default view mode for request details"
+          "description": "Automatically clear old events when the maximum history is reached"
         },
         "unhook.configFilePath": {
           "type": "string",
@@ -241,6 +218,7 @@
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
+    "date-fns": "4.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "ws": "8.18.2"
@@ -287,7 +265,7 @@
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
     "dev:extension": "NODE_ENV=development bun run build:base --watch --sourcemap=inline",
-    "dev:webview": "NODE_ENV=development vite build --config vite.dev.config.ts",
+    "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
     "package": "bun run typecheck && bun run build",
     "pretest": "bun run build:base",
     "test": "vscode-test",
@@ -296,5 +274,6 @@
     "vscode:prepublish": "bun run package"
   },
   "type": "commonjs",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "files": ["dist", "media"]
 }

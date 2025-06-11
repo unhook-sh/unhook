@@ -1,5 +1,5 @@
 import type { RouterOutputs } from '@unhook/api';
-import { createClient } from '@unhook/api/cli';
+import { createClient } from '@unhook/api/client';
 import { createId } from '@unhook/id';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';

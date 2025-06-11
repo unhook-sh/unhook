@@ -1,7 +1,10 @@
 // biome-ignore lint/style/useFilenamingConvention: <explanation>
 import type { RequestType } from '@unhook/db/schema';
+import { debug } from '@unhook/logger';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useEffect, useRef, useState } from 'react';
+
+const log = debug('unhook:vscode:request-details-app');
 
 // Declare the vscode global
 declare global {
@@ -97,37 +100,9 @@ function RequestDetails({ data }: { data: RequestType }) {
 }
 
 function MainView() {
-  const [count, setCount] = useState(0);
   const [filter, setFilter] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  // Close menu on outside click or escape
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (
-        menuOpen &&
-        menuRef.current &&
-        !menuRef.current.contains(e.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(e.target as Node)
-      ) {
-        setMenuOpen(false);
-      }
-    }
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setMenuOpen(false);
-    }
-    if (menuOpen) {
-      document.addEventListener('mousedown', handleClick);
-      document.addEventListener('keydown', handleKey);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClick);
-      document.removeEventListener('keydown', handleKey);
-    };
-  }, [menuOpen]);
 
   return (
     <div className="app">
@@ -176,91 +151,12 @@ function MainView() {
         >
           <Icons.ListFilter size="sm" variant="muted" />
         </button>
-        {menuOpen && (
-          <div
-            ref={menuRef}
-            tabIndex={-1}
-            style={{
-              position: 'absolute',
-              top: '110%',
-              right: 0,
-              minWidth: 180,
-              background: 'var(--vscode-menu-background)',
-              color: 'var(--vscode-menu-foreground)',
-              border: '1px solid var(--vscode-menu-border)',
-              borderRadius: 4,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              zIndex: 10,
-              padding: '0.25rem 0',
-            }}
-            role="menu"
-            aria-label="Filter options"
-          >
-            <button
-              type="button"
-              style={{
-                width: '100%',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                padding: '0.5rem 1rem',
-                color: 'inherit',
-                cursor: 'pointer',
-                fontSize: '1em',
-              }}
-              role="menuitem"
-              onClick={() => setMenuOpen(false)}
-            >
-              Featured
-            </button>
-            <button
-              type="button"
-              style={{
-                width: '100%',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                padding: '0.5rem 1rem',
-                color: 'inherit',
-                cursor: 'pointer',
-                fontSize: '1em',
-              }}
-              role="menuitem"
-              onClick={() => setMenuOpen(false)}
-            >
-              Most Popular
-            </button>
-            <button
-              type="button"
-              style={{
-                width: '100%',
-                background: 'none',
-                border: 'none',
-                textAlign: 'left',
-                padding: '0.5rem 1rem',
-                color: 'inherit',
-                cursor: 'pointer',
-                fontSize: '1em',
-              }}
-              role="menuitem"
-              onClick={() => setMenuOpen(false)}
-            >
-              Recently Published
-            </button>
-          </div>
-        )}
       </div>
-      {/* Main Content */}
-      <h1>Unhook API</h1>
+
       <div className="content">
-        <p>Welcome to the Unhook VS Code extension!</p>
         <div className="card">
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            Count is {count}
-          </button>
-          <p>
-            Edit <code>src/webview/App.tsx</code> and save to test HMR
-          </p>
+          <h1>Request Details</h1>
+          <p>Select a request from the events view to see its details here.</p>
         </div>
       </div>
     </div>
@@ -269,26 +165,51 @@ function MainView() {
 
 function App() {
   const [requestData, setRequestData] = useState<RequestType | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    log('Setting up message handler');
     // Listen for messages from the extension
     const messageHandler = (event: MessageEvent) => {
-      const message = event.data;
-      switch (message.type) {
-        case 'requestData':
-          setRequestData(message.data);
-          break;
+      try {
+        const message = event.data;
+        log('Received message from extension', { message });
+        switch (message.type) {
+          case 'requestData':
+            log('Setting request data', { requestId: message.data.id });
+            setRequestData(message.data);
+            setError(null);
+            break;
+          default:
+            log('Unknown message type', { type: message.type });
+        }
+      } catch (err) {
+        log('Error handling message', { error: err });
+        setError('Error processing request data');
       }
     };
 
     window.addEventListener('message', messageHandler);
     // Notify the extension that the webview is ready
+    log('Sending ready message to extension');
     window.vscode.postMessage({ type: 'ready' });
 
     return () => {
+      log('Cleaning up message handler');
       window.removeEventListener('message', messageHandler);
     };
   }, []);
+
+  if (error) {
+    return (
+      <div className="app">
+        <div className="card">
+          <h1>Error</h1>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (requestData) {
     return <RequestDetails data={requestData} />;

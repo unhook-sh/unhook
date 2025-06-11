@@ -28,7 +28,7 @@
       "default": "./src/index.ts",
       "types": "./dist/index.d.ts"
     },
-    "./client": {
+    "./react": {
       "default": "./src/react/client-exports.ts",
       "types": "./dist/react/client-exports.d.ts"
     },
@@ -36,9 +36,9 @@
       "default": "./src/react/server-exports.ts",
       "types": "./dist/react/server-exports.d.ts"
     },
-    "./cli": {
-      "default": "./src/react/cli.ts",
-      "types": "./dist/react/cli.d.ts"
+    "./client": {
+      "default": "./src/client.ts",
+      "types": "./dist/client.d.ts"
     }
   },
   "license": "MIT",

@@ -1,6 +1,6 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
-import { api } from '@unhook/api/client';
+import { api } from '@unhook/api/react';
 import { useSubscription } from '@unhook/db/supabase/client';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';

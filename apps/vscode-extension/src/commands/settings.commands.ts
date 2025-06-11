@@ -14,6 +14,28 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(openSettingsCommand);
 
+  // Command to set config file path
+  const setConfigFilePathCommand = vscode.commands.registerCommand(
+    'unhook.setConfigFilePath',
+    async () => {
+      const config = vscode.workspace.getConfiguration('unhook');
+      const currentPath = config.get('configFilePath');
+      const newPath = await vscode.window.showInputBox({
+        prompt: 'Enter the path to your Unhook config file',
+        placeHolder: 'e.g., .unhook/config.json',
+        value: currentPath as string,
+      });
+
+      if (newPath !== undefined) {
+        await config.update('configFilePath', newPath, true);
+        vscode.window.showInformationMessage(
+          `Config file path set to ${newPath}`,
+        );
+      }
+    },
+  );
+  context.subscriptions.push(setConfigFilePathCommand);
+
   // Command to toggle auto-show output
   const toggleAutoShowOutputCommand = vscode.commands.registerCommand(
     'unhook.toggleAutoShowOutput',
@@ -34,8 +56,8 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
     'unhook.toggleAutoClearEvents',
     async () => {
       const config = vscode.workspace.getConfiguration('unhook');
-      const currentValue = config.get('webhookEvents.autoClear');
-      await config.update('webhookEvents.autoClear', !currentValue, true);
+      const currentValue = config.get('events.autoClear');
+      await config.update('events.autoClear', !currentValue, true);
 
       vscode.window.showInformationMessage(
         `Auto-clear webhook events ${!currentValue ? 'enabled' : 'disabled'}`,
@@ -43,20 +65,4 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
     },
   );
   context.subscriptions.push(toggleAutoClearEventsCommand);
-
-  // Command to toggle request details view mode
-  const toggleRequestDetailsViewCommand = vscode.commands.registerCommand(
-    'unhook.toggleRequestDetailsView',
-    async () => {
-      const config = vscode.workspace.getConfiguration('unhook');
-      const currentValue = config.get('requestDetails.defaultView');
-      const newValue = currentValue === 'raw' ? 'formatted' : 'raw';
-      await config.update('requestDetails.defaultView', newValue, true);
-
-      vscode.window.showInformationMessage(
-        `Request details view set to ${newValue}`,
-      );
-    },
-  );
-  context.subscriptions.push(toggleRequestDetailsViewCommand);
 }

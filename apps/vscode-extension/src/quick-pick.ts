@@ -1,18 +1,18 @@
 // biome-ignore lint/style/useFilenamingConvention: <explanation>
 import * as vscode from 'vscode';
-import type { AuthStore } from './stores/auth-store';
+import type { AuthStore } from './services/auth.service';
 
-export class WebhookEventQuickPick {
-  private static instance: WebhookEventQuickPick;
+export class EventQuickPick {
+  private static instance: EventQuickPick;
   private authStore: AuthStore | null = null;
 
   private constructor() {}
 
-  public static getInstance(): WebhookEventQuickPick {
-    if (!WebhookEventQuickPick.instance) {
-      WebhookEventQuickPick.instance = new WebhookEventQuickPick();
+  public static getInstance(): EventQuickPick {
+    if (!EventQuickPick.instance) {
+      EventQuickPick.instance = new EventQuickPick();
     }
-    return WebhookEventQuickPick.instance;
+    return EventQuickPick.instance;
   }
 
   public setAuthStore(authStore: AuthStore) {
@@ -49,14 +49,14 @@ export class WebhookEventQuickPick {
     if (this.authStore?.isSignedIn) {
       items.push(
         {
-          label: '$(add) Add New Webhook Event',
-          description: 'Create a new webhook event',
-          detail: 'Add a new webhook event to the list',
+          label: '$(add) Add New Event',
+          description: 'Create a new event',
+          detail: 'Add a new event to the list',
         },
         {
           label: '$(refresh) Refresh Events',
-          description: 'Refresh the webhook events list',
-          detail: 'Update the list of webhook events',
+          description: 'Refresh the events list',
+          detail: 'Update the list of events',
         },
       );
     }
@@ -83,17 +83,20 @@ export class WebhookEventQuickPick {
         case '$(sign-out) Sign Out':
           await vscode.commands.executeCommand('unhook.signOut');
           break;
-        case '$(add) Add New Webhook Event':
-          await vscode.commands.executeCommand('unhook.addWebhookEvent');
+        case '$(add) Add New Event':
+          await vscode.commands.executeCommand('unhook.addEvent');
           break;
         case '$(refresh) Refresh Events':
-          await vscode.commands.executeCommand('unhook.webhookEvents.refresh');
+          await vscode.commands.executeCommand('unhook.events.refresh');
           break;
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(
             'workbench.action.openSettings',
             '@ext:unhook',
           );
+          break;
+        case '$(play) Toggle Webhook Delivery':
+          await vscode.commands.executeCommand('unhook.toggleDelivery');
           break;
       }
     }

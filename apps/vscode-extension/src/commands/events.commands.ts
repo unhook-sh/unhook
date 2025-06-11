@@ -82,10 +82,10 @@ export function registerEventCommands(
           );
 
           // Get the API and config from the provider
-          const authStore = provider['authStore'];
+          const authStore = provider.authStore;
           if (!authStore) throw new Error('Not authenticated');
           const api = authStore.api;
-          const config = await provider['getConfig']();
+          const config = await provider.getConfig();
           if (!config) throw new Error('No config loaded');
 
           // Update event status and retry count
@@ -232,10 +232,10 @@ export function registerEventCommands(
           );
 
           // Get the API and config from the provider
-          const authStore = provider['authStore'];
+          const authStore = provider.authStore;
           if (!authStore) throw new Error('Not authenticated');
           const api = authStore.api;
-          const config = await provider['getConfig']();
+          const config = await provider.getConfig();
           if (!config) throw new Error('No config loaded');
           if (!item.request.webhookId) throw new Error('No webhook ID found');
           if (!item.request.eventId) throw new Error('No event ID found');

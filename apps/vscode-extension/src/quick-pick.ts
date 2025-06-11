@@ -1,4 +1,3 @@
-// biome-ignore lint/style/useFilenamingConvention: <explanation>
 import * as vscode from 'vscode';
 import type { AuthStore } from './services/auth.service';
 

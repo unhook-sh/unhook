@@ -101,7 +101,6 @@ function RequestDetails({ data }: { data: RequestType }) {
 
 function MainView() {
   const [filter, setFilter] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -147,7 +146,7 @@ function MainView() {
             alignItems: 'center',
             color: 'var(--vscode-input-foreground)',
           }}
-          onClick={() => setMenuOpen((open) => !open)}
+          onClick={() => {}}
         >
           <Icons.ListFilter size="sm" variant="muted" />
         </button>

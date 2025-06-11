@@ -142,7 +142,7 @@ export const createAuthCode = action.action(async () => {
 });
 
 export const upsertOrg = action
-  .schema(
+  .inputSchema(
     z.object({
       name: z.string().min(1),
       clerkOrgId: z.string().optional(),

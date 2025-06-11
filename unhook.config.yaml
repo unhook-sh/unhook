@@ -18,7 +18,7 @@
 #   pathname?: string                    # URL pathname
 #   search?: string                      # URL search params
 
-webhookId: wh_r3hr3iaz4dtxbbmk4s6rdjk6
+webhookId: wh_internal
 destination:
   - name: default
     url: http://localhost:3000/api/webhooks/clerk

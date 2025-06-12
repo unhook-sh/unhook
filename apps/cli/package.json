@@ -6,10 +6,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "cpu": [
-    "x64",
-    "arm64"
-  ],
+  "cpu": ["x64", "arm64"],
   "dependencies": {
     "@clerk/backend": "2.0.0",
     "@clerk/clerk-js": "5.68.0",
@@ -110,10 +107,7 @@
   ],
   "license": "MIT",
   "name": "@unhook/cli",
-  "os": [
-    "darwin",
-    "linux"
-  ],
+  "os": ["darwin", "linux"],
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -143,5 +137,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.10.0"
+  "version": "0.10.1"
 }

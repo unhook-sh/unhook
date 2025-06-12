@@ -45,7 +45,11 @@
       "types": "./dist/utils/extract-event-name.d.ts"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",
@@ -84,5 +88,5 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",
-  "version": "0.4.0"
+  "version": "0.4.1"
 }

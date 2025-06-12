@@ -4,9 +4,11 @@ import {
 } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { Box, Text } from 'ink';
-import { type FC, useCallback, useState } from 'react';
+import { useInput } from 'ink';
+import { type FC, useCallback, useEffect, useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
 import { Table } from '~/components/table';
+import { useDimensions } from '~/hooks/use-dimensions';
 import { useForceUpdate } from '~/hooks/use-force-update';
 import { capture } from '~/lib/posthog';
 import { useEventStore } from '~/stores/events-store';
@@ -48,6 +50,31 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
 
   const replayRequest = useEventStore.use.replayRequest();
 
+  const dimensions = useDimensions();
+  const TABLE_MIN_WIDTH = 60; // sum of all columns' minWidth plus borders/padding
+  const BODY_MIN_WIDTH = 40;
+  const SHOW_SPLIT_THRESHOLD = 180; // Hide right panel unless terminal is at least 120 columns
+  const [showSplitView, setShowSplitView] = useState(
+    dimensions.width >= SHOW_SPLIT_THRESHOLD,
+  );
+
+  useEffect(() => {
+    setShowSplitView(dimensions.width >= SHOW_SPLIT_THRESHOLD);
+  }, [dimensions.width]);
+
+  useInput((input, key) => {
+    if (input === 'h' && !key.ctrl && !key.meta && !key.shift) {
+      capture({
+        event: 'hotkey_pressed_event_details_page',
+        properties: {
+          hotkey: 'h',
+          hokeyName: 'Toggle Split View',
+        },
+      });
+      setShowSplitView((prev) => !prev);
+    }
+  });
+
   if (!event) {
     return (
       <Box>
@@ -57,20 +84,21 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
   }
 
   const selectedRequest = event.requests?.[selectedIndex];
-  // Compute the body to display: prefer selected request, else event originRequest
-  let formattedRequestBody: string | null = null;
-  if (selectedRequest?.request?.body) {
-    const decoded = tryDecodeBase64(selectedRequest.request.body);
-    formattedRequestBody = tryParseJson(decoded);
-  } else if (event.originRequest.body) {
-    const decoded = tryDecodeBase64(event.originRequest.body);
-    formattedRequestBody = tryParseJson(decoded);
+  // Compute the body to display: prefer selected request's response, else event originRequest response
+  let formattedResponseBody: string | null = null;
+  if (selectedRequest?.response?.body) {
+    const decoded = tryDecodeBase64(selectedRequest.response.body);
+    formattedResponseBody = tryParseJson(decoded);
   }
 
   return (
     <Box flexDirection="row" width="100%">
       {/* Left: Table */}
-      <Box flexDirection="column" width="60%" minWidth={60}>
+      <Box
+        flexDirection="column"
+        width={showSplitView ? '60%' : '100%'}
+        minWidth={showSplitView ? TABLE_MIN_WIDTH : undefined}
+      >
         <Box borderStyle="round" flexDirection="column">
           <Box gap={1}>
             <Text bold>{event.source}</Text>
@@ -84,6 +112,7 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
           </Box>
         </Box>
         <Table<RequestType>
+          key={showSplitView ? 'split' : 'full'}
           totalCount={totalCount}
           data={event.requests}
           columns={columns}
@@ -102,7 +131,7 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
               onAction: (_, index) => {
                 const request = event.requests?.[index];
                 capture({
-                  event: 'hotkey_pressed',
+                  event: 'hotkey_pressed_event_details_page',
                   properties: {
                     hotkey: 'return',
                     hokeyName: 'View Details',
@@ -124,7 +153,7 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
               onAction: (_, index) => {
                 const request = event.requests?.[index];
                 capture({
-                  event: 'hotkey_pressed',
+                  event: 'hotkey_pressed_event_details_page',
                   properties: {
                     hotkey: 'r',
                     hokeyName: 'Replay',
@@ -140,16 +169,23 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
           ]}
         />
       </Box>
-      {/* Right: Selected request body */}
-      <Box flexDirection="column" width="40%" minWidth={40} paddingLeft={2}>
-        <Box marginTop={1}>
-          {formattedRequestBody ? (
-            <SyntaxHighlight code={formattedRequestBody} language="json" />
-          ) : (
-            <Text dimColor>No request body</Text>
-          )}
+      {/* Right: Selected response body */}
+      {showSplitView && (
+        <Box
+          flexDirection="column"
+          width="40%"
+          minWidth={BODY_MIN_WIDTH}
+          paddingLeft={2}
+        >
+          <Box marginTop={1}>
+            {formattedResponseBody ? (
+              <SyntaxHighlight code={formattedResponseBody} language="json" />
+            ) : (
+              <Text dimColor>No response body</Text>
+            )}
+          </Box>
         </Box>
-      </Box>
+      )}
     </Box>
   );
 };

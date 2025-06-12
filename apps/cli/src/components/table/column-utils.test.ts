@@ -176,6 +176,26 @@ describe('adjustWidthsToFit', () => {
     // Age should get the remaining space
     expect(adjustedWidths.age).toBe(15);
   });
+
+  it('should not shrink columns below their minWidth', () => {
+    const widths = { name: 20, age: 20 };
+    const columns: ColumnDef<TestData>[] = [
+      { id: 'name', header: 'Name', minWidth: 5 },
+      { id: 'age', header: 'Age', minWidth: 10 },
+    ];
+    // availableWidth is much less than total widths, so both should shrink, but not below minWidth
+    const adjustedWidths = adjustWidthsToFit({
+      widths: { ...widths },
+      availableWidth: 20, // less than sum of minWidths (15), so will hit minWidth
+      columns,
+    });
+    expect(adjustedWidths.name ?? 0).toBeGreaterThanOrEqual(5);
+    expect(adjustedWidths.age ?? 0).toBeGreaterThanOrEqual(10);
+    // Should sum to availableWidth or as close as possible without violating minWidth
+    expect(
+      (adjustedWidths.name ?? 0) + (adjustedWidths.age ?? 0),
+    ).toBeLessThanOrEqual(20);
+  });
 });
 
 describe('getVisibleColumns', () => {

@@ -118,9 +118,17 @@ export function adjustWidthsToFit<T>({
   if (totalContentWidth > availableWidth) {
     // Shrink columns proportionally when content exceeds available width
     const ratio = availableWidth / totalContentWidth;
+    // Build minWidths map if columns are provided
+    const minWidths: Record<string, number> = {};
+    if (columns) {
+      for (const column of columns) {
+        minWidths[column.id] = column.minWidth ?? 1;
+      }
+    }
     for (const key in widths) {
       if (widths[key] !== undefined) {
-        const minWidth = widths[key];
+        // Use minWidth from columns if available, else default to 1
+        const minWidth = columns ? (minWidths[key] ?? 1) : 1;
         widths[key] = Math.max(Math.floor(widths[key] * ratio), minWidth);
       }
     }
@@ -215,9 +223,9 @@ export function padContent({
   const _contentWidth = width - padding * 2;
 
   // Add padding
-  const totalPadding = width - content.length;
-  const leftPadding = Math.floor(totalPadding / 2);
-  const rightPadding = totalPadding - leftPadding;
+  const totalPadding = Math.max(0, width - content.length);
+  const leftPadding = Math.max(0, Math.floor(totalPadding / 2));
+  const rightPadding = Math.max(0, totalPadding - leftPadding);
   return ' '.repeat(leftPadding) + content + ' '.repeat(rightPadding);
 }
 

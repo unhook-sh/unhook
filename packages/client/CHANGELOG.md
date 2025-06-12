@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.4.1
+
+### Patch Changes
+
+- [`cbb97c0`](https://github.com/unhook-sh/unhook/commit/cbb97c078ced78e4a37c98bd7b0524822984b163) Thanks [@seawatts](https://github.com/seawatts)! - Fix cli table widths
+
 ## 0.4.0
 
 ### Minor Changes

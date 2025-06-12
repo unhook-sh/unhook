@@ -222,4 +222,30 @@ describe('getVisibleColumns', () => {
     expect(visibleCols).toHaveLength(1);
     expect(visibleCols[0]?.id).toBe('name');
   });
+
+  it('should not overestimate available width due to border miscount', () => {
+    // 2 columns, minWidth 10 each, padding 1 each
+    // Borders needed: 2 columns + 1 = 3
+    // Each column: minWidth (10) + padding*2 (2) = 12
+    // Total for 2 columns: 24 + 3 (borders) = 27
+    const columns: ColumnDef<TestData>[] = [
+      { id: 'a', header: 'A', minWidth: 10, priority: 1 },
+      { id: 'b', header: 'B', minWidth: 10, priority: 2 },
+    ];
+    // If availableWidth is exactly 27, both columns should fit
+    let visibleCols = getVisibleColumns({
+      columns,
+      availableWidth: 27,
+      padding: 1,
+    });
+    expect(visibleCols).toHaveLength(2);
+    // If availableWidth is 26, only one column should fit
+    visibleCols = getVisibleColumns({
+      columns,
+      availableWidth: 26,
+      padding: 1,
+    });
+    expect(visibleCols).toHaveLength(1);
+    expect(visibleCols[0]?.id).toBe('a');
+  });
 });

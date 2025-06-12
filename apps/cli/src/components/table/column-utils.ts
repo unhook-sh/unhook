@@ -269,20 +269,22 @@ export function getVisibleColumns<T extends ScalarDict>({
     return priorityA - priorityB;
   });
 
-  const borderChars = 1; // Start with just the outer borders
-  let totalWidth = borderChars;
   const visibleColumns: ColumnDef<T>[] = [];
 
   for (const column of sortedColumns) {
-    // Calculate the minimum width this column would need
-    const columnMinWidth = column.minWidth || 10;
-    const columnBorder = visibleColumns.length > 0 ? 1 : 0; // Border between columns
-    const columnTotalWidth = columnMinWidth + padding * 2 + columnBorder;
+    const candidateColumns = [...visibleColumns, column];
+    const totalWidth =
+      candidateColumns.reduce(
+        (sum, col) => sum + (col.minWidth || 10) + padding * 2,
+        0,
+      ) +
+      candidateColumns.length +
+      1; // borders: N columns + 1
 
-    // Check if adding this column would exceed available width
-    if (totalWidth + columnTotalWidth <= availableWidth) {
+    if (totalWidth <= availableWidth) {
       visibleColumns.push(column);
-      totalWidth += columnTotalWidth;
+    } else {
+      break;
     }
   }
 

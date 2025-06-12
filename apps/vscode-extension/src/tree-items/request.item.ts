@@ -35,9 +35,9 @@ export function formatRequestDetails(request: RequestType): string {
   // Headers
   if (request.request.headers) {
     lines.push('# Request Headers');
-    Object.entries(request.request.headers).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(request.request.headers)) {
       lines.push(`${key}: ${value}`);
-    });
+    }
     lines.push('');
   }
 
@@ -60,9 +60,9 @@ export function formatRequestDetails(request: RequestType): string {
     // Response Headers
     if (request.response.headers) {
       lines.push('# Response Headers');
-      Object.entries(request.response.headers).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(request.response.headers)) {
         lines.push(`${key}: ${value}`);
-      });
+      }
       lines.push('');
     }
 

@@ -13,13 +13,15 @@ import { registerUriHandler } from './register-auth-uri-handler';
 import { RequestDetailsWebviewProvider } from './request-details-webview/request-details.webview';
 import { AuthStore } from './services/auth.service';
 import { SettingsService } from './services/settings.service';
+import type { EventItem } from './tree-items/event.item';
+import type { RequestItem } from './tree-items/request.item';
 
 defaultLogger.enableNamespace('*');
 defaultLogger.enableNamespace('unhook:vscode');
 defaultLogger.enableNamespace('unhook:vscode:*');
 const log = debug('unhook:vscode');
 
-let eventsTreeView: vscode.TreeView<any> | undefined;
+let eventsTreeView: vscode.TreeView<EventItem | RequestItem> | undefined;
 let requestDetailsWebviewProvider: RequestDetailsWebviewProvider;
 
 export async function activate(context: vscode.ExtensionContext) {

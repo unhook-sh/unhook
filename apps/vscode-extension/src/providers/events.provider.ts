@@ -25,7 +25,7 @@ export class EventsProvider
 
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
-  private authStore: AuthStore | null = null;
+  public authStore: AuthStore | null = null;
   private pollInterval: NodeJS.Timeout | null = null;
   private readonly POLL_INTERVAL_MS = 10000; // 10 seconds
   private config: WebhookConfig | null = null;
@@ -143,7 +143,7 @@ export class EventsProvider
     }
   }
 
-  private async getConfig(): Promise<WebhookConfig | null> {
+  public async getConfig(): Promise<WebhookConfig | null> {
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     const settings = SettingsService.getInstance().getSettings();
     const configFilePath = settings.configFilePath;

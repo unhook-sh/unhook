@@ -56,6 +56,8 @@ export interface ColumnDef<T> {
   enableSorting?: boolean;
   /** Whether the column can be hidden */
   enableHiding?: boolean;
+  /** Priority for column visibility (lower = more important) */
+  priority?: number;
 }
 
 export interface TableProps<T extends ScalarDict> {

@@ -30,7 +30,11 @@ export function calculateColumnWidths<T extends ScalarDict>({
     widths: contentWidths,
   });
 
-  return adjustWidthsToFit({ widths: constrainedWidths, availableWidth });
+  return adjustWidthsToFit({
+    widths: constrainedWidths,
+    availableWidth,
+    columns,
+  });
 }
 
 export function calculateInitialWidths<T>({
@@ -97,24 +101,112 @@ export function applyConstraints<T>({
   return widths;
 }
 
-export function adjustWidthsToFit({
+export function adjustWidthsToFit<T>({
   widths,
   availableWidth,
-}: { widths: Record<string, number>; availableWidth: number }): Record<
-  string,
-  number
-> {
+  columns,
+}: {
+  widths: Record<string, number>;
+  availableWidth: number;
+  columns?: ColumnDef<T>[];
+}): Record<string, number> {
   const totalContentWidth = Object.values(widths).reduce(
     (sum, width) => sum + width,
     0,
   );
 
   if (totalContentWidth > availableWidth) {
+    // Shrink columns proportionally when content exceeds available width
     const ratio = availableWidth / totalContentWidth;
+    // Build minWidths map if columns are provided
+    const minWidths: Record<string, number> = {};
+    if (columns) {
+      for (const column of columns) {
+        minWidths[column.id] = column.minWidth ?? 1;
+      }
+    }
     for (const key in widths) {
       if (widths[key] !== undefined) {
-        const minWidth = widths[key];
+        // Use minWidth from columns if available, else default to 1
+        const minWidth = columns ? (minWidths[key] ?? 1) : 1;
         widths[key] = Math.max(Math.floor(widths[key] * ratio), minWidth);
+      }
+    }
+  } else if (totalContentWidth < availableWidth) {
+    // Expand columns proportionally when we have extra space
+    const extraSpace = availableWidth - totalContentWidth;
+
+    // Calculate max widths for each column if columns are provided
+    const maxWidths: Record<string, number | undefined> = {};
+    if (columns) {
+      for (const column of columns) {
+        maxWidths[column.id] = column.maxWidth;
+      }
+    }
+
+    // Calculate how much each column can grow
+    const growthPotential: Record<string, number> = {};
+    let totalGrowthPotential = 0;
+
+    for (const key in widths) {
+      if (widths[key] !== undefined) {
+        const currentWidth = widths[key];
+        const maxWidth = maxWidths[key];
+        const potential = maxWidth
+          ? Math.max(0, maxWidth - currentWidth)
+          : Number.POSITIVE_INFINITY;
+        growthPotential[key] = potential;
+        if (potential !== Number.POSITIVE_INFINITY) {
+          totalGrowthPotential += potential;
+        }
+      }
+    }
+
+    // If we have constrained growth potential, use it; otherwise distribute proportionally
+    if (totalGrowthPotential > 0 && totalGrowthPotential < extraSpace) {
+      // Some columns have max width constraints
+      // First, grow constrained columns to their max
+      for (const key in widths) {
+        if (
+          widths[key] !== undefined &&
+          growthPotential[key] !== Number.POSITIVE_INFINITY &&
+          growthPotential[key] !== undefined
+        ) {
+          widths[key] += growthPotential[key];
+        }
+      }
+
+      // Distribute remaining space among unconstrained columns
+      const remainingSpace = extraSpace - totalGrowthPotential;
+      const unconstrainedColumns = Object.keys(widths).filter(
+        (key) => growthPotential[key] === Number.POSITIVE_INFINITY,
+      );
+
+      if (unconstrainedColumns.length > 0) {
+        const spacePerColumn = Math.floor(
+          remainingSpace / unconstrainedColumns.length,
+        );
+        for (const key of unconstrainedColumns) {
+          if (widths[key] !== undefined) {
+            widths[key] += spacePerColumn;
+          }
+        }
+      }
+    } else {
+      // Distribute space proportionally based on current widths
+      for (const key in widths) {
+        if (widths[key] !== undefined) {
+          const currentWidth = widths[key];
+          const proportion = currentWidth / totalContentWidth;
+          const additionalWidth = Math.floor(extraSpace * proportion);
+          const maxWidth = maxWidths[key];
+
+          if (maxWidth) {
+            widths[key] = Math.min(currentWidth + additionalWidth, maxWidth);
+          } else {
+            widths[key] = currentWidth + additionalWidth;
+          }
+        }
       }
     }
   }
@@ -131,9 +223,9 @@ export function padContent({
   const _contentWidth = width - padding * 2;
 
   // Add padding
-  const totalPadding = width - content.length;
-  const leftPadding = Math.floor(totalPadding / 2);
-  const rightPadding = totalPadding - leftPadding;
+  const totalPadding = Math.max(0, width - content.length);
+  const leftPadding = Math.max(0, Math.floor(totalPadding / 2));
+  const rightPadding = Math.max(0, totalPadding - leftPadding);
   return ' '.repeat(leftPadding) + content + ' '.repeat(rightPadding);
 }
 
@@ -163,4 +255,54 @@ export function getSelectedColor({
   selectedColor?: string;
 }): string {
   return isSelected ? selectedColor : defaultColor;
+}
+
+/**
+ * Determine which columns to display based on available width and column priorities.
+ * Columns with lower priority values are shown first.
+ */
+export function getVisibleColumns<T extends ScalarDict>({
+  columns,
+  availableWidth,
+  padding,
+}: {
+  columns: ColumnDef<T>[];
+  availableWidth: number;
+  padding: number;
+}): ColumnDef<T>[] {
+  // Sort columns by priority (lower priority = more important)
+  const sortedColumns = [...columns].sort((a, b) => {
+    const priorityA = a.priority ?? 100;
+    const priorityB = b.priority ?? 100;
+    return priorityA - priorityB;
+  });
+
+  const visibleColumns: ColumnDef<T>[] = [];
+
+  for (const column of sortedColumns) {
+    const candidateColumns = [...visibleColumns, column];
+    const totalWidth =
+      candidateColumns.reduce(
+        (sum, col) => sum + (col.minWidth || 10) + padding * 2,
+        0,
+      ) +
+      candidateColumns.length +
+      1; // borders: N columns + 1
+
+    if (totalWidth <= availableWidth) {
+      visibleColumns.push(column);
+    } else {
+      break;
+    }
+  }
+
+  // Ensure at least one column is visible
+  if (visibleColumns.length === 0 && sortedColumns.length > 0) {
+    const firstColumn = sortedColumns[0];
+    if (firstColumn) {
+      visibleColumns.push(firstColumn);
+    }
+  }
+
+  return visibleColumns;
 }

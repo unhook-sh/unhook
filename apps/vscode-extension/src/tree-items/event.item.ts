@@ -23,7 +23,10 @@ export class EventItem extends vscode.TreeItem {
 
     super(eventName, vscode.TreeItemCollapsibleState.Collapsed);
     this.description = `${event.source} • ${formatDistance(event.timestamp, new Date(), { addSuffix: true })}`;
-    const lastRequest = event.requests[0]!;
+    const lastRequest = event.requests[0];
+    if (!lastRequest) {
+      throw new Error('No requests found for event');
+    }
 
     this.iconPath = getStatusIconPath({
       request: lastRequest,

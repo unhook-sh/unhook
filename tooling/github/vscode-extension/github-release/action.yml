@@ -1,5 +1,5 @@
 name: "Release VSCode Extension"
-description: "Package and publish VSCode extension to Visual Studio Marketplace and create GitHub release"
+description: "Package and publish VSCode extension to Visual Studio Marketplace, Open VSX Registry, and create GitHub release"
 
 inputs:
   version:
@@ -7,6 +7,9 @@ inputs:
     required: true
   vsce_pat:
     description: "Personal Access Token for Visual Studio Marketplace"
+    required: true
+  ovsx_pat:
+    description: "Personal Access Token for Open VSX Registry"
     required: true
 
 runs:
@@ -37,6 +40,28 @@ runs:
       run: |
         echo "Publishing to Visual Studio Marketplace..."
         bunx vsce publish --packagePath unhook-vscode-${{ inputs.version }}.vsix
+
+    - name: Publish to Open VSX Registry
+      shell: bash
+      working-directory: apps/vscode-extension
+      env:
+        OVSX_PAT: ${{ inputs.ovsx_pat }}
+      run: |
+        echo "Publishing to Open VSX Registry..."
+
+        # Get publisher name from package.json
+        PUBLISHER=$(node -p "require('./package.json').publisher")
+        echo "Publisher: $PUBLISHER"
+
+        # Create namespace if it doesn't exist (this will fail silently if it already exists)
+        echo "Ensuring namespace exists..."
+        bunx ovsx create-namespace "$PUBLISHER" --pat "$OVSX_PAT" || echo "Namespace may already exist, continuing..."
+
+        # Publish to Open VSX Registry
+        echo "Publishing extension..."
+        bunx ovsx publish unhook-vscode-${{ inputs.version }}.vsix --pat "$OVSX_PAT"
+
+        echo "✅ Successfully published to Open VSX Registry!"
 
     - name: Read changelog
       id: changelog

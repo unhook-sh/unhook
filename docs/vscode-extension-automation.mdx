@@ -5,7 +5,7 @@ description: "Automated release system for the VSCode extension"
 
 # VSCode Extension Release Automation
 
-This document outlines the automated release system for the VSCode extension (`apps/vscode-extension`) that enables seamless publishing to the Visual Studio Marketplace.
+This document outlines the automated release system for the VSCode extension (`apps/vscode-extension`) that enables seamless publishing to both the Visual Studio Marketplace and Open VSX Registry.
 
 ## Implementation Overview
 
@@ -25,7 +25,7 @@ The workflow is defined in `.github/workflows/vscode-extension-release.yml`:
 
 **Process:**
 1. **Version Check**: Validates that this is a version bump commit and that the VSCode extension version specifically changed
-2. **Release**: Builds, packages, publishes to Visual Studio Marketplace, and creates GitHub release
+2. **Release**: Builds, packages, publishes to both marketplaces, and creates GitHub release
 
 ### 2. Composite Action
 
@@ -35,20 +35,39 @@ The composite action is located at `tooling/github/vscode-extension/github-relea
 1. **Setup Environment**: Uses the shared setup action
 2. **Build Extension**: Runs `bun run build` to compile the extension
 3. **Package Extension**: Creates VSIX file using `bunx vsce package`
-4. **Publish to Marketplace**: Publishes to Visual Studio Marketplace using `bunx vsce publish`
-5. **Extract Changelog**: Reads version-specific changes from `CHANGELOG.md`
-6. **Create GitHub Release**: Creates release with tag `vscode-v{version}` and attaches VSIX file
+4. **Publish to Visual Studio Marketplace**: Publishes using `bunx vsce publish`
+5. **Publish to Open VSX Registry**: Publishes using `bunx ovsx publish`
+6. **Extract Changelog**: Reads version-specific changes from `CHANGELOG.md`
+7. **Create GitHub Release**: Creates release with tag `vscode-v{version}` and attaches VSIX file
 
 ## Setup Requirements
 
 ### Required GitHub Secrets
 
-Add the following secret to your GitHub repository:
+Add the following secrets to your GitHub repository:
 
 - `VSCE_PAT`: Personal Access Token for Visual Studio Marketplace
   - Generate at: https://dev.azure.com/
   - Requires "Marketplace (publish)" scope
   - Should be associated with the publisher account ("unhook")
+
+- `OVSX_PAT`: Personal Access Token for Open VSX Registry
+  - Generate at: https://open-vsx.org/user-settings/tokens
+  - Requires publishing permissions
+  - Should be associated with your Open VSX account
+
+### Open VSX Registry Setup
+
+Before publishing to Open VSX, you need to:
+
+1. **Create an Eclipse account** at eclipse.org (use same GitHub account as open-vsx.org)
+2. **Sign the Publisher Agreement** at open-vsx.org
+3. **Create an access token** in your Open VSX settings
+4. **Namespace creation** is handled automatically by the workflow
+
+<Note>
+The automation will automatically create the namespace (publisher) if it doesn't exist during the first publish.
+</Note>
 
 ### VSCode Extension Configuration
 
@@ -73,7 +92,7 @@ The automation expects:
 1. **Version Bump PR**: Changesets workflow creates PR with version bumps
 2. **PR Merge**: When PR is merged to `main`, Changeset NPM Release workflow runs
 3. **VSCode Release**: If VSCode extension version changed, the VSCode Extension Release workflow automatically triggers
-4. **Marketplace Publication**: Extension is built, packaged, and published
+4. **Dual Marketplace Publication**: Extension is built, packaged, and published to both Visual Studio Marketplace and Open VSX Registry
 5. **GitHub Release**: Release created with VSIX file attachment
 
 ### Manual Fallback
@@ -88,26 +107,41 @@ cd apps/vscode-extension
 bun run build
 
 # Package extension
-bunx vsce package
+bun run vsce
 
-# Publish to marketplace
+# Publish to Visual Studio Marketplace
 bunx vsce publish
+
+# Publish to Open VSX Registry (requires OVSX_PAT environment variable)
+bun run ovsx
 ```
+
+## Marketplace Coverage
+
+Publishing to both marketplaces ensures broad compatibility:
+
+- **Visual Studio Marketplace**: Used by Microsoft VS Code
+- **Open VSX Registry**: Used by VS Code alternatives like:
+  - VSCodium
+  - Gitpod
+  - Eclipse Theia
+  - Code-OSS distributions
 
 ## Monitoring
 
 The workflow provides clear logging for each step:
 - Build status and output
 - Package creation
-- Marketplace publishing result
+- Visual Studio Marketplace publishing result
+- Open VSX Registry publishing result
 - GitHub release creation
 
 Failed steps will be clearly indicated in the GitHub Actions logs.
 
 ## Security Considerations
 
-- `VSCE_PAT` is securely stored as a GitHub secret
-- Token has minimal required permissions (marketplace publish only)
+- Both `VSCE_PAT` and `OVSX_PAT` are securely stored as GitHub secrets
+- Tokens have minimal required permissions (marketplace publish only)
 - Extension files are built from source during workflow execution
 - All steps logged for audit trail
 
@@ -131,3 +165,4 @@ The workflow only triggers when the VSCode extension version specifically change
 - VSIX files are automatically attached to GitHub releases for manual distribution
 - The automation follows the same patterns as the existing CLI release workflow for consistency
 - Version management is handled by the Changesets workflow - no manual version bumping required
+- Dual marketplace publishing ensures maximum compatibility across VS Code distributions

@@ -240,6 +240,7 @@
     "glob": "11.0.2",
     "globals": "16.2.0",
     "mocha": "11.5.0",
+    "ovsx": "0.10.4",
     "typescript": "5.8.3",
     "vite": "6.3.5"
   },
@@ -266,6 +267,7 @@
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
     "dev:extension": "NODE_ENV=development bun run build:base --watch --sourcemap=inline",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
+    "ovsx": "bunx ovsx publish",
     "package": "bun run typecheck && bun run build",
     "pretest": "bun run build:base",
     "test": "vscode-test",

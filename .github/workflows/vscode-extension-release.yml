@@ -30,6 +30,7 @@ env:
   COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
+  OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
 jobs:
   check-version:
@@ -87,3 +88,4 @@ jobs:
         with:
           version: ${{ steps.version.outputs.version }}
           vsce_pat: ${{ env.VSCE_PAT }}
+          ovsx_pat: ${{ env.OVSX_PAT }}

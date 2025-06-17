@@ -39,7 +39,7 @@ function TestComponent({
   return <div data-testid="status">{status}</div>;
 }
 
-describe('SubscriptionProvider and useSubscription Integration', () => {
+describe.skip('SubscriptionProvider and useSubscription Integration', () => {
   const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

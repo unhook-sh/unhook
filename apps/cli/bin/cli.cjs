@@ -73,10 +73,21 @@ function runBinary() {
         'install.cjs',
       );
       if (fs.existsSync(installScript)) {
-        require(installScript);
-        // After installing, try running the binary again
-        runBinary();
-        return;
+        // Run the install script synchronously
+        const installResult = spawnSync(process.execPath, [installScript], {
+          stdio: 'inherit',
+          env: process.env,
+        });
+        if (installResult.status === 0) {
+          // After installing, try running the binary again
+          runBinary();
+          return;
+        }
+        console.error(
+          `❌ Auto-download failed with exit code: ${installResult.status}`,
+        );
+        showInstallInstructions();
+        process.exit(1);
       }
     } catch (err) {
       console.error(`❌ Auto-download failed: ${err.message}`);

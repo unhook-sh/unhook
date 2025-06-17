@@ -17,6 +17,13 @@
   "organizeImports": {
     "enabled": true
   },
+  "json": {
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "enabled": true
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {

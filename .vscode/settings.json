@@ -41,8 +41,5 @@
     ["twx\\(.*?\\).*?\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
   "cSpell.words": ["Omni", "openai"],
-  "svg.preview.background": "editor",
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  }
+  "svg.preview.background": "editor"
 }

@@ -39,7 +39,7 @@ if (platform === 'linux') {
     ) {
       targetArch = `${arch}-musl`;
     }
-  } catch (err) {
+  } catch (_err) {
     // If we can't determine, default to glibc variant
   }
 }

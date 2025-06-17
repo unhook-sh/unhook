@@ -12,20 +12,28 @@ const clientPackageJsonPath = join(
 );
 const installScriptPath = join(cliPath, 'scripts', 'install.cjs');
 
+const args = process.argv.slice(2);
+const skipReadme = args.includes('--no-readme');
+const skipInstallUpdate = args.includes('--no-install-update');
+
 // Copy README and LICENSE
-try {
-  const readmePath = join(workspaceRoot, '../../', 'README.md');
-  const licensePath = join(workspaceRoot, '../../', 'LICENSE');
-  const targetDir = join(workspaceRoot, 'package.json', '..');
+if (!skipReadme) {
+  try {
+    const readmePath = join(workspaceRoot, '../../', 'README.md');
+    const licensePath = join(workspaceRoot, '../../', 'LICENSE');
+    const targetDir = join(workspaceRoot, 'package.json', '..');
 
-  copyFileSync(readmePath, join(targetDir, 'README.md'));
-  console.log('✅ Copied README.md to package directory');
+    copyFileSync(readmePath, join(targetDir, 'README.md'));
+    console.log('✅ Copied README.md to package directory');
 
-  copyFileSync(licensePath, join(targetDir, 'LICENSE'));
-  console.log('✅ Copied LICENSE to package directory');
-} catch (error) {
-  console.error('❌ Failed to copy files:', error.message);
-  process.exit(1);
+    copyFileSync(licensePath, join(targetDir, 'LICENSE'));
+    console.log('✅ Copied LICENSE to package directory');
+  } catch (error) {
+    console.error('❌ Failed to copy files:', error.message);
+    process.exit(1);
+  }
+} else {
+  console.log('⏭️  Skipping README.md and LICENSE copy (--no-readme)');
 }
 
 // Read both package.json files
@@ -35,17 +43,23 @@ const clientPackageJson = JSON.parse(
 );
 
 // Update install script with package version
-try {
-  const installScript = readFileSync(installScriptPath, 'utf8');
-  const updatedScript = installScript.replace(
-    "'{{ PACKAGE_VERSION }}'",
-    `'v${packageJson.version}'`,
-  );
-  writeFileSync(installScriptPath, updatedScript);
-  console.log(`✅ Updated install script with version v${packageJson.version}`);
-} catch (error) {
-  console.error('❌ Failed to update install script:', error.message);
-  process.exit(1);
+if (!skipInstallUpdate) {
+  try {
+    const installScript = readFileSync(installScriptPath, 'utf8');
+    const updatedScript = installScript.replace(
+      "'{{ PACKAGE_VERSION }}'",
+      `'v${packageJson.version}'`,
+    );
+    writeFileSync(installScriptPath, updatedScript);
+    console.log(
+      `✅ Updated install script with version v${packageJson.version}`,
+    );
+  } catch (error) {
+    console.error('❌ Failed to update install script:', error.message);
+    process.exit(1);
+  }
+} else {
+  console.log('⏭️  Skipping install script update (--no-install-update)');
 }
 
 // Get all @unhook/* dependencies from both dependencies and devDependencies

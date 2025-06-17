@@ -274,7 +274,7 @@
     "test": "vscode-test",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "vsce": "bunx vsce package",
-    "prepublishOnly": "bun typecheck && bun run build && prepare-publish"
+    "prepublishOnly": "bun typecheck && bun run build && prepare-publish --no-readme --no-install-update"
   },
   "type": "commonjs",
   "version": "0.0.2",

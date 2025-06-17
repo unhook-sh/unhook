@@ -230,7 +230,8 @@
     "@types/node": "22.15.30",
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.6",
-    "@types/vscode": "1.100.0",
+    "@types/vscode": "1.96.0",
+    "@unhook/npm": "workspace:*",
     "@unhook/tsconfig": "workspace:*",
     "@vitejs/plugin-react": "4.5.1",
     "@vscode/test-cli": "0.0.11",
@@ -273,7 +274,7 @@
     "test": "vscode-test",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "vsce": "bunx vsce package",
-    "vscode:prepublish": "bun run package"
+    "prepublishOnly": "bun typecheck && bun run build && prepare-publish"
   },
   "type": "commonjs",
   "version": "0.0.2",

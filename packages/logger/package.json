@@ -7,7 +7,7 @@
   "devDependencies": {
     "@types/bun": "1.2.15",
     "@types/debug": "4.1.12",
-    "@types/vscode": "1.100.0",
+    "@types/vscode": "1.96.0",
     "typescript": "5.8.3"
   },
   "exports": {

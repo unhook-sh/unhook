@@ -74,7 +74,9 @@ function runBinary() {
       );
       if (fs.existsSync(installScript)) {
         require(installScript);
-        return; // The install script will handle running the binary
+        // After installing, try running the binary again
+        runBinary();
+        return;
       }
     } catch (err) {
       console.error(`❌ Auto-download failed: ${err.message}`);

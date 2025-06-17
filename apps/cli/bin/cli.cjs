@@ -64,6 +64,17 @@ function runBinary() {
     showInstallInstructions();
 
     // Try to run the install script automatically
+    const attempt = Number.parseInt(
+      process.env.UNHOOK_CLI_DOWNLOAD_ATTEMPT || '0',
+      10,
+    );
+    if (attempt >= 2) {
+      console.error(
+        '❌ Auto-download failed after multiple attempts. Please install manually.',
+      );
+      showInstallInstructions();
+      process.exit(1);
+    }
     console.log('🔄 Attempting to download binary automatically...');
     try {
       const installScript = path.join(
@@ -73,10 +84,15 @@ function runBinary() {
         'install.cjs',
       );
       if (fs.existsSync(installScript)) {
-        // Run the install script synchronously
+        // Run the install script synchronously, only install, do not execute binary
+        const env = {
+          ...process.env,
+          UNHOOK_CLI_INSTALL_ONLY: '1',
+          UNHOOK_CLI_DOWNLOAD_ATTEMPT: String(attempt + 1),
+        };
         const installResult = spawnSync(process.execPath, [installScript], {
           stdio: 'inherit',
-          env: process.env,
+          env,
         });
         if (installResult.status === 0) {
           // After installing, try running the binary again

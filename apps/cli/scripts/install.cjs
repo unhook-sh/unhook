@@ -287,7 +287,13 @@ function runBinary() {
 
 // If this script is being run directly (not required), download and run
 if (require.main === module) {
-  downloadBinary(runBinary);
+  if (process.env.UNHOOK_CLI_INSTALL_ONLY === '1') {
+    downloadBinary(() => {
+      console.log('✅ Binary installation complete');
+    });
+  } else {
+    downloadBinary(runBinary);
+  }
 } else {
   // If required as a module, just download
   downloadBinary(() => {

@@ -1,0 +1,133 @@
+---
+title: "VSCode Extension Release Automation"
+description: "Automated release system for the VSCode extension"
+---
+
+# VSCode Extension Release Automation
+
+This document outlines the automated release system for the VSCode extension (`apps/vscode-extension`) that enables seamless publishing to the Visual Studio Marketplace.
+
+## Implementation Overview
+
+The automation consists of two main components:
+
+### 1. GitHub Workflow
+
+The workflow is defined in `.github/workflows/vscode-extension-release.yml`:
+
+**Triggers:**
+- Automatically after the "Changeset NPM Release" workflow completes
+- Manual dispatch for testing/emergency releases
+
+**Conditions:**
+- Only runs when the commit message contains "chore: version packages" (indicating a version bump)
+- Only runs when the VSCode extension's `package.json` version was actually changed
+
+**Process:**
+1. **Version Check**: Validates that this is a version bump commit and that the VSCode extension version specifically changed
+2. **Release**: Builds, packages, publishes to Visual Studio Marketplace, and creates GitHub release
+
+### 2. Composite Action
+
+The composite action is located at `tooling/github/vscode-extension/github-release/action.yml`:
+
+**Steps:**
+1. **Setup Environment**: Uses the shared setup action
+2. **Build Extension**: Runs `bun run build` to compile the extension
+3. **Package Extension**: Creates VSIX file using `bunx vsce package`
+4. **Publish to Marketplace**: Publishes to Visual Studio Marketplace using `bunx vsce publish`
+5. **Extract Changelog**: Reads version-specific changes from `CHANGELOG.md`
+6. **Create GitHub Release**: Creates release with tag `vscode-v{version}` and attaches VSIX file
+
+## Setup Requirements
+
+### Required GitHub Secrets
+
+Add the following secret to your GitHub repository:
+
+- `VSCE_PAT`: Personal Access Token for Visual Studio Marketplace
+  - Generate at: https://dev.azure.com/
+  - Requires "Marketplace (publish)" scope
+  - Should be associated with the publisher account ("unhook")
+
+### VSCode Extension Configuration
+
+The automation expects:
+- Extension built with Bun (already configured)
+- Extension publisher set to "unhook" in `package.json` (already set)
+- Changelog maintained in `apps/vscode-extension/CHANGELOG.md` with version sections like:
+
+```markdown
+## 0.0.3
+- Feature description
+- Bug fix description
+
+## 0.0.2
+- Previous version changes
+```
+
+## Workflow Integration
+
+### Automatic Process
+
+1. **Version Bump PR**: Changesets workflow creates PR with version bumps
+2. **PR Merge**: When PR is merged to `main`, Changeset NPM Release workflow runs
+3. **VSCode Release**: If VSCode extension version changed, the VSCode Extension Release workflow automatically triggers
+4. **Marketplace Publication**: Extension is built, packaged, and published
+5. **GitHub Release**: Release created with VSIX file attachment
+
+### Manual Fallback
+
+If automation fails, manual release steps:
+
+```bash
+# Navigate to extension directory
+cd apps/vscode-extension
+
+# Build extension
+bun run build
+
+# Package extension
+bunx vsce package
+
+# Publish to marketplace
+bunx vsce publish
+```
+
+## Monitoring
+
+The workflow provides clear logging for each step:
+- Build status and output
+- Package creation
+- Marketplace publishing result
+- GitHub release creation
+
+Failed steps will be clearly indicated in the GitHub Actions logs.
+
+## Security Considerations
+
+- `VSCE_PAT` is securely stored as a GitHub secret
+- Token has minimal required permissions (marketplace publish only)
+- Extension files are built from source during workflow execution
+- All steps logged for audit trail
+
+## File Structure
+
+```
+.github/workflows/
+└── vscode-extension-release.yml
+
+tooling/github/vscode-extension/
+└── github-release/
+    └── action.yml
+```
+
+<Note>
+The workflow only triggers when the VSCode extension version specifically changes. GitHub releases use the tag format `vscode-v{version}` to distinguish from CLI releases.
+</Note>
+
+## Best Practices
+
+- VSIX files are automatically attached to GitHub releases for manual distribution
+- The automation follows the same patterns as the existing CLI release workflow for consistency
+- Version management is handled by the Changesets workflow - no manual version bumping required

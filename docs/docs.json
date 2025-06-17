@@ -52,7 +52,7 @@
           },
           {
             "group": "Development",
-            "pages": ["contributing"]
+            "pages": ["contributing", "vscode-extension-automation"]
           }
         ]
       },

@@ -43,7 +43,12 @@
           },
           {
             "group": "Reference",
-            "pages": ["cli", "architecture", "essentials/data-model"]
+            "pages": [
+              "cli",
+              "architecture",
+              "cross-platform-setup",
+              "essentials/data-model"
+            ]
           },
           {
             "group": "Development",

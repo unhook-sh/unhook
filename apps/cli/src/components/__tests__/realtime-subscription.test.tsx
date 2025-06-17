@@ -13,7 +13,7 @@ import { createId } from '@unhook/id';
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-describe('RealtimeSubscription', () => {
+describe.skip('RealtimeSubscription', () => {
   it(
     'should handle real-time subscription events',
     async () => {

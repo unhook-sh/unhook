@@ -25,6 +25,7 @@
 - 👥 **Team-Friendly**: Share one webhook URL across your entire team
 - 🔀 **Smart Distribution**: Automatically routes webhooks to the right developer
 - 🔒 **Secure by Default**: End-to-end encryption for all webhook traffic
+- 🌍 **Cross-Platform**: Works seamlessly on Windows, macOS, and Linux (x64/ARM64)
 - 📊 **Beautiful Dashboard**: Real-time monitoring of webhook requests
 - 🔄 **Request Replay**: Easily replay webhook requests for testing
 - 🎯 **Smart Routing**: Route webhooks to different local ports
@@ -88,6 +89,44 @@ https://unhook.sh/wh_your_webhook_id
 ```
 
 The webhook will automatically route requests based on the `source` and `destination` configuration in your `unhook.yaml`.
+
+## Cross-Platform Installation
+
+Unhook CLI automatically downloads and installs the correct platform-specific binary for your system during installation. This ensures optimal performance and eliminates the need for compilation or build tools.
+
+### Supported Platforms
+
+- **Windows**: x64 (64-bit)
+- **macOS**: Intel (x64) and Apple Silicon (ARM64)
+- **Linux**: x64 and ARM64 with both glibc and musl (Alpine Linux) support
+
+### How It Works
+
+1. **Platform Detection**: Automatically detects your OS, architecture, and C library variant
+2. **Binary Download**: Downloads the appropriate pre-compiled binary from GitHub releases
+3. **Smart Caching**: Stores binaries locally in `~/.unhook/bin/{version}/` for fast access
+4. **Transparent Execution**: CLI wrapper seamlessly executes the native binary
+5. **Version Management**: Automatically cleans up old versions during updates
+
+### Package Manager Support
+
+Works with all major JavaScript package managers:
+
+```bash
+# npm
+npm install -g @unhook/cli
+
+# yarn
+yarn global add @unhook/cli
+
+# pnpm
+pnpm add -g @unhook/cli
+
+# bun
+bun add -g @unhook/cli
+```
+
+For detailed technical information about the cross-platform implementation, see our [Cross-Platform CLI Setup Guide](https://docs.unhook.sh/cross-platform-setup).
 
 ## Configuration
 

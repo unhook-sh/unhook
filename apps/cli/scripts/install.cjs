@@ -12,7 +12,7 @@ const https = require('node:https');
 const version = '{{ PACKAGE_VERSION }}';
 const repo = 'unhook-sh/unhook';
 const cliName = 'unhook';
-const platformMap = { win32: 'windows', darwin: 'darwin', linux: 'linux' };
+const platformMap = { win32: 'win32', darwin: 'darwin', linux: 'linux' };
 const archMap = {
   x64: 'x64',
   arm64: 'arm64',
@@ -26,19 +26,36 @@ const arch = archMap[os.arch()];
 const ext = os.platform() === 'win32' ? '.exe' : '';
 
 if (!platform || !arch) {
-  console.error(`Unsupported platform or arch: ${os.platform()}-${os.arch()}`);
+  console.error(
+    `❌ Unsupported platform or arch: ${os.platform()}-${os.arch()}`,
+  );
+  console.error(
+    'Supported platforms: Windows (x64), macOS (x64, arm64), Linux (x64, arm64)',
+  );
   process.exit(1);
 }
 
 // For Linux, check if we should use musl variant
-const isMusl =
-  platform === 'linux' && fs.existsSync('/lib/ld-musl-x86_64.so.1');
-const targetArch = platform === 'linux' && isMusl ? `${arch}-musl` : arch;
+let targetArch = arch;
+if (platform === 'linux') {
+  try {
+    // Check for musl by looking for the musl loader
+    if (
+      fs.existsSync('/lib/ld-musl-x86_64.so.1') ||
+      fs.existsSync('/lib/ld-musl-aarch64.so.1')
+    ) {
+      targetArch = `${arch}-musl`;
+    }
+  } catch (_err) {
+    // If we can't determine, default to glibc variant
+  }
+}
 
 const binName = `${cliName}-${platform}-${targetArch}${ext}`;
-const url = `https://github.com/${repo}/releases/download/${version}/${binName}`;
+// Ensure version has 'v' prefix for GitHub releases
+const versionTag = version.startsWith('v') ? version : `v${version}`;
+const url = `https://github.com/${repo}/releases/download/${versionTag}/${binName}`;
 
-// Use /usr/local/bin for macOS, ~/.unhook/bin for other platforms
 const installDir = path.join(os.homedir(), `.${cliName}/bin`);
 const versionedInstallDir = path.join(installDir, version);
 const binPath = path.join(versionedInstallDir, binName);
@@ -46,31 +63,36 @@ const binPath = path.join(versionedInstallDir, binName);
 function clearOldVersions() {
   if (!fs.existsSync(installDir)) return;
 
-  const versions = fs.readdirSync(installDir);
-  for (const oldVersion of versions) {
-    // Skip if it's not a valid version number (like the placeholder)
-    if (!oldVersion.startsWith('v')) continue;
-    if (oldVersion !== version) {
+  try {
+    const versions = fs.readdirSync(installDir);
+    for (const oldVersion of versions) {
+      // Skip if it's the current version
+      if (oldVersion === version) continue;
+
       const oldVersionPath = path.join(installDir, oldVersion);
-      console.debug(`Clearing old version: ${oldVersion}`);
+      console.debug(`🧹 Clearing old version: ${oldVersion}`);
       fs.rmSync(oldVersionPath, { recursive: true, force: true });
     }
+  } catch (err) {
+    console.debug(`⚠️  Warning: Could not clear old versions: ${err.message}`);
   }
 }
 
 function ensureInstallDir() {
   if (!fs.existsSync(installDir)) {
-    console.debug(`Creating installation directory: ${installDir}`);
+    console.debug(`📁 Creating installation directory: ${installDir}`);
     try {
       fs.mkdirSync(installDir, { recursive: true });
     } catch (err) {
       if (err.code === 'EACCES') {
-        console.error(`Permission denied creating directory: ${installDir}`);
+        console.error(`❌ Permission denied creating directory: ${installDir}`);
         console.error(
-          'Please run the installer with sudo or create the directory manually:',
+          'Please run the installer with appropriate permissions or create the directory manually:',
         );
-        console.error(`  sudo mkdir -p ${installDir}`);
-        console.error(`  sudo chown $(whoami) ${installDir}`);
+        if (os.platform() !== 'win32') {
+          console.error(`  sudo mkdir -p ${installDir}`);
+          console.error(`  sudo chown $(whoami) ${installDir}`);
+        }
         process.exit(1);
       }
       throw err;
@@ -80,7 +102,7 @@ function ensureInstallDir() {
 
 function downloadBinary(cb) {
   if (fs.existsSync(binPath)) {
-    console.debug(`Binary already exists at ${binPath}`);
+    console.debug(`✅ Binary already exists at ${binPath}`);
     return cb();
   }
 
@@ -88,7 +110,7 @@ function downloadBinary(cb) {
 
   if (!fs.existsSync(versionedInstallDir)) {
     console.debug(
-      `Creating versioned installation directory: ${versionedInstallDir}`,
+      `📁 Creating versioned installation directory: ${versionedInstallDir}`,
     );
     fs.mkdirSync(versionedInstallDir, { recursive: true });
   }
@@ -96,7 +118,8 @@ function downloadBinary(cb) {
   clearOldVersions();
 
   const file = fs.createWriteStream(binPath);
-  console.debug(`Downloading from ${url}`);
+  console.log(`⬇️  Downloading ${binName} from GitHub releases...`);
+  console.debug(`URL: ${url}`);
 
   const request = https.get(url, (res) => {
     console.debug(`Response status: ${res.statusCode}`);
@@ -108,104 +131,115 @@ function downloadBinary(cb) {
         .get(redirectUrl, (redirectRes) => {
           console.debug(`Redirect response status: ${redirectRes.statusCode}`);
           if (redirectRes.statusCode !== 200) {
-            console.error(`Download failed: ${redirectRes.statusCode}`);
+            console.error(`❌ Download failed: ${redirectRes.statusCode}`);
+            if (redirectRes.statusCode === 404) {
+              console.error(`Binary not found: ${binName}`);
+              console.error('This may be because:');
+              console.error('- The binary for your platform is not available');
+              console.error('- The version has not been released yet');
+              console.error(
+                `- Check releases at: https://github.com/${repo}/releases`,
+              );
+            }
             process.exit(1);
           }
           redirectRes.pipe(file);
           file.on('finish', () => {
             file.close();
-            console.debug(
-              `Download complete, setting permissions on ${binPath}`,
-            );
-            try {
-              fs.chmodSync(binPath, 0o755);
-              // Remove quarantine attribute on macOS
-              if (os.platform() === 'darwin') {
-                try {
-                  execSync(`xattr -d com.apple.quarantine "${binPath}"`);
-                } catch (err) {
-                  // Ignore errors if the attribute doesn't exist
-                  if (!err.message.includes('No such xattr')) {
-                    console.warn(
-                      `Warning: Failed to remove quarantine attribute: ${err.message}`,
-                    );
-                  }
-                }
-              }
-            } catch (err) {
-              if (err.code === 'EACCES') {
-                console.error(
-                  `Permission denied setting permissions on: ${binPath}`,
-                );
-                console.error(
-                  'Please run the installer with sudo or set permissions manually:',
-                );
-                console.error(`  sudo chmod 755 ${binPath}`);
-                process.exit(1);
-              }
-              throw err;
-            }
+            setBinaryPermissions();
+            console.log(`✅ Successfully downloaded and installed ${binName}`);
             cb();
           });
         })
         .on('error', (err) => {
-          console.error(`Download error: ${err.message}`);
+          console.error(`❌ Download error: ${err.message}`);
           process.exit(1);
         });
     } else if (res.statusCode !== 200) {
-      console.error(`Download failed: ${res.statusCode}`);
+      console.error(`❌ Download failed: ${res.statusCode}`);
+      if (res.statusCode === 404) {
+        console.error(`Binary not found: ${binName}`);
+        console.error('This may be because:');
+        console.error('- The binary for your platform is not available');
+        console.error('- The version has not been released yet');
+        console.error(
+          `- Check releases at: https://github.com/${repo}/releases`,
+        );
+      }
       process.exit(1);
     } else {
       res.pipe(file);
       file.on('finish', () => {
         file.close();
-        console.debug(`Download complete, setting permissions on ${binPath}`);
-        try {
-          fs.chmodSync(binPath, 0o755);
-          // Remove quarantine attribute on macOS
-          if (os.platform() === 'darwin') {
-            try {
-              execSync(`xattr -d com.apple.quarantine "${binPath}"`);
-            } catch (err) {
-              // Ignore errors if the attribute doesn't exist
-              if (!err.message.includes('No such xattr')) {
-                console.warn(
-                  `Warning: Failed to remove quarantine attribute: ${err.message}`,
-                );
-              }
-            }
-          }
-        } catch (err) {
-          if (err.code === 'EACCES') {
-            console.error(
-              `Permission denied setting permissions on: ${binPath}`,
-            );
-            console.error(
-              'Please run the installer with sudo or set permissions manually:',
-            );
-            console.error(`  sudo chmod 755 ${binPath}`);
-            process.exit(1);
-          }
-          throw err;
-        }
+        setBinaryPermissions();
+        console.log(`✅ Successfully downloaded and installed ${binName}`);
         cb();
       });
     }
   });
 
   request.on('error', (err) => {
-    console.error(`Download error: ${err.message}`);
+    console.error(`❌ Download error: ${err.message}`);
+    if (err.code === 'ENOTFOUND') {
+      console.error(
+        'Network error: Could not connect to GitHub. Please check your internet connection.',
+      );
+    }
+    process.exit(1);
+  });
+
+  // Add timeout for the request
+  request.setTimeout(30000, () => {
+    console.error(
+      '❌ Download timeout: The download took too long. Please try again.',
+    );
     process.exit(1);
   });
 }
 
+function setBinaryPermissions() {
+  console.debug(`🔧 Setting permissions on ${binPath}`);
+  try {
+    fs.chmodSync(binPath, 0o755);
+
+    // Remove quarantine attribute on macOS
+    if (os.platform() === 'darwin') {
+      try {
+        execSync(`xattr -d com.apple.quarantine "${binPath}"`, {
+          stdio: 'ignore',
+        });
+        console.debug('🍎 Removed macOS quarantine attribute');
+      } catch (err) {
+        // Ignore errors if the attribute doesn't exist
+        if (!err.message.includes('No such xattr')) {
+          console.debug(
+            `⚠️  Warning: Failed to remove quarantine attribute: ${err.message}`,
+          );
+        }
+      }
+    }
+  } catch (err) {
+    if (err.code === 'EACCES') {
+      console.error(`❌ Permission denied setting permissions on: ${binPath}`);
+      console.error(
+        'Please run the installer with appropriate permissions or set permissions manually:',
+      );
+      if (os.platform() !== 'win32') {
+        console.error(`  chmod 755 ${binPath}`);
+      }
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
 function runBinary() {
   if (!fs.existsSync(binPath)) {
-    console.error(`Binary not found at ${binPath}`);
+    console.error(`❌ Binary not found at ${binPath}`);
     process.exit(1);
   }
 
-  console.debug(`Running binary from: ${binPath}`);
+  console.debug(`🚀 Running binary from: ${binPath}`);
   console.debug(`Arguments: ${process.argv.slice(2).join(' ')}`);
 
   try {
@@ -213,30 +247,9 @@ function runBinary() {
     try {
       fs.accessSync(binPath, fs.constants.X_OK);
     } catch (err) {
-      console.error(`Binary is not executable: ${err.message}`);
-      console.debug('Attempting to fix permissions...');
-      fs.chmodSync(binPath, 0o755);
-    }
-
-    // Check if we're on macOS and if SIP is enabled
-    if (os.platform() === 'darwin') {
-      try {
-        const sipStatus = execSync('csrutil status').toString().trim();
-        if (sipStatus.includes('enabled')) {
-          console.warn(
-            'Warning: System Integrity Protection (SIP) is enabled on macOS.',
-          );
-          console.warn('This may prevent the binary from running properly.');
-          console.warn(
-            'You may need to run the binary from a location outside of protected directories.',
-          );
-          console.warn(
-            'Consider installing to a different location or temporarily disabling SIP.',
-          );
-        }
-      } catch (_err) {
-        // Ignore errors checking SIP status
-      }
+      console.error(`❌ Binary is not executable: ${err.message}`);
+      console.debug('🔧 Attempting to fix permissions...');
+      setBinaryPermissions();
     }
 
     const result = spawnSync(binPath, process.argv.slice(2), {
@@ -245,7 +258,7 @@ function runBinary() {
     });
 
     if (result.error) {
-      console.error(`Failed to execute binary: ${result.error.message}`);
+      console.error(`❌ Failed to execute binary: ${result.error.message}`);
       if (result.error.code === 'ENOENT') {
         console.error('Binary not found or not executable');
       } else if (result.error.code === 'EACCES') {
@@ -253,7 +266,7 @@ function runBinary() {
         if (os.platform() === 'darwin') {
           console.error('This may be due to macOS security restrictions.');
           console.error(
-            'Try running the binary from a different location or check System Preferences > Security & Privacy.',
+            'Try: System Preferences > Security & Privacy > Allow downloaded binary',
           );
         }
       }
@@ -261,15 +274,23 @@ function runBinary() {
     }
 
     if (result.status === null) {
-      console.error('Process terminated without exit code');
+      console.error('❌ Process terminated without exit code');
       process.exit(1);
     }
 
     process.exit(result.status);
   } catch (error) {
-    console.error(`Unexpected error running binary: ${error.message}`);
+    console.error(`❌ Unexpected error running binary: ${error.message}`);
     process.exit(1);
   }
 }
 
-downloadBinary(runBinary);
+// If this script is being run directly (not required), download and run
+if (require.main === module) {
+  downloadBinary(runBinary);
+} else {
+  // If required as a module, just download
+  downloadBinary(() => {
+    console.log('✅ Binary installation complete');
+  });
+}

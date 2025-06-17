@@ -1,7 +1,7 @@
 {
   "author": "Unhook Team (https://github.com/unhook-sh)",
   "bin": {
-    "unhook": "./bin/unhook"
+    "unhook": "./bin/cli.cjs"
   },
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
@@ -78,7 +78,7 @@
     }
   },
   "files": [
-    "bin",
+    "bin/cli.cjs",
     "README.md",
     "LICENSE",
     "dist/src/exports.d.ts",
@@ -107,7 +107,7 @@
   ],
   "license": "MIT",
   "name": "@unhook/cli",
-  "os": ["darwin", "linux"],
+  "os": ["darwin", "linux", "win32"],
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -122,7 +122,7 @@
     "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
-    "postinstall.skip": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
+    "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
     "start": "bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun run ./src/cli.tsx",

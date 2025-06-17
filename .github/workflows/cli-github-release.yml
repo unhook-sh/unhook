@@ -56,7 +56,6 @@ jobs:
     if: needs.check-version.outputs.is_version_bump == 'true'
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
         include:
           # Linux builds (glibc)
           - os: ubuntu-latest
@@ -87,6 +86,11 @@ jobs:
             target: arm64
             binary_ext: ""
             needs_codesign: true
+          # Windows builds
+          - os: windows-latest
+            platform: win32
+            target: x64
+            binary_ext: ".exe"
 
     runs-on: ${{ matrix.os }}
     outputs:

@@ -54,7 +54,10 @@ dist/
 # turbo
 .turbo
 
-apps/cli/bin
+# CLI binaries (but allow wrapper scripts)
+apps/cli/bin/unhook*
+!apps/cli/bin/*.cjs
+!apps/cli/bin/*.js
 
 # Certificates and signing
 certificates/

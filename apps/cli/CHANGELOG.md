@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.11.0
+
+### Minor Changes
+
+- [`4796eef`](https://github.com/unhook-sh/unhook/commit/4796eef5636c5e0dfaaf05d7a29db277fee84148) Thanks [@seawatts](https://github.com/seawatts)! - Add cross platform support
+
 ## 0.10.0
 
 ### Minor Changes

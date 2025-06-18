@@ -9,7 +9,11 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": ["Debuggers", "Testing", "Other"],
+  "categories": [
+    "Debuggers",
+    "Testing",
+    "Other"
+  ],
   "contributes": {
     "authentication": [
       {
@@ -250,7 +254,12 @@
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
-  "keywords": ["webhook", "development", "testing", "debugging"],
+  "keywords": [
+    "webhook",
+    "development",
+    "testing",
+    "debugging"
+  ],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,
@@ -277,6 +286,9 @@
     "vscode:prepublish": "bun typecheck && bun run build && prepare-publish --no-readme --no-install-update && bun install"
   },
   "type": "commonjs",
-  "version": "0.0.2",
-  "files": ["dist", "media"]
+  "version": "0.1.0",
+  "files": [
+    "dist",
+    "media"
+  ]
 }

@@ -47,8 +47,8 @@ if (!skipInstallUpdate) {
   try {
     const installScript = readFileSync(installScriptPath, 'utf8');
     const updatedScript = installScript.replace(
-      "'{{ PACKAGE_VERSION }}'",
-      `'v${packageJson.version}'`,
+      /const version = ['"]v?\d+\.\d+\.\d+['"];?/,
+      `const version = 'v${packageJson.version}';`,
     );
     writeFileSync(installScriptPath, updatedScript);
     console.log(

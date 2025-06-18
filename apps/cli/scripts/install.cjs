@@ -9,7 +9,16 @@ const { spawnSync, execSync } = require('node:child_process');
 const https = require('node:https');
 
 // This is replaced by the version in the package.json by the build script tooling/npm/prepare-publish.js
-const version = '{{ PACKAGE_VERSION }}';
+let version = 'unknown';
+try {
+  const packageJsonPath = path.join(__dirname, '..', 'package.json');
+  console.debug(`📁 Reading package.json from: ${packageJsonPath}`);
+  version = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).version;
+} catch (err) {
+  const customMessage = `FATAL: Could not read package.json for version info.\nReason: ${err.message}\nMake sure package.json exists and is accessible at: ${packageJsonPath}`;
+  throw new Error(customMessage);
+}
+version = 'v0.10.0';
 const repo = 'unhook-sh/unhook';
 const cliName = 'unhook';
 const platformMap = { win32: 'win32', darwin: 'darwin', linux: 'linux' };

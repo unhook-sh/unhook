@@ -44,7 +44,7 @@
     "format:fix": "biome check --write",
     "knip": "knip --include files,dependencies",
     "lint:ws": "bunx sherif@latest",
-    "postinstall.skip": "bun lint:ws",
+    "postinstall": "bun lint:ws",
     "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... --filter=./apps/vscode-extension... && changeset publish",
     "test": "bun test",
     "typecheck": "turbo run typecheck",

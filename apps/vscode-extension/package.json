@@ -277,6 +277,6 @@
     "vscode:prepublish": "bun typecheck && bun run build && prepare-publish --no-readme --no-install-update && bun install"
   },
   "type": "commonjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "files": ["dist", "media"]
 }

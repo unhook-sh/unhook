@@ -67,8 +67,8 @@ runs:
         fi
 
         # Export and verify the environment variable
-        export BUN_BUILD_TARGET="$BUN_TARGET"
-        echo "Exported BUN_BUILD_TARGET=$BUN_BUILD_TARGET"
+        # export BUN_BUILD_TARGET="$BUN_TARGET"
+        # echo "Exported BUN_BUILD_TARGET=$BUN_BUILD_TARGET"
 
         echo "Running build command with BUN_BUILD_TARGET=$BUN_BUILD_TARGET"
         env | grep BUN_BUILD_TARGET

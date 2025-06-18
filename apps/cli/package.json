@@ -119,8 +119,9 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "bun run build:base --minify --production",
-    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
+    "build": "NODE_ENV=production bun run build:base --minify --sourcemap",
+    "build:base.old": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
+    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle",
     "clean": "git clean -xdf bin .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
     "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",

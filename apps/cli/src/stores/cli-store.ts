@@ -5,7 +5,7 @@ import type { AppRoutePath } from '~/app/routes';
 // Combine base and exclusive properties into the final state type
 export type CliState = {
   version: string;
-  debug: boolean;
+  verbose: boolean;
   code?: string;
   command?: AppRoutePath;
   path?: string;
@@ -16,9 +16,9 @@ export type CliState = {
 };
 
 interface CliActions {
-  setDebug: (debug: boolean) => void;
+  setVerbose: (verbose: boolean) => void;
   setCliArgs: (args: Partial<CliState>) => void;
-  getDebug: () => boolean;
+  getVerbose: () => boolean;
   getVersion: () => string;
   reset: () => void;
 }
@@ -26,7 +26,7 @@ interface CliActions {
 type CliStore = CliState & CliActions;
 
 const defaultCliState: Partial<CliState> = {
-  debug: false,
+  verbose: false,
   version: '',
   code: undefined,
   command: undefined,
@@ -40,10 +40,10 @@ const store = createStore<CliStore>()((set, get) => ({
   ...(defaultCliState as CliState),
 
   // Individual setters remain simple
-  setDebug: (debug) => set((state) => ({ ...state, debug })),
+  setVerbose: (verbose) => set((state) => ({ ...state, verbose })),
 
   // Getters for WebhookConfig fields
-  getDebug: () => get().debug ?? false,
+  getVerbose: () => get().verbose ?? false,
   getVersion: () => get().version,
   getCommand: () => get().command,
 

@@ -29,7 +29,7 @@ const log = debug('unhook:cli');
 async function main() {
   try {
     const args = await parseArgs();
-    await setupDebug({ isDebugEnabled: args.debug });
+    await setupDebug({ isDebugEnabled: args.verbose });
     useCliStore.setState(args);
 
     const config = await useConfigStore.getState().loadConfig();
@@ -45,7 +45,7 @@ async function main() {
       properties: {
         webhookId: config.webhookId,
         clientId: config.clientId,
-        debug: args.debug,
+        debug: args.verbose,
         version: args.version,
         command: args.command,
       },
@@ -55,13 +55,13 @@ async function main() {
 
     log('Starting CLI', {
       webhookId: config.webhookId,
-      debug: args.debug,
+      debug: args.verbose,
       version: args.version,
       command: args.command,
     });
 
     const renderInstance = render(<Layout />, {
-      debug: args.debug,
+      debug: args.verbose,
     });
 
     log('Waiting for CLI to exit...');

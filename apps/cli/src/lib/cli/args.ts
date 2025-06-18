@@ -20,35 +20,39 @@ export async function parseArgs(): Promise<CliState> {
   let command: AppRoutePath | undefined;
 
   const argv = await yargs(hideBin(process.argv))
-    .option('debug', {
-      alias: 'd',
+    .option('verbose', {
+      alias: 'v',
       type: 'boolean',
-      description: 'Enable debug logging',
+      description: 'Enable verbose debug logging for troubleshooting.',
       default: false,
     })
     .command(
       'init',
-      'Initialize a new Unhook project',
+      'Authenticate with Unhook and set up your project. Creates an unhook.yaml config and guides you through connecting your webhook provider.',
       {
         code: {
           alias: 'c',
           type: 'string',
-          description: 'Authentication code for direct login',
+          description:
+            'Authentication code for direct login (advanced; usually not needed).',
         },
         webhook: {
           alias: 'w',
           type: 'string',
-          description: 'Webhook ID to use',
+          description:
+            'Specify a webhook ID to use (optional; usually auto-generated).',
         },
         source: {
           alias: 's',
           type: 'string',
-          description: 'Source URL or path',
+          description:
+            'Set the source name or URL for incoming webhooks (e.g., "stripe").',
         },
         destination: {
           alias: 't',
           type: 'string',
-          description: 'Destination URL or path',
+          description:
+            'Set the local destination URL to forward webhooks to (e.g., "http://localhost:3000/api/webhooks").',
         },
       },
       () => {
@@ -57,17 +61,17 @@ export async function parseArgs(): Promise<CliState> {
     )
     .command(
       'listen',
-      'Start listening for changes',
+      'Start the Unhook relay to receive and forward webhooks to your local server. Keeps the CLI running and displays incoming requests.',
       {
         path: {
           type: 'string',
-          description: 'Path to watch for changes',
+          description: 'Directory to watch for config changes (default: ".").',
           default: '.',
         },
         config: {
           alias: 'c',
           type: 'string',
-          description: 'Path to configuration file',
+          description: 'Path to a custom unhook.yaml configuration file.',
         },
       },
       () => {
@@ -76,25 +80,22 @@ export async function parseArgs(): Promise<CliState> {
     )
     .command(
       'login',
-      'Login to your Unhook account',
+      'Authenticate your CLI with your Unhook account. Opens a browser for login.',
       {
         code: {
           alias: 'c',
           type: 'string',
-          description: 'Authentication code for direct login',
+          description:
+            'Authentication code for direct login (advanced; usually not needed).',
         },
       },
       () => {
         command = commandToPath['login' as keyof typeof commandToPath];
       },
     )
-    .command('version', 'Display the current version', {}, () => {
-      console.log(`Unhook CLI v${pkg.version}`);
-      process.exit(0);
-    })
-    .usage('Usage: $0 <command> [options]')
     .help()
     .alias('help', 'h')
+    .scriptName('unhook')
     .parseAsync();
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -102,7 +103,7 @@ export async function parseArgs(): Promise<CliState> {
   parsedConfig.version = pkg.version;
 
   return {
-    debug: parsedConfig.debug,
+    verbose: parsedConfig.verbose,
     version: parsedConfig.version,
     code: parsedConfig.code,
     command,

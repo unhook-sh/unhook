@@ -46,7 +46,7 @@ if (platform === 'linux') {
 
 const binName = `${cliName}-${platform}-${targetArch}${ext}`;
 const installDir = path.join(os.homedir(), `.${cliName}/bin`);
-const versionedInstallDir = path.join(installDir, version);
+const versionedInstallDir = path.join(installDir, `v${version}`);
 const binPath = path.join(versionedInstallDir, binName);
 
 function showInstallInstructions() {

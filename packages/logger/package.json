@@ -26,6 +26,10 @@
     "./destinations/vscode-output": {
       "default": "./src/destinations/vscode-output.ts",
       "types": "./dist/destinations/vscode-output.d.ts"
+    },
+    "./destinations/stdout": {
+      "default": "./src/destinations/stdout.ts",
+      "types": "./dist/destinations/stdout.d.ts"
     }
   },
   "license": "MIT",

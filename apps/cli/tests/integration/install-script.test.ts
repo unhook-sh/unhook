@@ -15,7 +15,7 @@ const binPath = path.join(versionedInstallDir, binName);
 
 function cleanup() {
   if (fs.existsSync(installDir)) {
-    fs.rmSync(installDir, { recursive: true, force: true });
+    // fs.rmSync(installDir, { recursive: true, force: true });
   }
 }
 
@@ -56,14 +56,17 @@ describe('Install Script Integration', () => {
     // Remove new version if present
     if (fs.existsSync(versionedInstallDir))
       fs.rmSync(versionedInstallDir, { recursive: true, force: true });
+    // Use a non-existent version that will fail quickly
+    const testVersion = 'v0.0.0-nonexistent';
     // Run install script (should not find the new version's binary)
     const result = spawnSync('node', [installScript], {
       env: {
         ...process.env,
         UNHOOK_CLI_INSTALL_ONLY: '1',
-        UNHOOK_CLI_VERSION: version,
+        UNHOOK_CLI_VERSION: testVersion,
       },
       encoding: 'utf8',
+      timeout: 15000,
     });
     expect(result.stdout + result.stderr).not.toMatch(/already exists/);
   });

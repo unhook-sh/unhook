@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.11.0",
+      "version": "0.12.2",
       "bin": {
         "unhook": "./bin/cli.cjs",
       },
@@ -39,6 +39,7 @@
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/logger": "workspace:*",
+        "@unhook/utils": "workspace:*",
         "@unhook/zustand": "workspace:*",
         "chalk": "5.4.1",
         "cli-highlight": "2.1.11",
@@ -91,7 +92,7 @@
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.0.2",
+      "version": "0.1.1",
       "dependencies": {
         "@unhook/api": "workspace:*",
         "@unhook/client": "workspace:*",
@@ -127,7 +128,7 @@
     },
     "apps/web-app": {
       "name": "@unhook/web-app",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "dependencies": {
         "@boundaryml/baml": "0.89.0",
         "@clerk/elements": "0.23.32",
@@ -247,7 +248,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dependencies": {
         "@supabase/supabase-js": "2.50.0",
         "@t3-oss/env-core": "0.13.6",
@@ -414,6 +415,17 @@
         "tailwindcss": "4.1.8",
         "typescript": "5.8.3",
         "zod": "3.25.56",
+      },
+    },
+    "packages/utils": {
+      "name": "@unhook/utils",
+      "version": "0.1.0",
+      "dependencies": {
+        "dedent-js": "1.0.1",
+      },
+      "devDependencies": {
+        "@unhook/tsconfig": "workspace:*",
+        "typescript": "5.8.3",
       },
     },
     "packages/zuzstand": {
@@ -1922,6 +1934,8 @@
     "@unhook/tsconfig": ["@unhook/tsconfig@workspace:tooling/typescript"],
 
     "@unhook/ui": ["@unhook/ui@workspace:packages/ui"],
+
+    "@unhook/utils": ["@unhook/utils@workspace:packages/utils"],
 
     "@unhook/web-app": ["@unhook/web-app@workspace:apps/web-app"],
 

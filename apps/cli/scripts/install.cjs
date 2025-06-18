@@ -2,6 +2,13 @@
 
 // @biome-ignore file
 // @ts-nocheck
+
+// Prevent recursive execution - check this first before doing anything else
+if (process.env.UNHOOK_CLI_LAUNCHED === '1') {
+  console.error('❌ Recursive execution detected. Exiting.');
+  process.exit(1);
+}
+
 const os = require('node:os');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -10,15 +17,22 @@ const https = require('node:https');
 
 // This is replaced by the version in the package.json by the build script tooling/npm/prepare-publish.js
 let version = 'unknown';
-try {
-  const packageJsonPath = path.join(__dirname, '..', 'package.json');
-  console.debug(`📁 Reading package.json from: ${packageJsonPath}`);
-  version = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).version;
-} catch (err) {
-  const customMessage = `FATAL: Could not read package.json for version info.\nReason: ${err.message}\nMake sure package.json exists and is accessible at: ${packageJsonPath}`;
-  throw new Error(customMessage);
+
+// Check for environment variable override first (for testing)
+if (process.env.UNHOOK_CLI_VERSION) {
+  version = process.env.UNHOOK_CLI_VERSION;
+  console.debug(`🔧 Using version from environment: ${version}`);
+} else {
+  try {
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    console.debug(`📁 Reading package.json from: ${packageJsonPath}`);
+    version = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).version;
+  } catch (err) {
+    const customMessage = `FATAL: Could not read package.json for version info.\nReason: ${err.message}\nMake sure package.json exists and is accessible at: ${packageJsonPath}`;
+    throw new Error(customMessage);
+  }
 }
-version = 'v0.10.0';
+
 const repo = 'unhook-sh/unhook';
 const cliName = 'unhook';
 const platformMap = { win32: 'win32', darwin: 'darwin', linux: 'linux' };
@@ -75,8 +89,8 @@ function clearOldVersions() {
   try {
     const versions = fs.readdirSync(installDir);
     for (const oldVersion of versions) {
-      // Skip if it's the current version
-      if (oldVersion === version) continue;
+      // Skip if it's the current version (compare with versionTag, not raw version)
+      if (oldVersion === versionTag) continue;
 
       const oldVersionPath = path.join(installDir, oldVersion);
       console.debug(`🧹 Clearing old version: ${oldVersion}`);
@@ -254,12 +268,6 @@ function setBinaryPermissions() {
 function runBinary() {
   if (!fs.existsSync(binPath)) {
     console.error(`❌ Binary not found at ${binPath}`);
-    process.exit(1);
-  }
-
-  // Prevent recursive execution
-  if (process.env.UNHOOK_CLI_LAUNCHED === '1') {
-    console.error('❌ Recursive execution detected. Exiting.');
     process.exit(1);
   }
 

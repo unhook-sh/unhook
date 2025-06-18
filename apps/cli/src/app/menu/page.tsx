@@ -33,7 +33,7 @@ export const MenuPage: FC<RouteProps> = () => {
   const clientId = useConfigStore.use.clientId?.();
   const version = useCliStore.use.version();
   const webhookId = useConfigStore.use.webhookId();
-  const debug = useCliStore.use.debug();
+  const debug = useCliStore.use.verbose();
 
   const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${webhookId}`;
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);

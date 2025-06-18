@@ -47,7 +47,7 @@ export type AppRoute = Route<AppRoutePath>;
 
 export function useRoutes() {
   const isSignedIn = useAuthStore.use.isSignedIn();
-  const isDebug = useCliStore.use.debug?.();
+  const isDebug = useCliStore.use.verbose?.();
   const isAuthorizedForWebhook = useWebhookStore.use.isAuthorizedForWebhook();
   const isCheckingWebhook = useWebhookStore.use.isCheckingWebhook();
 

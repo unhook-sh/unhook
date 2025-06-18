@@ -60,13 +60,13 @@ export class UnhookLogger {
     this.defaultNamespace = props.defaultNamespace || 'app';
     this.useColors = props.useColors ?? isBrowser;
     this.destinations = new Set(props.destinations || []);
-    this.flushInterval = props.flushInterval ?? 100; // Default 100ms
+    this.flushInterval = props.flushInterval ?? 50; // Default 50ms
 
     // Start the flush timer
     this.startFlushTimer();
 
     // Intercept console methods
-    this.interceptConsole();
+    // this.interceptConsole();
   }
 
   private startFlushTimer(): void {
@@ -204,7 +204,7 @@ export class UnhookLogger {
         }
 
         const timestamp = new Date();
-        const prefix = `[${timestamp.toISOString()}] [${namespace}]`;
+        const prefix = `foo [${timestamp.toISOString()}] [${namespace}]`;
 
         // Write to destinations (non-blocking)
         self.writeToDestinations(

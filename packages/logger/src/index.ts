@@ -1,7 +1,9 @@
 import { UnhookLogger } from './logger';
 
 // Create and export a default logger instance
-export const defaultLogger = new UnhookLogger();
+export const defaultLogger = new UnhookLogger({
+  defaultNamespace: 'unhook',
+});
 
 // Export a debug function that uses the default logger
 export const debug = (namespace: string) => defaultLogger.debug(namespace);

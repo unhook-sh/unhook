@@ -9,7 +9,7 @@ export function ConnectionStatus() {
   const isConnected = useConnectionStore.use.isAnyConnected();
   const connectionId = useConnectionStore.use.connectionId();
   const delivery = useConfigStore.use.delivery();
-  const debug = useCliStore.use.debug();
+  const debug = useCliStore.use.verbose();
 
   if (!delivery?.length) {
     return (

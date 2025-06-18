@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.12.0
+
+### Minor Changes
+
+- [`0af4147`](https://github.com/unhook-sh/unhook/commit/0af41479013d7162636bd36e567b2be2173c76ad) Thanks [@seawatts](https://github.com/seawatts)! - Release vscode
+
 ## 0.11.0
 
 ### Minor Changes

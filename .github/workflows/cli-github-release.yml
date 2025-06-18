@@ -87,10 +87,10 @@ jobs:
             binary_ext: ""
             needs_codesign: true
           # Windows builds
-          - os: windows-latest
-            platform: win32
-            target: x64
-            binary_ext: ".exe"
+          # - os: windows-latest
+          #   platform: win32
+          #   target: x64
+          #   binary_ext: ".exe"
 
     runs-on: ${{ matrix.os }}
     outputs:

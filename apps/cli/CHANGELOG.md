@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.12.2
+
+### Patch Changes
+
+- [`7d89281`](https://github.com/unhook-sh/unhook/commit/7d89281d695e7c713ac567eefde612ed505c7f44) Thanks [@seawatts](https://github.com/seawatts)! - Fix github release
+
 ## 0.12.1
 
 ### Patch Changes

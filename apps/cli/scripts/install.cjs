@@ -66,7 +66,7 @@ const versionTag = version.startsWith('v') ? version : `v${version}`;
 const url = `https://github.com/${repo}/releases/download/${versionTag}/${binName}`;
 
 const installDir = path.join(os.homedir(), `.${cliName}/bin`);
-const versionedInstallDir = path.join(installDir, version);
+const versionedInstallDir = path.join(installDir, versionTag);
 const binPath = path.join(versionedInstallDir, binName);
 
 function clearOldVersions() {
@@ -110,8 +110,13 @@ function ensureInstallDir() {
 }
 
 function downloadBinary(cb) {
+  console.debug(
+    `🔍 Checking for binary at: ${binPath} (version: ${versionTag})`,
+  );
   if (fs.existsSync(binPath)) {
-    console.debug(`✅ Binary already exists at ${binPath}`);
+    console.debug(
+      `✅ Binary already exists at ${binPath} (version: ${versionTag})`,
+    );
     return cb();
   }
 
@@ -129,6 +134,8 @@ function downloadBinary(cb) {
   const file = fs.createWriteStream(binPath);
   console.log(`⬇️  Downloading ${binName} from GitHub releases...`);
   console.debug(`URL: ${url}`);
+
+  let _didDownload = false;
 
   const request = https.get(url, (res) => {
     console.debug(`Response status: ${res.statusCode}`);
@@ -154,6 +161,7 @@ function downloadBinary(cb) {
           }
           redirectRes.pipe(file);
           file.on('finish', () => {
+            _didDownload = true;
             file.close();
             setBinaryPermissions();
             console.log(`✅ Successfully downloaded and installed ${binName}`);
@@ -179,6 +187,7 @@ function downloadBinary(cb) {
     } else {
       res.pipe(file);
       file.on('finish', () => {
+        _didDownload = true;
         file.close();
         setBinaryPermissions();
         console.log(`✅ Successfully downloaded and installed ${binName}`);
@@ -248,6 +257,12 @@ function runBinary() {
     process.exit(1);
   }
 
+  // Prevent recursive execution
+  if (process.env.UNHOOK_CLI_LAUNCHED === '1') {
+    console.error('❌ Recursive execution detected. Exiting.');
+    process.exit(1);
+  }
+
   console.debug(`🚀 Running binary from: ${binPath}`);
   console.debug(`Arguments: ${process.argv.slice(2).join(' ')}`);
 
@@ -261,9 +276,10 @@ function runBinary() {
       setBinaryPermissions();
     }
 
+    const env = { ...process.env, UNHOOK_CLI_LAUNCHED: '1' };
     const result = spawnSync(binPath, process.argv.slice(2), {
       stdio: 'inherit',
-      env: process.env,
+      env,
     });
 
     if (result.error) {

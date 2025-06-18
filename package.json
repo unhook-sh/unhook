@@ -49,7 +49,8 @@
     "test": "bun test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
-    "with-env": "infisical run --"
+    "with-env": "infisical run --",
+    "version": "changeset version && bun biome check --write"
   },
   "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "trustedDependencies": [

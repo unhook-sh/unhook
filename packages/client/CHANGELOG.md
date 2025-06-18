@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.4.2
+
+### Patch Changes
+
+- [`9ec655d`](https://github.com/unhook-sh/unhook/commit/9ec655dd64489e642922c69d7624d2673caa21b9) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with publishing
+
 ## 0.4.1
 
 ### Patch Changes

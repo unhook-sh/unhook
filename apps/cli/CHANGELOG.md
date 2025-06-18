@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.12.1
+
+### Patch Changes
+
+- [`9ec655d`](https://github.com/unhook-sh/unhook/commit/9ec655dd64489e642922c69d7624d2673caa21b9) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with publishing
+
+- Updated dependencies [[`9ec655d`](https://github.com/unhook-sh/unhook/commit/9ec655dd64489e642922c69d7624d2673caa21b9)]:
+  - @unhook/client@0.4.2
+
 ## 0.12.0
 
 ### Minor Changes

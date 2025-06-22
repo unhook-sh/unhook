@@ -23,7 +23,7 @@ export function Scrollbar() {
         return (
           <Text
             key={`scrollbar-page-${currentPage}-pos-${
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              // biome-ignore lint/suspicious/noArrayIndexKey: Array index is stable here since we're mapping over a fixed slice of children
               i
             }`}
             color="gray"

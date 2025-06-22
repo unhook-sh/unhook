@@ -66,7 +66,7 @@ export default async function Blog({
       <script
         type="application/ld+json"
         suppressHydrationWarning
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: we're using a trusted source
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
@@ -130,7 +130,7 @@ export default async function Blog({
         </div>
         <article
           className="prose prose-lg dark:prose-invert mx-auto max-w-full prose-headings:font-semibold prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg prose-img:border prose-img:shadow-md"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: we're using a trusted source
           dangerouslySetInnerHTML={{ __html: post.source }}
         />
       </div>

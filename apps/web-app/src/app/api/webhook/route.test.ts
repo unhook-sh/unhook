@@ -29,7 +29,7 @@ vi.mock('@unhook/db/client', () => ({
 }));
 
 describe('Webhook Route Handler', () => {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   let mockFindFirst: Mock<any>;
 
   beforeEach(async () => {
@@ -39,7 +39,7 @@ describe('Webhook Route Handler', () => {
 
     // Setup mocks
     const { db } = await import('@unhook/db/client');
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     mockFindFirst = db.query.Webhooks.findFirst as Mock<any>;
 
     // Default mock responses

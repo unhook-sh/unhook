@@ -94,7 +94,7 @@ export function useWebhook(id: string) {
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to fetch the webhook once
   useEffect(() => {
     fetchWebhook();
   }, []);

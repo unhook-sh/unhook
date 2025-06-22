@@ -1,4 +1,4 @@
-// biome-ignore lint/style/useFilenamingConvention: <explanation>
+// biome-ignore lint/style/useFilenamingConvention: rename to run-test.ts
 import * as path from 'node:path';
 import { runTests } from '@vscode/test-electron';
 

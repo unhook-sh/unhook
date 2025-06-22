@@ -7,12 +7,14 @@
     "defaultBranch": "main"
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": ["!dist/**"]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
   },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "json": {
     "formatter": {
       "indentStyle": "space",
@@ -48,7 +50,21 @@
             "requireAscii": true,
             "filenameCases": ["kebab-case"]
           }
-        }
+        },
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "noCommonJs": "error",
+        "noNestedTernary": "off",
+        "useAtIndex": "error",
+        "useCollapsedIf": "error"
       },
       "suspicious": {
         "noExplicitAny": "error"

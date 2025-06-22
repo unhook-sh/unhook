@@ -12,7 +12,7 @@ vi.mock('../client', () => ({
       on: vi.fn().mockReturnThis(),
       subscribe: vi.fn((callback: (status: string, error?: Error) => void) => {
         // Store the callback for later use in tests
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
         (global as any).__subscriptionCallback = callback;
         return {
           unsubscribe: vi.fn(),
@@ -37,7 +37,7 @@ describe('useSubscription', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     (global as any).__subscriptionCallback = null;
   });
 
@@ -77,7 +77,7 @@ describe('useSubscription', () => {
 
     // Simulate successful connection
     await act(async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
       (global as any).__subscriptionCallback('SUBSCRIBED');
     });
 
@@ -85,7 +85,7 @@ describe('useSubscription', () => {
 
     // Simulate disconnection
     await act(async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
       (global as any).__subscriptionCallback('CLOSED');
     });
 
@@ -106,7 +106,7 @@ describe('useSubscription', () => {
 
     // Initial connection
     await act(async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
       (global as any).__subscriptionCallback('SUBSCRIBED');
     });
 
@@ -114,7 +114,7 @@ describe('useSubscription', () => {
 
     // Simulate disconnection
     await act(async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
       (global as any).__subscriptionCallback('CLOSED');
     });
 
@@ -146,7 +146,7 @@ describe('useSubscription', () => {
 
     // Simulate error
     await act(async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
       (global as any).__subscriptionCallback(
         'CHANNEL_ERROR',
         new Error('Test error'),
@@ -169,7 +169,7 @@ describe('useSubscription', () => {
 
     // Initial connection
     await act(async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
       (global as any).__subscriptionCallback('SUBSCRIBED');
     });
 
@@ -178,7 +178,7 @@ describe('useSubscription', () => {
 
     // Verify cleanup
     expect(createClient).toHaveBeenCalled();
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (createClient as any).mock.results[0].value;
     expect(client.removeAllChannels).toHaveBeenCalled();
     expect(client.realtime.disconnect).toHaveBeenCalled();

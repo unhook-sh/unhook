@@ -1,4 +1,4 @@
-// biome-ignore lint/style/useFilenamingConvention: <explanation>
+// biome-ignore lint/style/useFilenamingConvention: rename to app.tsx
 import type { RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { Icons } from '@unhook/ui/custom/icons';

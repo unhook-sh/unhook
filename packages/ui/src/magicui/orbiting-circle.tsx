@@ -109,7 +109,7 @@ export function OrbitingCircles({
             >
               <motion.div
                 key={`orbit-child-${
-                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Array index is stable here since we're mapping over a fixed slice of children
                   index
                 }`}
                 initial={{ scale: 0, opacity: 0 }}

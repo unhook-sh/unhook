@@ -98,7 +98,7 @@ export async function parseArgs(): Promise<CliState> {
     .scriptName('unhook')
     .parseAsync();
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: args doesn't have a type
   const parsedConfig = argv as any;
   parsedConfig.version = pkg.version;
 

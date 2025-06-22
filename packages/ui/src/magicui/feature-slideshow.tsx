@@ -136,7 +136,7 @@ export const Feature = ({
   };
 
   // interval for changing images
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to set the interval once
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) =>
@@ -147,7 +147,7 @@ export const Feature = ({
     return () => clearInterval(timer);
   }, [collapseDelay, currentIndex, featureItems.length]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to set the interval once
   useEffect(() => {
     const handleAutoScroll = () => {
       const nextIndex =

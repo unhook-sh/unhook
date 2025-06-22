@@ -87,7 +87,7 @@ export function Scrollbar({
       {visibleChildren.map((option, i) => (
         <Box
           key={`scrollbar-${
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            // biome-ignore lint/suspicious/noArrayIndexKey: Array index is stable here since we're mapping over a fixed slice of children
             i
           }`}
         >

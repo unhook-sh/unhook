@@ -73,7 +73,7 @@ export function Table<T extends ScalarDict>({
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
   const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to measure the width once
   useEffect(() => {
     if (tableRef.current) {
       const { width } = measureElement(tableRef.current);
@@ -89,7 +89,7 @@ export function Table<T extends ScalarDict>({
   // - 1 line for pagination info (if needed)
   const heightOfReservedLines = 5;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to measure the height once
   useEffect(() => {
     if (tableRef.current) {
       const { height } = measureElement(tableRef.current);

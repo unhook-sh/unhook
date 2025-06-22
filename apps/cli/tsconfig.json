@@ -16,5 +16,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["*.ts", "*.tsx", "src"],
-  "exclude": ["node_modules", "dist", "scripts"]
+  "exclude": ["node_modules", "dist", "scripts", "bin"]
 }

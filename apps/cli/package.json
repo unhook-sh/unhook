@@ -128,7 +128,7 @@
   "scripts": {
     "build": "NODE_ENV=production bun run build:base --minify --sourcemap",
     "build:base.old": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none --splitting=false",
-    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle",
+    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle --no-splitting",
     "clean": "git clean -xdf bin -e bin/cli.cjs .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
     "postinstall.skip": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",

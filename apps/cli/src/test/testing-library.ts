@@ -8,7 +8,7 @@ import { WebSocket } from 'ws';
 GlobalRegistrator.register();
 
 // Add WebSocket to global scope
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: WebSocket is a global
 global.WebSocket = WebSocket as any;
 
 // Extend expect with jest-dom matchers

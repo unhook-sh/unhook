@@ -12,22 +12,22 @@ import type { WebhookClientOptions } from './index';
 import { startWebhookClient } from './index';
 
 interface MockStream {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   on: Mock<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   write: Mock<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   end: Mock<any>;
 }
 
 interface MockClient {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   on: Mock<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   request: Mock<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   destroy: Mock<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
   close: Mock<any>;
   destroyed: boolean;
 }
@@ -84,7 +84,7 @@ describe('startWebhookClient', () => {
 
     expect(http2.connect).toHaveBeenCalledWith('https://webhook.example.com');
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
       ?.value as MockClient;
     expect(client.on).toHaveBeenCalledWith('error', expect.any(Function));
@@ -98,12 +98,12 @@ describe('startWebhookClient', () => {
   it('should start request stream with correct headers', () => {
     const stopClient = startWebhookClient(options);
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
       ?.value as MockClient;
     const connectHandler = client.on.mock.calls.find(
       (call) => call[0] === 'connect',
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     )?.[1] as any;
     if (!connectHandler) throw new Error('Connect handler not found');
 
@@ -123,12 +123,12 @@ describe('startWebhookClient', () => {
   it('should handle incoming requests and deliver them to local service', async () => {
     const stopClient = startWebhookClient(options);
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
       ?.value as MockClient;
     const connectHandler = client.on.mock.calls.find(
       (call) => call[0] === 'connect',
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     )?.[1] as any;
     if (!connectHandler) throw new Error('Connect handler not found');
 
@@ -138,7 +138,7 @@ describe('startWebhookClient', () => {
     const stream = client.request.mock.results[0]?.value as MockStream;
     const dataHandler = stream.on.mock.calls.find(
       (call) => call[0] === 'data',
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     )?.[1] as any;
     if (!dataHandler) throw new Error('Data handler not found');
 
@@ -194,12 +194,12 @@ describe('startWebhookClient', () => {
   it('should handle errors from local service', async () => {
     const stopClient = startWebhookClient(options);
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
       ?.value as MockClient;
     const connectHandler = client.on.mock.calls.find(
       (call) => call[0] === 'connect',
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     )?.[1] as any;
     if (!connectHandler) throw new Error('Connect handler not found');
 
@@ -209,7 +209,7 @@ describe('startWebhookClient', () => {
     const stream = client.request.mock.results[0]?.value as MockStream;
     const dataHandler = stream.on.mock.calls.find(
       (call) => call[0] === 'data',
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     )?.[1] as any;
     if (!dataHandler) throw new Error('Data handler not found');
 
@@ -258,12 +258,12 @@ describe('startWebhookClient', () => {
 
     const stopClient = startWebhookClient(options);
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
       ?.value as MockClient;
     const errorHandler = client.on.mock.calls.find(
       (call) => call[0] === 'error',
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     )?.[1] as any;
     if (!errorHandler) throw new Error('Error handler not found');
 
@@ -282,7 +282,7 @@ describe('startWebhookClient', () => {
   it('should cleanup resources on stop', () => {
     const stopClient = startWebhookClient(options);
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
       ?.value as MockClient;
     const stream = client.request.mock.results[0]?.value as MockStream;

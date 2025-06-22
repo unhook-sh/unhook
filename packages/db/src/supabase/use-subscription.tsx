@@ -9,8 +9,8 @@ import type {
 import { REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js';
 import { debug } from '@unhook/logger';
 import {
-  type ReactNode,
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -453,7 +453,7 @@ export function useSubscription<T extends TableName>(
         handleReconnect();
       }
     }
-  }, [networkStatus, getStatus]);
+  }, [networkStatus, getStatus, handleReconnect]);
 
   // Cleanup function for reconnection attempts
   const cleanupReconnect = useCallback(() => {

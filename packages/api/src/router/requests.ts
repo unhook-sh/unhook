@@ -1,11 +1,10 @@
-import { and, desc, eq } from 'drizzle-orm';
-import { z } from 'zod';
-
 import {
   CreateRequestTypeSchema,
-  type RequestType,
   Requests,
+  type RequestType,
 } from '@unhook/db/schema';
+import { and, desc, eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 

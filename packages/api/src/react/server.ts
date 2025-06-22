@@ -1,9 +1,8 @@
 import 'server-only';
 
+import { createServerSideHelpers } from '@trpc/react-query/server';
 import { headers } from 'next/headers';
 import { NextRequest } from 'next/server';
-
-import { createServerSideHelpers } from '@trpc/react-query/server';
 import { cache } from 'react';
 import superjson from 'superjson';
 import { createTRPCContext } from '../context';

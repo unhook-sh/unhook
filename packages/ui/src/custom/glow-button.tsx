@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cn } from '@unhook/ui/lib/utils';
-import { type VariantProps, cva } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { ArrowRight } from 'lucide-react';
 import type * as React from 'react';
 
@@ -53,16 +53,14 @@ function GlowButton({
       )}
       {...props}
     >
-      <>
-        {/* Glow effect container */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-full opacity-75 group-hover:opacity-100 transition duration-1000" />
+      {/* Glow effect container */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-full opacity-75 group-hover:opacity-100 transition duration-1000" />
 
-        {/* Button content */}
-        <div className="relative bg-black border border-transparent rounded-full px-6 py-2">
-          {children}
-          {showArrow && <ArrowRight className="absolute right-6 size-5" />}
-        </div>
-      </>
+      {/* Button content */}
+      <div className="relative bg-black border border-transparent rounded-full px-6 py-2">
+        {children}
+        {showArrow && <ArrowRight className="absolute right-6 size-5" />}
+      </div>
     </Comp>
   );
 }

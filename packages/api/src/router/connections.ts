@@ -1,12 +1,11 @@
-import { kv } from '@vercel/kv';
-import { and, desc, eq } from 'drizzle-orm';
-import { z } from 'zod';
-
 import {
   Connections,
   CreateConnectionTypeSchema,
   UpdateConnectionTypeSchema,
 } from '@unhook/db/schema';
+import { kv } from '@vercel/kv';
+import { and, desc, eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 

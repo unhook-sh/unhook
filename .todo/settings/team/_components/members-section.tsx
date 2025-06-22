@@ -4,14 +4,14 @@ import { useUser } from '@clerk/nextjs/client';
 import type { ColumnDef } from '@tanstack/react-table';
 import {
   type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type SortingState,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table';
 import {
   AlertDialog,

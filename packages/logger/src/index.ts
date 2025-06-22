@@ -19,5 +19,5 @@ if (typeof process !== 'undefined' && process.env.DEBUG) {
   }
 }
 
-export * from './types';
 export * from './logger';
+export * from './types';

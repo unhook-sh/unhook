@@ -1,6 +1,5 @@
-import { useId } from 'react';
-
 import { cn } from '@unhook/ui/lib/utils';
+import { useId } from 'react';
 
 interface DotPatternProps {
   width?: number;

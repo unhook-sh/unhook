@@ -6,12 +6,12 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
-import { TRPCError, initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
+import { debug } from '@unhook/logger';
 import superjson from 'superjson';
 import { ZodError } from 'zod';
-
-import { debug } from '@unhook/logger';
 import type { Context } from './context';
+
 const log = debug('unhook:trpc');
 
 /**

@@ -86,7 +86,7 @@ export function WebhookLatencyChart({
     };
 
     setData(generateData());
-  }, [timeRange, detailed]);
+  }, [timeRange, detailed, getPointsForTimeRange, getTimeRangeInMs]);
 
   const getTimeRangeInMs = (range: string) => {
     switch (range) {

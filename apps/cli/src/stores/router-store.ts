@@ -5,6 +5,7 @@ import type { FC } from 'react';
 import { createStore } from 'zustand';
 import type { AppRoutePath } from '~/app/routes';
 import { capture } from '../lib/posthog';
+
 const log = debug('unhook:cli:router-store');
 
 // Route configuration type

@@ -1,8 +1,7 @@
 import type { TRPCRouterRecord } from '@trpc/server';
-import { z } from 'zod';
-
 import { eq } from '@unhook/db';
 import { CreateUserSchema, Users } from '@unhook/db/schema';
+import { z } from 'zod';
 
 import { protectedProcedure, publicProcedure } from '../trpc';
 

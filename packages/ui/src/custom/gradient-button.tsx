@@ -1,5 +1,5 @@
 import { cn } from '@unhook/ui/lib/utils';
-import { type VariantProps, cva } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
 const gradientButtonVariants = cva(

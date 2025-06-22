@@ -1,11 +1,10 @@
 'use client';
 
+import { cn } from '@unhook/ui/lib/utils';
 import createGlobe, { type COBEOptions } from 'cobe';
 import { useMotionValue, useSpring } from 'motion/react';
 import { useTheme } from 'next-themes';
 import { useEffect, useMemo, useRef } from 'react';
-
-import { cn } from '@unhook/ui/lib/utils';
 
 const MOVEMENT_DAMPING = 1400;
 

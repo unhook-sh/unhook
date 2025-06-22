@@ -1,7 +1,7 @@
 import {
-  type WebhookConfig,
   findUpConfig,
   loadConfig,
+  type WebhookConfig,
 } from '@unhook/client/config';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';

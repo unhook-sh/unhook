@@ -1,5 +1,4 @@
 import net from 'node:net';
-import {} from 'node:os';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';

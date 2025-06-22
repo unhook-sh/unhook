@@ -1,7 +1,6 @@
-import { RequestView } from '~/app/(app)/_components/requests/request-view';
-
-import { HydrationBoundary, getApi } from '@unhook/api/server';
+import { getApi, HydrationBoundary } from '@unhook/api/server';
 import { Suspense } from 'react';
+import { RequestView } from '~/app/(app)/_components/requests/request-view';
 
 export default async function RequestsPage() {
   const api = await getApi();

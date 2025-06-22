@@ -1,5 +1,6 @@
 import {
   Code,
+  CreditCard,
   FolderPlus,
   KeyRound,
   Logs,
@@ -7,7 +8,6 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import { CreditCard } from 'lucide-react';
 
 export interface SidebarSection {
   label?: string;

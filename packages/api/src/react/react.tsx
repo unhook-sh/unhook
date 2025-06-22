@@ -9,7 +9,7 @@ import type { AppRouter } from '../root';
 import { type ClientConfig, createDefaultLinks } from './config';
 import { createQueryClient } from './query-client';
 
-let clientQueryClientSingleton: QueryClient | undefined = undefined;
+let clientQueryClientSingleton: QueryClient | undefined;
 const getQueryClient = () => {
   if (typeof globalThis === 'undefined') {
     // Server: always make a new query client

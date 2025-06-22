@@ -1,13 +1,12 @@
-import { and, count, desc, eq } from 'drizzle-orm';
-import { z } from 'zod';
-
 import {
   CreateEventTypeSchema,
-  type EventTypeWithRequest,
   Events,
+  type EventTypeWithRequest,
   Requests,
   UpdateEventTypeSchema,
 } from '@unhook/db/schema';
+import { and, count, desc, eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 

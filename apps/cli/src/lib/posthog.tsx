@@ -1,8 +1,7 @@
+import { debug } from '@unhook/logger';
 import { PostHog } from 'posthog-node';
 import type { PropsWithChildren } from 'react';
 import { useEffect } from 'react';
-
-import { debug } from '@unhook/logger';
 import { env } from '~/env';
 import { useAuthStore } from '~/stores/auth-store';
 import { useCliStore } from '~/stores/cli-store';

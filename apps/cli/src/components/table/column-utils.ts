@@ -40,7 +40,10 @@ export function calculateColumnWidths<T extends ScalarDict>({
 export function calculateInitialWidths<T>({
   columns,
   padding,
-}: { columns: ColumnDef<T>[]; padding: number }): Record<string, number> {
+}: {
+  columns: ColumnDef<T>[];
+  padding: number;
+}): Record<string, number> {
   const widths: Record<string, number> = {};
   for (const column of columns) {
     const headerContent =
@@ -218,7 +221,11 @@ export function padContent({
   content,
   width,
   padding,
-}: { content: string; width: number; padding: number }): string {
+}: {
+  content: string;
+  width: number;
+  padding: number;
+}): string {
   // Calculate available space for content
   const _contentWidth = width - padding * 2;
 

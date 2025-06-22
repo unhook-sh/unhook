@@ -8,6 +8,7 @@ import {
   SiStripe,
   SiX,
 } from '@icons-pack/react-simple-icons';
+import { cn, twx } from '@unhook/ui/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
 import { cva } from 'class-variance-authority';
 import type { IconNode, LucideProps } from 'lucide-react';
@@ -34,10 +35,10 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   ChevronsLeft,
   ChevronsLeftRightEllipsis,
   ChevronsRight,
+  ChevronUp,
   Circle,
   CircleDot,
   CirclePlus,
@@ -102,8 +103,6 @@ import {
   X,
 } from 'lucide-react';
 import type { TwcComponentProps } from 'react-twc';
-
-import { cn, twx } from '@unhook/ui/lib/utils';
 
 export type Icon = IconNode;
 

@@ -1,8 +1,7 @@
+import { auth } from '@clerk/nextjs/server';
 import { createServerClient } from '@supabase/ssr';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-
-import { auth } from '@clerk/nextjs/server';
 import { env } from '../env.client';
 
 export async function updateSession(request: NextRequest) {

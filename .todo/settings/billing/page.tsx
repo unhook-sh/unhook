@@ -61,21 +61,21 @@ export default async function BillingPage({
                 </Suspense>
               </div>
             </div>
-            <>
-              <Separator />
-              <div>
-                <h4 className="font-medium text-md">Upgrade Plan</h4>
-                <p className="text-sm text-muted-foreground">
-                  Upgrade to the <strong>Pro Plan</strong> to get more features.
-                </p>
-                <div className="mt-4">
-                  <Suspense fallback={<div>Loading checkout...</div>}>
-                    <StripeCheckoutButton orgId={orgId} />
-                  </Suspense>
-                </div>
+
+            <Separator />
+            <div>
+              <h4 className="font-medium text-md">Upgrade Plan</h4>
+              <p className="text-sm text-muted-foreground">
+                Upgrade to the <strong>Pro Plan</strong> to get more features.
+              </p>
+              <div className="mt-4">
+                <Suspense fallback={<div>Loading checkout...</div>}>
+                  <StripeCheckoutButton orgId={orgId} />
+                </Suspense>
               </div>
-              {/* <Separator /> */}
-            </>
+            </div>
+            {/* <Separator /> */}
+
             {/* <div> */}
             {/* <h4 className="font-medium text-md">Features</h4> */}
             {/* <Suspense fallback={<div>Loading features...</div>}> */}

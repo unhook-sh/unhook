@@ -1,7 +1,6 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { defaultLogger } from '@unhook/logger';
-import { debug } from '@unhook/logger';
+import { debug, defaultLogger } from '@unhook/logger';
 import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file';
 
 const logDir = join(homedir(), '.unhook');

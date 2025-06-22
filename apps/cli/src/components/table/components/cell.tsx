@@ -1,5 +1,4 @@
-import { Text } from 'ink';
-import { useFocus } from 'ink';
+import { Text, useFocus } from 'ink';
 import type { CellProps, ScalarDict } from '../types';
 
 export function Cell<T extends ScalarDict>({

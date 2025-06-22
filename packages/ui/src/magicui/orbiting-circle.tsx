@@ -2,8 +2,8 @@
 
 import { cn } from '@unhook/ui/lib/utils';
 import {
-  type HTMLMotionProps,
   cubicBezier,
+  type HTMLMotionProps,
   motion,
   useInView,
 } from 'motion/react';

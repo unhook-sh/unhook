@@ -1,7 +1,6 @@
 import { tryDecodeBase64 } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
-import { Box, Text } from 'ink';
-import { useInput } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
@@ -10,8 +9,8 @@ import { useDimensions } from '~/hooks/use-dimensions';
 import { useForceUpdate } from '~/hooks/use-force-update';
 import { capture } from '~/lib/posthog';
 import { useEventStore } from '~/stores/events-store';
-import { useRouterStore } from '~/stores/router-store';
 import type { RouteProps } from '~/stores/router-store';
+import { useRouterStore } from '~/stores/router-store';
 import { columns } from './_components/events-table-columns';
 
 function tryParseJson(str: string): string {

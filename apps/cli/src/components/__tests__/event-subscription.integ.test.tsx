@@ -2,8 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'bun:test';
 import type { RealtimePostgresInsertPayload } from '@supabase/supabase-js';
 import type { Tables } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { Events } from '@unhook/db/schema';
 import type { EventType } from '@unhook/db/schema';
+import { Events } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
 import {
   cleanupTestEnvironment,

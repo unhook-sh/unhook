@@ -7,8 +7,8 @@ import { SelectInput } from '~/components/select-input';
 import { env } from '~/env';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
-import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
 import type { RouteProps } from '~/stores/router-store';
+import { type StaticRoutePath, useRouterStore } from '~/stores/router-store';
 import type { AppRoutePath } from '../routes';
 import { useRoutes } from '../routes';
 

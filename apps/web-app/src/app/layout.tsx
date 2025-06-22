@@ -1,14 +1,12 @@
+import { AnalyticsProviders } from '@unhook/analytics';
 import { ReactScan } from '@unhook/ui/custom/react-scan';
+import { ThemeProvider } from '@unhook/ui/custom/theme';
+import { cn } from '@unhook/ui/lib/utils';
+import { Toaster } from '@unhook/ui/sonner';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata, Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-
-import { AnalyticsProviders } from '@unhook/analytics';
-import { ThemeProvider } from '@unhook/ui/custom/theme';
-import { cn } from '@unhook/ui/lib/utils';
-import {} from '@unhook/ui/sidebar';
-import { Toaster } from '@unhook/ui/sonner';
 
 import '@unhook/ui/globals.css';
 

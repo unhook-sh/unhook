@@ -5,10 +5,7 @@ import type { Database } from './types';
 
 const log = debug('unhook:lib:supabase:realtime-client');
 
-export function createClient(props: {
-  authToken: string;
-  url?: string;
-}) {
+export function createClient(props: { authToken: string; url?: string }) {
   const { authToken, url } = props;
   if (!authToken) {
     log('Warning: No access token provided to createRealtimeClient');

@@ -8,11 +8,7 @@ export interface NavItem {
   href: string;
 }
 
-export function NavMenu({
-  navs,
-}: {
-  navs?: NavItem[];
-}) {
+export function NavMenu({ navs }: { navs?: NavItem[] }) {
   const ref = useRef<HTMLUListElement>(null);
   const [left, setLeft] = useState(0);
   const [width, setWidth] = useState(0);

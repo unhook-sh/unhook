@@ -1,8 +1,8 @@
 import 'server-only';
 
 import {
-  HydrationBoundary as ReactQueryHydrationBoundary,
   dehydrate,
+  HydrationBoundary as ReactQueryHydrationBoundary,
 } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { getApi } from './server';

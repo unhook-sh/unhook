@@ -1,6 +1,6 @@
 import { useApp } from 'ink';
-import { useEffect } from 'react';
 import type { FC } from 'react';
+import { useEffect } from 'react';
 import type { RouteProps } from '~/stores/router-store';
 
 export const QuitPage: FC<RouteProps> = () => {

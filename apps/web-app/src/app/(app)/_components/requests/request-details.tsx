@@ -1,8 +1,5 @@
 'use client';
 
-import { ChevronDown, ChevronUp, Copy, X } from 'lucide-react';
-import { useState } from 'react';
-
 import type { RequestType } from '@unhook/db/schema';
 import { Button } from '@unhook/ui/components/button';
 import { ScrollArea } from '@unhook/ui/components/scroll-area';
@@ -13,6 +10,8 @@ import {
   TabsTrigger,
 } from '@unhook/ui/components/tabs';
 import { cn } from '@unhook/ui/lib/utils';
+import { ChevronDown, ChevronUp, Copy, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface LogDetailsProps {
   request: RequestType;

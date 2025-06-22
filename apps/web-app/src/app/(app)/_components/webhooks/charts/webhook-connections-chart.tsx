@@ -63,7 +63,7 @@ export function WebhookConnectionsChart({
     };
 
     setData(generateData());
-  }, [timeRange]);
+  }, [timeRange, getPointsForTimeRange, getTimeRangeInMs]);
 
   // Simulate real-time updates
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { type Theme, highlight } from 'cli-highlight';
+import { highlight, type Theme } from 'cli-highlight';
 import { Text } from 'ink';
 import * as React from 'react';
 

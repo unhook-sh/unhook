@@ -49,7 +49,7 @@ export function WebhookActivityChart({ timeRange }: WebhookActivityChartProps) {
     };
 
     setData(generateData());
-  }, [timeRange]);
+  }, [timeRange, getTimeRangeInMs]);
 
   const getTimeRangeInMs = (range: string) => {
     switch (range) {

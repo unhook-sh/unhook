@@ -65,8 +65,8 @@ export function startWebhookClient(options: WebhookClientOptions): () => void {
   };
 }
 
-export * from './utils/headers';
-export * from './types';
-export * from './webhook-handler';
-export * from './connection-manager';
 export * from './config';
+export * from './connection-manager';
+export * from './types';
+export * from './utils/headers';
+export * from './webhook-handler';

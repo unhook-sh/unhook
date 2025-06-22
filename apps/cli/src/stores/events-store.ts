@@ -77,7 +77,10 @@ const store = createStore<EventStore>()((set, get) => ({
   fetchEvents: async ({
     limit = 25,
     offset = 0,
-  }: { limit?: number; offset?: number } = {}) => {
+  }: {
+    limit?: number;
+    offset?: number;
+  } = {}) => {
     const { webhookId } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     const currentState = get();

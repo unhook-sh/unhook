@@ -1,7 +1,7 @@
 'use server';
 
-import { initBaseAuth } from '@clerk/node';
 import type { UserInOrgMetadata } from '@clerk/node';
+import { initBaseAuth } from '@clerk/node';
 import { createSafeActionClient } from 'next-safe-action';
 import { env } from '~/env';
 import type { Member, Role } from './types';

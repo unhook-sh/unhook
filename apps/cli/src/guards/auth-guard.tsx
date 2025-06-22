@@ -1,4 +1,3 @@
-import {} from 'ink';
 import type { PropsWithChildren } from 'react';
 import { useAuthStore } from '../stores/auth-store';
 
@@ -16,7 +15,7 @@ interface AuthGuardProps extends PropsWithChildren {
 export function SignedIn({ children }: AuthGuardProps) {
   const isSignedIn = useAuthStore.use.isSignedIn();
 
-  return isSignedIn ? <>{children}</> : null;
+  return isSignedIn ? children : null;
 }
 
 /**
@@ -25,7 +24,7 @@ export function SignedIn({ children }: AuthGuardProps) {
 export function SignedOut({ children }: AuthGuardProps) {
   const isSignedIn = useAuthStore.use.isSignedIn();
 
-  return !isSignedIn ? <>{children}</> : null;
+  return !isSignedIn ? children : null;
 }
 
 /**
@@ -34,7 +33,7 @@ export function SignedOut({ children }: AuthGuardProps) {
 export function ValidatingSession({ children }: AuthGuardProps) {
   const isValidating = useAuthStore.use.isValidatingSession();
 
-  return isValidating ? <>{children}</> : null;
+  return isValidating ? children : null;
 }
 
 /**
@@ -43,5 +42,5 @@ export function ValidatingSession({ children }: AuthGuardProps) {
 export function ValidatedSession({ children }: AuthGuardProps) {
   const isValidating = useAuthStore.use.isValidatingSession();
 
-  return isValidating ? null : <>{children}</>;
+  return isValidating ? null : children;
 }

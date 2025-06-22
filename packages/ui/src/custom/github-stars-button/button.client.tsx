@@ -6,7 +6,11 @@ import { cn } from '@unhook/ui/lib/utils';
 export function GitHubStarsButtonClient({
   className,
   repo,
-}: { stars: number; className?: string; repo: string }) {
+}: {
+  stars: number;
+  className?: string;
+  repo: string;
+}) {
   const _formater = Intl.NumberFormat('en-US', {
     notation: 'compact',
     maximumFractionDigits: 0,

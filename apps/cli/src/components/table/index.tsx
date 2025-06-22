@@ -1,6 +1,5 @@
 import figures from 'figures';
-import { Box, Text } from 'ink';
-import { measureElement } from 'ink';
+import { Box, measureElement, Text } from 'ink';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {

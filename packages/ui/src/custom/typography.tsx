@@ -1,8 +1,7 @@
+import { cn, twx } from '@unhook/ui/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
 import { cva } from 'class-variance-authority';
 import type { TwcComponentProps } from 'react-twc';
-
-import { cn, twx } from '@unhook/ui/lib/utils';
 
 import { Skeleton } from '../components/skeleton';
 

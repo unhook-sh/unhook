@@ -34,4 +34,4 @@ type RouterOutputs = inferRouterOutputs<AppRouter>;
 export { createCaller };
 export type { RouterInputs, RouterOutputs };
 
-export { appRouter, type AppRouter } from './root';
+export { type AppRouter, appRouter } from './root';

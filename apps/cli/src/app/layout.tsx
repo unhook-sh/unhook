@@ -19,11 +19,11 @@ import {
 } from '~/guards';
 import { useDimensions } from '~/hooks/use-dimensions';
 import {
+  capture,
+  captureException,
   PostHogIdentifyUser,
   PostHogOptIn,
   PostHogPageView,
-  capture,
-  captureException,
 } from '~/lib/posthog';
 import { useAuthStore } from '~/stores/auth-store';
 import { useCliStore } from '~/stores/cli-store';

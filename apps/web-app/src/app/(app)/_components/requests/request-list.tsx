@@ -1,10 +1,10 @@
 'use client';
-import { AlertTriangle } from 'lucide-react';
 
 import type { RequestType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/components/badge';
 import { Skeleton } from '@unhook/ui/components/skeleton';
 import { cn } from '@unhook/ui/lib/utils';
+import { AlertTriangle } from 'lucide-react';
 
 interface RequestListProps {
   requests: RequestType[];

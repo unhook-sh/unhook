@@ -1,11 +1,10 @@
 'use client';
 
-import type React from 'react';
-import { forwardRef, useRef } from 'react';
-
 import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { AnimatedBeam } from '@unhook/ui/magicui/animated-beam';
+import type React from 'react';
+import { forwardRef, useRef } from 'react';
 import { Icons as MarketingIcons } from './icons';
 
 const Circle = forwardRef<
@@ -27,11 +26,7 @@ const Circle = forwardRef<
 
 Circle.displayName = 'Circle';
 
-export function ThirdBentoAnimation({
-  className,
-}: {
-  className?: string;
-}) {
+export function ThirdBentoAnimation({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const div1Ref = useRef<HTMLDivElement>(null);
   const div2Ref = useRef<HTMLDivElement>(null);

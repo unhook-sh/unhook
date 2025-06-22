@@ -1,6 +1,6 @@
 import type { ForegroundColorName } from 'chalk';
-import spinners from 'cli-spinners';
 import type { SpinnerName } from 'cli-spinners';
+import spinners from 'cli-spinners';
 import { Text } from 'ink';
 import { useEffect, useState } from 'react';
 import type { LiteralUnion } from 'type-fest';

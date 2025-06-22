@@ -27,7 +27,7 @@ import {
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { ProjectDropdownMenu } from './project-dropdown-menu';
-import { type SidebarSection, defaultSections } from './sections';
+import { defaultSections, type SidebarSection } from './sections';
 import { UserDropdownMenu } from './user-dropdown-menu';
 
 export interface AppSidebarProps {

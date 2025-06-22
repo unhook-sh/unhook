@@ -1,11 +1,9 @@
+import type { WebhookConfig } from '@unhook/client';
 import { debug } from '@unhook/logger';
 import { Box, Text, useInput } from 'ink';
 import { type FC, useState } from 'react';
 import { z } from 'zod';
 import { Ascii } from '~/components/ascii';
-import { capture } from '~/lib/posthog';
-
-import type { WebhookConfig } from '@unhook/client';
 import {
   FormDescription,
   FormInput,
@@ -14,10 +12,12 @@ import {
   FormSelect,
 } from '~/components/form';
 import { useDimensions } from '~/hooks/use-dimensions';
+import { capture } from '~/lib/posthog';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
 import { useWebhookStore } from '~/stores/webhook-store';
+
 const log = debug('unhook:cli:init');
 
 const initFormSchema = z.object({

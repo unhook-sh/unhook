@@ -3,8 +3,7 @@ import {
   tryDecodeBase64,
 } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
-import { Box, Text } from 'ink';
-import { useInput } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import { type FC, useCallback, useEffect, useState } from 'react';
 import { SyntaxHighlight } from '~/components/syntax-highlight';
 import { Table } from '~/components/table';

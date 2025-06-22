@@ -115,7 +115,9 @@ export function Tabs({
 
 export function TabsList({
   children,
-}: { children: React.ReactElement<typeof TabsTrigger>[] }) {
+}: {
+  children: React.ReactElement<typeof TabsTrigger>[];
+}) {
   const direction = useTabsStore.use.direction();
   const activeTabIndex = useTabsStore.use.activeTabIndex();
   const setActiveTabIndex = useTabsStore.use.setActiveTabIndex();
@@ -189,7 +191,10 @@ export function TabsTrigger({
 export function TabsContent({
   children,
   value,
-}: { children: React.ReactNode; value: string }) {
+}: {
+  children: React.ReactNode;
+  value: string;
+}) {
   const activeTab = useTabsStore.use.activeTab();
 
   if (activeTab === value) return children;

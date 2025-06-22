@@ -1,7 +1,5 @@
 import type { WebhookEvent } from '@clerk/nextjs/server';
 import { posthog } from '@unhook/analytics/posthog/server';
-import {} from '@unhook/db/schema';
-import {} from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { Webhook } from 'svix';
 

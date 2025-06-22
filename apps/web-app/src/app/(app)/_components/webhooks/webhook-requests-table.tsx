@@ -1,9 +1,5 @@
 'use client';
 
-import { format } from 'date-fns';
-import { AlertTriangle } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
 import type { RequestType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/components/badge';
 import { Skeleton } from '@unhook/ui/components/skeleton';
@@ -15,6 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '@unhook/ui/components/table';
+import { format } from 'date-fns';
+import { AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { RequestDetails } from '~/app/(app)/_components/requests/request-details';
 import { RequestMetadata } from '~/app/(app)/_components/requests/request-metadata';
 

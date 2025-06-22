@@ -1,6 +1,4 @@
-import { format, formatDistanceToNow } from 'date-fns';
-
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes, format, formatDistanceToNow } from 'date-fns';
 
 export function formatRelativeTime(
   date: Date,

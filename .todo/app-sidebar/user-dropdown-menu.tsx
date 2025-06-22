@@ -30,9 +30,9 @@ import {
   SunIcon,
   Users,
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import { useState } from 'react';
 import { NewOrgDialog } from './new-org-dialog';
 

@@ -26,7 +26,7 @@ export function Connected({ children, fallback }: ConnectionGuardProps) {
     );
   }
 
-  return isConnected ? <>{children}</> : null;
+  return isConnected ? children : null;
 }
 
 /**
@@ -46,7 +46,7 @@ export function Disconnected({ children, fallback }: ConnectionGuardProps) {
     );
   }
 
-  return !isConnected ? <>{children}</> : null;
+  return !isConnected ? children : null;
 }
 
 /**
@@ -75,5 +75,5 @@ export function ConnectionGuard({
     );
   }
 
-  return isConnected ? <>{children}</> : <>{disconnectedComponent}</>;
+  return isConnected ? children : disconnectedComponent;
 }

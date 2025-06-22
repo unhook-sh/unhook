@@ -6,7 +6,9 @@ import { useEffect, useState } from 'react';
  */
 export function useForceUpdate({
   intervalMs = 1000,
-}: { intervalMs?: number } = {}) {
+}: {
+  intervalMs?: number;
+} = {}) {
   const [, forceUpdate] = useState({});
   // Add timer effect to update the page every second
   useEffect(() => {

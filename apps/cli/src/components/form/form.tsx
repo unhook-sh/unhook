@@ -1,7 +1,7 @@
 import { Box, useFocusManager } from 'ink';
 import {
-  type ReactNode,
   createContext,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,

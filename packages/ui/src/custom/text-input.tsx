@@ -1,7 +1,6 @@
+import type { VariantProps } from 'class-variance-authority';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-
-import type { VariantProps } from 'class-variance-authority';
 import { Button, type buttonVariants } from '../components/button';
 import { Input } from '../components/input';
 

@@ -1,6 +1,5 @@
-import type { CSSProperties, FC, ReactNode } from 'react';
-
 import { cn } from '@unhook/ui/lib/utils';
+import type { CSSProperties, FC, ReactNode } from 'react';
 
 interface AnimatedShinyTextProps {
   children: ReactNode;

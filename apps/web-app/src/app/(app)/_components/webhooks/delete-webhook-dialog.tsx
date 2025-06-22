@@ -1,8 +1,5 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
-
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -13,6 +10,8 @@ import {
   AlertDialogTitle,
 } from '@unhook/ui/components/alert-dialog';
 import { Button } from '@unhook/ui/components/button';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import type { Webhook } from '~/types/webhook';
 
 interface DeleteWebhookDialogProps {

@@ -50,6 +50,7 @@ posthog.init(process.env.PLASMO_PUBLIC_POSTHOG_KEY || '', {
   },
   persistence: 'localStorage',
 });
+
 // }, []);
 
 // return <Provider client={posthog as unknown as PostHog}>{children}</Provider>;

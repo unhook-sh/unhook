@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 import { createHash } from 'node:crypto';
-import { clerkClient } from '@clerk/express';
 import type { User } from '@clerk/express';
+import { clerkClient } from '@clerk/express';
 import type { RealtimePostgresInsertPayload } from '@supabase/supabase-js';
 import type { Tables } from '@unhook/db';
 import { eq } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { Events, Orgs, Users, Webhooks } from '@unhook/db/schema';
 import type { EventType } from '@unhook/db/schema';
+import { Events, Orgs, Users, Webhooks } from '@unhook/db/schema';
 import { createClient } from '@unhook/db/supabase/cli';
 import { createId } from '@unhook/id';
 

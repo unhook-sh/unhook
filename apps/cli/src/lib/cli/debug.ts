@@ -4,7 +4,9 @@ const log = debug('unhook:cli');
 
 export async function setupDebug({
   isDebugEnabled,
-}: { isDebugEnabled: boolean }): Promise<void> {
+}: {
+  isDebugEnabled: boolean;
+}): Promise<void> {
   if (!isDebugEnabled) return;
 
   defaultLogger.enableNamespace('unhook:*');

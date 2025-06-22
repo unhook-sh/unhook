@@ -16,7 +16,7 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, request) => {
   // Handle POST requests to root path with any webhook ID
   if (request.method === 'POST') {
-    const match = request.nextUrl.pathname.match(/^\/wh_([^\/]+)$/);
+    const match = request.nextUrl.pathname.match(/^\/wh_([^/]+)$/);
     if (match) {
       const webhookId = match[1];
       const url = new URL(`/api/webhook/wh_${webhookId}`, request.url);

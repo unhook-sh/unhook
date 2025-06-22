@@ -1,6 +1,6 @@
-export * from './use-subscription';
-export * from './use-broadcast';
-export * from './presence/component';
-export * from './presence/store-provider';
-export type * from './presence/store';
 export { createClient } from './client';
+export * from './presence/component';
+export type * from './presence/store';
+export * from './presence/store-provider';
+export * from './use-broadcast';
+export * from './use-subscription';

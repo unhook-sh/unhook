@@ -1,8 +1,5 @@
 'use client';
 
-import { ChevronDown, ChevronRight, Search } from 'lucide-react';
-import { useState } from 'react';
-
 import { Button } from '@unhook/ui/components/button';
 import { Checkbox } from '@unhook/ui/components/checkbox';
 import {
@@ -19,6 +16,8 @@ import {
   SelectValue,
 } from '@unhook/ui/components/select';
 import { cn } from '@unhook/ui/lib/utils';
+import { ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { useState } from 'react';
 
 interface FilterAreaProps {
   className?: string;

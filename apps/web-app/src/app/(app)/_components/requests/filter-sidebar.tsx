@@ -1,8 +1,5 @@
 'use client';
 
-import { ChevronDown, ChevronRight, Search } from 'lucide-react';
-import { useState } from 'react';
-
 import { Button } from '@unhook/ui/components/button';
 import { Checkbox } from '@unhook/ui/components/checkbox';
 import {
@@ -19,6 +16,8 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from '@unhook/ui/components/sidebar';
+import { ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { useState } from 'react';
 
 export function FilterSidebar() {
   const [routeSearch, setRouteSearch] = useState('');

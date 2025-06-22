@@ -1,7 +1,6 @@
+import { cn } from '@unhook/ui/lib/utils';
 import type { CSSProperties } from 'react';
 import React from 'react';
-
-import { cn } from '@unhook/ui/lib/utils';
 
 export interface ShimmerButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

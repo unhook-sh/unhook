@@ -1,5 +1,4 @@
 import { debug } from '@unhook/logger';
-import {} from 'ink';
 import { memo, useEffect, useRef } from 'react';
 import { useConfigStore } from '~/stores/config-store';
 import { useWebhookStore } from '~/stores/webhook-store';

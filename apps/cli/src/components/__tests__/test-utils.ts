@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { clerkClient } from '@clerk/express';
 import type { User } from '@clerk/express';
+import { clerkClient } from '@clerk/express';
 import { eq } from '@unhook/db';
 import { db } from '@unhook/db/client';
 import type { OrgType, UserType, WebhookType } from '@unhook/db/schema';

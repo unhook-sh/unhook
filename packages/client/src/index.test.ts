@@ -1,10 +1,10 @@
 import {
-  type Mock,
   afterEach,
   beforeEach,
   describe,
   expect,
   it,
+  type Mock,
   mock,
 } from 'bun:test';
 import http2 from 'node:http2';

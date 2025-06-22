@@ -87,7 +87,7 @@ export const Particles: React.FC<ParticlesProps> = ({
     return () => {
       window.removeEventListener('resize', initCanvas);
     };
-  }, []);
+  }, [animate, initCanvas]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -105,7 +105,7 @@ export const Particles: React.FC<ParticlesProps> = ({
 
   useEffect(() => {
     initCanvas();
-  }, []);
+  }, [initCanvas]);
 
   const initCanvas = () => {
     resizeCanvas();

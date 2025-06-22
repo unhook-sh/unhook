@@ -1,5 +1,5 @@
-import { relations } from 'drizzle-orm';
-import { sql } from 'drizzle-orm';
+import { createId } from '@unhook/id';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -14,8 +14,6 @@ import {
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import { z } from 'zod';
-
-import { createId } from '@unhook/id';
 
 export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user']);
 export const webhookStatusEnum = pgEnum('webhookStatus', [

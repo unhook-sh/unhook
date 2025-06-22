@@ -1,8 +1,5 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Copy, Shield, X } from 'lucide-react';
-import { useState } from 'react';
-
 import type { RequestType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/components/badge';
 import { Button } from '@unhook/ui/components/button';
@@ -14,6 +11,8 @@ import {
   TooltipTrigger,
 } from '@unhook/ui/components/tooltip';
 import { cn } from '@unhook/ui/lib/utils';
+import { ArrowDown, ArrowUp, Copy, Shield, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface LogMetadataProps {
   request: RequestType;

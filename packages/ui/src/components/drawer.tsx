@@ -1,9 +1,8 @@
 'use client';
 
+import { cn } from '@unhook/ui/lib/utils';
 import type * as React from 'react';
 import { Drawer as DrawerPrimitive } from 'vaul';
-
-import { cn } from '@unhook/ui/lib/utils';
 
 function Drawer({
   ...props

@@ -23,14 +23,22 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "a11y": {
+        "noStaticElementInteractions": "off"
+      },
       "recommended": true,
       "correctness": {
+        "noInvalidUseBeforeDeclaration": "off",
         "noUnusedImports": "error",
         "noUnusedVariables": "warn",
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },
-      "nursery": {},
+      "nursery": {
+        "useIndexOf": "error",
+        "useUniqueElementIds": "off",
+        "noNestedComponentDefinitions": "off"
+      },
       "style": {
         "noNegationElse": "off",
         "useNodejsImportProtocol": "error",

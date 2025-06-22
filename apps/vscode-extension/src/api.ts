@@ -6,7 +6,9 @@ export type AuthUser = RouterOutputs['auth']['verifySessionToken']['user'];
 
 export function createApiClient({
   authToken,
-}: { authToken?: string } = {}): ApiClient {
+}: {
+  authToken?: string;
+} = {}): ApiClient {
   return createClient({
     authToken,
     sessionCookie: authToken,

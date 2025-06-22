@@ -4,7 +4,10 @@ import * as vscode from 'vscode';
 export function getStatusIconPath({
   request,
   context,
-}: { request: RequestType; context: vscode.ExtensionContext }) {
+}: {
+  request: RequestType;
+  context: vscode.ExtensionContext;
+}) {
   const iconPath = (filename: string) => ({
     light: vscode.Uri.file(context.asAbsolutePath(`src/media/${filename}.svg`)),
     dark: vscode.Uri.file(context.asAbsolutePath(`src/media/${filename}.svg`)),

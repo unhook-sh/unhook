@@ -72,3 +72,4 @@ certificates/
 .unhook
 
 .vscode-test/
+act-output.log

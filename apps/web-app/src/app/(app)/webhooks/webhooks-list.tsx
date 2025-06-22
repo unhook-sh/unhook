@@ -18,7 +18,6 @@ const cardVariants = {
     scale: 0.8,
     transition: {
       duration: 0.2,
-      ease: 'easeOut',
     },
   },
   hidden: {
@@ -30,7 +29,6 @@ const cardVariants = {
     scale: 1,
     transition: {
       duration: 0.3,
-      ease: 'easeOut',
     },
   },
 };

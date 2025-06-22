@@ -18,7 +18,6 @@ const terminalVariants = {
     transition: {
       delay: 0.4,
       duration: 0.8,
-      ease: [0.22, 1, 0.36, 1],
     },
   },
 };

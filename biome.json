@@ -7,15 +7,11 @@
     "defaultBranch": "main"
   },
   "files": {
-    "ignoreUnknown": false,
-    "ignore": []
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
-  },
-  "organizeImports": {
-    "enabled": true
   },
   "json": {
     "formatter": {
@@ -34,12 +30,7 @@
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },
-      "nursery": {
-        "noCommonJs": "error",
-        "noNestedTernary": "off",
-        "useAtIndex": "error",
-        "useCollapsedIf": "error"
-      },
+      "nursery": {},
       "style": {
         "noNegationElse": "off",
         "useNodejsImportProtocol": "error",

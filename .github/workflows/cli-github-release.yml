@@ -37,23 +37,23 @@ env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
-  check-version:
-    runs-on: ubuntu-latest
-    outputs:
-      is_version_bump: ${{ steps.check.outputs.is_version_bump }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: check
-        run: |
-          if [[ "${{ github.event.workflow_run.head_commit.message }}" == *"chore: version packages"* ]]; then
-            echo "is_version_bump=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_version_bump=false" >> $GITHUB_OUTPUT
-          fi
+  # check-version:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     is_version_bump: ${{ steps.check.outputs.is_version_bump }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - id: check
+  #       run: |
+  #         if [[ "${{ github.event.workflow_run.head_commit.message }}" == *"chore: version packages"* ]]; then
+  #           echo "is_version_bump=true" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "is_version_bump=false" >> $GITHUB_OUTPUT
+  #         fi
 
   build:
-    needs: check-version
-    if: needs.check-version.outputs.is_version_bump == 'true'
+    # needs: check-version
+    # if: needs.check-version.outputs.is_version_bump == 'true'
     strategy:
       matrix:
         include:
@@ -112,49 +112,49 @@ jobs:
           platform: ${{ matrix.platform }}
           target: ${{ matrix.target }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: unhook-${{ matrix.platform }}-${{ matrix.target }}
-          path: apps/cli/bin/unhook-${{ matrix.platform }}-${{ matrix.target }}${{ matrix.binary_ext }}
-
-  release:
-    name: Release CLI
-    needs: [check-version, build]
-    runs-on: ubuntu-latest
-    if: needs.check-version.outputs.is_version_bump == 'true'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Need full history for Changesets
-          fetch-depth: 0
-
-      - name: Setup Environment
-        uses: ./tooling/github/setup
-
-      - name: Get version from package.json
-        id: version
-        run: |
-          VERSION=$(node -p "require('./apps/cli/package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: unhook-*
-          path: dist
-          run-id: ${{ github.run_id }}
-          repository: ${{ github.repository }}
-          github-token: ${{ github.token }}
-
-      - name: Create GitHub Release
-        uses: ./tooling/github/cli/github-release
-        with:
-          version: ${{ steps.version.outputs.version }}
-
-      # - name: Update Monitoring
-      #   uses: ./tooling/github/cli/monitoring
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
       #   with:
-      #     version: ${{ steps.version.outputs.version }}
-      #     posthog_host: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
-      #     posthog_api_key: ${{ env.POSTHOG_PERSONAL_API_KEY }}
+      #     name: unhook-${{ matrix.platform }}-${{ matrix.target }}
+      #     path: apps/cli/bin/unhook-${{ matrix.platform }}-${{ matrix.target }}${{ matrix.binary_ext }}
+
+  # release:
+  #   name: Release CLI
+  #   needs: [check-version, build]
+  #   runs-on: ubuntu-latest
+  #   if: needs.check-version.outputs.is_version_bump == 'true'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         # Need full history for Changesets
+  #         fetch-depth: 0
+
+  #     - name: Setup Environment
+  #       uses: ./tooling/github/setup
+
+  #     - name: Get version from package.json
+  #       id: version
+  #       run: |
+  #         VERSION=$(node -p "require('./apps/cli/package.json').version")
+  #         echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         pattern: unhook-*
+  #         path: dist
+  #         run-id: ${{ github.run_id }}
+  #         repository: ${{ github.repository }}
+  #         github-token: ${{ github.token }}
+
+  #     - name: Create GitHub Release
+  #       uses: ./tooling/github/cli/github-release
+  #       with:
+  #         version: ${{ steps.version.outputs.version }}
+
+  #     # - name: Update Monitoring
+  #     #   uses: ./tooling/github/cli/monitoring
+  #     #   with:
+  #     #     version: ${{ steps.version.outputs.version }}
+  #     #     posthog_host: ${{ env.NEXT_PUBLIC_POSTHOG_HOST }}
+  #     #     posthog_api_key: ${{ env.POSTHOG_PERSONAL_API_KEY }}

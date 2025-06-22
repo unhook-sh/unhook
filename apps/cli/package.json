@@ -6,13 +6,16 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "cpu": ["x64", "arm64"],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
   "dependencies": {
-    "@clerk/backend": "2.0.0",
-    "@clerk/clerk-js": "5.68.0",
-    "@clerk/express": "1.6.0",
-    "@clerk/types": "4.60.0",
-    "@t3-oss/env-core": "0.13.6",
+    "@clerk/backend": "2.1.0",
+    "@clerk/clerk-js": "5.69.0",
+    "@clerk/express": "1.7.0",
+    "@clerk/types": "4.60.1",
+    "@t3-oss/env-core": "0.13.8",
     "@unhook/api": "workspace:*",
     "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
@@ -35,7 +38,7 @@
     "keytar": "7.9.0",
     "meow": "13.2.0",
     "open": "10.1.2",
-    "posthog-js": "1.249.4",
+    "posthog-js": "1.255.1",
     "react": "19.1.0",
     "react-devtools": "6.1.2",
     "react-devtools-core": "6.1.2",
@@ -45,19 +48,19 @@
     "type-fest": "4.41.0",
     "undici": "7.10.0",
     "yargs": "18.0.0",
-    "zod": "3.25.56",
+    "zod": "3.25.67",
     "zustand": "5.0.5",
     "zx": "8.5.5"
   },
   "description": "A CLI tool for testing webhooks locally with team collaboration features.",
   "devDependencies": {
-    "@happy-dom/global-registrator": "17.6.3",
-    "@playwright/test": "1.52.0",
-    "@types/bun": "1.2.15",
+    "@happy-dom/global-registrator": "18.0.1",
+    "@playwright/test": "1.53.1",
+    "@types/bun": "1.2.17",
     "@types/figlet": "1.7.0",
     "@types/js-yaml": "4.0.9",
-    "@types/jsonwebtoken": "9.0.9",
-    "@types/react": "19.1.6",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/react": "19.1.8",
     "@types/react-devtools": "3.6.2",
     "@types/react-dom": "19.1.6",
     "@types/ws": "8.18.1",
@@ -108,7 +111,11 @@
   ],
   "license": "MIT",
   "name": "@unhook/cli",
-  "os": ["darwin", "linux", "win32"],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -120,11 +127,11 @@
   },
   "scripts": {
     "build": "NODE_ENV=production bun run build:base --minify --sourcemap",
-    "build:base.old": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none",
+    "build:base.old": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none --splitting=false",
     "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle",
-    "clean": "git clean -xdf bin .turbo node_modules dist",
+    "clean": "git clean -xdf bin -e bin/cli.cjs .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
-    "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
+    "postinstall.skip": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
     "start": "bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun run ./src/cli.tsx",
@@ -139,5 +146,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.12.4"
+  "version": "0.12.5"
 }

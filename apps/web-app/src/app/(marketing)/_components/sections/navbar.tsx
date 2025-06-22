@@ -30,7 +30,6 @@ const drawerVariants = {
     y: 0,
     rotate: 0,
     transition: {
-      type: 'spring',
       damping: 15,
       stiffness: 200,
       staggerChildren: 0.03,
@@ -53,11 +52,7 @@ const drawerMenuVariants = {
   visible: { opacity: 1 },
 };
 
-export function Navbar({
-  navs,
-}: {
-  navs?: NavItem[];
-}) {
+export function Navbar({ navs }: { navs?: NavItem[] }) {
   const { scrollY } = useScroll();
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

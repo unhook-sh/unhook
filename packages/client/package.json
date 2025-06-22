@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "2.50.0",
-    "@t3-oss/env-core": "0.13.6",
+    "@t3-oss/env-core": "0.13.8",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
@@ -16,7 +16,7 @@
     "find-up": "7.0.0",
     "undici": "7.10.0",
     "yaml": "2.8.0",
-    "zod": "3.25.56"
+    "zod": "3.25.67"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",
@@ -45,7 +45,11 @@
       "types": "./dist/utils/extract-event-name.d.ts"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
     "webhook",

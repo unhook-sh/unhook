@@ -9,7 +9,11 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": ["Debuggers", "Testing", "Other"],
+  "categories": [
+    "Debuggers",
+    "Testing",
+    "Other"
+  ],
   "contributes": {
     "authentication": [
       {
@@ -225,22 +229,22 @@
   },
   "description": "Webhook Development",
   "devDependencies": {
-    "@types/bun": "1.2.15",
+    "@types/bun": "1.2.17",
     "@types/glob": "8.1.0",
-    "@types/node": "22.15.30",
-    "@types/react": "19.1.6",
+    "@types/node": "24.0.3",
+    "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
-    "@types/vscode": "1.96.0",
+    "@types/vscode": "1.101.0",
     "@unhook/npm": "workspace:*",
     "@unhook/tsconfig": "workspace:*",
-    "@vitejs/plugin-react": "4.5.1",
+    "@vitejs/plugin-react": "4.5.2",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.5.0",
-    "concurrently": "9.1.2",
-    "glob": "11.0.2",
+    "concurrently": "9.2.0",
+    "glob": "11.0.3",
     "globals": "16.2.0",
-    "mocha": "11.5.0",
+    "mocha": "11.7.0",
     "ovsx": "0.10.4",
     "typescript": "5.8.3",
     "vite": "6.3.5"
@@ -250,7 +254,12 @@
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
-  "keywords": ["webhook", "development", "testing", "debugging"],
+  "keywords": [
+    "webhook",
+    "development",
+    "testing",
+    "debugging"
+  ],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,
@@ -278,5 +287,8 @@
   },
   "type": "commonjs",
   "version": "0.1.2",
-  "files": ["dist", "media"]
+  "files": [
+    "dist",
+    "media"
+  ]
 }

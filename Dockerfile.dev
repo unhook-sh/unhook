@@ -1,0 +1,48 @@
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV FORCE_COLOR=3
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    unzip \
+    build-essential \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 18 (same as GitHub Actions)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:$PATH"
+
+# Set working directory
+WORKDIR /workspace
+
+# Copy package files first for better caching
+COPY package.json bun.lock* ./
+COPY turbo.json ./
+COPY biome.json ./
+
+# Copy tooling and packages
+COPY tooling/ ./tooling/
+COPY packages/ ./packages/
+
+# Copy apps
+COPY apps/ ./apps/
+
+# Copy other config files
+COPY tsconfig.json ./
+COPY .gitignore ./
+
+# Install dependencies
+RUN bun install
+
+# Set default command to bash for interactive use
+CMD ["/bin/bash"]

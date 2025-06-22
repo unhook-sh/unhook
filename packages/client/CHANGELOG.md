@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.4.4
+
+### Patch Changes
+
+- [`954edef`](https://github.com/unhook-sh/unhook/commit/954edef048cda371347d53d03630f9c175b2308d) Thanks [@seawatts](https://github.com/seawatts)! - Bump
+
 ## 0.4.3
 
 ### Patch Changes

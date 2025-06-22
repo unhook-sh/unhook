@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@unhook/ui/lib/utils';
-import type { AnimationProps } from 'motion/react';
+import type { MotionProps } from 'motion/react';
 import { motion } from 'motion/react';
 import type React from 'react';
 
@@ -24,7 +24,7 @@ const animationProps = {
     type: 'spring',
   },
   whileTap: { scale: 0.95 },
-} as AnimationProps;
+} as MotionProps;
 interface ShinyButtonProps {
   text: React.ReactNode;
   className?: string;

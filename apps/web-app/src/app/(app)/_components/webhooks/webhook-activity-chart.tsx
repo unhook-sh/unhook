@@ -17,6 +17,21 @@ interface WebhookActivityChartProps {
 export function WebhookActivityChart({ timeRange }: WebhookActivityChartProps) {
   const [data, setData] = useState<{ time: string; invocations: number }[]>([]);
 
+  const getTimeRangeInMs = (range: string) => {
+    switch (range) {
+      case '1h':
+        return 60 * 60 * 1000;
+      case '12h':
+        return 12 * 60 * 60 * 1000;
+      case '24h':
+        return 24 * 60 * 60 * 1000;
+      case '7d':
+        return 7 * 24 * 60 * 60 * 1000;
+      default:
+        return 12 * 60 * 60 * 1000;
+    }
+  };
+
   useEffect(() => {
     // Generate mock data based on time range
     const generateData = () => {
@@ -49,22 +64,7 @@ export function WebhookActivityChart({ timeRange }: WebhookActivityChartProps) {
     };
 
     setData(generateData());
-  }, [timeRange, getTimeRangeInMs]);
-
-  const getTimeRangeInMs = (range: string) => {
-    switch (range) {
-      case '1h':
-        return 60 * 60 * 1000;
-      case '12h':
-        return 12 * 60 * 60 * 1000;
-      case '24h':
-        return 24 * 60 * 60 * 1000;
-      case '7d':
-        return 7 * 24 * 60 * 60 * 1000;
-      default:
-        return 12 * 60 * 60 * 1000;
-    }
-  };
+  }, [timeRange]);
 
   return (
     <div className="h-[200px] w-full">

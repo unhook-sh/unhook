@@ -25,6 +25,40 @@ export function WebhookConnectionsChart({
   const [data, setData] = useState<{ time: string; connections: number }[]>([]);
   const [isLive, setIsLive] = useState(true);
 
+  const getTimeRangeInMs = (range: string) => {
+    switch (range) {
+      case '1h':
+        return 60 * 60 * 1000;
+      case '6h':
+        return 6 * 60 * 60 * 1000;
+      case '24h':
+        return 24 * 60 * 60 * 1000;
+      case '7d':
+        return 7 * 24 * 60 * 60 * 1000;
+      case '30d':
+        return 30 * 24 * 60 * 60 * 1000;
+      default:
+        return 24 * 60 * 60 * 1000;
+    }
+  };
+
+  const getPointsForTimeRange = (range: string) => {
+    switch (range) {
+      case '1h':
+        return 60;
+      case '6h':
+        return 72;
+      case '24h':
+        return 96;
+      case '7d':
+        return 84;
+      case '30d':
+        return 90;
+      default:
+        return 96;
+    }
+  };
+
   // Generate initial data based on time range
   useEffect(() => {
     const generateData = () => {
@@ -63,7 +97,7 @@ export function WebhookConnectionsChart({
     };
 
     setData(generateData());
-  }, [timeRange, getPointsForTimeRange, getTimeRangeInMs]);
+  }, [timeRange]);
 
   // Simulate real-time updates
   useEffect(() => {
@@ -110,40 +144,6 @@ export function WebhookConnectionsChart({
 
     return () => clearInterval(interval);
   }, [isLive]);
-
-  const getTimeRangeInMs = (range: string) => {
-    switch (range) {
-      case '1h':
-        return 60 * 60 * 1000;
-      case '6h':
-        return 6 * 60 * 60 * 1000;
-      case '24h':
-        return 24 * 60 * 60 * 1000;
-      case '7d':
-        return 7 * 24 * 60 * 60 * 1000;
-      case '30d':
-        return 30 * 24 * 60 * 60 * 1000;
-      default:
-        return 24 * 60 * 60 * 1000;
-    }
-  };
-
-  const getPointsForTimeRange = (range: string) => {
-    switch (range) {
-      case '1h':
-        return 60;
-      case '6h':
-        return 72;
-      case '24h':
-        return 96;
-      case '7d':
-        return 84;
-      case '30d':
-        return 90;
-      default:
-        return 96;
-    }
-  };
 
   return (
     <div className="h-[300px] w-full">

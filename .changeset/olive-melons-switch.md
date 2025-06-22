@@ -1,0 +1,5 @@
+---
+"@unhook/cli": patch
+---
+
+Bump

@@ -120,7 +120,7 @@ export function WebhookLatencyChart({
     };
 
     setData(generateData());
-  }, [timeRange, detailed]);
+  }, [timeRange, detailed, getPointsForTimeRange, getTimeRangeInMs]);
 
   return (
     <div className="h-[300px] w-full">

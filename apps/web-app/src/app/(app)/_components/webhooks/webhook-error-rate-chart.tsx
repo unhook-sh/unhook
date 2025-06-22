@@ -72,7 +72,7 @@ export function WebhookErrorRateChart({
     };
 
     setData(generateData());
-  }, [timeRange]);
+  }, [timeRange, getTimeRangeInMs]);
 
   return (
     <div className="h-[200px] w-full">

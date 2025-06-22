@@ -1,4 +1,3 @@
-
 import baseConfig from '@unhook/next-config/base';
 
 /** @type {import('next').NextConfig} */

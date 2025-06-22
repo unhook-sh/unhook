@@ -161,7 +161,7 @@ export const Particles: React.FC<ParticlesProps> = ({
 
   useEffect(() => {
     initCanvas();
-  }, []);
+  }, [initCanvas]);
 
   interface Circle {
     x: number;

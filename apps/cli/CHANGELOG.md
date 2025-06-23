@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.12.15
+
+### Patch Changes
+
+- [`f2a003e`](https://github.com/unhook-sh/unhook/commit/f2a003e3291ad4300c5d97316a030a6ab4c29468) Thanks [@seawatts](https://github.com/seawatts)! - Fix keytar
+
 ## 0.12.14
 
 ### Patch Changes

@@ -116,7 +116,7 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "NODE_ENV=production bun build src/cli.tsx --outfile bin/unhook.js --target node --env 'NEXT_PUBLIC_*' && echo '#!/usr/bin/env node' | cat - bin/unhook.js > temp && mv temp bin/unhook.js && chmod +x bin/unhook.js",
+    "build": "rm -rf bin && NODE_ENV=production bun build src/cli.tsx --outdir bin --target node --env 'NEXT_PUBLIC_*' && mv bin/cli.js bin/unhook.js && echo '#!/usr/bin/env node' | cat - bin/unhook.js > temp && mv temp bin/unhook.js && chmod +x bin/unhook.js",
     "clean": "rm -rf .turbo node_modules dist bin/unhook.js",
     "dev": "bun --watch src/cli.tsx",
     "prepublishOnly": "bun run typecheck && bun run build",

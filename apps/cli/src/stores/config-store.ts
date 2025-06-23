@@ -47,7 +47,7 @@ const store = createStore<ConfigStore>()((set, get) => ({
       const config = await loadConfig(configPath);
       log('Loaded config:', config);
       set(config);
-      return defaultConfigState;
+      return config;
     } catch (error) {
       log('Error loading config:', error);
       return defaultConfigState;

@@ -1,15 +1,11 @@
 {
   "author": "Unhook Team (https://github.com/unhook-sh)",
   "bin": {
-    "unhook": "./bin/cli.cjs"
+    "unhook": "./bin/unhook.js"
   },
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "cpu": [
-    "x64",
-    "arm64"
-  ],
   "dependencies": {
     "@clerk/backend": "2.1.0",
     "@clerk/clerk-js": "5.69.0",
@@ -35,7 +31,6 @@
     "ink": "6.0.0",
     "js-yaml": "4.1.0",
     "jsonwebtoken": "9.0.2",
-    "keytar": "7.9.0",
     "meow": "13.2.0",
     "open": "10.1.2",
     "posthog-js": "1.255.1",
@@ -73,7 +68,7 @@
     "ws": "8.18.2"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=18.0.0"
   },
   "exports": {
     ".": {
@@ -82,11 +77,11 @@
     }
   },
   "files": [
-    "bin/cli.cjs",
+    "bin/unhook.js",
+    "src/**/*",
     "README.md",
     "LICENSE",
-    "dist/src/exports.d.ts",
-    "scripts/install.cjs"
+    "dist/**/*"
   ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [
@@ -111,11 +106,6 @@
   ],
   "license": "MIT",
   "name": "@unhook/cli",
-  "os": [
-    "darwin",
-    "linux",
-    "win32"
-  ],
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -126,34 +116,21 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "NODE_ENV=production bun run build:base --minify --sourcemap",
-    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle --external none",
-    "build:test": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook-test --env 'NEXT_PUBLIC_*' --compile --bundle --external react-devtools-core --external react-devtools --external react-scan --minify",
-    "clean": "git clean -xdf bin -e bin/cli.cjs .turbo node_modules dist",
-    "dev": "bun run build:base --watch --sourcemap=inline",
-    "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
-    "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
-    "start": "bun run ./src/cli.tsx",
-    "start:debug": "DEV=true bun run ./src/cli.tsx",
+    "build": "NODE_ENV=production bun build src/cli.tsx --outfile bin/unhook.js --target node --env 'NEXT_PUBLIC_*' && echo '#!/usr/bin/env node' | cat - bin/unhook.js > temp && mv temp bin/unhook.js && chmod +x bin/unhook.js",
+    "clean": "rm -rf .turbo node_modules dist bin/unhook.js",
+    "dev": "bun --watch src/cli.tsx",
+    "prepublishOnly": "bun run typecheck && bun run build",
+    "start": "bun src/cli.tsx",
+    "start:debug": "DEBUG=* bun src/cli.tsx",
     "test": "bun test",
-    "test:compile": "bun run test:compile:build && bun run test:compile:run",
-    "test:compile:build": "bun run build:test",
-    "test:compile:run": "./bin/unhook-test --help",
-    "test:debug": "bun run src/test/debug-test.ts",
-    "test:full": "bun run test:compile && bun run test:debug",
-    "typecheck": "tsc"
+    "typecheck": "bun run tsc --noEmit"
   },
   "trustedDependencies": [
     "@clerk/shared",
     "browser-tabs-lock",
     "core-js",
-    "electron",
     "keytar"
   ],
   "type": "module",
-  "version": "0.12.11",
-  "optionalDependencies": {
-    "react-devtools": "6.1.2",
-    "react-devtools-core": "6.1.2"
-  }
+  "version": "0.12.11"
 }

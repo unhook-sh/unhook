@@ -35,8 +35,6 @@ jobs:
           publish: bun run publish
           commit: "chore: version packages"
           title: "chore: version packages"
-          createGithubReleases: false
-          # commitMode: 'github-api'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

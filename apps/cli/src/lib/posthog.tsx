@@ -11,13 +11,15 @@ const log = debug('unhook:cli:posthog');
 const nodeEnv = env.NEXT_PUBLIC_APP_ENV;
 const isProduction = nodeEnv === 'production';
 
-// // Keep a reference to the original PostHog instance
-const posthog = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
-  host: env.NEXT_PUBLIC_POSTHOG_HOST,
-  flushAt: 1, // Flush immediately
-  defaultOptIn: true,
-  flushInterval: 0, // Don't wait to flush
-});
+// Initialize PostHog only if we have a valid API key
+const posthog = env.NEXT_PUBLIC_POSTHOG_KEY
+  ? new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY, {
+      host: env.NEXT_PUBLIC_POSTHOG_HOST,
+      flushAt: 1, // Flush immediately
+      defaultOptIn: true,
+      flushInterval: 0, // Don't wait to flush
+    })
+  : null;
 
 export function capture(
   event: Partial<Pick<Parameters<PostHog['capture']>[0], 'distinctId'>> &
@@ -31,7 +33,7 @@ export function capture(
   }
   const path = useRouterStore.getState().currentPath;
 
-  if (!isProduction) {
+  if (!isProduction || !posthog) {
     return;
   }
 
@@ -51,7 +53,7 @@ export function captureException(error: Error) {
   const userId = user?.id ?? sessionId;
   const path = useRouterStore.getState().currentPath;
 
-  if (!isProduction) {
+  if (!isProduction || !posthog) {
     return;
   }
 
@@ -61,6 +63,10 @@ export function captureException(error: Error) {
 }
 
 export async function shutdown() {
+  if (!posthog) {
+    return;
+  }
+
   try {
     await posthog.flush();
   } catch (error) {
@@ -81,7 +87,7 @@ export function PostHogPageView() {
 
   useEffect(() => {
     // Track pageviews
-    if (path && userId && isProduction) {
+    if (path && userId && isProduction && posthog) {
       posthog.capture({
         distinctId: userId,
         event: '$pageview',
@@ -104,7 +110,7 @@ export function PostHogIdentifyUser() {
   const email = user?.email;
 
   useEffect(() => {
-    if (userId && isProduction) {
+    if (userId && isProduction && posthog) {
       posthog.identify({
         distinctId: userId,
         properties: {
@@ -133,10 +139,12 @@ export function PostHogOptIn({
   const isProduction = nodeEnv === 'production';
 
   useEffect(() => {
-    if (enableTelemetry && isProduction) {
-      posthog.optIn();
-    } else {
-      posthog.optOut();
+    if (posthog) {
+      if (enableTelemetry && isProduction) {
+        posthog.optIn();
+      } else {
+        posthog.optOut();
+      }
     }
   }, [enableTelemetry, isProduction]);
 

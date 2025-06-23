@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.1.4
+
+### Patch Changes
+
+- [`7a73526`](https://github.com/unhook-sh/unhook/commit/7a73526720fdb2fec1b672a6d513bc5d66820439) Thanks [@seawatts](https://github.com/seawatts)! - Move away from bun --compile
+
+- Updated dependencies [[`7a73526`](https://github.com/unhook-sh/unhook/commit/7a73526720fdb2fec1b672a6d513bc5d66820439)]:
+  - @unhook/client@0.4.5
+
 ## 0.1.3
 
 ### Patch Changes

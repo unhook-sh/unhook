@@ -10,8 +10,9 @@ let connectToDevTools: ((options?: unknown) => void) | null = null;
 const isCompiledBinary =
   typeof (globalThis as unknown as { __BUN_EMBEDDED_MODULES__: unknown })
     .__BUN_EMBEDDED_MODULES__ !== 'undefined';
+const isDev = process.env.NODE_ENV === 'development';
 
-if (!isCompiledBinary) {
+if (!isCompiledBinary && isDev) {
   try {
     // This will only be included in builds when not using --compile
     const reactDevTools = await import('react-devtools-core/backend');
@@ -35,7 +36,7 @@ export async function setupDebug({
   log('Debug logging enabled');
 
   // Only attempt to connect to devtools if we have it available and we're not in a compiled binary
-  if (connectToDevTools && !isCompiledBinary) {
+  if (connectToDevTools && !isCompiledBinary && isDev) {
     try {
       log('Setting up React DevTools connection...');
       log('Connecting to React DevTools...');

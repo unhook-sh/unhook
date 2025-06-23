@@ -68,10 +68,6 @@ jobs:
             --env 'NEXT_PUBLIC_*' \
             --compile \
             --bundle \
-            --no-splitting \
-            --external react-devtools-core \
-            --external react-devtools \
-            --external react-scan \
             --minify
         env:
           BUN_BUILD_TARGET: ${{ matrix.target }}

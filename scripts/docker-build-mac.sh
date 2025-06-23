@@ -40,8 +40,7 @@ docker run --rm \
         bun build apps/cli/src/cli.tsx \
           --compile \
           --target=\"\$BUN_TARGET\" \
-          --outfile=\"apps/cli/bin/unhook\" \
-          --external=\"react-devtools-core\"
+          --outfile=\"apps/cli/bin/unhook\"
 
         BINARY_NAME=\"unhook-\${PLATFORM}-\${TARGET}\${BINARY_EXT}\"
         mv \"apps/cli/bin/unhook\" \"apps/cli/bin/\${BINARY_NAME}\"
@@ -55,8 +54,7 @@ docker run --rm \
         bun build apps/cli/src/cli.tsx \
           --compile \
           --target=\"\$BUN_TARGET\" \
-          --outfile=\"apps/cli/bin/unhook\" \
-          --external=\"react-devtools-core\"
+          --outfile=\"apps/cli/bin/unhook\"
 
         BINARY_NAME=\"unhook-\${PLATFORM}-\${TARGET}\${BINARY_EXT}\"
         mv \"apps/cli/bin/unhook\" \"apps/cli/bin/\${BINARY_NAME}\"

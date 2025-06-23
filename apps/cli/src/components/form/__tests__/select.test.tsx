@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
-import 'react-devtools-core';
 import { render } from 'ink-testing-library';
 import type { ReactElement } from 'react';
 import { z } from 'zod';

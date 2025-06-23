@@ -24,8 +24,7 @@ echo "4. Running bun build..."
 bun build apps/cli/src/cli.tsx \
   --compile \
   --target="$BUN_TARGET" \
-  --outfile="apps/cli/bin/unhook" \
-  --external="react-devtools-core"
+  --outfile="apps/cli/bin/unhook"
 
 echo "5. Renaming binary..."
 BINARY_NAME="unhook-${PLATFORM}-${TARGET}${BINARY_EXT}"

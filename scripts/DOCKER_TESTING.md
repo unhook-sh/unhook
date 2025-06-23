@@ -56,8 +56,7 @@ Once inside the container (`./scripts/docker-dev.sh`), you can:
    bun build apps/cli/src/cli.tsx \
      --compile \
      --target="$BUN_TARGET" \
-     --outfile="apps/cli/bin/unhook" \
-     --external="react-devtools-core"
+     --outfile="apps/cli/bin/unhook"
    ```
 
 5. **Test the binary:**

@@ -683,7 +683,7 @@ export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
   clientVersion: z.string().optional(),
   clientOs: z.string().optional(),
   clientHostname: z.string().optional(),
-  cobnnectedAt: z.date(),
+  connectedAt: z.date(),
   disconnectedAt: z.date().optional(),
   lastPingAt: z.date(),
   userId: z.string(),

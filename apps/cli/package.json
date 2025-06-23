@@ -31,6 +31,7 @@
     "ink": "6.0.0",
     "js-yaml": "4.1.0",
     "jsonwebtoken": "9.0.2",
+    "keytar": "7.9.0",
     "meow": "13.2.0",
     "open": "10.1.2",
     "posthog-js": "1.255.1",
@@ -116,7 +117,7 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "rm -rf bin && NODE_ENV=production bun build src/cli.tsx --outdir bin --target node --env 'NEXT_PUBLIC_*' && mv bin/cli.js bin/unhook.js && echo '#!/usr/bin/env node' | cat - bin/unhook.js > temp && mv temp bin/unhook.js && chmod +x bin/unhook.js",
+    "build": "rm -rf bin && NODE_ENV=production bun build src/cli.tsx --outdir bin --target node --env 'NEXT_PUBLIC_*' --external keytar && mv bin/cli.js bin/unhook.js && echo '#!/usr/bin/env node' | cat - bin/unhook.js > temp && mv temp bin/unhook.js && chmod +x bin/unhook.js",
     "clean": "rm -rf .turbo node_modules dist bin/unhook.js",
     "dev": "bun --watch src/cli.tsx",
     "prepublishOnly": "bun run typecheck && bun run build && prepare-publish",

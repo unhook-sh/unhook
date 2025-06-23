@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.12.10
+
+### Patch Changes
+
+- [`70d2ed0`](https://github.com/unhook-sh/unhook/commit/70d2ed0c214555517ddd1fe144b26cdf2d3e5953) Thanks [@seawatts](https://github.com/seawatts)! - Testing
+
 ## 0.12.9
 
 ### Patch Changes

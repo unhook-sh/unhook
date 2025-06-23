@@ -1,0 +1,57 @@
+diff --git a/build/reconciler.js b/build/reconciler.js
+index 23aa25bbe99a05dc0a39a2c3715e16f9a2664f59..2d3e48ef28c0e3decff90504b71035a9a8ee6841 100644
+--- a/build/reconciler.js
++++ b/build/reconciler.js
+@@ -8,26 +8,30 @@ import applyStyles from './styles.js';
+ // We need to conditionally perform devtools connection to avoid
+ // accidentally breaking other third-party code.
+ // See https://github.com/vadimdemedes/ink/issues/384
+-if (process.env['DEV'] === 'true') {
+-    try {
+-        await import('./devtools.js');
+-    }
+-    catch (error) {
+-        if (error.code === 'ERR_MODULE_NOT_FOUND') {
+-            console.warn(`
+-The environment variable DEV is set to true, so Ink tried to import \`react-devtools-core\`,
++const isCompiledBinary =
++  typeof (globalThis as any).__BUN_EMBEDDED_MODULES__ !== 'undefined';
++if (process.env.NODE_ENV === 'development' && !isCompiledBinary) {
++    (async () => {
++        try {
++            await import('./devtools.js');
++        }
++        catch (error) {
++            if (error.code === 'ERR_MODULE_NOT_FOUND') {
++                console.warn(`
++The environment variable NODE_ENV is set to development, so Ink tried to import \`react-devtools-core\`,
+ but this failed as it was not installed. Debugging with React Devtools requires it.
+
+ To install use this command:
+
+ $ npm install --save-dev react-devtools-core
+ 				`.trim() + '\n');
++            }
++            else {
++                // eslint-disable-next-line @typescript-eslint/only-throw-error
++                throw error;
++            }
+         }
+-        else {
+-            // eslint-disable-next-line @typescript-eslint/only-throw-error
+-            throw error;
+-        }
+-    }
++    })();
+ }
+ const diff = (before, after) => {
+     if (before === after) {
+@@ -96,7 +100,7 @@ export default createReconciler({
+     shouldSetTextContent: () => false,
+     createInstance(originalType, newProps, rootNode, hostContext) {
+         if (hostContext.isInsideText && originalType === 'ink-box') {
+-            throw new Error(`<Box> can’t be nested inside <Text> component`);
++            throw new Error(`<Box> can't be nested inside <Text> component`);
+         }
+         const type = originalType === 'ink-text' && hostContext.isInsideText
+             ? 'ink-virtual-text'

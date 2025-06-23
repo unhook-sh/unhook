@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.12.6",
+      "version": "0.12.9",
       "bin": {
         "unhook": "./bin/cli.cjs",
       },
@@ -58,8 +58,6 @@
         "open": "10.1.2",
         "posthog-js": "1.255.1",
         "react": "19.1.0",
-        "react-devtools": "6.1.2",
-        "react-devtools-core": "6.1.2",
         "react-dom": "19.1.0",
         "react-error-boundary": "6.0.0",
         "react-reconciler": "0.32.0",
@@ -86,13 +84,19 @@
         "@unhook/tsconfig": "workspace:*",
         "ink-testing-library": "4.0.0",
         "is-ci": "4.1.0",
+        "react-devtools": "6.1.2",
+        "react-devtools-core": "6.1.2",
         "typescript": "5.8.3",
         "ws": "8.18.2",
+      },
+      "optionalDependencies": {
+        "react-devtools": "6.1.2",
+        "react-devtools-core": "6.1.2",
       },
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "dependencies": {
         "@unhook/api": "workspace:*",
         "@unhook/client": "workspace:*",
@@ -110,7 +114,7 @@
         "@types/node": "24.0.3",
         "@types/react": "19.1.8",
         "@types/react-dom": "19.1.6",
-        "@types/vscode": "1.101.0",
+        "@types/vscode": "1.96.0",
         "@unhook/npm": "workspace:*",
         "@unhook/tsconfig": "workspace:*",
         "@vitejs/plugin-react": "4.5.2",
@@ -128,7 +132,7 @@
     },
     "apps/web-app": {
       "name": "@unhook/web-app",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "dependencies": {
         "@clerk/elements": "0.23.33",
         "@clerk/nextjs": "6.22.0",
@@ -246,7 +250,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.4.3",
+      "version": "0.4.4",
       "dependencies": {
         "@supabase/supabase-js": "2.50.0",
         "@t3-oss/env-core": "0.13.8",
@@ -331,7 +335,7 @@
       "devDependencies": {
         "@types/bun": "1.2.17",
         "@types/debug": "4.1.12",
-        "@types/vscode": "1.101.0",
+        "@types/vscode": "1.96.0",
         "typescript": "5.8.3",
       },
     },
@@ -1859,7 +1863,7 @@
 
     "@types/urijs": ["@types/urijs@1.19.25", "", {}, "sha512-XOfUup9r3Y06nFAZh3WvO0rBU4OtlfPB/vgxpjg+NRdGU6CN6djdc6OEiH+PcqHCY6eFLo9Ista73uarf4gnBg=="],
 
-    "@types/vscode": ["@types/vscode@1.101.0", "", {}, "sha512-ZWf0IWa+NGegdW3iU42AcDTFHWW7fApLdkdnBqwYEtHVIBGbTu0ZNQKP/kX3Ds/uMJXIMQNAojHR4vexCEEz5Q=="],
+    "@types/vscode": ["@types/vscode@1.96.0", "", {}, "sha512-qvZbSZo+K4ZYmmDuaodMbAa67Pl6VDQzLKFka6rq+3WUTY4Kro7Bwoi0CuZLO/wema0ygcmpwow7zZfPJTs5jg=="],
 
     "@types/webxr": ["@types/webxr@0.5.22", "", {}, "sha512-Vr6Stjv5jPRqH690f5I5GLjVk8GSsoQSYJ2FVd/3jJF7KaqfwPi3ehfBS96mlQ2kPCwZaX6U0rG2+NGHBKkA/A=="],
 

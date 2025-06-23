@@ -1,0 +1,88 @@
+FROM ubuntu:22.04
+
+# Install dependencies that match GitHub Actions runner
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bun (latest version like CI)
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:$PATH"
+
+# Set working directory
+WORKDIR /workspace
+
+# Copy package files first for better caching
+COPY package.json bun.lock ./
+COPY packages/*/package.json ./packages/*/
+COPY apps/*/package.json ./apps/*/
+COPY tooling/*/package.json ./tooling/*/
+
+# Install dependencies
+RUN bun install
+
+# Copy source code
+COPY . .
+
+# Set environment variables that match CI
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=sk_test_123
+ENV NEXT_PUBLIC_SUPABASE_URL=https://test.supabase.co
+ENV NEXT_PUBLIC_POSTHOG_KEY=phc_test_123
+ENV NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_123
+ENV NEXT_PUBLIC_API_URL=https://api.unhook.sh
+ENV NEXT_PUBLIC_APP_ENV=production
+ENV FORCE_COLOR=3
+
+# Build and test script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "🏗️ Building CLI in Docker environment..."\n\
+cd /workspace/apps/cli\n\
+\n\
+# Test multiple targets like CI does\n\
+for TARGET in "x64" "arm64"; do\n\
+  echo "Building for linux-$TARGET..."\n\
+  \n\
+  # Clean and build\n\
+  bun run clean\n\
+  bun run typecheck\n\
+  \n\
+  # Build with our fixed configuration\n\
+  NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx \\\n\
+    --outfile ./bin/unhook-test-linux-$TARGET \\\n\
+    --env "NEXT_PUBLIC_*" \\\n\
+    --compile \\\n\
+    --bundle \\\n\
+    --no-splitting \\\n\
+    --external react-devtools-core \\\n\
+    --external react-devtools \\\n\
+    --external react-scan \\\n\
+    --minify\n\
+  \n\
+  # Test the binary\n\
+  if [[ -f "./bin/unhook-test-linux-$TARGET" ]]; then\n\
+    chmod +x "./bin/unhook-test-linux-$TARGET"\n\
+    echo "✅ Binary created successfully for $TARGET"\n\
+    \n\
+    # Test for the specific error\n\
+    if ./bin/unhook-test-linux-$TARGET --version 2>&1 | grep -q "chunk id map"; then\n\
+      echo "❌ FAIL: chunk id map error detected for $TARGET!"\n\
+      exit 1\n\
+    else\n\
+      echo "✅ PASS: No chunk id map error for $TARGET"\n\
+    fi\n\
+  else\n\
+    echo "❌ FAIL: Binary not created for $TARGET"\n\
+    exit 1\n\
+  fi\n\
+done\n\
+\n\
+echo "🎉 All targets built and tested successfully!"\n\
+' > /test-build.sh && chmod +x /test-build.sh
+
+CMD ["/test-build.sh"]

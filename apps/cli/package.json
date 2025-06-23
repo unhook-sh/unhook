@@ -40,8 +40,6 @@
     "open": "10.1.2",
     "posthog-js": "1.255.1",
     "react": "19.1.0",
-    "react-devtools": "6.1.2",
-    "react-devtools-core": "6.1.2",
     "react-dom": "19.1.0",
     "react-error-boundary": "6.0.0",
     "react-reconciler": "0.32.0",
@@ -69,6 +67,8 @@
     "@unhook/tsconfig": "workspace:*",
     "ink-testing-library": "4.0.0",
     "is-ci": "4.1.0",
+    "react-devtools": "6.1.2",
+    "react-devtools-core": "6.1.2",
     "typescript": "5.8.3",
     "ws": "8.18.2"
   },
@@ -127,8 +127,8 @@
   },
   "scripts": {
     "build": "NODE_ENV=production bun run build:base --minify --sourcemap",
-    "build:base.old": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --target ${BUN_BUILD_TARGET:-bun} --bundle --external none --splitting=false",
-    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle --no-splitting",
+    "build:base": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook --env 'NEXT_PUBLIC_*' --compile --bundle --external react-devtools-core --external react-devtools --external react-scan",
+    "build:test": "bun run clean && bun run typecheck && NEXT_PUBLIC_APP_TYPE=cli bun build ./src/cli.tsx --outfile ./bin/unhook-test --env 'NEXT_PUBLIC_*' --compile --bundle --external react-devtools-core --external react-devtools --external react-scan --minify",
     "clean": "git clean -xdf bin -e bin/cli.cjs .turbo node_modules dist",
     "dev": "bun run build:base --watch --sourcemap=inline",
     "postinstall": "node -e \"require('is-ci') ? process.exit(0) : require('./scripts/install.cjs')\"",
@@ -136,6 +136,11 @@
     "start": "bun run ./src/cli.tsx",
     "start:debug": "DEV=true bun run ./src/cli.tsx",
     "test": "bun test",
+    "test:compile": "bun run test:compile:build && bun run test:compile:run",
+    "test:compile:build": "bun run build:test",
+    "test:compile:run": "./bin/unhook-test --help",
+    "test:debug": "bun run src/test/debug-test.ts",
+    "test:full": "bun run test:compile && bun run test:debug",
     "typecheck": "tsc"
   },
   "trustedDependencies": [
@@ -146,5 +151,9 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.12.9"
+  "version": "0.12.9",
+  "optionalDependencies": {
+    "react-devtools": "6.1.2",
+    "react-devtools-core": "6.1.2"
+  }
 }

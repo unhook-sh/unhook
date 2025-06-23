@@ -151,7 +151,7 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.12.10",
+  "version": "0.12.11",
   "optionalDependencies": {
     "react-devtools": "6.1.2",
     "react-devtools-core": "6.1.2"

@@ -68,17 +68,17 @@ unhook/
 
 ### Running Tests
 
-We use Jest for testing. Run the test suite with:
+Tests are powered by **Vitest** and executed with `bun test`. Run the test suite with:
 
 ```bash
 # Run all tests
-npm test
+bun test
 
 # Run tests in watch mode
-npm test -- --watch
+bun test --watch
 
 # Run tests for a specific package
-npm test -- packages/cli
+bun test packages/cli
 ```
 
 ### Linting and Formatting
@@ -182,7 +182,7 @@ We welcome contributions! Here's how you can help:
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes
-4. Run tests: `npm test`
+4. Run tests: `bun test`
 5. Commit your changes: `git commit -m 'Add amazing feature'`
 6. Push to your branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request

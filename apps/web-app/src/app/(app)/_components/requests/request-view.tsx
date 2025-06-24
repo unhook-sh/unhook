@@ -2,7 +2,6 @@
 
 import { api } from '@unhook/api/react';
 import type { RequestType } from '@unhook/db/schema';
-import { useSubscription } from '@unhook/db/supabase/client';
 import { Button } from '@unhook/ui/components/button';
 import { Input } from '@unhook/ui/components/input';
 import {
@@ -32,29 +31,6 @@ export function RequestView() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [requests, { isLoading, refetch }] =
     api.requests.all.useSuspenseQuery();
-
-  useSubscription({
-    event: '*',
-    onDelete: () => {
-      console.log('onDelete');
-      void refetch();
-    },
-    onError: (error) => {
-      console.error('Subscription error:', error);
-    },
-    onInsert: () => {
-      console.log('onInsert');
-      void refetch();
-    },
-    onStatusChange: (newStatus) => {
-      console.log('Subscription status:', newStatus);
-    },
-    onUpdate: () => {
-      console.log('onUpdate');
-      void refetch();
-    },
-    table: 'requests',
-  });
 
   const filteredRequests = requests.filter(
     (request) =>

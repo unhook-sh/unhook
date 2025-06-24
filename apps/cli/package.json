@@ -79,11 +79,9 @@
     }
   },
   "files": [
-    "bin/unhook.js",
-    "src/**/*",
+    "bin/cli.js",
     "README.md",
-    "LICENSE",
-    "dist/**/*"
+    "LICENSE"
   ],
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "keywords": [

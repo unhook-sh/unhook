@@ -1,5 +1,5 @@
 import { posthog } from '@unhook/analytics/posthog/server';
-import { filterHeaders } from '@unhook/client';
+import { filterHeaders } from '@unhook/client/utils/headers';
 import { db } from '@unhook/db/client';
 import { Events, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { createId } from '@unhook/id';

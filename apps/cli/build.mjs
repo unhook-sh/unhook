@@ -91,6 +91,7 @@ esbuild
       '../package.json',
       './package.json',
       'keytar', // Native module
+      'posthog-js',
     ],
     bundle: true,
     format: 'esm',

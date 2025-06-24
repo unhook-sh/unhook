@@ -2,7 +2,6 @@
 
 import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
 import type { AuthCodeType, WebhookType } from '@unhook/db/schema';
-import { SubscriptionProvider } from '@unhook/db/supabase/client';
 import {
   Card,
   CardContent,
@@ -164,12 +163,10 @@ export function WebhookWizard(props: { authToken?: string }) {
       </Card>
 
       {webhook && (
-        <SubscriptionProvider authToken={authToken}>
-          <RealTimeEventStream
-            webhookId={webhook.id}
-            onEventReceived={handleFirstEventReceived}
-          />
-        </SubscriptionProvider>
+        <RealTimeEventStream
+          webhookId={webhook.id}
+          onEventReceived={handleFirstEventReceived}
+        />
       )}
     </div>
   );

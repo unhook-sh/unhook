@@ -2,6 +2,7 @@
 
 import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
 import type { AuthCodeType, WebhookType } from '@unhook/db/schema';
+import { SubscriptionProvider } from '@unhook/db/supabase/client';
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { createAuthCode } from '~/app/(app)/cli-token/actions';
 import { createWebhook } from './actions';
 import { InstallationCommand } from './installation-command';
+import { RealTimeEventStream } from './real-time-event-stream';
 import { SourceStep } from './source-step';
 import { WebhookUrlStep } from './webhook-url-step';
 
@@ -23,10 +25,12 @@ const STEP_TITLE = 'Welcome to Unhook';
 const STEP_DESCRIPTION =
   'Your webhook URL is ready! Use it to receive webhooks locally.';
 
-export function WebhookWizard() {
+export function WebhookWizard(props: { authToken?: string }) {
+  const { authToken } = props;
   const [source, setSource] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
+  const [hasReceivedFirstEvent, setHasReceivedFirstEvent] = useState(false);
   const { organization } = useOrganization();
   const { createOrganization, setActive } = useOrganizationList();
   const { user } = useUser();
@@ -112,33 +116,61 @@ export function WebhookWizard() {
     return url.toString();
   })();
 
+  const handleFirstEventReceived = () => {
+    setHasReceivedFirstEvent(true);
+    toast.success('🎉 Webhook setup complete!', {
+      description: 'You successfully received your first webhook event.',
+    });
+  };
+
   return (
-    <Card className="w-full relative overflow-hidden">
-      <CardHeader className="space-y-1">
-        <CardTitle>{STEP_TITLE}</CardTitle>
-        <CardDescription>{STEP_DESCRIPTION}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <div className="space-y-4">
-          {(isCreatingWebhook || isCreatingAuthCode) &&
-          !webhook &&
-          !authCode ? (
-            <div className="flex items-center justify-center py-8">
-              <Icons.Spinner className="size-8 animate-spin text-muted-foreground" />
+    <div className="w-full space-y-6">
+      <Card className="w-full relative overflow-hidden">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>{STEP_TITLE}</CardTitle>
+              <CardDescription>{STEP_DESCRIPTION}</CardDescription>
             </div>
-          ) : webhook && authCode ? (
-            <>
-              <WebhookUrlStep webhookUrl={webhookUrl} source={source} />
-              <SourceStep value={source} onChange={setSource} />
-              <InstallationCommand
-                authCode={authCode.id}
-                webhookId={webhook.id}
-                source={source}
-              />
-            </>
-          ) : null}
-        </div>
-      </CardContent>
-    </Card>
+            {hasReceivedFirstEvent && (
+              <div className="flex items-center gap-2 text-green-600">
+                <Icons.Check className="size-5" />
+                <span className="text-sm font-medium">Setup Complete!</span>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div className="space-y-4">
+            {(isCreatingWebhook || isCreatingAuthCode) &&
+            !webhook &&
+            !authCode ? (
+              <div className="flex items-center justify-center py-8">
+                <Icons.Spinner className="size-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : webhook && authCode ? (
+              <>
+                <WebhookUrlStep webhookUrl={webhookUrl} source={source} />
+                <SourceStep value={source} onChange={setSource} />
+                <InstallationCommand
+                  authCode={authCode.id}
+                  webhookId={webhook.id}
+                  source={source}
+                />
+              </>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
+
+      {webhook && (
+        <SubscriptionProvider authToken={authToken}>
+          <RealTimeEventStream
+            webhookId={webhook.id}
+            onEventReceived={handleFirstEventReceived}
+          />
+        </SubscriptionProvider>
+      )}
+    </div>
   );
 }

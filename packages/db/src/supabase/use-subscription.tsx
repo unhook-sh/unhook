@@ -123,8 +123,8 @@ async function handleSubscriptionEvent<T extends TableName>(
 
 interface SubscriptionProviderProps {
   children: ReactNode;
-  authToken: string;
-  url: string;
+  authToken?: string;
+  url?: string;
 }
 
 export function SubscriptionProvider({
@@ -163,7 +163,7 @@ export function SubscriptionProvider({
 
   // Create a new client when the token changes
   const createNewClient = useCallback(
-    (props: { authToken: string; url: string }) => {
+    (props: { authToken?: string; url?: string }) => {
       const { authToken, url } = props;
       log('Creating new Supabase client');
       if (clientRef.current) {

@@ -1,7 +1,11 @@
+import { auth } from '@clerk/nextjs/server';
 import Image from 'next/image';
 import { WebhookWizard } from './_components/webhook-wizard';
 
-export default function WebhooksCreatePage() {
+export default async function WebhooksCreatePage() {
+  const { userId, getToken } = await auth();
+  const authToken = userId ? await getToken({ template: 'supabase' }) : null;
+
   return (
     <main className="container grid min-h-screen place-items-center mx-auto">
       <div className="flex w-full max-w-[32rem] flex-col items-center gap-8">
@@ -16,7 +20,7 @@ export default function WebhooksCreatePage() {
           />
           <div className="text-2xl font-bold">Unhook</div>
         </div>
-        <WebhookWizard />
+        <WebhookWizard authToken={authToken ?? undefined} />
       </div>
     </main>
   );

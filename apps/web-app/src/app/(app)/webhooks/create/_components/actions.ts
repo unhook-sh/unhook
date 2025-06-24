@@ -11,7 +11,7 @@ import { z } from 'zod';
 const action = createSafeActionClient();
 
 export const createWebhook = action
-  .schema(
+  .inputSchema(
     z.object({
       isPrivate: z.boolean().optional().default(false),
       orgName: z.string(),

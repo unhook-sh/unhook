@@ -56,6 +56,10 @@
       "default": "./src/supabase/client-exports.ts",
       "types": "./dist/supabase/client-exports.d.ts"
     },
+    "./supabase/types": {
+      "default": "./src/supabase/types.generated.ts",
+      "types": "./dist/supabase/types.generated.d.ts"
+    },
     "./supabase/create-channel": {
       "default": "./src/supabase/create-channel.ts",
       "types": "./dist/supabase/create-channel.d.ts"

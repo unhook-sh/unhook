@@ -42,7 +42,7 @@ export const useClient = () => {
   return client;
 };
 
-export function createClient(props: { authToken: string; url?: string }) {
+export function createClient(props: { authToken?: string; url?: string }) {
   const { authToken, url } = props;
   if (!authToken) {
     log('Warning: No access token provided to createClient');
@@ -60,7 +60,7 @@ export function createClient(props: { authToken: string; url?: string }) {
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       async accessToken() {
-        return authToken;
+        return authToken ?? null;
       },
       realtime: {
         params: {

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { debug, defaultLogger } from '@unhook/logger';
@@ -69,13 +70,17 @@ async function main() {
     renderInstance.cleanup();
   } catch (error) {
     log('Global error:', error);
-    captureException(error as Error);
-    setTimeout(() => {
-      process.exit(1);
-    }, 0);
+    try {
+      captureException(error as Error);
+    } catch (error) {
+      log('Error capturing exception:', error);
+    }
   } finally {
     log('Cleanup in finally...');
     await shutdown();
+    setTimeout(() => {
+      process.exit(1);
+    }, 0);
   }
 }
 

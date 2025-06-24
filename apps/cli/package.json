@@ -61,11 +61,11 @@
     "@types/yargs": "17.0.33",
     "@unhook/npm": "workspace:*",
     "@unhook/tsconfig": "workspace:*",
-    "esbuild": "0.25.5",
     "ink-testing-library": "4.0.0",
     "is-ci": "4.1.0",
     "react-devtools": "6.1.2",
     "react-devtools-core": "6.1.2",
+    "tsup": "8.5.0",
     "typescript": "5.8.3",
     "ws": "8.18.2"
   },
@@ -116,12 +116,12 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "rm -rf bin && NODE_ENV=production node build.mjs",
+    "build": "tsup",
     "clean": "rm -rf .turbo node_modules dist bin/cli.js",
-    "dev": "bun --watch src/cli.tsx",
+    "dev": "tsup --watch",
     "prepublishOnly": "bun run typecheck && bun run build && prepare-publish",
-    "start": "bun src/cli.tsx",
-    "start:debug": "DEBUG=* bun src/cli.tsx",
+    "start": "bun bin/cli.js",
+    "start:debug": "DEBUG=* bun bin/cli.js",
     "test": "bun test",
     "typecheck": "bun run tsc --noEmit"
   },

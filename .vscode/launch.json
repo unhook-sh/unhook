@@ -40,6 +40,18 @@
       "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
       "cwd": "${workspaceFolder}/apps/vscode-extension",
       "preLaunchTask": "prepare-extension"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug cli.js",
+      "program": "${workspaceFolder}/apps/cli/bin/cli.js",
+      "console": "integratedTerminal",
+      "stopOnEntry": false,
+      "runtimeArgs": ["--inspect-brk"],
+      "env": {
+        "NODE_OPTIONS": "--unhandled-rejections=strict"
+      }
     }
   ]
 }

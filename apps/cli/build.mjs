@@ -4,6 +4,9 @@ import * as esbuild from 'esbuild';
 
 const OUT_DIR = 'bin';
 
+// Read package.json to get version
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
+
 /**
  * ink attempts to import react-devtools-core in an ESM-unfriendly way:
  * This plugin ignores the import to prevent dynamic require issues.
@@ -57,6 +60,7 @@ if (isDevBuild) {
 // Environment variables to inject at build time from Infisical
 const envDefines = {
   'process.env.NODE_ENV': JSON.stringify('production'),
+  'process.env.NEXT_PUBLIC_CLI_VERSION': JSON.stringify(pkg.version),
   'process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '',
   ),
@@ -99,8 +103,10 @@ esbuild
     target: 'node18',
     tsconfig: 'tsconfig.json',
     outfile: `${OUT_DIR}/cli.js`,
-    minify: !isDevBuild,
-    sourcemap: isDevBuild ? 'inline' : false,
+    // minify: !isDevBuild,
+    minify: false,
+    sourcemap: 'inline',
+    // sourcemap: isDevBuild ? 'inline' : false,
     banner: {
       js: isDevBuild ? '' : '#!/usr/bin/env node',
     },

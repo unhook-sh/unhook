@@ -116,7 +116,7 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "NODE_ENV=production node build.mjs",
+    "build": "rm -rf bin && NODE_ENV=production node build.mjs",
     "clean": "rm -rf .turbo node_modules dist bin/cli.js",
     "dev": "bun --watch src/cli.tsx",
     "prepublishOnly": "bun run typecheck && bun run build && prepare-publish",
@@ -132,5 +132,5 @@
     "keytar"
   ],
   "type": "module",
-  "version": "0.12.17"
+  "version": "0.12.20"
 }

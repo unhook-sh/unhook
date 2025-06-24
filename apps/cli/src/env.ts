@@ -21,6 +21,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_TYPE: process.env.NEXT_PUBLIC_APP_TYPE,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_CLI_VERSION: process.env.NEXT_PUBLIC_CLI_VERSION,
   },
   server: {
     NODE_ENV: z
@@ -41,6 +42,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_TYPE: z.enum(['cli', 'nextjs']).default('cli'),
     NEXT_PUBLIC_SUPABASE_URL: z.string().optional().default(''),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional().default(''),
+    NEXT_PUBLIC_CLI_VERSION: z.string().optional().default(''),
   },
 
   skipValidation: shouldSkipValidation,

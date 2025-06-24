@@ -19,7 +19,7 @@ import { Layout } from './app/layout';
 import { parseArgs } from './lib/cli/args';
 import { setupDebug } from './lib/cli/debug';
 import { setupProcessHandlers } from './lib/cli/process';
-import { capture, captureException } from './lib/posthog';
+import { capture, captureException, shutdown } from './lib/posthog';
 import { useCliStore } from './stores/cli-store';
 import { useConfigStore } from './stores/config-store';
 
@@ -75,6 +75,7 @@ async function main() {
     }, 0);
   } finally {
     log('Cleanup in finally...');
+    await shutdown();
   }
 }
 

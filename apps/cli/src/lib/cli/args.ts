@@ -1,14 +1,12 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import type { AppRoutePath } from '~/app/routes';
+import { env } from '~/env';
 import type { CliState } from '~/stores/cli-store';
 
 export async function parseArgs(): Promise<CliState> {
-  const pkg = JSON.parse(
-    readFileSync(join(__dirname, '../../../package.json'), 'utf-8'),
-  ) as { version: string };
+  // Version is injected at build time
+  const version = env.NEXT_PUBLIC_CLI_VERSION || '0.0.0';
 
   // Map command to route path
   const commandToPath: Record<string, AppRoutePath> = {
@@ -100,7 +98,7 @@ export async function parseArgs(): Promise<CliState> {
 
   // biome-ignore lint/suspicious/noExplicitAny: args doesn't have a type
   const parsedConfig = argv as any;
-  parsedConfig.version = pkg.version;
+  parsedConfig.version = version;
 
   return {
     verbose: parsedConfig.verbose,

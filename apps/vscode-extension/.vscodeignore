@@ -13,3 +13,15 @@ vsc-extension-quickstart.md
 **/*.ts
 **/.vscode-test.*
 bun.lockb
+# Build and development files
+vite.config.ts
+vite.dev.config.ts
+vitest.config.ts
+# Temporary files
+*.vsix
+# Documentation
+README.md
+CHANGELOG.md
+# But include the logo and license
+!logo.png
+!LICENSE

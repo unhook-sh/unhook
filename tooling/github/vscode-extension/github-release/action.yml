@@ -18,19 +18,21 @@ runs:
     - name: Setup Environment
       uses: ./tooling/github/setup
 
-    - name: Build VSCode Extension
-      shell: bash
-      working-directory: apps/vscode-extension
-      run: |
-        echo "Building VSCode extension..."
-        bun run build
-
     - name: Package VSCode Extension
       shell: bash
       working-directory: apps/vscode-extension
       run: |
-        echo "Packaging VSCode extension..."
-        bunx vsce package --out unhook-vscode-${{ inputs.version }}.vsix
+        echo "Preparing, building, and packaging VSCode extension..."
+        bun run package
+
+        # Verify the expected file was created
+        if [ ! -f "unhook-vscode-${{ inputs.version }}.vsix" ]; then
+          echo "Expected package file not found. Listing available files:"
+          ls -la *.vsix || echo "No .vsix files found"
+          exit 1
+        fi
+
+        echo "✅ Package created: unhook-vscode-${{ inputs.version }}.vsix"
 
     - name: Publish to Visual Studio Marketplace
       shell: bash
@@ -69,14 +71,21 @@ runs:
       working-directory: apps/vscode-extension
       run: |
         # Read the changelog file
+        if [ ! -f "CHANGELOG.md" ]; then
+          echo "CHANGELOG.md not found, using default release notes"
+          echo "body=Release of VSCode extension v${{ inputs.version }}" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
         CHANGELOG=$(cat CHANGELOG.md)
         VERSION="${{ inputs.version }}"
 
         # Find the start of the version section
         START_LINE=$(echo "$CHANGELOG" | grep -n "^## $VERSION" | cut -d: -f1)
         if [ -z "$START_LINE" ]; then
-          echo "Could not find version $VERSION in changelog"
-          exit 1
+          echo "Could not find version $VERSION in changelog, using default release notes"
+          echo "body=Release of VSCode extension v${{ inputs.version }}" >> $GITHUB_OUTPUT
+          exit 0
         fi
 
         # Find the next version section or end of file

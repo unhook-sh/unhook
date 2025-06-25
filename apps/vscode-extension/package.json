@@ -217,15 +217,15 @@
     }
   },
   "dependencies": {
-    "@unhook/api": "workspace:*",
-    "@unhook/client": "workspace:*",
-    "@unhook/db": "workspace:*",
-    "@unhook/id": "workspace:*",
-    "@unhook/logger": "workspace:*",
+    "@unhook/client": "0.4.6",
     "date-fns": "4.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "ws": "8.18.2"
+  },
+  "vsce": {
+    "dependencies": false,
+    "yarn": false
   },
   "description": "Webhook Development",
   "devDependencies": {
@@ -235,8 +235,6 @@
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@types/vscode": "1.96.0",
-    "@unhook/npm": "workspace:*",
-    "@unhook/tsconfig": "workspace:*",
     "@vitejs/plugin-react": "4.5.2",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
@@ -246,6 +244,7 @@
     "globals": "16.2.0",
     "mocha": "11.7.0",
     "ovsx": "0.10.4",
+    "tsup": "8.5.0",
     "typescript": "5.8.3",
     "vite": "6.3.5"
   },
@@ -254,6 +253,7 @@
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
+  "icon": "logo.png",
   "keywords": [
     "webhook",
     "development",
@@ -269,26 +269,26 @@
     "url": "https://github.com/unhook-sh/unhook"
   },
   "scripts": {
-    "build": "bun run typecheck && bun run build:webview && bun run build:base --minify --production",
-    "build:base": "bun build ./src/extension.ts --outfile ./dist/extension.js --target node --bundle --external vscode --format cjs",
-    "build:debug": "bun run typecheck && bun run build:webview && bun run build:base --sourcemap=inline",
+    "build": "bun run typecheck && bun run build:webview && NODE_ENV=production tsup",
+    "build:base": "tsup",
+    "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup --dev",
     "build:webview": "vite build",
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "rm -rf .turbo node_modules dist *.vsix",
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
-    "dev:extension": "NODE_ENV=development bun run build:base --watch --sourcemap=inline",
+    "dev:extension": "NODE_ENV=development tsup --dev --watch",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
-    "ovsx": "bunx ovsx publish",
-    "package": "bun run typecheck && bun run build",
+    "package": "bun run prepare && bun run build && bun run package:vsix",
+    "package:vsix": "bunx vsce package",
+    "prepare": "prepare-publish --vscode-extension --no-readme --no-install-update",
     "pretest": "bun run build:base",
+    "publish": "bun run package && bun run publish:vscode && bun run publish:ovsx",
+    "publish:ovsx": "infisical run --env prod -- bunx ovsx publish *.vsix",
+    "publish:vscode": "infisical run --env prod -- bunx vsce publish",
     "test": "vscode-test",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
-    "vsce": "bunx vsce package",
-    "vscode:prepublish": "bun typecheck && bun run build && prepare-publish --no-readme --no-install-update && bun install"
+    "test:ovsx": "infisical run --env prod -- bunx ovsx verify-pat",
+    "test:vsce": "infisical run --env prod -- bunx vsce verify-pat",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "commonjs",
-  "version": "0.1.5",
-  "files": [
-    "dist",
-    "media"
-  ]
+  "version": "0.1.6"
 }

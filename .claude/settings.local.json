@@ -9,7 +9,8 @@
       "Bash(npm run build:*)",
       "Bash(node:*)",
       "Bash(cp:*)",
-      "Bash(bun:*)"
+      "Bash(bun:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

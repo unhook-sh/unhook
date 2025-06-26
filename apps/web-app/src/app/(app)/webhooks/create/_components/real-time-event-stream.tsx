@@ -1,7 +1,11 @@
 'use client';
 
 import { api } from '@unhook/api/react';
-import type { EventTypeWithRequest, RequestPayload } from '@unhook/db/schema';
+import {
+  extractEventName,
+  tryDecodeBase64,
+} from '@unhook/client/utils/extract-event-name';
+import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
@@ -143,9 +147,24 @@ export function RealTimeEventStream({
                       {getStatusIcon(event.status)}
                       {event.status}
                     </Badge>
-                    <span className="text-xs font-mono text-muted-foreground">
-                      {event.source || 'webhook'}
-                    </span>
+                    <div className="flex items-center gap-1 text-xs">
+                      <span className="font-mono text-muted-foreground">
+                        {event.source || 'webhook'}
+                      </span>
+                      {(() => {
+                        const eventName = extractEventName(
+                          event.originRequest?.body,
+                        );
+                        return eventName ? (
+                          <>
+                            <span className="text-muted-foreground">•</span>
+                            <span className="font-medium text-foreground">
+                              {eventName}
+                            </span>
+                          </>
+                        ) : null;
+                      })()}
+                    </div>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(event.timestamp, { addSuffix: true })}
@@ -156,30 +175,31 @@ export function RealTimeEventStream({
                   <div className="text-xs text-muted-foreground space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">
-                        {(event.originRequest as RequestPayload)?.method ||
-                          'POST'}
+                        {event.originRequest?.method || 'POST'}
                       </span>
                       <span className="font-mono">
-                        {(event.originRequest as RequestPayload)?.headers?.[
-                          'user-agent'
-                        ]?.slice(0, 30) || 'Unknown'}
-                        {((event.originRequest as RequestPayload)?.headers?.[
-                          'user-agent'
-                        ]?.length || 0) > 30 && '...'}
+                        {event.originRequest?.headers?.['user-agent']?.slice(
+                          0,
+                          30,
+                        ) || 'Unknown'}
+                        {event.originRequest?.headers?.['user-agent']?.length &&
+                          event.originRequest?.headers?.['user-agent']?.length >
+                            30 &&
+                          '...'}
                       </span>
                     </div>
-                    {(event.originRequest as RequestPayload)?.body && (
+                    {event.originRequest?.body && (
                       <div className="text-xs">
                         <span className="text-muted-foreground">Body:</span>
                         <span className="ml-1 font-mono">
-                          {typeof (event.originRequest as RequestPayload)
-                            .body === 'string'
-                            ? (
-                                event.originRequest as RequestPayload
-                              ).body?.slice(0, 50)
-                            : JSON.stringify(
-                                (event.originRequest as RequestPayload).body,
-                              ).slice(0, 50)}
+                          {(() => {
+                            const body = event.originRequest.body;
+                            if (typeof body === 'string') {
+                              const decodedBody = tryDecodeBase64(body);
+                              return decodedBody.slice(0, 50);
+                            }
+                            return JSON.stringify(body).slice(0, 50);
+                          })()}
                           ...
                         </span>
                       </div>

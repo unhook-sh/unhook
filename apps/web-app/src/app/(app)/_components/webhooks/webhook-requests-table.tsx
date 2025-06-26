@@ -1,5 +1,6 @@
 'use client';
 
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { RequestType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/components/badge';
 import { Skeleton } from '@unhook/ui/components/skeleton';
@@ -53,6 +54,30 @@ export function WebhookRequestsTable({
                 ? 400 + Math.floor(Math.random() * 100)
                 : 200 + Math.floor(Math.random() * 100);
 
+            // Generate mock webhook bodies with different event types
+            const mockEvents = [
+              {
+                event: 'user.created',
+                data: { id: 'user_123', email: 'test@example.com' },
+              },
+              {
+                event: 'payment.completed',
+                data: { amount: 1000, currency: 'USD' },
+              },
+              { event: 'order.placed', data: { orderId: 'order_456' } },
+              {
+                event_type: 'customer.updated',
+                data: { customerId: 'cust_789' },
+              },
+              { type: 'invoice.paid', data: { invoiceId: 'inv_012' } },
+              {
+                eventType: 'subscription.cancelled',
+                data: { subscriptionId: 'sub_345' },
+              },
+            ];
+            const mockBody =
+              mockEvents[Math.floor(Math.random() * mockEvents.length)];
+
             return {
               id: `req_${i}_${Date.now()}`,
               webhookId,
@@ -74,6 +99,7 @@ export function WebhookRequestsTable({
                   'content-type': 'application/json',
                   'user-agent': 'Svix-Webhooks/1.62.0',
                 },
+                body: JSON.stringify(mockBody),
                 size: Math.floor(Math.random() * 1000),
                 contentType: 'application/json',
                 clientIp: '127.0.0.1',
@@ -158,7 +184,7 @@ export function WebhookRequestsTable({
               <TableRow>
                 <TableHead className="w-[100px]">Time</TableHead>
                 <TableHead className="w-[100px]">Method</TableHead>
-                <TableHead>Path</TableHead>
+                <TableHead>Event & Path</TableHead>
                 <TableHead className="w-[100px]">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -207,8 +233,22 @@ export function WebhookRequestsTable({
                         {request.request.method}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-[300px] truncate font-mono text-xs">
-                      {request.destination.name}
+                    <TableCell className="max-w-[300px]">
+                      <div className="space-y-1">
+                        {(() => {
+                          const eventName = extractEventName(
+                            request.request.body,
+                          );
+                          return eventName ? (
+                            <div className="text-sm font-medium text-foreground">
+                              {eventName}
+                            </div>
+                          ) : null;
+                        })()}
+                        <div className="font-mono text-xs text-muted-foreground truncate">
+                          {request.destination.name}
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">

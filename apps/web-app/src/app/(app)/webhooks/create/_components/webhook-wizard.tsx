@@ -2,6 +2,7 @@
 
 import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
 import type { AuthCodeType, WebhookType } from '@unhook/db/schema';
+import { generateRandomName } from '@unhook/id';
 import {
   Card,
   CardContent,
@@ -45,9 +46,12 @@ export function WebhookWizard(props: { authToken?: string }) {
         const orgName = user?.firstName
           ? `${user.firstName}'s Team`
           : 'Personal Team';
+
         if (user && createOrganization && !organization) {
+          const slug = generateRandomName();
           const result = await createOrganization({
             name: orgName,
+            slug,
           });
 
           if (result) {

@@ -1,5 +1,11 @@
 import { init } from '@paralleldrive/cuid2';
 import { ulid } from 'ulid';
+import {
+  adjectives,
+  animals,
+  colors,
+  uniqueNamesGenerator,
+} from 'unique-names-generator';
 
 export function createId(props?: {
   prefix?: string;
@@ -34,4 +40,14 @@ export const generateRandomSlug = ({ length }: { length: number }): string => {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+};
+
+export const generateRandomName = (): string => {
+  return uniqueNamesGenerator({
+    dictionaries: [adjectives, animals, colors],
+    length: 3,
+    seed: Date.now(),
+    separator: '-',
+    style: 'lowerCase',
+  });
 };

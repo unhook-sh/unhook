@@ -3,6 +3,7 @@
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { db } from '@unhook/db/client';
 import { AuthCodes, OrgMembers, Orgs, Users } from '@unhook/db/schema';
+import { generateRandomName } from '@unhook/id';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -216,8 +217,10 @@ export const upsertOrg = action
     }
 
     // Create new org if no clerkOrgId provided
+    const slug = generateRandomName();
     const clerkOrg = await client.organizations.createOrganization({
       name,
+      slug,
       createdBy: user.userId,
     });
 

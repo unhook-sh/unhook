@@ -1,6 +1,6 @@
 import { cn } from '@unhook/ui/lib/utils';
-/* eslint-disable @next/next/no-img-element */
 import { Marquee } from '@unhook/ui/magicui/marquee';
+import Image from 'next/image';
 
 export interface TestimonialCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -34,7 +34,7 @@ export const TestimonialCard = ({
     </div>
 
     <div className="flex w-full select-none items-center justify-start gap-3.5">
-      <img src={img} alt={name} className="size-8 rounded-full" />
+      {img && <Image src={img} alt={name} className="size-8 rounded-full" />}
 
       <div>
         <p className="font-medium text-primary/90">{name}</p>

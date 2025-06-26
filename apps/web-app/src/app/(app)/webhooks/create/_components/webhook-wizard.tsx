@@ -25,8 +25,7 @@ const STEP_TITLE = 'Welcome to Unhook';
 const STEP_DESCRIPTION =
   'Your webhook URL is ready! Use it to receive webhooks locally.';
 
-export function WebhookWizard(props: { authToken?: string }) {
-  const { authToken } = props;
+export function WebhookWizard(_props: { authToken?: string }) {
   const [source, setSource] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);

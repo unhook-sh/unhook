@@ -8,6 +8,7 @@ import {
   TableRow,
 } from '@unhook/ui/table';
 import { MoreHorizontal } from 'lucide-react';
+import Image from 'next/image';
 
 const vaults = [
   {
@@ -68,7 +69,7 @@ export function VaultTable() {
             <TableCell className="font-medium">
               <div className="flex items-center gap-2">
                 <Avatar className="h-6 w-6">
-                  <img
+                  <Image
                     src={'/placeholder.svg?height=24&width=24'}
                     alt={vault.name}
                   />

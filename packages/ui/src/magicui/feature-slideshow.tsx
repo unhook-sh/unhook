@@ -210,6 +210,7 @@ export const Feature = ({
           />
 
           {/* Main Image */}
+          {/** biome-ignore lint/performance/noImgElement: we need to use img element for animation */}
           <motion.img
             key={currentIndex}
             src={currentItem.image}

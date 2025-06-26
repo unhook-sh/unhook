@@ -213,7 +213,7 @@ export async function handlePendingRequest({
         }
       }
       const startTime = Date.now();
-      const { host, ...headers } = request.request.headers;
+      const { host: _host, ...headers } = request.request.headers;
       const response = await (requestFn
         ? requestFn(dest.url, {
             method: request.request.method,

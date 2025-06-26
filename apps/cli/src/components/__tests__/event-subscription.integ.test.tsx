@@ -182,7 +182,11 @@ function verifyEventPayload(payload: ChannelPayload, expectedEvent: TestEvent) {
   expect(payload.eventType).toBe('INSERT');
 
   // Create copies without date fields for comparison
-  const { createdAt, timestamp, ...expectedWithoutDates } = expectedEvent;
+  const {
+    createdAt: _createdAt,
+    timestamp: _timestamp,
+    ...expectedWithoutDates
+  } = expectedEvent;
   const {
     createdAt: receivedCreatedAt,
     timestamp: receivedTimestamp,

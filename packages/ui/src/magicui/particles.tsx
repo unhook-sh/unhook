@@ -132,6 +132,7 @@ export const Particles: React.FC<ParticlesProps> = ({
     window.requestAnimationFrame(animate);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to run this once
   useEffect(() => {
     if (canvasRef.current) {
       context.current = canvasRef.current.getContext('2d');
@@ -143,7 +144,7 @@ export const Particles: React.FC<ParticlesProps> = ({
     return () => {
       window.removeEventListener('resize', initCanvas);
     };
-  }, [animate, initCanvas]);
+  }, []);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -159,9 +160,10 @@ export const Particles: React.FC<ParticlesProps> = ({
     }
   }, [mousePosition]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to run this once
   useEffect(() => {
     initCanvas();
-  }, [initCanvas]);
+  }, []);
 
   interface Circle {
     x: number;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Line,
   LineChart,
@@ -19,7 +19,7 @@ export function WebhookErrorRateChart({
 }: WebhookErrorRateChartProps) {
   const [data, setData] = useState<{ time: string; errorRate: number }[]>([]);
 
-  const getTimeRangeInMs = (range: string) => {
+  const getTimeRangeInMs = useCallback((range: string) => {
     switch (range) {
       case '1h':
         return 60 * 60 * 1000;
@@ -32,7 +32,7 @@ export function WebhookErrorRateChart({
       default:
         return 12 * 60 * 60 * 1000;
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Generate mock data based on time range

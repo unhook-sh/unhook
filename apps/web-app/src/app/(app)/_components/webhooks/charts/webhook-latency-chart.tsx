@@ -5,7 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@unhook/ui/components/chart';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -35,7 +35,7 @@ export function WebhookLatencyChart({
     }[]
   >([]);
 
-  const getTimeRangeInMs = (range: string) => {
+  const getTimeRangeInMs = useCallback((range: string) => {
     switch (range) {
       case '1h':
         return 60 * 60 * 1000;
@@ -50,9 +50,9 @@ export function WebhookLatencyChart({
       default:
         return 24 * 60 * 60 * 1000;
     }
-  };
+  }, []);
 
-  const getPointsForTimeRange = (range: string) => {
+  const getPointsForTimeRange = useCallback((range: string) => {
     switch (range) {
       case '1h':
         return 60;
@@ -67,7 +67,7 @@ export function WebhookLatencyChart({
       default:
         return 96;
     }
-  };
+  }, []);
 
   useEffect(() => {
     const generateData = () => {

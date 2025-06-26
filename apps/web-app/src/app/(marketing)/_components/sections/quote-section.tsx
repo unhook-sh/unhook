@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+import Image from 'next/image';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 export function QuoteSection() {
@@ -16,7 +16,7 @@ export function QuoteSection() {
 
         <div className="flex gap-4">
           <div className="size-10 rounded-full bg-primary border border-border">
-            <img
+            <Image
               src={quoteSection.author.image}
               alt={quoteSection.author.name}
               className="size-full rounded-full object-contain"

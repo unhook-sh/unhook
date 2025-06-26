@@ -4,6 +4,7 @@
 import { cn } from '@unhook/ui/lib/utils';
 import { Play, XIcon } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
+import Image from 'next/image';
 import { useState } from 'react';
 
 type AnimationStyle =
@@ -89,7 +90,7 @@ export function HeroVideoDialog({
         }}
       >
         {thumbnailSrc ? (
-          <img
+          <Image
             src={thumbnailSrc}
             alt={thumbnailAlt}
             width={1920}

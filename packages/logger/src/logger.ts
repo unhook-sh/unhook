@@ -91,7 +91,7 @@ export class UnhookLogger {
 
     // Process each message in order
     for (const bufferedMessage of sortedBuffer) {
-      const { sequence, ...message } = bufferedMessage;
+      const { sequence: _sequence, ...message } = bufferedMessage;
       if (this.destinations.size > 0) {
         await Promise.all(
           Array.from(this.destinations).map((destination) =>

@@ -26,7 +26,7 @@ export const defaultSections = {
       {
         icon: Logs,
         title: 'Function Calls',
-        url: '/${orgId}/${projectId}/${envName}/function-calls',
+        url: `/${orgId}/${projectId}/${envName}/function-calls`,
       },
     ],
   },
@@ -36,7 +36,7 @@ export const defaultSections = {
       {
         icon: KeyRound,
         title: 'API Keys',
-        url: '/${orgId}/${projectId}/${envName}/settings/api-keys',
+        url: `/${orgId}/${projectId}/${envName}/settings/api-keys`,
       },
     ],
   },
@@ -46,12 +46,12 @@ export const defaultSections = {
       {
         icon: Users,
         title: 'Team Members',
-        url: '/${orgId}/settings/members',
+        url: `/${orgId}/settings/members`,
       },
       {
         icon: CreditCard,
         title: 'Billing',
-        url: '/${orgId}/settings/billing',
+        url: `/${orgId}/settings/billing`,
       },
     ],
   },
@@ -61,32 +61,32 @@ export const defaultSections = {
       {
         icon: Sparkles,
         title: 'Welcome',
-        url: '/${orgId}/onboarding/welcome',
+        url: `/${orgId}/onboarding/welcome`,
       },
       {
         icon: FolderPlus,
         title: 'Project Setup',
-        url: '/${orgId}/onboarding/project-setup',
+        url: `/${orgId}/onboarding/project-setup`,
       },
       {
         icon: Code,
         title: 'Code Setup',
-        url: '/${orgId}/onboarding/code-setup',
+        url: `/${orgId}/onboarding/code-setup`,
       },
       {
         icon: Settings,
         title: 'Editor Setup',
-        url: '/${orgId}/onboarding/editor-setup',
+        url: `/${orgId}/onboarding/editor-setup`,
       },
       {
         icon: Users,
         title: 'Invite Team',
-        url: '/${orgId}/onboarding/invite-team',
+        url: `/${orgId}/onboarding/invite-team`,
       },
       {
         icon: CreditCard,
         title: 'Billing',
-        url: '/${orgId}/onboarding/billing',
+        url: `/${orgId}/onboarding/billing`,
       },
     ],
   },

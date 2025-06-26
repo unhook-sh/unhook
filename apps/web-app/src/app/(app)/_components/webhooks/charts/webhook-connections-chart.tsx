@@ -5,7 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@unhook/ui/components/chart';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -25,7 +25,7 @@ export function WebhookConnectionsChart({
   const [data, setData] = useState<{ time: string; connections: number }[]>([]);
   const [isLive, setIsLive] = useState(true);
 
-  const getTimeRangeInMs = (range: string) => {
+  const getTimeRangeInMs = useCallback((range: string) => {
     switch (range) {
       case '1h':
         return 60 * 60 * 1000;
@@ -40,9 +40,9 @@ export function WebhookConnectionsChart({
       default:
         return 24 * 60 * 60 * 1000;
     }
-  };
+  }, []);
 
-  const getPointsForTimeRange = (range: string) => {
+  const getPointsForTimeRange = useCallback((range: string) => {
     switch (range) {
       case '1h':
         return 60;
@@ -57,7 +57,7 @@ export function WebhookConnectionsChart({
       default:
         return 96;
     }
-  };
+  }, []);
 
   // Generate initial data based on time range
   useEffect(() => {

@@ -1,0 +1,25 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- File background -->
+  <path d="M14 2H6C4.89 2 4 2.89 4 4V20C4 21.11 4.89 22 6 22H18C19.11 22 20 21.11 20 20V8L14 2Z" fill="#2D3748" stroke="#4A5568" stroke-width="1"/>
+  
+  <!-- File corner fold -->
+  <path d="M14 2V8H20" fill="none" stroke="#4A5568" stroke-width="1"/>
+  
+  <!-- Unhook logo/icon in the center -->
+  <g transform="translate(12, 13) scale(0.6)">
+    <!-- Hook shape -->
+    <path d="M-4 -2C-4 -4.2 -2.2 -6 0 -6C2.2 -6 4 -4.2 4 -2C4 0.2 2.2 2 0 2H-2" 
+          fill="none" 
+          stroke="#3182CE" 
+          stroke-width="2" 
+          stroke-linecap="round"/>
+    
+    <!-- Webhook indicator dots -->
+    <circle cx="-6" cy="-2" r="1" fill="#3182CE"/>
+    <circle cx="6" cy="-2" r="1" fill="#3182CE"/>
+    <circle cx="0" cy="4" r="1" fill="#3182CE"/>
+  </g>
+  
+  <!-- YAML/Config indicator -->
+  <text x="12" y="19" font-family="monospace" font-size="6" fill="#718096" text-anchor="middle">YML</text>
+</svg>

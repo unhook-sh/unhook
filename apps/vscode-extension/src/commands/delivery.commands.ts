@@ -1,26 +1,66 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { SettingsService } from '../services/settings.service';
 
 const log = debug('unhook:vscode:delivery-commands');
 
-let isDeliveryEnabled = true;
+/**
+ * Commands and utilities for managing event delivery settings.
+ *
+ * Event delivery controls whether new webhook events are automatically
+ * forwarded to their configured destinations. When disabled, events will
+ * still be received and displayed in the extension, but they won't be
+ * forwarded to local endpoints until manually replayed or delivery is re-enabled.
+ */
 
 export function registerDeliveryCommands(context: vscode.ExtensionContext) {
+  const settingsService = SettingsService.getInstance();
+
   // Register toggle delivery command
   const toggleDeliveryCommand = vscode.commands.registerCommand(
     'unhook.toggleDelivery',
     async () => {
-      isDeliveryEnabled = !isDeliveryEnabled;
-      const status = isDeliveryEnabled ? 'enabled' : 'disabled';
+      const config = vscode.workspace.getConfiguration('unhook');
+      const currentState = config.get<boolean>('delivery.enabled', true);
+      const newState = !currentState;
 
+      await config.update(
+        'delivery.enabled',
+        newState,
+        vscode.ConfigurationTarget.Workspace,
+      );
+
+      const status = newState ? 'enabled' : 'disabled';
       log('Event delivery %s', status);
-
       vscode.window.showInformationMessage(`Event delivery ${status}`);
     },
   );
-  context.subscriptions.push(toggleDeliveryCommand);
+
+  // Listen for configuration changes to update settings service
+  const configChangeListener = vscode.workspace.onDidChangeConfiguration(
+    (e) => {
+      if (e.affectsConfiguration('unhook.delivery.enabled')) {
+        const config = vscode.workspace.getConfiguration('unhook');
+        const newSettings = {
+          delivery: {
+            enabled: config.get<boolean>('delivery.enabled', true),
+          },
+        };
+        settingsService.updateSettings(newSettings);
+      }
+    },
+  );
+
+  context.subscriptions.push(toggleDeliveryCommand, configChangeListener);
 }
 
 export function isDeliveryPaused(): boolean {
-  return !isDeliveryEnabled;
+  const config = vscode.workspace.getConfiguration('unhook');
+  const isEnabled = config.get<boolean>('delivery.enabled', true);
+  return !isEnabled;
+}
+
+export function isDeliveryEnabled(): boolean {
+  const config = vscode.workspace.getConfiguration('unhook');
+  return config.get<boolean>('delivery.enabled', true);
 }

@@ -2,7 +2,10 @@ import { debug, defaultLogger } from '@unhook/logger';
 import { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-output';
 import * as vscode from 'vscode';
 import { registerAuthCommands } from './commands/auth.commands';
-import { registerDeliveryCommands } from './commands/delivery.commands';
+import {
+  isDeliveryEnabled,
+  registerDeliveryCommands,
+} from './commands/delivery.commands';
 import { registerEventCommands } from './commands/events.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
@@ -62,6 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // Listen for settings changes
   settingsService.onSettingsChange((settings) => {
     outputDestination.autoShow = settings.output.autoShow;
+    updateStatusBar(); // Update status bar when delivery settings change
   });
 
   // Create status bar item
@@ -70,15 +74,19 @@ export async function activate(context: vscode.ExtensionContext) {
     100,
   );
 
-  // Update status bar based on auth state
+  // Update status bar based on auth state and delivery status
   function updateStatusBar() {
+    const deliveryEnabled = isDeliveryEnabled();
+    const deliveryIcon = deliveryEnabled ? '$(play)' : '$(debug-pause)';
+    const deliveryStatus = deliveryEnabled ? 'enabled' : 'paused';
+
     if (authStore.isValidatingSession) {
       statusBarItem.text = '$(sync~spin) Validating Unhook Session...';
       statusBarItem.tooltip = 'Validating your Unhook session...';
       statusBarItem.command = undefined;
     } else if (authStore.isSignedIn) {
-      statusBarItem.text = '$(check) Unhook';
-      statusBarItem.tooltip = 'Click to open Unhook Quick Actions';
+      statusBarItem.text = `$(check) Unhook ${deliveryIcon}`;
+      statusBarItem.tooltip = `Unhook connected • Event forwarding ${deliveryStatus}\nClick to open Quick Actions`;
       statusBarItem.command = 'unhook.showQuickPick';
     } else {
       statusBarItem.text = '$(sign-in) Sign in to Unhook';
@@ -90,6 +98,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Listen for auth state changes
   authStore.onDidChangeAuth(() => updateStatusBar());
+
+  // Listen for delivery setting changes
+  const configChangeListener = vscode.workspace.onDidChangeConfiguration(
+    (e) => {
+      if (e.affectsConfiguration('unhook.delivery.enabled')) {
+        updateStatusBar();
+      }
+    },
+  );
+
   updateStatusBar();
 
   // Add status bar item to subscriptions
@@ -99,6 +117,7 @@ export async function activate(context: vscode.ExtensionContext) {
     signInCommand,
     signOutCommand,
     statusBarItem,
+    configChangeListener,
   );
 
   // Initialize webhook events provider

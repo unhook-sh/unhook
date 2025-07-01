@@ -1,0 +1,106 @@
+/* Import the UI package's global styles */
+@import "../../../../packages/ui/src/styles/globals.css";
+
+/* VSCode-specific overrides with fallbacks */
+:root {
+  /* Override with VSCode variables, fallback to shadcn defaults */
+  --background: var(--vscode-editor-background, oklch(98.46% 0.002 247.84));
+  --foreground: var(--vscode-editor-foreground, oklch(0.145 0 0));
+  --card: var(--vscode-editor-background, oklch(1 0 0));
+  --card-foreground: var(--vscode-editor-foreground, oklch(0.145 0 0));
+  --popover: var(--vscode-editorWidget-background, oklch(1 0 0));
+  --popover-foreground: var(--vscode-editorWidget-foreground, oklch(0.145 0 0));
+  --primary: var(--vscode-button-background, oklch(0.205 0 0));
+  --primary-foreground: var(--vscode-button-foreground, oklch(0.985 0 0));
+  --secondary: var(--vscode-button-secondaryBackground, oklch(0.6 0.118 184.704));
+  --secondary-foreground: var(--vscode-button-secondaryForeground, oklch(0.205 0 0));
+  --muted: var(--vscode-input-background, oklch(0.97 0 0));
+  --muted-foreground: var(--vscode-input-placeholderForeground, oklch(0.556 0 0));
+  --accent: var(--vscode-list-hoverBackground, oklch(0.97 0 0));
+  --accent-foreground: var(--vscode-list-hoverForeground, oklch(0.205 0 0));
+  --destructive: var(--vscode-errorForeground, oklch(0.577 0.245 27.325));
+  --destructive-foreground: var(--vscode-errorForeground, oklch(0.577 0.245 27.325));
+  --border: var(--vscode-panel-border, oklch(0.922 0 0));
+  --input: var(--vscode-input-border, oklch(0.922 0 0));
+  --ring: var(--vscode-focusBorder, oklch(0.708 0 0));
+  
+  /* Sidebar overrides */
+  --sidebar: var(--vscode-sideBar-background, oklch(0.985 0 0));
+  --sidebar-foreground: var(--vscode-sideBar-foreground, oklch(0.145 0 0));
+  --sidebar-border: var(--vscode-sideBar-border, oklch(0.922 0 0));
+  
+  /* Additional VSCode-specific variables */
+  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  font-weight: var(--vscode-font-weight, normal);
+}
+
+/* VSCode dark theme detection - Apply dark theme CSS variables */
+body[data-vscode-theme-kind="vscode-dark"],
+body[data-vscode-theme-kind="vscode-high-contrast"] {
+  --background: var(--vscode-editor-background, oklch(21.03% 0.006 285.89));
+  --foreground: var(--vscode-editor-foreground, oklch(0.985 0 0));
+  --card: var(--vscode-editor-background, oklch(0.145 0 0));
+  --card-foreground: var(--vscode-editor-foreground, oklch(0.985 0 0));
+  --popover: var(--vscode-editorWidget-background, oklch(0.145 0 0));
+  --popover-foreground: var(--vscode-editorWidget-foreground, oklch(0.985 0 0));
+  --primary: var(--vscode-button-background, oklch(0.985 0 0));
+  --primary-foreground: var(--vscode-button-foreground, oklch(0.205 0 0));
+  --secondary: var(--vscode-button-secondaryBackground, oklch(0.6 0.118 184.704));
+  --secondary-foreground: var(--vscode-button-secondaryForeground, oklch(0.985 0 0));
+  --muted: var(--vscode-input-background, oklch(0.269 0 0));
+  --muted-foreground: var(--vscode-input-placeholderForeground, oklch(0.708 0 0));
+  --accent: var(--vscode-list-hoverBackground, oklch(0.269 0 0));
+  --accent-foreground: var(--vscode-list-hoverForeground, oklch(0.985 0 0));
+  --destructive: var(--vscode-errorForeground, oklch(0.396 0.141 25.723));
+  --destructive-foreground: var(--vscode-errorForeground, oklch(0.637 0.237 25.331));
+  --border: var(--vscode-panel-border, oklch(0.269 0 0));
+  --input: var(--vscode-input-border, oklch(0.269 0 0));
+  --ring: var(--vscode-focusBorder, oklch(0.556 0 0));
+}
+
+/* Additional VSCode-specific styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* VSCode-specific status colors */
+.status-200 {
+  background-color: var(--vscode-testing-iconPassed, var(--primary));
+  color: var(--vscode-testing-passForeground, var(--primary-foreground));
+}
+
+.status-4xx {
+  background-color: var(--vscode-testing-iconFailed, var(--destructive));
+  color: var(--vscode-testing-failForeground, var(--destructive-foreground));
+}
+
+.status-5xx {
+  background-color: var(--vscode-testing-iconErrored, var(--destructive));
+  color: var(--vscode-testing-errorForeground, var(--destructive-foreground));
+}
+
+/* VSCode-specific focus styles */
+:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder, var(--ring));
+  outline-offset: -1px;
+}
+
+/* Code blocks should use VSCode editor colors */
+pre, code {
+  font-family: var(--vscode-editor-font-family, "Consolas", "Courier New", monospace);
+  font-size: var(--vscode-editor-font-size, 13px);
+  background-color: var(--vscode-textBlockQuote-background, var(--muted));
+}
+
+/* Links */
+a {
+  color: var(--vscode-textLink-foreground, var(--primary));
+}
+
+a:hover {
+  color: var(--vscode-textLink-activeForeground, var(--primary));
+}

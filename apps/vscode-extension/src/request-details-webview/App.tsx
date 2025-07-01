@@ -6,14 +6,24 @@ import { useEffect, useRef, useState } from 'react';
 
 const log = debug('unhook:vscode:request-details-app');
 
-// Declare the vscode global
+// VSCode API type declaration
 declare global {
   interface Window {
-    vscode: {
+    acquireVsCodeApi?: () => {
       postMessage: (message: unknown) => void;
+      getState: () => unknown;
+      setState: (state: unknown) => void;
     };
   }
 }
+
+// Get the VS Code API
+const vscode = window.acquireVsCodeApi?.() || {
+  postMessage: (message: unknown) => {
+    log('VSCode API not available, posting to parent', message);
+    window.parent.postMessage(message, '*');
+  },
+};
 
 function RequestDetails({ data }: { data: RequestType }) {
   const parseBody = (body?: string) => {
@@ -191,7 +201,7 @@ function App() {
     window.addEventListener('message', messageHandler);
     // Notify the extension that the webview is ready
     log('Sending ready message to extension');
-    window.vscode.postMessage({ type: 'ready' });
+    vscode.postMessage({ type: 'ready' });
 
     return () => {
       log('Cleaning up message handler');

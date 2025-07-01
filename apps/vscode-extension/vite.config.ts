@@ -12,4 +12,7 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
   },
+  optimizeDeps: {
+    exclude: ['@unhook/db', '@unhook/logger', '@unhook/ui'],
+  },
 });

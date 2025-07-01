@@ -4,17 +4,24 @@ Welcome to your comprehensive social media marketing toolkit for Unhook! These C
 
 ## 🚀 Quick Start
 
-To use any command, simply type `/` followed by the command name in your Claude Code session:
+To use any command in Claude Code, simply type `/project:` followed by the command name:
 
 ```
-/twitter-viral
+/project:twitter-viral
+```
+
+Commands with parameters can be used like this:
+```
+/project:marketing-coordinator Launch our new webhook debugging feature
 ```
 
 ## 📋 Available Commands
 
+All commands are located in `.claude/commands/` and are available as `/project:command-name`.
+
 ### Platform-Specific Commands
 
-#### `/twitter-viral`
+#### `/project:twitter-viral`
 Generate viral Twitter/X content including:
 - 5 different viral tweet options with hooks
 - Engagement strategies and timing
@@ -22,235 +29,162 @@ Generate viral Twitter/X content including:
 - Thread ideas and content calendars
 - Influencer engagement tactics
 
-#### `/linkedin-thought-leader`
+#### `/project:linkedin-thought-leader`
 Create LinkedIn thought leadership content:
 - Professional posts with compelling hooks
 - Article outlines on webhook development
-- Personal brand building templates
-- Visual content ideas (carousels, infographics)
-- Engagement strategies for B2B audience
+- Case studies showcasing ROI
+- Team spotlights and culture posts
+- Industry insights and trends
 
-#### `/reddit-community`
-Authentic Reddit engagement strategies:
-- 5 types of posts (problem/solution, tutorials, comparisons)
-- Subreddit-specific approaches
-- Comment templates for natural engagement
-- Community building best practices
-- Avoiding spam while promoting naturally
+#### `/project:reddit-community`
+Authentic Reddit community engagement:
+- Subreddit-specific content strategies
+- Comment templates for organic promotion
+- Post ideas for different communities
+- Timing and karma optimization
+- Community relationship building
 
-#### `/youtube-tutorial`
-Comprehensive YouTube content strategy:
-- Video scripts for multiple formats
-- Title and thumbnail optimization
-- Description templates with SEO
-- 30-day content calendar
-- YouTube Shorts ideas
+#### `/project:youtube-tutorial`
+Video content planning and scripts:
+- Tutorial scripts with timestamps
+- Thumbnail design suggestions
+- SEO-optimized titles and descriptions
+- Series planning for sustained engagement
+- Collaboration opportunities
 
-#### `/devto-blog`
-Technical blog content for Dev.to:
-- 10 high-impact article ideas
-- SEO-optimized article templates
-- Series planning for consistent content
+#### `/project:devto-blog`
+Technical blog content strategy:
+- In-depth technical articles
+- Tutorial series planning
+- Code examples and demos
+- SEO optimization strategies
+- Cross-promotion tactics
+
+#### `/project:hackernews-launch`
+Hacker News launch strategy:
+- Show HN post variations
+- Comment engagement strategies
+- Timing optimization
+- Community value alignment
+- Follow-up strategies
+
+#### `/project:producthunt-launch`
+Product Hunt launch orchestration:
+- Launch day timeline
+- Asset preparation checklists
+- Hunter outreach templates
 - Community engagement tactics
-- Performance tracking metrics
+- Post-launch momentum strategies
 
-#### `/hackernews-launch`
-Hacker News launch strategies:
-- 5 different Show HN post variations
-- Comment response strategies
-- Optimal timing and preparation
-- Success metrics and follow-up plans
-- Community values alignment
-
-#### `/producthunt-launch`
-Product Hunt launch coordination:
-- Complete listing optimization
-- Visual asset specifications
-- Pre-launch and launch day strategies
-- Community engagement templates
-- Post-launch action plans
-
-#### `/tiktok-devtok`
+#### `/project:tiktok-devtok`
 TikTok/DevTok viral content:
-- 10 viral video concepts
-- Trending hooks and formats
+- Trend-based video concepts
+- Hook optimization
+- Educational content ideas
+- Collaboration opportunities
 - Hashtag strategies
-- Creator collaboration ideas
-- Community building tactics
 
-#### `/discord-community`
+#### `/project:discord-community`
 Discord community engagement:
 - Server-specific strategies
-- Phased entry approach
-- Value-add content ideas
-- Event and workshop planning
-- Long-term relationship building
+- Bot integration ideas
+- Community event planning
+- Engagement tactics
+- Value-first approaches
 
-### Master Coordination Command
+### 🎯 Master Coordinator
 
-#### `/marketing-coordinator`
-Orchestrates multi-platform campaigns:
-- Analyzes campaign objectives
-- Creates platform-specific content variations
-- Develops posting schedules
-- Coordinates cross-platform amplification
-- Tracks campaign performance
+#### `/project:marketing-coordinator`
+The master marketing coordinator that can:
+- Orchestrate multi-platform campaigns
+- Analyze campaign requests
+- Generate platform-specific content
+- Track performance metrics
+- Suggest optimization strategies
 
-## 💡 Usage Examples
-
-### Example 1: Launch a New Feature
+**Usage with parameters:**
 ```
-/marketing-coordinator
-
-Create a 2-week campaign to launch our new team collaboration feature. 
-Goal: 500 new team signups.
+/project:marketing-coordinator Create a campaign for our new OAuth integration feature
 ```
 
-### Example 2: Generate Viral Tweet
-```
-/twitter-viral
+## 💡 Pro Tips
 
-I need tweets about how Unhook saved a developer 3 hours of debugging time.
-Include code snippet visuals.
+### 1. Campaign Planning
+Start with the marketing coordinator to plan comprehensive campaigns:
 ```
-
-### Example 3: Technical Article
-```
-/devto-blog
-
-Write an article about "Why Webhook Testing in Production is Dangerous"
-Focus on security implications and include Unhook as a solution.
+/project:marketing-coordinator Plan a 2-week campaign for our enterprise launch
 ```
 
-## 🎯 Best Practices
+### 2. Platform Optimization
+Each platform command is optimized for that specific platform's culture and best practices. Use them individually for focused content:
+```
+/project:twitter-viral
+/project:linkedin-thought-leader
+```
 
-### 1. **Consistency is Key**
-- Use commands regularly to maintain presence
-- Follow the suggested posting schedules
-- Maintain voice consistency across platforms
+### 3. Content Repurposing
+Use multiple commands to repurpose content across platforms:
+1. Start with `/project:devto-blog` for technical content
+2. Use `/project:twitter-viral` to create tweet threads from the blog
+3. Use `/project:linkedin-thought-leader` to create professional insights
+4. Use `/project:youtube-tutorial` to plan video versions
 
-### 2. **Adapt Content Per Platform**
-- Each platform has unique culture and expectations
-- Use platform-specific features (threads, carousels, etc.)
-- Respect community guidelines
+### 4. Launch Sequences
+For product launches, use commands in sequence:
+1. `/project:marketing-coordinator` - Overall strategy
+2. `/project:producthunt-launch` - PH specific prep
+3. `/project:hackernews-launch` - HN strategy
+4. `/project:twitter-viral` - Launch day tweets
+5. `/project:reddit-community` - Community engagement
 
-### 3. **Track and Iterate**
-- Monitor metrics suggested by each command
-- A/B test different approaches
-- Iterate based on what resonates
+### 5. A/B Testing
+Generate multiple variations for testing:
+```
+/project:twitter-viral
+```
+Then ask: "Generate 3 more variations with different hooks"
 
-### 4. **Authenticity First**
-- Always provide value before promotion
-- Be transparent about your affiliation
-- Engage genuinely with communities
+## 🔧 Customization
 
-### 5. **Coordinate Campaigns**
-- Use `/marketing-coordinator` for multi-platform pushes
-- Time releases for maximum impact
-- Cross-reference content between platforms
+### Adding Custom Parameters
+Commands support the `$ARGUMENTS` placeholder. For example, the marketing coordinator uses:
+```
+Analyze this marketing request: $ARGUMENTS
+```
 
-## 📊 Success Metrics
+### Creating New Commands
+Add new markdown files to `.claude/commands/`:
+```bash
+echo "Your prompt here" > .claude/commands/instagram-reels.md
+```
 
-Track these KPIs across all campaigns:
+### Team Collaboration
+These commands are version controlled and shared with your team. Any team member with access to the repo can use them.
 
-### Awareness
-- Impressions and reach
-- Brand mentions
-- Share of voice
-- Follower growth
+## 📊 Performance Tracking
 
-### Engagement
-- Likes, comments, shares
-- Click-through rates
-- Time on content
-- Community participation
+After generating content with any command, you can ask Claude to:
+- Create tracking spreadsheets
+- Set up UTM parameters
+- Generate analytics dashboards
+- Create performance reports
 
-### Conversion
-- Sign-ups per platform
-- Free to paid conversion
-- Feature adoption
-- User retention
+## 🚨 Important Notes
 
-## 🚨 Quick Campaign Ideas
+1. **Review Generated Content**: Always review and customize generated content before publishing
+2. **Platform Guidelines**: Ensure content follows each platform's guidelines
+3. **Timing Matters**: Use platform-specific timing recommendations
+4. **Authenticity First**: Maintain your brand voice across all content
+5. **Iterate and Improve**: Use performance data to refine your approach
 
-When you need content fast:
+## 🎉 Getting Started
 
-1. **"Webhook Horror Story"** - Share debugging nightmares
-2. **"Team Success"** - Highlight collaboration wins
-3. **"Speed Challenge"** - Setup time comparisons
-4. **"Feature Deep Dive"** - Technical explanations
-5. **"Community Spotlight"** - User success stories
+1. Open Claude Code in your terminal
+2. Type `/project:marketing-coordinator` to start with overall strategy
+3. Use platform-specific commands for detailed content
+4. Iterate based on performance
 
-## 🔄 Workflow Integration
+Remember: These commands are designed to accelerate your marketing efforts, not replace human creativity and strategic thinking. Use them as a powerful starting point and customize for your specific needs.
 
-### Daily Routine
-1. Morning: Check trending topics with `/marketing-coordinator`
-2. Create day's content using platform-specific commands
-3. Schedule posts across platforms
-4. Afternoon: Engage with communities
-5. Evening: Analyze performance and plan tomorrow
-
-### Weekly Planning
-- Monday: Plan week's campaigns
-- Tuesday-Thursday: Execute and engage
-- Friday: Analyze and report
-- Weekend: Light community engagement
-
-## 📚 Command Combinations
-
-### Product Launch Combo
-1. `/producthunt-launch` - Prepare materials
-2. `/hackernews-launch` - Technical angle
-3. `/twitter-viral` - Build buzz
-4. `/marketing-coordinator` - Orchestrate all
-
-### Educational Series Combo
-1. `/devto-blog` - In-depth article
-2. `/youtube-tutorial` - Video version
-3. `/tiktok-devtok` - Bite-sized tips
-4. `/linkedin-thought-leader` - Professional summary
-
-## 🎨 Brand Voice Guidelines
-
-Maintain Unhook's personality across all content:
-- **Technical but accessible**
-- **Helpful without being preachy**
-- **Confident but humble**
-- **Fun but professional**
-- **Developer-first always**
-
-## 🛠️ Troubleshooting
-
-### Content Not Resonating?
-- Review platform-specific best practices
-- Check timing and hashtags
-- Ensure value-first approach
-- Consider audience feedback
-
-### Low Engagement?
-- Increase community participation first
-- Focus on helping, not selling
-- Use more visual content
-- Engage with others' content
-
-### Platform Restrictions?
-- Always follow platform rules
-- Build reputation before promoting
-- Use indirect approaches
-- Focus on education over promotion
-
-## 🎉 Get Started!
-
-Ready to make Unhook go viral? Start with:
-
-1. `/marketing-coordinator` to plan your first campaign
-2. Choose 2-3 platforms to focus on initially
-3. Create your first week's content
-4. Engage authentically with communities
-5. Track results and iterate
-
-Remember: The best marketing doesn't feel like marketing. Focus on solving real problems for developers, and Unhook will naturally become part of the conversation.
-
----
-
-*These commands are designed to be iterative and adaptive. Use them as starting points and customize based on your campaign results and community feedback.*
+Happy marketing! 🚀

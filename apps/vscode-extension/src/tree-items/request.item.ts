@@ -102,7 +102,11 @@ export class RequestItem extends vscode.TreeItem {
       title: 'View Request Details',
       arguments: [this],
     };
-    log('Setting up command for request', { requestId: request.id });
+    log('Setting up command for request', {
+      requestId: request.id,
+      hasRequest: !!this.request,
+      itemConstructor: this.constructor.name,
+    });
     this.command = command;
   }
 }

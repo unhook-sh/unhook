@@ -63,8 +63,9 @@ export class EventsProvider
     element?: EventItem | RequestItem,
   ): Promise<(EventItem | RequestItem)[]> {
     if (element instanceof EventItem) {
-      // Return requests for this event
-      return (element.event.requests ?? []).map(
+      // Return requests for this event, or empty array if no requests
+      const requests = element.event.requests ?? [];
+      return requests.map(
         (request) => new RequestItem(request, element, this.context),
       );
     }

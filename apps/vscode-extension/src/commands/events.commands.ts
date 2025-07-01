@@ -192,6 +192,39 @@ export function registerEventCommands(
       'unhook.viewRequest',
       async (item: RequestItem) => {
         try {
+          log('View request command called', {
+            item: item ? 'present' : 'undefined',
+            hasRequest: item?.request ? 'yes' : 'no',
+            itemType: typeof item,
+            itemConstructor: item?.constructor?.name,
+          });
+
+          // Guard against undefined item
+          if (!item) {
+            log('View request command called without item');
+            vscode.window.showErrorMessage(
+              'No request item provided to view command',
+            );
+            return;
+          }
+
+          // Guard against missing request property
+          if (!item.request) {
+            log(
+              'View request command called with item missing request property',
+              {
+                item,
+                itemKeys: Object.keys(item || {}),
+                itemType: typeof item,
+                itemConstructor: item?.constructor?.name,
+              },
+            );
+            vscode.window.showErrorMessage(
+              'Request item is missing request data',
+            );
+            return;
+          }
+
           log('Opening request details', { requestId: item.request.id });
 
           // Show the request details in a panel
@@ -202,7 +235,7 @@ export function registerEventCommands(
           });
         } catch (error) {
           log('Failed to open request details', {
-            requestId: item.request.id,
+            requestId: item?.request?.id,
             error,
           });
           vscode.window.showErrorMessage(

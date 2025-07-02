@@ -31,14 +31,14 @@ const ngrokComparison = {
       items: [
         {
           feature: 'Shared webhook URLs',
-          unhook: 'Built-in team sharing',
+          unhook: 'One URL for entire team + config file',
           competitor: 'Individual URLs only',
           unhookAdvantage: true,
         },
         {
-          feature: 'Team member visibility',
-          unhook: 'See active team members',
-          competitor: 'No team visibility',
+          feature: 'Config file sharing',
+          unhook: 'Checked-in config file',
+          competitor: 'Manual URL sharing',
           unhookAdvantage: true,
         },
         {
@@ -233,7 +233,7 @@ const ngrokComparison = {
   reasons: [
     {
       title: 'Built for Teams',
-      description: 'Unlike ngrok\'s individual-focused approach, Unhook is designed from the ground up for team collaboration with shared URLs, team visibility, and collaborative debugging.',
+      description: 'Unlike ngrok\'s individual-focused approach, Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo. No more hunting for the right URL.',
       icon: '👥',
     },
     {

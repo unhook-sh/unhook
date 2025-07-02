@@ -62,7 +62,7 @@ const beeceptorComparison = {
       items: [
         {
           feature: 'Team webhook sharing',
-          unhook: 'Built-in team sharing',
+          unhook: 'One URL for entire team + config file',
           competitor: 'Individual endpoints',
           unhookAdvantage: true,
         },
@@ -218,7 +218,7 @@ const beeceptorComparison = {
     },
     {
       title: 'Team Collaboration',
-      description: 'Built-in team features that Beeceptor lacks - shared webhooks, collaborative debugging, and team management.',
+      description: 'One shared webhook URL for your entire team with a config file that lives in your repo. No more manual URL sharing or setup for new team members.',
       icon: '👥',
     },
     {

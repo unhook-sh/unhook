@@ -68,7 +68,7 @@ const localtunnelComparison = {
         },
         {
           feature: 'Shared webhooks',
-          unhook: 'Team webhook sharing',
+          unhook: 'One URL for entire team + config file',
           competitor: 'Individual tunnels only',
           unhookAdvantage: true,
         },
@@ -207,7 +207,7 @@ const localtunnelComparison = {
     },
     {
       title: 'Built for Teams',
-      description: 'Localtunnel is designed for individual use. Unhook provides the team collaboration features modern development teams need.',
+      description: 'Localtunnel creates individual tunnels. Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo.',
       icon: '👥',
     },
     {

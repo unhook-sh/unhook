@@ -25,8 +25,8 @@ const competitors = [
     weaknesses: ['Expensive for teams', 'No team features', 'Per-domain pricing'],
     comparison: '/vs-ngrok',
     unhookAdvantages: [
-      'Team-first pricing',
-      'Built-in collaboration',
+      'One shared URL for entire team',
+      'Config file in your repo',
       'VS Code integration',
       'No per-domain fees'
     ]
@@ -42,9 +42,9 @@ const competitors = [
     weaknesses: ['Limited team features', 'Basic functionality', 'No editor integration'],
     comparison: '/vs-webhook-site',
     unhookAdvantages: [
-      'Advanced team features',
+      'One shared URL for entire team',
+      'Config file in your repo',
       'VS Code integration',
-      'Better reliability',
       'Professional features'
     ]
   },
@@ -59,10 +59,10 @@ const competitors = [
     weaknesses: ['Expensive', 'General-purpose tool', 'No webhook focus'],
     comparison: '/vs-beeceptor',
     unhookAdvantages: [
+      'One shared URL for entire team',
+      'Config file in your repo',
       'Webhook-focused design',
-      'Better pricing',
-      'Team collaboration',
-      'Editor integration'
+      'Better pricing'
     ]
   },
   {
@@ -76,17 +76,25 @@ const competitors = [
     weaknesses: ['Unmaintained', 'Unreliable', 'No team features', 'Basic functionality'],
     comparison: '/vs-localtunnel',
     unhookAdvantages: [
+      'One shared URL for entire team',
+      'Config file in your repo',
       'Active maintenance',
-      'Enterprise reliability',
-      'Team features',
-      'Professional support'
+      'Enterprise reliability'
     ]
   }
 ];
 
 const comparisonMatrix = [
   {
-    feature: 'Team Collaboration',
+    feature: 'Shared Webhook URLs',
+    unhook: true,
+    ngrok: false,
+    webhookSite: false,
+    beeceptor: false,
+    localtunnel: false,
+  },
+  {
+    feature: 'Config File in Repo',
     unhook: true,
     ngrok: false,
     webhookSite: false,

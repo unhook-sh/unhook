@@ -5,6 +5,7 @@ import { FAQSection } from '~/app/(marketing)/_components/sections/faq-section';
 import { FooterSection } from '~/app/(marketing)/_components/sections/footer-section';
 import { GrowthSection } from '~/app/(marketing)/_components/sections/growth-section';
 import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
+import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
 import { VSCodeFeaturesSection } from '~/app/(marketing)/_components/sections/vscode-features-section';
 import { VSCodeHeroSection } from '~/app/(marketing)/_components/sections/vscode-hero-section';
 import { siteConfig } from './_lib/config';
@@ -19,6 +20,7 @@ export default function Home() {
         <VSCodeHeroSection />
         {/* <CompanyShowcase /> */}
         <BentoSection />
+        <SharedWebhooksSection />
         <VSCodeFeaturesSection />
         <AIMCPSection />
         {/* <QuoteSection /> */}

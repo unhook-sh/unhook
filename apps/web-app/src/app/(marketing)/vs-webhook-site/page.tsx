@@ -33,7 +33,7 @@ const webhookSiteComparison = {
       items: [
         {
           feature: 'Team webhook sharing',
-          unhook: 'Built-in team sharing',
+          unhook: 'One URL for entire team + config file',
           competitor: 'Individual URLs only',
           unhookAdvantage: true,
         },
@@ -214,7 +214,7 @@ const webhookSiteComparison = {
   reasons: [
     {
       title: 'Team-First Design',
-      description: 'Unlike Webhook.site\'s individual focus, Unhook is built for teams with shared URLs, collaborative debugging, and team management features.',
+      description: 'Unlike Webhook.site\'s individual focus, Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo. New team members get instant access.',
       icon: '👥',
     },
     {

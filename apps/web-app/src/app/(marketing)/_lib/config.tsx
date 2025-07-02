@@ -74,7 +74,7 @@ export const siteConfig = {
     badge: 'Now Available: VS Code Extension',
     title: 'Webhook Development in VS Code',
     description:
-      'Debug webhooks directly in your editor. Test AI-driven automations, MCP server integrations, and traditional webhook flows without leaving VS Code.',
+      'Debug webhooks directly in your editor with shared team URLs and config files. Test AI-driven automations, MCP server integrations, and traditional webhook flows without leaving VS Code.',
     cta: {
       primary: {
         text: 'Install Extension',
@@ -644,6 +644,18 @@ export const siteConfig = {
         question: 'What is MCP and how does it relate to webhook testing?',
         answer:
           'MCP (Model Context Protocol) is a standard for connecting AI models to external data sources and tools. Many MCP servers trigger webhooks when AI agents perform actions. Unhook helps you test these AI-triggered webhooks, making it easier to debug agentic systems and validate AI-driven automations.',
+      },
+      {
+        id: 8,
+        question: 'Can my entire team use the same webhook URL?',
+        answer:
+          'Yes! Unhook provides one shared webhook URL that your entire team can use across all services like Stripe, GitHub, and Clerk. The same URL intelligently routes webhooks to the active developer, eliminating the need for individual URLs.',
+      },
+      {
+        id: 9,
+        question: 'How do I share webhook configuration with my team?',
+        answer:
+          'Create an unhook.config.json file in your repository with your shared webhook URLs. When team members check out the code, they automatically get access to the same webhook configuration. No more manual URL sharing or setup for new team members.',
       },
     ],
   },

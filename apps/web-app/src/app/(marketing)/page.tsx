@@ -1,3 +1,4 @@
+import { AIMCPSection } from '~/app/(marketing)/_components/sections/ai-mcp-section';
 import { BentoSection } from '~/app/(marketing)/_components/sections/bento-section';
 import { CTASection } from '~/app/(marketing)/_components/sections/cta-section';
 import { FAQSection } from '~/app/(marketing)/_components/sections/faq-section';
@@ -19,6 +20,7 @@ export default function Home() {
         {/* <CompanyShowcase /> */}
         <BentoSection />
         <VSCodeFeaturesSection />
+        <AIMCPSection />
         {/* <QuoteSection /> */}
         {/* <FeatureSection /> */}
         <GrowthSection />

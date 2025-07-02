@@ -74,7 +74,7 @@ export const siteConfig = {
     badge: 'Now Available: VS Code Extension',
     title: 'Webhook Development in VS Code',
     description:
-      'Debug webhooks directly in your editor. View events, replay requests, and collaborate with your team without leaving VS Code.',
+      'Debug webhooks directly in your editor. Test AI-driven automations, MCP server integrations, and traditional webhook flows without leaving VS Code.',
     cta: {
       primary: {
         text: 'Install Extension',
@@ -632,6 +632,18 @@ export const siteConfig = {
         question: 'Is the extension free to use?',
         answer:
           'Yes, the VS Code extension is completely free to use. You can view webhook events, replay requests, and collaborate with your team at no cost. Premium features like advanced analytics are available with paid plans.',
+      },
+      {
+        id: 6,
+        question: 'How can I test AI calls with MCP servers?',
+        answer:
+          'Unhook is perfect for testing webhooks triggered by AI agents using MCP (Model Context Protocol) servers. When your AI agent calls an MCP tool that triggers a webhook, Unhook captures it for inspection and replay. This helps you debug AI workflows and validate that your agentic systems are working correctly.',
+      },
+      {
+        id: 7,
+        question: 'What is MCP and how does it relate to webhook testing?',
+        answer:
+          'MCP (Model Context Protocol) is a standard for connecting AI models to external data sources and tools. Many MCP servers trigger webhooks when AI agents perform actions. Unhook helps you test these AI-triggered webhooks, making it easier to debug agentic systems and validate AI-driven automations.',
       },
     ],
   },

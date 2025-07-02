@@ -79,6 +79,12 @@ export const configSchema = z
         destination: z.string(),
       }),
     ),
+    server: z
+      .object({
+        apiUrl: z.string().url().optional(),
+        dashboardUrl: z.string().url().optional(),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
     // Runtime validation: ensure all delivery.destination values exist in destination[].name
@@ -88,7 +94,13 @@ export const configSchema = z
         if (!validNames.has(f.destination)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Invalid delivery.destination: "${f.destination}".\n- Allowed values: [${[...validNames].map((n) => `\"${n}\"`).join(', ')}]\n- Please ensure every 'delivery.destination' matches a 'destination[].name'.\nSee https://docs.unhook.sh/config for examples.`,
+            message: `Invalid delivery.destination: "${
+              f.destination
+            }".\n- Allowed values: [${[...validNames]
+              .map((n) => `\"${n}\"`)
+              .join(
+                ', ',
+              )}]\n- Please ensure every 'delivery.destination' matches a 'destination[].name'.\nSee https://docs.unhook.sh/config for examples.`,
             path: ['delivery', idx, 'destination'],
           });
         }

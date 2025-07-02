@@ -211,6 +211,9 @@ Similar process using Azure Container Registry and Azure Database for PostgreSQL
 | `CLERK_WEBHOOK_SECRET` | Clerk webhook secret | `whsec_...` |
 | `NEXTAUTH_SECRET` | NextAuth secret | Generated 32-byte string |
 | `WEBHOOK_ENCRYPTION_KEY` | Webhook encryption key | Generated 32-byte string |
+| `NEXT_PUBLIC_API_URL` | API URL for self-hosted | `https://your-domain.com` |
+| `NEXT_PUBLIC_WEBHOOK_BASE_URL` | Webhook base URL | `https://your-domain.com` |
+| `NEXT_PUBLIC_IS_SELF_HOSTED` | Mark as self-hosted | `true` |
 
 #### Optional Variables
 
@@ -219,6 +222,28 @@ Similar process using Azure Container Registry and Azure Database for PostgreSQL
 | `POSTHOG_KEY` | PostHog API key | Empty (disabled) |
 | `LOG_LEVEL` | Logging level | `info` |
 | `NODE_ENV` | Environment | `production` |
+
+### Configuring CLI and VS Code Extension
+
+After deploying your self-hosted instance, you need to configure your development tools to connect to it:
+
+1. **Create Configuration File**: In your project root, create an `unhook.yaml` file:
+   ```yaml
+   webhookId: 'wh_your_webhook_id'
+   server:
+     apiUrl: 'https://your-domain.com'
+   destination:
+     - name: 'local'
+       url: 'http://localhost:3000/api/webhooks'
+   delivery:
+     - destination: 'local'
+   ```
+
+2. **CLI**: The CLI will automatically use this configuration when you run it.
+
+3. **VS Code Extension**: The extension will detect the configuration file in your workspace.
+
+For detailed configuration instructions, see the [Self-Hosted Configuration Guide](SELF_HOSTED_CONFIG.md).
 
 ### Database Setup
 

@@ -9,11 +9,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": [
-    "Debuggers",
-    "Testing",
-    "Other"
-  ],
+  "categories": ["Debuggers", "Testing", "Other"],
   "contributes": {
     "authentication": [
       {
@@ -212,6 +208,16 @@
           "type": "string",
           "default": "",
           "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root."
+        },
+        "unhook.server.apiUrl": {
+          "type": "string",
+          "default": "",
+          "description": "API URL for self-hosted Unhook instance. Leave empty to use the default cloud service."
+        },
+        "unhook.server.dashboardUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Dashboard URL for self-hosted Unhook instance. Defaults to the API URL if not set."
         }
       }
     }
@@ -254,12 +260,7 @@
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "icon": "logo.png",
-  "keywords": [
-    "webhook",
-    "development",
-    "testing",
-    "debugging"
-  ],
+  "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,

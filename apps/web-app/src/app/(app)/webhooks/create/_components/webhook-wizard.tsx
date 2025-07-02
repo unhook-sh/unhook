@@ -15,6 +15,7 @@ import { toast } from '@unhook/ui/sonner';
 import { useAction } from 'next-safe-action/hooks';
 import { useEffect, useState } from 'react';
 import { createAuthCode } from '~/app/(app)/cli-token/actions';
+import { env } from '~/env.client';
 import { createWebhook } from './actions';
 import { InstallationCommand } from './installation-command';
 import { RealTimeEventStream } from './real-time-event-stream';
@@ -110,7 +111,8 @@ export function WebhookWizard(_props: { authToken?: string }) {
   const webhookUrl = (() => {
     if (!webhook) return '';
 
-    const url = new URL(`https://unhook.sh/${webhook.id}`);
+    const baseUrl = env.NEXT_PUBLIC_WEBHOOK_BASE_URL || 'https://unhook.sh';
+    const url = new URL(`${baseUrl}/${webhook.id}`);
     url.searchParams.set('source', source);
     if (webhook.isPrivate) {
       url.searchParams.set('key', webhook.apiKey);

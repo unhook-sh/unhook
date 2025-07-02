@@ -17,6 +17,7 @@ defaultLogger.addDestination(
 
 import { render } from 'ink';
 import { Layout } from './app/layout';
+import { setConfigApiUrl } from './env';
 import { parseArgs } from './lib/cli/args';
 import { setupDebug } from './lib/cli/debug';
 import { setupProcessHandlers } from './lib/cli/process';
@@ -33,6 +34,13 @@ async function main() {
     useCliStore.setState(args);
 
     const config = await useConfigStore.getState().loadConfig();
+
+    // Set API URL from config if available
+    if (config.server?.apiUrl) {
+      setConfigApiUrl(config.server.apiUrl);
+      log('Using API URL from config:', config.server.apiUrl);
+    }
+
     void useConfigStore.getState().watchConfig();
 
     if (config.debug) {
@@ -48,6 +56,7 @@ async function main() {
         debug: args.verbose,
         version: args.version,
         command: args.command,
+        selfHosted: !!config.server?.apiUrl,
       },
     });
 
@@ -58,6 +67,7 @@ async function main() {
       debug: args.verbose,
       version: args.version,
       command: args.command,
+      apiUrl: config.server?.apiUrl,
     });
 
     const renderInstance = render(<Layout />, {

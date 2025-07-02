@@ -1,0 +1,38 @@
+# Unhook Self-Hosted Configuration Example
+# 
+# This example shows how to configure Unhook CLI to connect to a self-hosted instance
+# instead of the cloud service at unhook.sh
+
+# Your webhook ID from the self-hosted dashboard
+webhookId: 'wh_example123'
+
+# Server configuration for self-hosted deployment
+server:
+  # The API URL of your self-hosted Unhook instance
+  apiUrl: 'https://api.your-domain.com'
+  
+  # The dashboard URL (optional, defaults to apiUrl)
+  dashboardUrl: 'https://dashboard.your-domain.com'
+
+# Destination configuration - where webhooks should be forwarded
+destination:
+  - name: 'local-dev'
+    url: 'http://localhost:3000/api/webhooks'
+    
+  - name: 'local-test'
+    url: 'http://localhost:4000/api/test-webhooks'
+
+# Delivery rules - which webhooks go to which destination
+delivery:
+  # Send all webhooks to local-dev by default
+  - destination: 'local-dev'
+    
+  # Send webhooks from 'test' source to local-test
+  - source: 'test'
+    destination: 'local-test'
+
+# Optional: Enable debug mode
+debug: false
+
+# Optional: Enable telemetry (helps improve Unhook)
+telemetry: true

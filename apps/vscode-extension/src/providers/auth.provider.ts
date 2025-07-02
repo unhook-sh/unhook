@@ -1,7 +1,12 @@
 import * as http from 'node:http';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import { env } from '../env';
+import { outputChannel } from '../output-channel';
 import type { AuthStore } from '../services/auth.service';
+import { authStore } from '../store/auth';
+import { type UnhookAuthData, UnhookSession } from '../types/auth';
+import { randomBytes } from '../utils/randomBytes';
 
 interface AuthenticationProvider {
   onDidChangeSessions: vscode.Event<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>;
@@ -81,7 +86,10 @@ export class UnhookAuthProvider implements AuthenticationProvider {
   async createSession(scopes: string[]): Promise<vscode.AuthenticationSession> {
     try {
       // Open browser for auth
-      const authUrl = new URL('/cli-token', env.NEXT_PUBLIC_API_URL);
+      const authUrl = new URL(
+        '/cli-token',
+        ConfigManager.getInstance().getApiUrl(),
+      );
       const editorScheme = this.getEditorUriScheme();
       authUrl.searchParams.set(
         'redirect_uri',
@@ -152,6 +160,17 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     const server = new AuthServer();
     await server.start({ port, csrfToken });
     return server;
+  }
+
+  private createLoginUrl(codeVerifier: string): vscode.Uri {
+    const authUrl = new URL(
+      '/cli-token',
+      ConfigManager.getInstance().getApiUrl(),
+    );
+    authUrl.searchParams.append('auth', 'vscode');
+    authUrl.searchParams.append('codeVerifier', codeVerifier);
+    authUrl.searchParams.append('redirectUri', this.redirectUri.toString());
+    return vscode.Uri.parse(authUrl.toString());
   }
 }
 

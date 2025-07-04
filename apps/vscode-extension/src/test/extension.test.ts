@@ -27,28 +27,25 @@ suite('Extension Test Suite', () => {
     assert.strictEqual(isDeliveryPaused(), false);
   });
 
-  test('Delivery setting should be configurable', (done) => {
+  test('Delivery setting should be configurable', async () => {
     const config = vscode.workspace.getConfiguration('unhook');
 
     // Set delivery to disabled
-    config
-      .update('delivery.enabled', false, vscode.ConfigurationTarget.Global)
-      .then(() => {
-        assert.strictEqual(isDeliveryEnabled(), false);
-        assert.strictEqual(isDeliveryPaused(), true);
+    await config.update(
+      'delivery.enabled',
+      false,
+      vscode.ConfigurationTarget.Global,
+    );
+    assert.strictEqual(isDeliveryEnabled(), false);
+    assert.strictEqual(isDeliveryPaused(), true);
 
-        // Set delivery back to enabled
-        return config.update(
-          'delivery.enabled',
-          true,
-          vscode.ConfigurationTarget.Global,
-        );
-      })
-      .then(() => {
-        assert.strictEqual(isDeliveryEnabled(), true);
-        assert.strictEqual(isDeliveryPaused(), false);
-        done();
-      })
-      .catch(done);
+    // Set delivery back to enabled
+    await config.update(
+      'delivery.enabled',
+      true,
+      vscode.ConfigurationTarget.Global,
+    );
+    assert.strictEqual(isDeliveryEnabled(), true);
+    assert.strictEqual(isDeliveryPaused(), false);
   });
 });

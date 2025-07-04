@@ -25,6 +25,7 @@ export class EventsProvider
 
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
+  private previousEvents: EventTypeWithRequest[] = [];
   public authStore: AuthStore | null = null;
   private pollInterval: NodeJS.Timeout | null = null;
   private readonly POLL_INTERVAL_MS = 10000; // 10 seconds
@@ -113,6 +114,15 @@ export class EventsProvider
 
   public updateEvents(events: EventTypeWithRequest[]): void {
     log('Updating events', { eventCount: events.length });
+
+    // Check if notifications are enabled
+    const settings = SettingsService.getInstance().getSettings();
+    if (settings.notifications.showForNewEvents) {
+      this.checkForNewEventsAndNotify(events);
+    }
+
+    // Store previous events for comparison
+    this.previousEvents = [...this.events];
     this.events = events;
     this.refresh();
   }
@@ -125,6 +135,77 @@ export class EventsProvider
     if (this.configWatcher) {
       this.configWatcher.dispose();
       this.configWatcher = null;
+    }
+  }
+
+  private checkForNewEventsAndNotify(newEvents: EventTypeWithRequest[]): void {
+    if (this.previousEvents.length === 0) {
+      // First time loading events, don't show notifications
+      return;
+    }
+
+    const previousEventIds = this.previousEvents.map((e) => e.id);
+    const previousEventMap: Record<string, EventTypeWithRequest> = {};
+    for (const event of this.previousEvents) {
+      previousEventMap[event.id] = event;
+    }
+
+    // Check for new events
+    const newEventsOnly = newEvents.filter(
+      (event) => previousEventIds.indexOf(event.id) === -1,
+    );
+    if (newEventsOnly.length > 0) {
+      const message =
+        newEventsOnly.length === 1
+          ? `New webhook event received: ${
+              newEventsOnly[0]?.source || 'Unknown'
+            }`
+          : `${newEventsOnly.length} new webhook events received`;
+      vscode.window.showInformationMessage(message);
+    }
+
+    // Check for status changes in existing events
+    for (const event of newEvents) {
+      const previousEvent = previousEventMap[event.id];
+      if (previousEvent && previousEvent.status !== event.status) {
+        vscode.window.showInformationMessage(
+          `Event ${event.id} status changed from ${previousEvent.status} to ${event.status}`,
+        );
+      }
+
+      // Check for new requests in existing events
+      if (previousEvent && event.requests && previousEvent.requests) {
+        const previousRequestIds = previousEvent.requests.map((r) => r.id);
+        const newRequests = event.requests.filter(
+          (r) => previousRequestIds.indexOf(r.id) === -1,
+        );
+        if (newRequests.length > 0) {
+          const message =
+            newRequests.length === 1
+              ? `New request for event ${event.id}: ${
+                  newRequests[0]?.status || 'Unknown'
+                }`
+              : `${newRequests.length} new requests for event ${event.id}`;
+          vscode.window.showInformationMessage(message);
+        }
+
+        // Check for request status changes
+        const previousRequestMap: Record<
+          string,
+          EventTypeWithRequest['requests'][0]
+        > = {};
+        for (const request of previousEvent.requests) {
+          previousRequestMap[request.id] = request;
+        }
+        for (const request of event.requests) {
+          const previousRequest = previousRequestMap[request.id];
+          if (previousRequest && previousRequest.status !== request.status) {
+            vscode.window.showInformationMessage(
+              `Request ${request.id} status changed from ${previousRequest.status} to ${request.status}`,
+            );
+          }
+        }
+      }
     }
   }
 

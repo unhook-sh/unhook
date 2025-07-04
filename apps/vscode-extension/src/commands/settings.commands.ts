@@ -65,4 +65,23 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
     },
   );
   context.subscriptions.push(toggleAutoClearEventsCommand);
+
+  // Command to toggle event notifications
+  const toggleNotificationsCommand = vscode.commands.registerCommand(
+    'unhook.toggleNotifications',
+    async () => {
+      const config = vscode.workspace.getConfiguration('unhook');
+      const currentValue = config.get('notifications.showForNewEvents');
+      await config.update(
+        'notifications.showForNewEvents',
+        !currentValue,
+        true,
+      );
+
+      vscode.window.showInformationMessage(
+        `Event notifications ${!currentValue ? 'enabled' : 'disabled'}`,
+      );
+    },
+  );
+  context.subscriptions.push(toggleNotificationsCommand);
 }

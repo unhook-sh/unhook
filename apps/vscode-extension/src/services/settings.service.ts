@@ -13,6 +13,9 @@ export interface UnhookSettings {
   notifications: {
     showForNewEvents: boolean;
   };
+  delivery: {
+    enabled: boolean;
+  };
   configFilePath: string;
 }
 
@@ -58,6 +61,9 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
       },
       notifications: {
         showForNewEvents: config.get('notifications.showForNewEvents') ?? true,
+      },
+      delivery: {
+        enabled: config.get('delivery.enabled') ?? true,
       },
       configFilePath: config.get('configFilePath') ?? '',
     };

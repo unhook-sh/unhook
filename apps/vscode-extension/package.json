@@ -9,11 +9,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": [
-    "Debuggers",
-    "Testing",
-    "Other"
-  ],
+  "categories": ["Debuggers", "Testing", "Other"],
   "contributes": {
     "authentication": [
       {
@@ -110,7 +106,7 @@
       {
         "category": "Unhook",
         "command": "unhook.toggleDelivery",
-        "title": "Toggle Event Delivery",
+        "title": "Toggle Event Forwarding",
         "icon": "$(play)"
       },
       {
@@ -212,6 +208,11 @@
           "type": "string",
           "default": "",
           "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root."
+        },
+        "unhook.delivery.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable forwarding new events to their destinations. When disabled, events will be received but not forwarded to local endpoints."
         }
       }
     },
@@ -288,12 +289,7 @@
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "icon": "logo.png",
-  "keywords": [
-    "webhook",
-    "development",
-    "testing",
-    "debugging"
-  ],
+  "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,

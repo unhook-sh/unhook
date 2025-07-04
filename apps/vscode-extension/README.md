@@ -58,6 +58,15 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 
 ## Configuration & Advanced Usage
 
+### Extension Settings
+
+- **Event Forwarding**: Control whether new webhook events are automatically forwarded to their destinations
+  - Setting: `unhook.delivery.enabled` (default: `true`)
+  - When disabled, events will be received and displayed but not forwarded until manually replayed
+  - Toggle via Command Palette: "Unhook: Toggle Event Forwarding"
+
+### Advanced Configuration
+
 - Configure routing and provider integrations via the Unhook web dashboard or CLI
 - For advanced configuration, see the [Unhook documentation](https://unhook.sh/docs)
 

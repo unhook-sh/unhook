@@ -1,0 +1,32 @@
+{
+  "name": "@unhook/forwarding",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "git clean -xdf dist node_modules .turbo",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@unhook/db": "workspace:*",
+    "@unhook/logger": "workspace:*",
+    "drizzle-orm": "0.44.2",
+    "isolated-vm": "6.0.0",
+    "zod": "3.25.67"
+  },
+  "devDependencies": {
+    "@types/node": "24.0.3",
+    "@unhook/tsconfig": "workspace:*",
+    "tsup": "8.5.0",
+    "typescript": "5.8.3"
+  }
+}

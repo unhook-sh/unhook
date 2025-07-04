@@ -122,10 +122,10 @@ export function VSCodeBentoAnimation() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className={selectedEvent.color}>
+              <div className={selectedEvent?.color}>
                 {`{
-  "event": "${selectedEvent.type}",
-  "status": ${selectedEvent.status},
+  "event": "${selectedEvent?.type}",
+  "status": ${selectedEvent?.status},
   "timestamp": "${new Date().toISOString()}",
   "data": { ... }
 }`}

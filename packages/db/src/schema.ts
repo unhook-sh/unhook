@@ -313,6 +313,7 @@ export const WebhooksRelations = relations(Webhooks, ({ one, many }) => ({
   requests: many(Requests),
   connections: many(Connections),
   events: many(Events),
+  accessRequests: many(WebhookAccessRequests),
 }));
 
 export const RequestPayloadSchema = z.object({
@@ -710,6 +711,136 @@ export const ConnectionsRelations = relations(Connections, ({ one, many }) => ({
   }),
   requests: many(Requests),
 }));
+
+// Webhook Access Request Status
+export const webhookAccessRequestStatusEnum = pgEnum(
+  'webhookAccessRequestStatus',
+  ['pending', 'approved', 'rejected', 'expired'],
+);
+
+export const WebhookAccessRequestStatusType = z.enum(
+  webhookAccessRequestStatusEnum.enumValues,
+).Enum;
+
+export const WebhookAccessRequests = pgTable(
+  'webhook_access_requests',
+  {
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'war' }))
+      .notNull()
+      .primaryKey(),
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    requesterId: varchar('requesterId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    requesterEmail: text('requesterEmail').notNull(),
+    requesterMessage: text('requesterMessage'),
+    status: webhookAccessRequestStatusEnum('status')
+      .notNull()
+      .default('pending'),
+    responderId: varchar('responderId').references(() => Users.id, {
+      onDelete: 'set null',
+    }),
+    responseMessage: text('responseMessage'),
+    respondedAt: timestamp('respondedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    expiresAt: timestamp('expiresAt', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .$defaultFn(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)), // 7 days from now
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).$onUpdateFn(() => new Date()),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+  },
+  (table) => [
+    // Index for finding pending requests for a webhook
+    index('webhook_access_requests_webhook_status_idx').on(
+      table.webhookId,
+      table.status,
+    ),
+    // Index for finding requests by requester
+    index('webhook_access_requests_requester_idx').on(table.requesterId),
+    // Index for finding pending requests that need to expire
+    index('webhook_access_requests_pending_expires_idx')
+      .on(table.expiresAt)
+      .where(sql`${table.status} = 'pending'`),
+  ],
+);
+
+export type WebhookAccessRequestType =
+  typeof WebhookAccessRequests.$inferSelect;
+
+export const CreateWebhookAccessRequestSchema = createInsertSchema(
+  WebhookAccessRequests,
+  {
+    webhookId: z.string(),
+    requesterMessage: z.string().optional(),
+  },
+).omit({
+  id: true,
+  requesterId: true,
+  requesterEmail: true,
+  status: true,
+  responderId: true,
+  responseMessage: true,
+  respondedAt: true,
+  expiresAt: true,
+  createdAt: true,
+  updatedAt: true,
+  orgId: true,
+});
+
+export const RespondToWebhookAccessRequestSchema = z.object({
+  id: z.string(),
+  status: z.enum(['approved', 'rejected']),
+  responseMessage: z.string().optional(),
+});
+
+export const WebhookAccessRequestsRelations = relations(
+  WebhookAccessRequests,
+  ({ one }) => ({
+    webhook: one(Webhooks, {
+      fields: [WebhookAccessRequests.webhookId],
+      references: [Webhooks.id],
+    }),
+    requester: one(Users, {
+      fields: [WebhookAccessRequests.requesterId],
+      references: [Users.id],
+      relationName: 'requester',
+    }),
+    responder: one(Users, {
+      fields: [WebhookAccessRequests.responderId],
+      references: [Users.id],
+      relationName: 'responder',
+    }),
+    org: one(Orgs, {
+      fields: [WebhookAccessRequests.orgId],
+      references: [Orgs.id],
+    }),
+  }),
+);
 
 export const AuthCodes = pgTable('authCodes', {
   id: varchar('id', { length: 128 })

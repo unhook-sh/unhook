@@ -1,0 +1,279 @@
+---
+title: 'Stripe Webhooks'
+description: 'Integrate Stripe payment and subscription webhooks with Unhook'
+---
+
+# Stripe Webhook Integration
+
+Stripe webhooks allow you to receive real-time notifications about events in your Stripe account, such as successful payments, failed charges, subscription updates, and more.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure in Stripe Dashboard**: [dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks)
+3. **Start receiving events locally**: `unhook listen`
+
+## Configuration Steps
+
+### 1. Access Stripe Webhook Settings
+
+Navigate to the Stripe Dashboard:
+- **Direct Link**: [dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks)
+- Or go to Dashboard → Developers → Webhooks
+
+### 2. Create a New Endpoint
+
+1. Click **"Add endpoint"**
+2. Enter your Unhook URL:
+   ```
+   https://unhook.sh/wh_YOUR_ID
+   ```
+3. Select API version (optional - defaults to your account version)
+
+### 3. Select Events to Listen For
+
+Choose the events relevant to your application:
+
+#### Payment Events
+- `payment_intent.succeeded` - Payment completed successfully
+- `payment_intent.payment_failed` - Payment attempt failed
+- `charge.succeeded` - Charge was successful
+- `charge.failed` - Charge failed
+- `charge.refunded` - Charge was refunded
+- `charge.dispute.created` - Customer disputed a charge
+
+#### Customer Events
+- `customer.created` - New customer created
+- `customer.updated` - Customer details updated
+- `customer.deleted` - Customer deleted
+- `customer.source.created` - Payment method added
+- `customer.source.deleted` - Payment method removed
+
+#### Subscription Events
+- `customer.subscription.created` - New subscription started
+- `customer.subscription.updated` - Subscription modified
+- `customer.subscription.deleted` - Subscription cancelled
+- `customer.subscription.trial_will_end` - Trial ending soon
+- `invoice.payment_succeeded` - Subscription payment successful
+- `invoice.payment_failed` - Subscription payment failed
+
+#### Checkout Events
+- `checkout.session.completed` - Checkout session successful
+- `checkout.session.expired` - Checkout session expired
+- `checkout.session.async_payment_succeeded` - Async payment completed
+- `checkout.session.async_payment_failed` - Async payment failed
+
+#### Connect Events (for platforms)
+- `account.updated` - Connected account updated
+- `account.application.authorized` - OAuth connection authorized
+- `account.application.deauthorized` - OAuth connection removed
+- `payout.created` - Payout initiated
+- `payout.paid` - Payout completed
+- `payout.failed` - Payout failed
+
+### 4. Configure Webhook Settings
+
+After selecting events, configure additional settings:
+
+1. **Description**: Add a meaningful description (e.g., "Production webhooks for MyApp")
+2. **Listen to**: Choose between live mode and test mode events
+3. **Click "Add endpoint"** to save
+
+## Webhook Signing Secret
+
+Stripe signs all webhook events for security. To verify signatures:
+
+1. After creating the endpoint, click on it to view details
+2. Click **"Reveal"** under Signing secret
+3. Copy the `whsec_...` value
+4. Add it to your environment variables:
+   ```bash
+   STRIPE_WEBHOOK_SECRET=whsec_abc123...
+   ```
+
+## Testing Webhooks
+
+### Using Stripe CLI
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login to your Stripe account
+stripe login
+
+# Trigger test events
+stripe trigger payment_intent.succeeded
+stripe trigger customer.subscription.created
+```
+
+### Using Stripe Dashboard
+1. Go to your webhook endpoint in the Dashboard
+2. Click **"Send test webhook"**
+3. Select an event type
+4. Click **"Send test webhook"**
+
+## Event Payload Examples
+
+### Payment Intent Succeeded
+```json
+{
+  "id": "evt_1234567890",
+  "object": "event",
+  "api_version": "2023-10-16",
+  "created": 1234567890,
+  "data": {
+    "object": {
+      "id": "pi_1234567890",
+      "object": "payment_intent",
+      "amount": 2000,
+      "currency": "usd",
+      "status": "succeeded",
+      "customer": "cus_1234567890",
+      "metadata": {
+        "order_id": "12345"
+      }
+    }
+  },
+  "type": "payment_intent.succeeded"
+}
+```
+
+### Customer Subscription Created
+```json
+{
+  "id": "evt_1234567890",
+  "object": "event",
+  "api_version": "2023-10-16",
+  "created": 1234567890,
+  "data": {
+    "object": {
+      "id": "sub_1234567890",
+      "object": "subscription",
+      "customer": "cus_1234567890",
+      "status": "active",
+      "current_period_start": 1234567890,
+      "current_period_end": 1234567890,
+      "items": {
+        "data": [{
+          "id": "si_1234567890",
+          "price": {
+            "id": "price_1234567890",
+            "product": "prod_1234567890",
+            "unit_amount": 999,
+            "currency": "usd"
+          }
+        }]
+      }
+    }
+  },
+  "type": "customer.subscription.created"
+}
+```
+
+## Best Practices
+
+### 1. Verify Webhook Signatures
+Always verify that webhooks are coming from Stripe:
+
+```javascript
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+  const sig = request.headers['stripe-signature'];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+  } catch (err) {
+    console.log(`Webhook Error: ${err.message}`);
+    return response.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      const paymentIntent = event.data.object;
+      // Handle successful payment
+      break;
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+
+  response.send();
+});
+```
+
+### 2. Handle Idempotency
+Stripe may send the same event multiple times. Use the event ID to ensure idempotent processing:
+
+```javascript
+// Store processed event IDs to prevent duplicate processing
+const processedEvents = new Set();
+
+if (processedEvents.has(event.id)) {
+  console.log(`Event ${event.id} already processed`);
+  return response.send();
+}
+
+processedEvents.add(event.id);
+// Process the event...
+```
+
+### 3. Respond Quickly
+Return a 2xx response quickly to acknowledge receipt:
+
+```javascript
+// Acknowledge receipt immediately
+response.status(200).send();
+
+// Process the webhook asynchronously
+processWebhookAsync(event);
+```
+
+### 4. Handle Failures Gracefully
+Implement proper error handling and retries:
+
+```javascript
+try {
+  await processWebhook(event);
+} catch (error) {
+  console.error('Webhook processing failed:', error);
+  // Log to monitoring service
+  // Queue for retry if appropriate
+}
+```
+
+## Common Issues
+
+### Missing Events
+- Ensure you've selected all required events in the webhook configuration
+- Check if you're listening to the correct mode (live vs test)
+- Verify your endpoint URL is correct
+
+### Signature Verification Failures
+- Make sure you're using the correct endpoint secret
+- Ensure the raw request body is used for verification (not parsed JSON)
+- Check that your framework isn't modifying the request body
+
+### Timeout Errors
+- Respond to webhooks within 20 seconds
+- Process heavy operations asynchronously
+- Return 200 immediately, then process
+
+## Useful Links
+
+- **Stripe Webhook Documentation**: [stripe.com/docs/webhooks](https://stripe.com/docs/webhooks)
+- **Stripe API Reference**: [stripe.com/docs/api/events](https://stripe.com/docs/api/events)
+- **Webhook Event Types**: [stripe.com/docs/api/events/types](https://stripe.com/docs/api/events/types)
+- **Stripe CLI**: [stripe.com/docs/stripe-cli](https://stripe.com/docs/stripe-cli)
+- **Testing Webhooks**: [stripe.com/docs/webhooks/test](https://stripe.com/docs/webhooks/test)
+
+## Support
+
+Need help with Stripe webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Check [Stripe's support](https://support.stripe.com)
+- Email us at support@unhook.sh

@@ -1,0 +1,15 @@
+{
+  "iconDefinitions": {
+    "unhook-config": {
+      "iconPath": "./unhook-config.svg"
+    }
+  },
+  "fileNames": {
+    "unhook.yaml": "unhook-config",
+    "unhook.yml": "unhook-config",
+    "unhook.json": "unhook-config",
+    "unhook.ts": "unhook-config"
+  },
+  "fileExtensions": {},
+  "languageIds": {}
+}

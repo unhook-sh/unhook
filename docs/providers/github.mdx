@@ -1,0 +1,360 @@
+---
+title: 'GitHub Webhooks'
+description: 'Connect GitHub repository and workflow events to Unhook'
+---
+
+# GitHub Webhook Integration
+
+GitHub webhooks allow you to build or set up integrations that subscribe to certain events on GitHub. When one of those events is triggered, GitHub sends an HTTP POST payload to the webhook's configured URL.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure in GitHub**: Repository Settings → Webhooks
+3. **Start receiving events**: `unhook listen`
+
+## Configuration Steps
+
+### Repository Webhooks
+
+#### 1. Navigate to Webhook Settings
+- Go to your repository on GitHub
+- Click **Settings** → **Webhooks**
+- Direct link: `https://github.com/YOUR_USERNAME/YOUR_REPO/settings/hooks`
+
+#### 2. Add a New Webhook
+1. Click **"Add webhook"**
+2. Enter your Unhook URL in **Payload URL**:
+   ```
+   https://unhook.sh/wh_YOUR_ID
+   ```
+3. Set **Content type** to `application/json`
+4. Enter a **Secret** (optional but recommended for security)
+5. Choose events to trigger the webhook
+
+#### 3. Select Events
+
+Choose **"Let me select individual events"** to pick specific events:
+
+##### Repository Events
+- `push` - Git push to repository
+- `pull_request` - PR opened, closed, synchronized, etc.
+- `pull_request_review` - PR review submitted
+- `pull_request_review_comment` - Comment on PR code
+- `issues` - Issue opened, closed, labeled, etc.
+- `issue_comment` - Comment on issues/PRs
+- `create` - Branch or tag created
+- `delete` - Branch or tag deleted
+- `fork` - Repository forked
+- `star` - Repository starred (watch events)
+
+##### Workflow Events
+- `workflow_run` - Workflow run completed
+- `workflow_job` - Workflow job queued, in progress, or completed
+- `check_run` - Check run created, updated, or completed
+- `check_suite` - Check suite completed
+- `status` - Commit status updated
+
+##### Release Events
+- `release` - Release published, unpublished, created, edited, deleted
+- `deployment` - Deployment created
+- `deployment_status` - Deployment status updated
+
+##### Collaboration Events
+- `member` - Collaborator added, removed, or permissions changed
+- `team_add` - Repository added to team
+- `repository` - Repository created, deleted, archived, unarchived
+
+### Organization Webhooks
+
+#### 1. Navigate to Organization Settings
+- Go to your organization page
+- Click **Settings** → **Webhooks**
+- Direct link: `https://github.com/organizations/YOUR_ORG/settings/hooks`
+
+#### 2. Configure Organization Webhook
+Follow similar steps as repository webhooks, with additional organization-specific events:
+
+- `organization` - Organization member added/removed
+- `team` - Team created, deleted, edited
+- `membership` - Team membership changed
+- `repository` - Repository created/deleted in org
+- `project` - Project board created, edited, closed
+
+## Event Payload Examples
+
+### Push Event
+```json
+{
+  "ref": "refs/heads/main",
+  "before": "abc123...",
+  "after": "def456...",
+  "repository": {
+    "id": 123456789,
+    "name": "my-repo",
+    "full_name": "username/my-repo",
+    "owner": {
+      "name": "username",
+      "email": "user@example.com"
+    }
+  },
+  "pusher": {
+    "name": "username",
+    "email": "user@example.com"
+  },
+  "commits": [
+    {
+      "id": "def456...",
+      "message": "Update README.md",
+      "timestamp": "2024-01-15T10:00:00Z",
+      "author": {
+        "name": "username",
+        "email": "user@example.com"
+      }
+    }
+  ]
+}
+```
+
+### Pull Request Event
+```json
+{
+  "action": "opened",
+  "number": 42,
+  "pull_request": {
+    "id": 123456789,
+    "number": 42,
+    "title": "Add new feature",
+    "state": "open",
+    "user": {
+      "login": "username",
+      "id": 123456
+    },
+    "head": {
+      "ref": "feature-branch",
+      "sha": "abc123..."
+    },
+    "base": {
+      "ref": "main",
+      "sha": "def456..."
+    },
+    "body": "This PR adds a new feature..."
+  },
+  "repository": {
+    "name": "my-repo",
+    "full_name": "username/my-repo"
+  }
+}
+```
+
+### Workflow Run Event
+```json
+{
+  "action": "completed",
+  "workflow_run": {
+    "id": 123456789,
+    "name": "CI",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 123456,
+    "run_number": 42,
+    "event": "push",
+    "created_at": "2024-01-15T10:00:00Z",
+    "updated_at": "2024-01-15T10:05:00Z"
+  },
+  "workflow": {
+    "id": 123456,
+    "name": "CI",
+    "path": ".github/workflows/ci.yml"
+  },
+  "repository": {
+    "name": "my-repo",
+    "full_name": "username/my-repo"
+  }
+}
+```
+
+## Webhook Security
+
+### Verifying Webhook Signatures
+
+GitHub signs webhook payloads using HMAC-SHA256:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyGitHubWebhook(payload, signature, secret) {
+  const hmac = crypto.createHmac('sha256', secret);
+  const digest = 'sha256=' + hmac.update(payload).digest('hex');
+
+  // Use timing-safe comparison
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(digest)
+  );
+}
+
+app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
+  const signature = req.headers['x-hub-signature-256'];
+  const payload = req.body;
+
+  if (!verifyGitHubWebhook(payload, signature, process.env.GITHUB_WEBHOOK_SECRET)) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const event = JSON.parse(payload);
+  const eventType = req.headers['x-github-event'];
+
+  // Process the webhook
+  console.log(`Received ${eventType} event`);
+
+  res.status(200).send('OK');
+});
+```
+
+### IP Allowlisting
+
+GitHub webhooks come from specific IP ranges. You can retrieve these using:
+
+```bash
+curl https://api.github.com/meta
+```
+
+Look for the `hooks` array in the response.
+
+## Testing Webhooks
+
+### Using GitHub's Redelivery Feature
+1. Go to Settings → Webhooks → Recent Deliveries
+2. Click on a delivery
+3. Click **"Redeliver"** to resend the webhook
+
+### Creating Test Events
+Trigger webhooks by performing actions:
+- Push commits to trigger `push` events
+- Open/close issues for `issues` events
+- Create pull requests for `pull_request` events
+
+### Using the GitHub API
+```bash
+# Trigger a repository dispatch event
+curl -X POST \
+  -H "Authorization: token YOUR_GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/repos/OWNER/REPO/dispatches \
+  -d '{"event_type":"test_webhook"}'
+```
+
+## Best Practices
+
+### 1. Handle Events Asynchronously
+```javascript
+app.post('/webhook', async (req, res) => {
+  // Respond immediately
+  res.status(200).send('Received');
+
+  // Process asynchronously
+  setImmediate(async () => {
+    try {
+      await processWebhook(req.body);
+    } catch (error) {
+      console.error('Webhook processing failed:', error);
+    }
+  });
+});
+```
+
+### 2. Filter by Action
+Many events have sub-actions:
+
+```javascript
+if (eventType === 'pull_request') {
+  switch (event.action) {
+    case 'opened':
+      await handlePROpened(event);
+      break;
+    case 'closed':
+      if (event.pull_request.merged) {
+        await handlePRMerged(event);
+      }
+      break;
+    case 'synchronize':
+      await handlePRUpdated(event);
+      break;
+  }
+}
+```
+
+### 3. Store Delivery IDs
+Prevent duplicate processing:
+
+```javascript
+const deliveryId = req.headers['x-github-delivery'];
+
+if (await isProcessed(deliveryId)) {
+  return res.status(200).send('Already processed');
+}
+
+await markAsProcessed(deliveryId);
+```
+
+## Common Use Cases
+
+### CI/CD Integration
+```javascript
+// Trigger deployment on push to main
+if (eventType === 'push' && event.ref === 'refs/heads/main') {
+  await triggerDeployment(event.after);
+}
+```
+
+### PR Automation
+```javascript
+// Auto-label PRs based on files changed
+if (eventType === 'pull_request' && event.action === 'opened') {
+  const files = await getPRFiles(event.pull_request.url);
+  const labels = determineLabels(files);
+  await addLabels(event.pull_request.url, labels);
+}
+```
+
+### Issue Management
+```javascript
+// Auto-assign issues based on labels
+if (eventType === 'issues' && event.action === 'labeled') {
+  const assignee = getAssigneeForLabel(event.label.name);
+  await assignIssue(event.issue.url, assignee);
+}
+```
+
+## Troubleshooting
+
+### Webhook Not Triggering
+- Verify the webhook is active (green checkmark in settings)
+- Check "Recent Deliveries" for error responses
+- Ensure you've selected the correct events
+- Verify your server is accessible from the internet
+
+### Payload Too Large
+- GitHub limits payloads to 25MB
+- For large events, use the API to fetch full data
+- Consider filtering events to reduce payload size
+
+### Rate Limiting
+- GitHub doesn't rate limit webhook deliveries
+- But your server might hit API rate limits when responding
+- Use conditional requests and caching when fetching additional data
+
+## Useful Links
+
+- **GitHub Webhooks Documentation**: [docs.github.com/en/developers/webhooks-and-events/webhooks](https://docs.github.com/en/developers/webhooks-and-events/webhooks)
+- **Webhook Events Reference**: [docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads](https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads)
+- **GitHub API Documentation**: [docs.github.com/en/rest](https://docs.github.com/en/rest)
+- **Webhook Debugging**: [docs.github.com/en/developers/webhooks-and-events/webhooks/testing-webhooks](https://docs.github.com/en/developers/webhooks-and-events/webhooks/testing-webhooks)
+
+## Support
+
+Need help with GitHub webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Check [GitHub's documentation](https://docs.github.com)
+- Email us at support@unhook.sh

@@ -72,6 +72,8 @@ export function VaultTable() {
                   <Image
                     src={'/placeholder.svg?height=24&width=24'}
                     alt={vault.name}
+                    width={24}
+                    height={24}
                   />
                 </Avatar>
                 <div>

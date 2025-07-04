@@ -1,11 +1,13 @@
-import type { RequestType } from '@unhook/db/schema';
+import type { EventType, RequestType } from '@unhook/db/schema';
 import * as vscode from 'vscode';
 
 export function getStatusIconPath({
   request,
+  eventStatus,
   context,
 }: {
-  request: RequestType;
+  request: RequestType | null;
+  eventStatus?: EventType['status'];
   context: vscode.ExtensionContext;
 }) {
   const iconPath = (filename: string) => ({
@@ -14,6 +16,22 @@ export function getStatusIconPath({
   });
 
   if (!request) {
+    // If no request, use event status to determine icon
+    if (eventStatus === 'pending' || eventStatus === 'processing') {
+      return new vscode.ThemeIcon(
+        'sync',
+        new vscode.ThemeColor('charts.yellow'),
+      );
+    }
+    if (eventStatus === 'failed') {
+      return new vscode.ThemeIcon('error', new vscode.ThemeColor('charts.red'));
+    }
+    if (eventStatus === 'completed') {
+      return new vscode.ThemeIcon(
+        'pass',
+        new vscode.ThemeColor('charts.green'),
+      );
+    }
     return new vscode.ThemeIcon(
       'circle-outline',
       new vscode.ThemeColor('icon.foreground'),

@@ -21,17 +21,28 @@ export class EventItem extends vscode.TreeItem {
         }
       })();
 
-    super(eventName, vscode.TreeItemCollapsibleState.Collapsed);
+    // Only show as collapsible if there are requests
+    const collapsibleState =
+      event.requests && event.requests.length > 0
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None;
+    super(eventName, collapsibleState);
     this.description = `${event.source} • ${formatDistance(event.timestamp, new Date(), { addSuffix: true })}`;
-    const lastRequest = event.requests[0];
-    if (!lastRequest) {
-      throw new Error('No requests found for event');
-    }
+    const lastRequest = event.requests?.[0];
 
-    this.iconPath = getStatusIconPath({
-      request: lastRequest,
-      context,
-    });
+    // If there are no requests yet, use a default icon based on event status
+    if (!lastRequest) {
+      this.iconPath = getStatusIconPath({
+        request: null,
+        eventStatus: event.status,
+        context,
+      });
+    } else {
+      this.iconPath = getStatusIconPath({
+        request: lastRequest,
+        context,
+      });
+    }
     this.contextValue = 'event';
     this.resourceUri = vscode.Uri.parse('unhook://event');
     this.tooltip = new vscode.MarkdownString('Event');

@@ -1,0 +1,414 @@
+---
+title: 'SendGrid Webhooks'
+description: 'Integrate SendGrid email delivery and engagement webhooks with Unhook'
+---
+
+# SendGrid Webhook Integration
+
+SendGrid Event Webhooks provide real-time notifications about email events including deliveries, bounces, opens, clicks, and more. Monitor your email campaigns and transactional emails with detailed engagement tracking.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure in SendGrid**: [app.sendgrid.com/settings/mail_settings/webhook](https://app.sendgrid.com/settings/mail_settings/webhook)
+3. **Start receiving events locally**: `unhook listen`
+
+## Configuration Steps
+
+### 1. Access SendGrid Event Webhook Settings
+
+Navigate to SendGrid Settings:
+- **Direct Link**: [app.sendgrid.com/settings/mail_settings/webhook](https://app.sendgrid.com/settings/mail_settings/webhook)
+- Or go to Settings → Mail Settings → Event Webhook
+
+### 2. Configure Event Webhook
+
+1. Toggle **Event Webhook Status** to **Enabled**
+2. Enter your **HTTP Post URL**:
+   ```
+   https://unhook.sh/wh_YOUR_ID
+   ```
+3. Select **Actions to be POSTed**
+
+### 3. Select Event Types
+
+Choose the events you want to receive:
+
+#### Engagement Events
+- **Processed** - Message accepted by SendGrid
+- **Dropped** - Message dropped (bounced address, unsubscribed, etc.)
+- **Delivered** - Message delivered to recipient server
+- **Deferred** - Temporary delivery failure
+- **Bounce** - Permanent delivery failure
+- **Open** - Recipient opened email
+- **Click** - Recipient clicked a link
+- **Unsubscribe** - Recipient unsubscribed
+- **Spam Report** - Marked as spam
+- **Group Unsubscribe** - Unsubscribed from suppression group
+- **Group Resubscribe** - Resubscribed to suppression group
+
+### 4. Additional Configuration
+
+#### Security Settings
+
+1. **Enable Signed Event Webhook**:
+   - Toggle **Signed Event Webhook Requests** to ON
+   - Copy the **Verification Key** for signature validation
+   - This key is used to verify webhooks are from SendGrid
+
+2. **OAuth 2.0** (Optional):
+   - Enable if you need OAuth authentication
+   - Configure client credentials
+
+#### Advanced Options
+
+- **Test Your Integration** - Send a test POST
+- **Unique Arguments** - Include custom data in events
+- **Categories** - Filter events by category
+
+### 5. Save Configuration
+
+Click **Save** to activate your webhook endpoint.
+
+## Event Payload Examples
+
+### Email Delivered
+```json
+[
+  {
+    "email": "user@example.com",
+    "timestamp": 1669651200,
+    "smtp-id": "<14c5d75ce93.dfd.64b469@ismtpd-555>",
+    "event": "delivered",
+    "category": ["welcome_email"],
+    "sg_event_id": "sg_event_id_delivered",
+    "sg_message_id": "sg_message_id.filter001.123.456",
+    "ip": "168.1.1.1",
+    "response": "250 OK",
+    "tls": 1,
+    "unique_args": {
+      "user_id": "123",
+      "campaign": "welcome_series"
+    }
+  }
+]
+```
+
+### Email Opened
+```json
+[
+  {
+    "email": "user@example.com",
+    "timestamp": 1669651800,
+    "event": "open",
+    "category": ["newsletter"],
+    "sg_event_id": "sg_event_id_open",
+    "sg_message_id": "sg_message_id.filter001.123.456",
+    "useragent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "ip": "192.168.1.1",
+    "unique_args": {
+      "user_id": "123",
+      "newsletter_id": "202311"
+    }
+  }
+]
+```
+
+### Link Clicked
+```json
+[
+  {
+    "email": "user@example.com",
+    "timestamp": 1669652400,
+    "event": "click",
+    "category": ["promotion"],
+    "sg_event_id": "sg_event_id_click",
+    "sg_message_id": "sg_message_id.filter001.123.456",
+    "useragent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)",
+    "ip": "192.168.1.1",
+    "url": "https://example.com/promo?utm_campaign=black_friday",
+    "url_offset": {
+      "index": 0,
+      "type": "html"
+    },
+    "unique_args": {
+      "user_id": "123",
+      "promo_code": "BF2023"
+    }
+  }
+]
+```
+
+### Email Bounced
+```json
+[
+  {
+    "email": "invalid@example.com",
+    "timestamp": 1669650600,
+    "event": "bounce",
+    "category": ["transactional"],
+    "sg_event_id": "sg_event_id_bounce",
+    "sg_message_id": "sg_message_id.filter001.123.456",
+    "smtp-id": "<14c5d75ce93.dfd.64b469@ismtpd-555>",
+    "type": "bounce",
+    "status": "5.1.1",
+    "reason": "550 5.1.1 The email account that you tried to reach does not exist",
+    "ip": "168.1.1.1",
+    "tls": 1,
+    "bounce_classification": "invalid"
+  }
+]
+```
+
+## Webhook Security
+
+### Verify Event Webhook Signatures
+
+SendGrid signs webhooks using ECDSA. Verify them:
+
+```javascript
+const crypto = require('crypto');
+
+function verifySendGridWebhook(publicKey, payload, signature, timestamp) {
+  const timestampPayload = timestamp + payload;
+  const decodedSignature = Buffer.from(signature, 'base64');
+
+  const verify = crypto.createVerify('SHA256');
+  verify.update(timestampPayload);
+  verify.end();
+
+  return verify.verify(publicKey, decodedSignature);
+}
+
+// Express middleware example
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.get('X-Twilio-Email-Event-Webhook-Signature');
+  const timestamp = req.get('X-Twilio-Email-Event-Webhook-Timestamp');
+
+  const publicKey = process.env.SENDGRID_WEBHOOK_PUBLIC_KEY;
+
+  const isValid = verifySendGridWebhook(
+    publicKey,
+    req.body.toString(),
+    signature,
+    timestamp
+  );
+
+  if (!isValid) {
+    return res.status(403).send('Forbidden');
+  }
+
+  // Process webhook
+  const events = JSON.parse(req.body);
+  // ...
+
+  res.status(200).send('OK');
+});
+```
+
+## Best Practices
+
+### 1. Handle Batch Events
+SendGrid sends events in batches:
+
+```javascript
+app.post('/webhook', (req, res) => {
+  const events = req.body; // Array of events
+
+  events.forEach(event => {
+    switch (event.event) {
+      case 'delivered':
+        handleDelivered(event);
+        break;
+      case 'open':
+        handleOpen(event);
+        break;
+      case 'click':
+        handleClick(event);
+        break;
+      case 'bounce':
+        handleBounce(event);
+        break;
+      // ... handle other events
+    }
+  });
+
+  res.status(200).send('OK');
+});
+```
+
+### 2. Process Events Asynchronously
+Don't block the webhook response:
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  // Acknowledge immediately
+  res.status(200).send('OK');
+
+  // Queue for processing
+  await eventQueue.push(req.body);
+});
+```
+
+### 3. Handle Duplicate Events
+Use sg_event_id for deduplication:
+
+```javascript
+const processedEvents = new Set();
+
+function processEvent(event) {
+  const eventId = event.sg_event_id;
+
+  if (processedEvents.has(eventId)) {
+    console.log(`Duplicate event ${eventId} skipped`);
+    return;
+  }
+
+  processedEvents.add(eventId);
+  // Process the event...
+}
+```
+
+### 4. Store Raw Events
+Keep raw event data for debugging:
+
+```javascript
+async function handleWebhook(events) {
+  // Store raw events
+  await storeRawEvents(events);
+
+  // Process each event
+  for (const event of events) {
+    try {
+      await processEvent(event);
+    } catch (error) {
+      console.error(`Error processing event ${event.sg_event_id}:`, error);
+      // Continue processing other events
+    }
+  }
+}
+```
+
+## Testing Webhooks
+
+### Using SendGrid UI
+
+1. Go to Event Webhook settings
+2. Click **Test Your Integration**
+3. Select event types to test
+4. Click **Send Test**
+
+### Using cURL
+
+```bash
+# Test webhook endpoint
+curl -X POST https://unhook.sh/wh_YOUR_ID \
+  -H "Content-Type: application/json" \
+  -d '[{
+    "email": "test@example.com",
+    "timestamp": 1669651200,
+    "event": "processed",
+    "sg_event_id": "test_event_001",
+    "sg_message_id": "test_message_001"
+  }]'
+```
+
+## Common Event Patterns
+
+### Track Email Journey
+```javascript
+const emailJourney = new Map();
+
+function trackEmailEvent(event) {
+  const messageId = event.sg_message_id;
+
+  if (!emailJourney.has(messageId)) {
+    emailJourney.set(messageId, []);
+  }
+
+  emailJourney.get(messageId).push({
+    event: event.event,
+    timestamp: event.timestamp,
+    data: event
+  });
+}
+
+// Get complete journey for an email
+function getEmailJourney(messageId) {
+  return emailJourney.get(messageId) || [];
+}
+```
+
+### Monitor Bounce Rates
+```javascript
+const bounceStats = {
+  total: 0,
+  hard: 0,
+  soft: 0
+};
+
+function updateBounceStats(event) {
+  if (event.event === 'bounce') {
+    bounceStats.total++;
+
+    if (event.type === 'bounce') {
+      bounceStats.hard++;
+    } else if (event.type === 'blocked') {
+      bounceStats.soft++;
+    }
+  }
+}
+```
+
+## Environment Variables
+
+```bash
+# SendGrid API Key (for sending emails)
+SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxx
+
+# Webhook Verification Key
+SENDGRID_WEBHOOK_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE...
+-----END PUBLIC KEY-----"
+
+# Optional
+SENDGRID_FROM_EMAIL=noreply@example.com
+SENDGRID_TEMPLATE_ID=d-xxxxxxxxxxxxxxxxxxxxx
+```
+
+## Common Issues
+
+### Missing Events
+- Ensure all desired event types are selected
+- Check that webhook is enabled
+- Verify URL is accessible
+
+### Signature Verification Failures
+- Use the exact public key from SendGrid
+- Ensure you're using the raw request body
+- Include proper newlines in the public key
+
+### Delayed Events
+- Open and click events may be delayed
+- Implement retry logic for critical operations
+- Some events (like bounces) may take time to process
+
+### Large Payloads
+- SendGrid batches up to 1,000 events
+- Implement proper timeout handling
+- Consider streaming large payloads
+
+## Useful Links
+
+- **SendGrid App**: [app.sendgrid.com](https://app.sendgrid.com)
+- **Event Webhook Guide**: [docs.sendgrid.com/for-developers/tracking-events/event](https://docs.sendgrid.com/for-developers/tracking-events/event)
+- **Event Types Reference**: [docs.sendgrid.com/for-developers/tracking-events/event#events](https://docs.sendgrid.com/for-developers/tracking-events/event#events)
+- **Security & Validation**: [docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security-features](https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security-features)
+- **API Reference**: [docs.sendgrid.com/api-reference](https://docs.sendgrid.com/api-reference)
+
+## Support
+
+Need help with SendGrid webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Visit [SendGrid Support](https://support.sendgrid.com)
+- Email us at support@unhook.sh

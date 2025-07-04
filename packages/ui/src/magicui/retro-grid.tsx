@@ -1,6 +1,6 @@
 import { cn } from '@unhook/ui/lib/utils';
 
-export default function RetroGrid({ className }: { className?: string }) {
+export function RetroGrid({ className }: { className?: string }) {
   return (
     <div
       className={cn(

@@ -1,0 +1,472 @@
+---
+title: 'Linear Webhooks'
+description: 'Integrate Linear issue tracking and project management webhooks with Unhook'
+---
+
+# Linear Webhook Integration
+
+Linear webhooks provide real-time notifications for issue tracking, project updates, and team collaboration events. Perfect for automating workflows, syncing with other tools, and building custom integrations.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure in Linear Settings**: [linear.app/settings/api](https://linear.app/settings/api)
+3. **Start receiving events locally**: `unhook listen`
+
+## Configuration Steps
+
+### 1. Access Linear Webhook Settings
+
+Navigate to Linear Settings:
+- **Direct Link**: [linear.app/settings/api](https://linear.app/settings/api)
+- Or go to Settings → API → Webhooks
+
+### 2. Create a New Webhook
+
+1. Click **"New webhook"**
+2. Enter webhook details:
+   - **Label**: Give your webhook a descriptive name
+   - **URL**: Enter your Unhook URL:
+     ```
+     https://unhook.sh/wh_YOUR_ID
+     ```
+3. Select **Resource types** to subscribe to
+
+### 3. Select Resource Types
+
+Choose the resources you want to monitor:
+
+#### Issue Events
+- **Issue** - All issue-related events
+  - Created, updated, deleted
+  - Status changes
+  - Assignment changes
+  - Priority updates
+  - Label additions/removals
+
+#### Project & Cycle Events
+- **Project** - Project lifecycle events
+- **Cycle** - Sprint/cycle management
+- **ProjectUpdate** - Project status updates
+- **Milestone** - Milestone tracking
+
+#### Team Collaboration
+- **Comment** - Issue comments
+- **Reaction** - Emoji reactions
+- **IssueRelation** - Issue linking
+- **Attachment** - File attachments
+
+#### Workflow & Organization
+- **WorkflowState** - Workflow state changes
+- **Team** - Team updates
+- **User** - User account changes
+- **Label** - Label management
+- **Template** - Issue templates
+
+### 4. Configure Webhook Options
+
+1. **Secret**: Copy the webhook secret for signature verification
+2. **Enabled**: Toggle to activate the webhook
+3. Click **"Create webhook"**
+
+## Event Payload Structure
+
+Linear uses a consistent event structure:
+
+```json
+{
+  "action": "create",
+  "actor": {
+    "id": "user_id",
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "createdAt": "2023-11-20T10:00:00.000Z",
+  "data": {
+    // Resource-specific data
+  },
+  "type": "Issue",
+  "url": "https://linear.app/team/issue/TEAM-123",
+  "webhookId": "webhook_id",
+  "webhookTimestamp": 1700478000000
+}
+```
+
+## Event Examples
+
+### Issue Created
+```json
+{
+  "action": "create",
+  "actor": {
+    "id": "80e102b0-1234-5678-9abc-def012345678",
+    "name": "Jane Smith"
+  },
+  "createdAt": "2023-11-20T10:00:00.000Z",
+  "data": {
+    "id": "issue_id",
+    "identifier": "TEAM-123",
+    "title": "Fix authentication bug",
+    "description": "Users are unable to login with SSO",
+    "priority": 1,
+    "state": {
+      "id": "state_id",
+      "name": "In Progress",
+      "type": "started"
+    },
+    "assignee": {
+      "id": "assignee_id",
+      "name": "John Developer"
+    },
+    "creator": {
+      "id": "creator_id",
+      "name": "Jane Smith"
+    },
+    "team": {
+      "id": "team_id",
+      "key": "TEAM",
+      "name": "Engineering"
+    },
+    "labels": [
+      {
+        "id": "label_id",
+        "name": "bug",
+        "color": "#ff0000"
+      }
+    ],
+    "estimate": 3,
+    "dueDate": "2023-11-25"
+  },
+  "type": "Issue",
+  "url": "https://linear.app/company/issue/TEAM-123"
+}
+```
+
+### Issue Status Changed
+```json
+{
+  "action": "update",
+  "actor": {
+    "id": "80e102b0-1234-5678-9abc-def012345678",
+    "name": "John Developer"
+  },
+  "createdAt": "2023-11-20T14:30:00.000Z",
+  "data": {
+    "id": "issue_id",
+    "identifier": "TEAM-123",
+    "title": "Fix authentication bug",
+    "state": {
+      "id": "new_state_id",
+      "name": "Done",
+      "type": "completed"
+    },
+    "previousState": {
+      "id": "old_state_id",
+      "name": "In Progress",
+      "type": "started"
+    }
+  },
+  "type": "Issue",
+  "updatedFrom": {
+    "state": {
+      "id": "old_state_id",
+      "name": "In Progress"
+    }
+  }
+}
+```
+
+### Comment Added
+```json
+{
+  "action": "create",
+  "actor": {
+    "id": "user_id",
+    "name": "Sarah QA"
+  },
+  "createdAt": "2023-11-20T15:00:00.000Z",
+  "data": {
+    "id": "comment_id",
+    "body": "I've tested the fix and it's working well. Ready for deployment.",
+    "issue": {
+      "id": "issue_id",
+      "identifier": "TEAM-123",
+      "title": "Fix authentication bug"
+    },
+    "user": {
+      "id": "user_id",
+      "name": "Sarah QA"
+    }
+  },
+  "type": "Comment",
+  "url": "https://linear.app/company/issue/TEAM-123#comment_id"
+}
+```
+
+## Webhook Security
+
+### Verify Webhook Signatures
+
+Linear signs webhooks using HMAC-SHA256:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyLinearWebhook(payload, signature, secret) {
+  const hash = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+
+  return `sha256=${hash}` === signature;
+}
+
+// Express middleware
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['linear-signature'];
+  const secret = process.env.LINEAR_WEBHOOK_SECRET;
+
+  if (!verifyLinearWebhook(req.body, signature, secret)) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const event = JSON.parse(req.body);
+
+  // Process the webhook
+  console.log(`Linear ${event.type} ${event.action}:`, event.data);
+
+  res.status(200).send('OK');
+});
+```
+
+## Best Practices
+
+### 1. Handle All Actions
+Process create, update, and remove actions:
+
+```javascript
+async function handleLinearWebhook(event) {
+  const { type, action, data } = event;
+
+  switch (type) {
+    case 'Issue':
+      switch (action) {
+        case 'create':
+          await handleIssueCreated(data);
+          break;
+        case 'update':
+          await handleIssueUpdated(data, event.updatedFrom);
+          break;
+        case 'remove':
+          await handleIssueDeleted(data);
+          break;
+      }
+      break;
+
+    case 'Comment':
+      if (action === 'create') {
+        await handleCommentAdded(data);
+      }
+      break;
+
+    // Handle other resource types...
+  }
+}
+```
+
+### 2. Track Changes with updatedFrom
+Use the `updatedFrom` field to track what changed:
+
+```javascript
+function handleIssueUpdate(issue, updatedFrom) {
+  if (updatedFrom?.state) {
+    console.log(`Status changed from ${updatedFrom.state.name} to ${issue.state.name}`);
+    notifyStatusChange(issue);
+  }
+
+  if (updatedFrom?.assignee) {
+    console.log(`Assignee changed to ${issue.assignee?.name || 'Unassigned'}`);
+    notifyAssignmentChange(issue);
+  }
+
+  if (updatedFrom?.priority !== undefined) {
+    console.log(`Priority changed from ${updatedFrom.priority} to ${issue.priority}`);
+  }
+}
+```
+
+### 3. Implement Idempotency
+Handle potential duplicate events:
+
+```javascript
+const processedEvents = new Map();
+
+async function processWebhook(event) {
+  const eventKey = `${event.webhookId}-${event.webhookTimestamp}`;
+
+  if (processedEvents.has(eventKey)) {
+    console.log(`Duplicate event ${eventKey} skipped`);
+    return;
+  }
+
+  processedEvents.set(eventKey, Date.now());
+
+  // Clean up old entries periodically
+  if (processedEvents.size > 10000) {
+    const cutoff = Date.now() - 3600000; // 1 hour
+    for (const [key, timestamp] of processedEvents) {
+      if (timestamp < cutoff) {
+        processedEvents.delete(key);
+      }
+    }
+  }
+
+  await handleLinearWebhook(event);
+}
+```
+
+### 4. Use Linear SDK for Additional Context
+Fetch additional data when needed:
+
+```javascript
+const { LinearClient } = require('@linear/sdk');
+
+const linear = new LinearClient({
+  apiKey: process.env.LINEAR_API_KEY
+});
+
+async function enrichIssueData(issueId) {
+  const issue = await linear.issue(issueId);
+  const comments = await issue.comments();
+  const attachments = await issue.attachments();
+
+  return {
+    issue: issue,
+    comments: comments.nodes,
+    attachments: attachments.nodes
+  };
+}
+```
+
+## Common Use Cases
+
+### Sync with External Systems
+```javascript
+async function syncToExternalSystem(event) {
+  if (event.type === 'Issue' && event.action === 'create') {
+    const externalTicket = await createExternalTicket({
+      title: event.data.title,
+      description: event.data.description,
+      priority: mapLinearPriority(event.data.priority),
+      linearId: event.data.id,
+      linearUrl: event.url
+    });
+
+    // Store mapping for future updates
+    await storeMapping(event.data.id, externalTicket.id);
+  }
+}
+```
+
+### Auto-assign Based on Labels
+```javascript
+async function autoAssignIssues(event) {
+  if (event.type === 'Issue' && event.action === 'update') {
+    const labels = event.data.labels || [];
+
+    for (const label of labels) {
+      const assignee = getAssigneeForLabel(label.name);
+      if (assignee && !event.data.assignee) {
+        await linear.issueUpdate(event.data.id, {
+          assigneeId: assignee.id
+        });
+      }
+    }
+  }
+}
+```
+
+### Notify on High Priority Issues
+```javascript
+async function notifyHighPriorityIssues(event) {
+  if (event.type === 'Issue' && event.action === 'create') {
+    if (event.data.priority <= 1) { // Urgent or High
+      await sendSlackNotification({
+        text: `🚨 High priority issue created: ${event.data.identifier}`,
+        issue: event.data,
+        url: event.url
+      });
+    }
+  }
+}
+```
+
+## Testing Webhooks
+
+### Manual Testing
+1. Create a test issue in Linear
+2. Update the issue status
+3. Add comments or labels
+4. Verify webhooks are received
+
+### Using Linear API
+```javascript
+// Create test issue via API
+const issue = await linear.issueCreate({
+  teamId: 'team_id',
+  title: 'Test webhook issue',
+  description: 'Testing webhook integration'
+});
+
+// Update to trigger webhook
+await linear.issueUpdate(issue.issue.id, {
+  stateId: 'new_state_id'
+});
+```
+
+## Environment Variables
+
+```bash
+# Linear API Key (for enriching webhook data)
+LINEAR_API_KEY=lin_api_xxxxxxxxxxxxx
+
+# Webhook Secret (from webhook configuration)
+LINEAR_WEBHOOK_SECRET=your_webhook_secret
+
+# Optional: Team ID for API operations
+LINEAR_TEAM_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
+## Common Issues
+
+### Missing Events
+- Ensure all required resource types are selected
+- Check webhook is enabled
+- Verify URL is accessible
+
+### Signature Verification Failures
+- Use the exact secret from Linear
+- Ensure using raw request body
+- Check for proper header name (`linear-signature`)
+
+### Rate Limits
+- Linear API has rate limits (check headers)
+- Implement exponential backoff
+- Cache frequently accessed data
+
+## Useful Links
+
+- **Linear App**: [linear.app](https://linear.app)
+- **API Documentation**: [developers.linear.app](https://developers.linear.app)
+- **Webhook Guide**: [developers.linear.app/docs/webhooks](https://developers.linear.app/docs/webhooks)
+- **Linear SDK**: [github.com/linear/linear](https://github.com/linear/linear)
+- **API Explorer**: [linear.app/developers/api-explorer](https://linear.app/developers/api-explorer)
+- **Community**: [linear.app/community](https://linear.app/community)
+
+## Support
+
+Need help with Linear webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Visit [Linear Community](https://linear.app/community)
+- Check [Linear Docs](https://linear.app/docs)
+- Email us at support@unhook.sh

@@ -1,0 +1,72 @@
+# Git
+.git
+.gitignore
+
+# Node modules
+node_modules
+**/node_modules
+
+# Build outputs
+.next
+**/.next
+dist
+**/dist
+build
+**/build
+out
+**/out
+
+# Development files
+.env.local
+.env.development
+.env.test
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files
+__tests__
+**/__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+coverage
+.nyc_output
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Deployment files (except what Docker needs)
+deploy/scripts
+deploy/kubernetes
+Makefile
+
+# Cache directories
+.turbo
+.cache
+.parcel-cache
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Other
+.github
+.changeset
+.cursor
+.claude
+.todo

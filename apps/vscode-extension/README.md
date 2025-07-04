@@ -22,6 +22,7 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 - **Provider Integrations**: Out-of-the-box support for Stripe, GitHub, Clerk, Discord, and more
 - **Smart Routing**: Route webhooks to your local environment based on team and session
 - **Beautiful, Native UI**: Seamless integration with the VS Code interface
+- **Custom File Icons**: Dedicated icons for Unhook configuration files (`unhook.yaml`, `unhook.yml`, `unhook.json`, `unhook.ts`)
 
 ---
 
@@ -57,8 +58,29 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 
 ## Configuration & Advanced Usage
 
+### Extension Settings
+
+- **Event Forwarding**: Control whether new webhook events are automatically forwarded to their destinations
+  - Setting: `unhook.delivery.enabled` (default: `true`)
+  - When disabled, events will be received and displayed but not forwarded until manually replayed
+  - Toggle via Command Palette: "Unhook: Toggle Event Forwarding"
+
+### Advanced Configuration
+
 - Configure routing and provider integrations via the Unhook web dashboard or CLI
 - For advanced configuration, see the [Unhook documentation](https://unhook.sh/docs)
+
+### File Icons
+
+The extension provides custom icons for Unhook configuration files:
+- `unhook.yaml` and `unhook.yml` - YAML configuration files
+- `unhook.json` - JSON configuration files  
+- `unhook.ts` - TypeScript configuration files
+
+To use the custom file icons, enable the "Unhook File Icons" icon theme in VS Code:
+1. Open VS Code Settings (`⌘,`)
+2. Search for "File Icon Theme"
+3. Select "Unhook File Icons" from the dropdown
 
 ---
 

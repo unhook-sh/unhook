@@ -1,0 +1,67 @@
+# syntax=docker/dockerfile:1
+
+# Base stage for dependencies
+FROM oven/bun:1-alpine AS base
+WORKDIR /app
+
+# Install dependencies only when needed
+FROM base AS deps
+# Copy package files
+COPY package.json bun.lock ./
+COPY apps/web-app/package.json ./apps/web-app/
+COPY packages/*/package.json ./packages/*/
+COPY turbo.json ./
+
+# Install dependencies
+RUN bun install --frozen-lockfile
+
+# Builder stage
+FROM base AS builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/web-app/node_modules ./apps/web-app/node_modules
+COPY --from=deps /app/packages/*/node_modules ./packages/*/node_modules
+
+# Copy source code
+COPY . .
+
+# Build arguments for environment configuration
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_CLERK_SIGN_IN_URL
+ARG NEXT_PUBLIC_CLERK_SIGN_UP_URL
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST
+ARG NEXT_PUBLIC_API_URL
+
+# Build the application
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+RUN bun run build --filter=web-app
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built application
+COPY --from=builder /app/apps/web-app/public ./apps/web-app/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web-app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web-app/.next/static ./apps/web-app/.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["bun", "run", "apps/web-app/server.js"]

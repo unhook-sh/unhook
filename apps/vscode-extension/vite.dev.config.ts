@@ -6,11 +6,16 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
     hmr: {
       port: 5173,
       protocol: 'ws',
-      clientPort: 5173,
-      timeout: 30000,
+      host: 'localhost',
     },
     watch: {
       usePolling: true,

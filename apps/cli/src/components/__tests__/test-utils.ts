@@ -45,6 +45,9 @@ export const mockOrg = {
   createdByUserId: mockUser.id,
   createdAt: new Date(),
   updatedAt: new Date(),
+  stripeCustomerId: 'cus_1234567890',
+  stripeSubscriptionId: 'sub_1234567890',
+  stripeSubscriptionStatus: 'active',
 } satisfies OrgType;
 
 // Mock webhook data

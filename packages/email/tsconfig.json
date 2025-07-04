@@ -1,0 +1,10 @@
+{
+  "extends": "@unhook/tsconfig/node.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "jsx": "react-jsx"
+  },
+  "include": ["*.ts", "*.tsx", "src"],
+  "exclude": ["node_modules"]
+}

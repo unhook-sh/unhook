@@ -1,0 +1,546 @@
+---
+title: 'Custom Webhook Providers'
+description: 'Integrate any webhook provider with Unhook using our universal webhook endpoint'
+---
+
+# Custom Webhook Provider Integration
+
+Unhook works with any service that sends HTTP webhooks. If your provider isn't listed in our documentation, you can still use Unhook by following this guide. Our universal webhook endpoint accepts any HTTP POST request and forwards it to your local development environment.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Add to your provider's webhook settings**
+3. **Start receiving webhooks locally**: `unhook listen`
+
+## Universal Webhook Features
+
+### Accepts All HTTP Methods
+- **POST** (most common)
+- **GET** (query parameters)
+- **PUT**
+- **DELETE**
+- **PATCH**
+
+### Supports All Content Types
+- `application/json`
+- `application/x-www-form-urlencoded`
+- `text/plain`
+- `application/xml`
+- `multipart/form-data`
+- Custom content types
+
+### Preserves All Headers
+All headers from the webhook provider are forwarded to your local endpoint, including:
+- Authentication headers
+- Content type
+- Custom headers
+- Signatures
+
+## Configuration Steps
+
+### 1. Find Webhook Settings
+Look for these common locations in your provider:
+- Settings → Webhooks
+- API → Webhooks
+- Integrations → Webhooks
+- Notifications → Webhooks
+- Developer → Webhooks
+
+### 2. Add Unhook URL
+Enter your Unhook webhook URL:
+```
+https://unhook.sh/wh_YOUR_ID
+```
+
+### 3. Optional Query Parameters
+Add query parameters to help identify the source:
+```
+https://unhook.sh/wh_YOUR_ID?source=provider-name
+https://unhook.sh/wh_YOUR_ID?type=order&action=created
+https://unhook.sh/wh_YOUR_ID?env=development
+```
+
+## Handling Different Webhook Formats
+
+### JSON Webhooks
+Most modern APIs send JSON:
+
+```javascript
+app.post('/webhook', express.json(), (req, res) => {
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+
+  // Process the webhook
+  const event = req.body;
+
+  res.status(200).send('OK');
+});
+```
+
+### Form-Encoded Webhooks
+Some providers use form encoding:
+
+```javascript
+app.post('/webhook', express.urlencoded({ extended: true }), (req, res) => {
+  console.log('Form data:', req.body);
+
+  // Convert to consistent format
+  const event = {
+    type: req.body.event_type,
+    data: req.body
+  };
+
+  res.status(200).send('OK');
+});
+```
+
+### XML Webhooks
+Legacy systems might send XML:
+
+```javascript
+const xmlparser = require('express-xml-bodyparser');
+
+app.post('/webhook', xmlparser(), (req, res) => {
+  console.log('XML data:', req.body);
+
+  // Process XML structure
+  res.status(200).send('OK');
+});
+```
+
+### Raw Body Access
+For signature verification:
+
+```javascript
+app.post('/webhook', express.raw({ type: '*/*' }), (req, res) => {
+  const rawBody = req.body;
+  const textBody = rawBody.toString('utf8');
+
+  // Verify signature with raw body
+  const signature = req.headers['x-webhook-signature'];
+  const isValid = verifySignature(rawBody, signature);
+
+  if (!isValid) {
+    return res.status(403).send('Invalid signature');
+  }
+
+  // Parse body based on content type
+  const contentType = req.headers['content-type'];
+  let data;
+
+  if (contentType.includes('application/json')) {
+    data = JSON.parse(textBody);
+  } else if (contentType.includes('form-urlencoded')) {
+    data = new URLSearchParams(textBody);
+  }
+
+  res.status(200).send('OK');
+});
+```
+
+## Common Webhook Patterns
+
+### Event-Based Webhooks
+```javascript
+// Pattern: { event: "type", data: {...} }
+function handleEventWebhook(payload) {
+  const { event, data } = payload;
+
+  switch (event) {
+    case 'user.created':
+      handleUserCreated(data);
+      break;
+    case 'order.completed':
+      handleOrderCompleted(data);
+      break;
+    default:
+      console.log(`Unknown event: ${event}`);
+  }
+}
+```
+
+### Action-Based Webhooks
+```javascript
+// Pattern: { action: "created", resource: "user", data: {...} }
+function handleActionWebhook(payload) {
+  const { action, resource, data } = payload;
+
+  const handler = `${resource}.${action}`;
+
+  switch (handler) {
+    case 'user.created':
+      createUser(data);
+      break;
+    case 'user.updated':
+      updateUser(data);
+      break;
+    case 'user.deleted':
+      deleteUser(data);
+      break;
+  }
+}
+```
+
+### Notification Webhooks
+```javascript
+// Pattern: Direct data without wrapper
+function handleNotificationWebhook(payload) {
+  // Some webhooks send data directly
+  if (payload.id && payload.status) {
+    updateRecordStatus(payload.id, payload.status);
+  }
+}
+```
+
+## Security Implementation
+
+### Generic Signature Verification
+Many providers use HMAC signatures:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhookSignature(payload, signature, secret, algorithm = 'sha256') {
+  const computed = crypto
+    .createHmac(algorithm, secret)
+    .update(payload)
+    .digest('hex');
+
+  // Some providers prefix the signature
+  const variations = [
+    computed,
+    `sha256=${computed}`,
+    `sha1=${computed}`,
+    algorithm + '=' + computed
+  ];
+
+  return variations.some(variant =>
+    crypto.timingSafeEqual(Buffer.from(variant), Buffer.from(signature))
+  );
+}
+
+// Usage
+app.post('/webhook', express.raw({ type: '*/*' }), (req, res) => {
+  const signatures = [
+    req.headers['x-webhook-signature'],
+    req.headers['x-hub-signature'],
+    req.headers['x-signature'],
+    req.headers['authorization']
+  ].filter(Boolean);
+
+  const isValid = signatures.some(sig =>
+    verifyWebhookSignature(req.body, sig, process.env.WEBHOOK_SECRET)
+  );
+
+  if (!isValid) {
+    return res.status(403).send('Invalid signature');
+  }
+
+  // Process webhook...
+});
+```
+
+### IP Allowlisting
+Some providers publish their webhook source IPs:
+
+```javascript
+const allowedIPs = [
+  '192.168.1.0/24',
+  '10.0.0.0/8'
+  // Add your provider's IPs
+];
+
+function isIPAllowed(ip) {
+  // Implement IP range checking
+  return allowedIPs.some(range => ipRangeCheck(ip, range));
+}
+
+app.use((req, res, next) => {
+  const clientIP = req.ip || req.connection.remoteAddress;
+
+  if (!isIPAllowed(clientIP)) {
+    return res.status(403).send('Forbidden');
+  }
+
+  next();
+});
+```
+
+## Debugging Webhooks
+
+### Log Everything Initially
+```javascript
+app.post('/webhook', (req, res) => {
+  console.log('=== Webhook Received ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('Query:', req.query);
+  console.log('Body:', req.body);
+  console.log('====================');
+
+  res.status(200).send('OK');
+});
+```
+
+### Webhook Inspector Endpoint
+```javascript
+const webhookHistory = [];
+
+app.post('/webhook', express.raw({ type: '*/*' }), (req, res) => {
+  const webhook = {
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    url: req.url,
+    headers: req.headers,
+    query: req.query,
+    body: req.body.toString('utf8'),
+    contentType: req.headers['content-type']
+  };
+
+  webhookHistory.push(webhook);
+
+  // Keep last 100 webhooks
+  if (webhookHistory.length > 100) {
+    webhookHistory.shift();
+  }
+
+  res.status(200).send('OK');
+});
+
+// View webhook history
+app.get('/webhook-history', (req, res) => {
+  res.json(webhookHistory);
+});
+```
+
+## Best Practices
+
+### 1. Identify Webhook Source
+Use query parameters or headers:
+
+```javascript
+app.post('/webhook', (req, res) => {
+  const source = req.query.source ||
+                 req.headers['x-webhook-source'] ||
+                 'unknown';
+
+  console.log(`Webhook from: ${source}`);
+
+  // Route to appropriate handler
+  switch (source) {
+    case 'provider-a':
+      handleProviderA(req.body);
+      break;
+    case 'provider-b':
+      handleProviderB(req.body);
+      break;
+    default:
+      handleGenericWebhook(req.body);
+  }
+
+  res.status(200).send('OK');
+});
+```
+
+### 2. Implement Retry Logic
+Handle provider retries:
+
+```javascript
+const processedWebhooks = new Map();
+
+function getWebhookId(req) {
+  // Try common webhook ID headers
+  return req.headers['x-webhook-id'] ||
+         req.headers['x-request-id'] ||
+         req.headers['x-event-id'] ||
+         req.body?.id ||
+         req.body?.event_id;
+}
+
+app.post('/webhook', (req, res) => {
+  const webhookId = getWebhookId(req);
+
+  if (webhookId && processedWebhooks.has(webhookId)) {
+    console.log(`Duplicate webhook ${webhookId} skipped`);
+    return res.status(200).send('Already processed');
+  }
+
+  if (webhookId) {
+    processedWebhooks.set(webhookId, Date.now());
+  }
+
+  // Process webhook...
+  res.status(200).send('OK');
+});
+```
+
+### 3. Handle Various Response Requirements
+Different providers expect different responses:
+
+```javascript
+app.post('/webhook', (req, res) => {
+  // Process webhook...
+
+  // Some providers expect JSON response
+  if (req.headers['accept']?.includes('application/json')) {
+    return res.json({ status: 'success' });
+  }
+
+  // Some expect specific text
+  if (req.headers['x-webhook-version'] === 'v2') {
+    return res.send('ACKNOWLEDGED');
+  }
+
+  // Default response
+  res.status(200).send('OK');
+});
+```
+
+### 4. Graceful Error Handling
+```javascript
+app.post('/webhook', async (req, res) => {
+  try {
+    // Acknowledge receipt immediately
+    res.status(200).send('OK');
+
+    // Process asynchronously
+    await processWebhookAsync(req);
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+
+    // Log for debugging but don't fail the webhook
+    await logError({
+      error: error.message,
+      webhook: {
+        headers: req.headers,
+        body: req.body
+      }
+    });
+  }
+});
+```
+
+## Common Integration Patterns
+
+### Queue for Processing
+```javascript
+const Queue = require('bull');
+const webhookQueue = new Queue('webhooks');
+
+app.post('/webhook', async (req, res) => {
+  // Quick acknowledgment
+  res.status(200).send('OK');
+
+  // Queue for processing
+  await webhookQueue.add('process', {
+    headers: req.headers,
+    body: req.body,
+    timestamp: Date.now()
+  });
+});
+
+// Process webhooks from queue
+webhookQueue.process('process', async (job) => {
+  const { headers, body } = job.data;
+  await handleWebhook(headers, body);
+});
+```
+
+### Multi-Provider Router
+```javascript
+class WebhookRouter {
+  constructor() {
+    this.providers = new Map();
+  }
+
+  register(name, config) {
+    this.providers.set(name, config);
+  }
+
+  async handle(req, res) {
+    const provider = this.identifyProvider(req);
+
+    if (!provider) {
+      console.warn('Unknown webhook provider');
+      return res.status(200).send('OK');
+    }
+
+    const config = this.providers.get(provider);
+
+    // Verify if needed
+    if (config.verify) {
+      const isValid = await config.verify(req);
+      if (!isValid) {
+        return res.status(403).send('Forbidden');
+      }
+    }
+
+    // Process
+    await config.handler(req.body, req.headers);
+
+    // Respond
+    const response = config.response || 'OK';
+    res.status(200).send(response);
+  }
+
+  identifyProvider(req) {
+    // Check various indicators
+    if (req.headers['x-provider-name']) {
+      return req.headers['x-provider-name'];
+    }
+
+    if (req.query.provider) {
+      return req.query.provider;
+    }
+
+    // Check known patterns
+    for (const [name, config] of this.providers) {
+      if (config.identify && config.identify(req)) {
+        return name;
+      }
+    }
+
+    return null;
+  }
+}
+```
+
+## Testing Your Integration
+
+### Manual Testing with cURL
+```bash
+# Basic POST
+curl -X POST https://unhook.sh/wh_YOUR_ID \
+  -H "Content-Type: application/json" \
+  -d '{"event":"test","data":{"message":"Hello Unhook!"}}'
+
+# With custom headers
+curl -X POST https://unhook.sh/wh_YOUR_ID \
+  -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: test-signature" \
+  -H "X-Custom-Header: custom-value" \
+  -d '{"test":true}'
+
+# Form data
+curl -X POST https://unhook.sh/wh_YOUR_ID \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "event=test&status=success"
+```
+
+### Webhook Testing Tools
+- **Webhook.site** - Generate test webhooks
+- **RequestBin** - Inspect HTTP requests
+- **Postman** - API testing with webhook simulation
+- **Insomnia** - REST client with webhook testing
+
+## Support
+
+Need help with custom webhook integration?
+- Join our [Discord community](https://discord.gg/unhook)
+- Email us at support@unhook.sh
+- Check our [GitHub examples](https://github.com/unhook/examples)
+
+If you'd like to see your provider added to our official documentation, please [submit a request](https://github.com/unhook/unhook/issues/new?template=provider-request.md) with details about the webhook format and authentication method.

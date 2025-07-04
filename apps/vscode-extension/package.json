@@ -9,11 +9,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": [
-    "Debuggers",
-    "Testing",
-    "Other"
-  ],
+  "categories": ["Debuggers", "Testing", "Other"],
   "contributes": {
     "authentication": [
       {
@@ -110,7 +106,7 @@
       {
         "category": "Unhook",
         "command": "unhook.toggleDelivery",
-        "title": "Toggle Event Delivery",
+        "title": "Toggle Event Forwarding",
         "icon": "$(play)"
       },
       {
@@ -212,15 +208,56 @@
           "type": "string",
           "default": "",
           "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root."
+        },
+        "unhook.delivery.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable forwarding new events to their destinations. When disabled, events will be received but not forwarded to local endpoints."
         }
       }
-    }
+    },
+    "iconThemes": [
+      {
+        "id": "unhook-file-icons",
+        "label": "Unhook File Icons",
+        "path": "./icons/file-icon-theme.json"
+      }
+    ],
+    "languages": [
+      {
+        "id": "unhook-yaml",
+        "aliases": [
+          "Unhook YAML",
+          "unhook-yaml"
+        ],
+        "extensions": [],
+        "filenames": [
+          "unhook.yaml",
+          "unhook.yml"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "unhook-json",
+        "aliases": [
+          "Unhook JSON",
+          "unhook-json"
+        ],
+        "extensions": [],
+        "filenames": [
+          "unhook.json"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
   },
   "dependencies": {
     "@unhook/client": "0.4.6",
+    "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "tailwind-merge": "3.3.1",
     "ws": "8.18.2"
   },
   "vsce": {
@@ -229,6 +266,7 @@
   },
   "description": "Webhook Development",
   "devDependencies": {
+    "@tailwindcss/postcss": "4.1.10",
     "@types/bun": "1.2.17",
     "@types/glob": "8.1.0",
     "@types/node": "24.0.3",
@@ -244,6 +282,8 @@
     "globals": "16.2.0",
     "mocha": "11.7.0",
     "ovsx": "0.10.4",
+    "postcss": "8.4.49",
+    "tailwindcss": "4.1.10",
     "tsup": "8.5.0",
     "typescript": "5.8.3",
     "vite": "6.3.5"
@@ -254,12 +294,7 @@
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "icon": "logo.png",
-  "keywords": [
-    "webhook",
-    "development",
-    "testing",
-    "debugging"
-  ],
+  "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,
@@ -271,11 +306,11 @@
   "scripts": {
     "build": "bun run typecheck && bun run build:webview && NODE_ENV=production tsup",
     "build:base": "tsup",
-    "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup --dev",
+    "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup",
     "build:webview": "vite build",
     "clean": "rm -rf .turbo node_modules dist *.vsix",
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
-    "dev:extension": "NODE_ENV=development tsup --dev --watch",
+    "dev:extension": "NODE_ENV=development tsup --watch",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
     "package": "bun run prepare && bun run build && bun run package:vsix",
     "package:vsix": "bunx vsce package",

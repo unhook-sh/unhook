@@ -1,156 +1,172 @@
 ---
 title: 'Webhook Providers'
-description: 'Set up Unhook with popular webhook providers'
+description: 'Connect Unhook with popular webhook providers'
 ---
 
-## Stripe
+# Webhook Provider Integration Guides
 
-### Setup
+Unhook makes it easy to receive webhooks from any provider. Each provider has specific configuration requirements and webhook event types. Select your provider below for detailed setup instructions.
 
-1. Go to your [Stripe Dashboard](https://dashboard.stripe.com/webhooks)
-2. Click "Add Endpoint"
-3. Enter your Unhook URL:
-```bash
-https://unhook.sh/t_123?e=stripe
-```
-4. Select the events you want to receive
-5. Save the endpoint
+## Popular Providers
 
-### Local Development
+<CardGroup cols={3}>
+  <Card
+    title="Stripe"
+    icon="stripe"
+    href="/docs/providers/stripe"
+  >
+    Payment processing and subscription webhooks
+  </Card>
+  <Card
+    title="GitHub"
+    icon="github"
+    href="/docs/providers/github"
+  >
+    Repository and workflow events
+  </Card>
+  <Card
+    title="Clerk"
+    icon="user-shield"
+    href="/docs/providers/clerk"
+  >
+    User authentication and management
+  </Card>
+  <Card
+    title="Twilio"
+    icon="comment-sms"
+    href="/docs/providers/twilio"
+  >
+    SMS, voice, and communication events
+  </Card>
+  <Card
+    title="SendGrid"
+    icon="envelope"
+    href="/docs/providers/sendgrid"
+  >
+    Email delivery and engagement tracking
+  </Card>
+  <Card
+    title="Shopify"
+    icon="cart-shopping"
+    href="/docs/providers/shopify"
+  >
+    E-commerce and order webhooks
+  </Card>
+</CardGroup>
 
-```bash
-# Start Unhook
-unhook listen
+## Payment & Commerce
 
-# Configure your application
-STRIPE_WEBHOOK_URL=https://unhook.sh/t_123?e=stripe
-```
+<CardGroup cols={3}>
+  <Card title="PayPal" href="/docs/providers/paypal">Payment notifications</Card>
+  <Card title="Square" href="/docs/providers/square">Payment and POS events</Card>
+  <Card title="Braintree" href="/docs/providers/braintree">Payment gateway webhooks</Card>
+  <Card title="Paddle" href="/docs/providers/paddle">SaaS billing events</Card>
+  <Card title="Chargebee" href="/docs/providers/chargebee">Subscription management</Card>
+  <Card title="Recurly" href="/docs/providers/recurly">Recurring billing webhooks</Card>
+</CardGroup>
 
-### Event Types
+## Communication & Collaboration
 
-Stripe sends webhook events for various actions. Common events include:
-- `payment_intent.succeeded`
-- `customer.subscription.created`
-- `invoice.paid`
+<CardGroup cols={3}>
+  <Card title="Slack" href="/docs/providers/slack">Team messaging events</Card>
+  <Card title="Discord" href="/docs/providers/discord">Community platform webhooks</Card>
+  <Card title="Microsoft Teams" href="/docs/providers/microsoft-teams">Enterprise communication</Card>
+  <Card title="Zoom" href="/docs/providers/zoom">Video conferencing events</Card>
+  <Card title="Intercom" href="/docs/providers/intercom">Customer messaging</Card>
+  <Card title="Mailchimp" href="/docs/providers/mailchimp">Email marketing events</Card>
+</CardGroup>
 
-## GitHub
+## Development & Infrastructure
 
-### Setup
+<CardGroup cols={3}>
+  <Card title="Vercel" href="/docs/providers/vercel">Deployment notifications</Card>
+  <Card title="Netlify" href="/docs/providers/netlify">Build and deploy events</Card>
+  <Card title="CircleCI" href="/docs/providers/circleci">CI/CD pipeline webhooks</Card>
+  <Card title="PagerDuty" href="/docs/providers/pagerduty">Incident management</Card>
+  <Card title="Sentry" href="/docs/providers/sentry">Error tracking alerts</Card>
+  <Card title="Datadog" href="/docs/providers/datadog">Monitoring and analytics</Card>
+</CardGroup>
 
-1. Go to your repository settings
-2. Navigate to "Webhooks"
-3. Click "Add webhook"
-4. Enter your Unhook URL:
-```bash
-https://unhook.sh/t_123?e=github
-```
-5. Choose your events
-6. Set content type to `application/json`
-7. Save the webhook
+## Project Management
 
-### Local Development
+<CardGroup cols={3}>
+  <Card title="Linear" href="/docs/providers/linear">Issue tracking</Card>
+  <Card title="Jira" href="/docs/providers/jira">Agile project management</Card>
+  <Card title="Notion" href="/docs/providers/notion">Workspace notifications</Card>
+  <Card title="Asana" href="/docs/providers/asana">Task management</Card>
+  <Card title="Monday.com" href="/docs/providers/monday">Work OS events</Card>
+  <Card title="ClickUp" href="/docs/providers/clickup">Productivity platform</Card>
+</CardGroup>
 
-```bash
-# Start Unhook
-unhook listen
+## Authentication & Security
 
-# Configure your application
-GITHUB_WEBHOOK_URL=https://unhook.sh/t_123?e=github
-```
+<CardGroup cols={3}>
+  <Card title="Auth0" href="/docs/providers/auth0">Identity management</Card>
+  <Card title="Okta" href="/docs/providers/okta">Enterprise authentication</Card>
+  <Card title="Firebase" href="/docs/providers/firebase">Authentication events</Card>
+  <Card title="Supabase" href="/docs/providers/supabase">Backend platform webhooks</Card>
+  <Card title="WorkOS" href="/docs/providers/workos">Enterprise SSO</Card>
+  <Card title="FusionAuth" href="/docs/providers/fusionauth">Customer identity</Card>
+</CardGroup>
 
-### Event Types
+## Form & Survey
 
-GitHub sends webhook events for repository actions like:
-- `push`
-- `pull_request`
-- `issues`
+<CardGroup cols={3}>
+  <Card title="Typeform" href="/docs/providers/typeform">Form submissions</Card>
+  <Card title="Google Forms" href="/docs/providers/google-forms">Survey responses</Card>
+  <Card title="JotForm" href="/docs/providers/jotform">Form builder webhooks</Card>
+  <Card title="SurveyMonkey" href="/docs/providers/surveymonkey">Survey platform</Card>
+  <Card title="Calendly" href="/docs/providers/calendly">Scheduling events</Card>
+  <Card title="Cal.com" href="/docs/providers/cal">Open-source scheduling</Card>
+</CardGroup>
 
-## Clerk
+## Storage & Files
 
-### Setup
+<CardGroup cols={3}>
+  <Card title="Box" href="/docs/providers/box">File collaboration</Card>
+  <Card title="Dropbox" href="/docs/providers/dropbox">Cloud storage events</Card>
+  <Card title="Google Drive" href="/docs/providers/google-drive">Document notifications</Card>
+  <Card title="OneDrive" href="/docs/providers/onedrive">Microsoft cloud storage</Card>
+  <Card title="AWS S3" href="/docs/providers/aws-s3">Object storage events</Card>
+  <Card title="Cloudinary" href="/docs/providers/cloudinary">Media management</Card>
+</CardGroup>
 
-1. Go to your [Clerk Dashboard](https://dashboard.clerk.dev)
-2. Navigate to "Webhooks"
-3. Click "Add Endpoint"
-4. Enter your Unhook URL:
-```bash
-https://unhook.sh/t_123?e=clerk
-```
-5. Select webhook events
-6. Save the endpoint
+## Analytics & Marketing
 
-### Local Development
+<CardGroup cols={3}>
+  <Card title="Segment" href="/docs/providers/segment">Customer data events</Card>
+  <Card title="Mixpanel" href="/docs/providers/mixpanel">Product analytics</Card>
+  <Card title="Amplitude" href="/docs/providers/amplitude">Digital analytics</Card>
+  <Card title="HubSpot" href="/docs/providers/hubspot">CRM and marketing</Card>
+  <Card title="Salesforce" href="/docs/providers/salesforce">Enterprise CRM</Card>
+  <Card title="Pipedrive" href="/docs/providers/pipedrive">Sales CRM webhooks</Card>
+</CardGroup>
 
-```bash
-# Start Unhook
-unhook listen
+## Social Media
 
-# Configure your application
-CLERK_WEBHOOK_URL=https://unhook.sh/t_123?e=clerk
-```
-
-### Event Types
-
-Clerk sends webhook events for user actions:
-- `user.created`
-- `user.updated`
-- `session.created`
-
-## Slack
-
-### Setup
-
-1. Go to your [Slack App Settings](https://api.slack.com/apps)
-2. Select your app
-3. Click "Event Subscriptions"
-4. Enter your Unhook URL:
-```bash
-https://unhook.sh/t_123?e=slack
-```
-5. Subscribe to bot events
-6. Save changes
-
-### Local Development
-
-```bash
-# Start Unhook
-unhook listen
-
-# Configure your application
-SLACK_WEBHOOK_URL=https://unhook.sh/t_123?e=slack
-```
-
-### Event Types
-
-Slack sends webhook events for:
-- `message.channels`
-- `app_mention`
-- `reaction_added`
+<CardGroup cols={3}>
+  <Card title="Facebook" href="/docs/providers/facebook">Social platform events</Card>
+  <Card title="Instagram" href="/docs/providers/instagram">Photo sharing webhooks</Card>
+  <Card title="Twitter/X" href="/docs/providers/twitter">Social media events</Card>
+  <Card title="LinkedIn" href="/docs/providers/linkedin">Professional network</Card>
+  <Card title="TikTok" href="/docs/providers/tiktok">Video platform webhooks</Card>
+  <Card title="YouTube" href="/docs/providers/youtube">Video notifications</Card>
+</CardGroup>
 
 ## Custom Providers
 
-### Generic Setup
+If your provider is not listed above, you can still use Unhook! Simply use your unique Unhook URL as the webhook endpoint. See our [Custom Integration Guide](/docs/providers/custom) for more details.
 
-For any webhook provider:
+## Quick Start
 
-1. Use the Unhook URL format:
-```bash
-https://unhook.sh/t_123?e=YOUR_ENDPOINT
-```
+1. Choose your provider from the list above
+2. Follow the provider-specific setup instructions
+3. Copy your Unhook URL: `https://unhook.sh/wh_YOUR_ID`
+4. Configure the webhook in your provider's dashboard
+5. Start receiving webhooks locally!
 
-2. Start Unhook locally:
-```bash
-unhook listen
-```
+## Need Help?
 
-3. Configure your application:
-```bash
-WEBHOOK_URL=https://unhook.sh/t_123?e=YOUR_ENDPOINT
-```
-
-### Best Practices
-
-1. Use meaningful endpoint names
-2. Validate webhook signatures when available
-3. Handle retries appropriately
-4. Log webhook events for debugging
+- Check the provider-specific documentation for detailed setup steps
+- Join our [Discord community](https://discord.gg/unhook) for support
+- Contact us at support@unhook.sh

@@ -7,6 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Ascii } from '~/components/ascii';
 import { ConnectToWebhook } from '~/components/connect-to-webhook';
 import { EventSubscription } from '~/components/event-subscription';
+import { RequestWebhookAccess } from '~/components/request-webhook-access';
 import { Router } from '~/components/router';
 import { AuthProvider } from '~/context/auth-context';
 import { RouterProvider } from '~/context/router-context';
@@ -112,7 +113,7 @@ function AppContent() {
           )}
         </WebhookAuthorized>
         <WebhookUnauthorized>
-          <Text>You are not authorized to use this webhook.</Text>
+          <RequestWebhookAccess webhookId={webhookId} />
         </WebhookUnauthorized>
         <WebhookChecking>
           <Text>Verifying webhook...</Text>

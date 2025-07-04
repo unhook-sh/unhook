@@ -10,6 +10,12 @@ export interface UnhookSettings {
     maxHistory: number;
     autoClear: boolean;
   };
+  notifications: {
+    showForNewEvents: boolean;
+  };
+  delivery: {
+    enabled: boolean;
+  };
   configFilePath: string;
 }
 
@@ -20,6 +26,15 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
   private constructor() {
     super();
     this._settings = this.loadSettings();
+
+    // Listen for configuration changes
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('unhook')) {
+        const newSettings = this.loadSettings();
+        this._settings = newSettings;
+        super.emit('settingsChanged', this._settings);
+      }
+    });
   }
 
   public static getInstance(): SettingsService {
@@ -44,6 +59,12 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
         maxHistory: config.get('events.maxHistory') ?? 100,
         autoClear: config.get('events.autoClear') ?? false,
       },
+      notifications: {
+        showForNewEvents: config.get('notifications.showForNewEvents') ?? true,
+      },
+      delivery: {
+        enabled: config.get('delivery.enabled') ?? true,
+      },
       configFilePath: config.get('configFilePath') ?? '',
     };
   }
@@ -54,7 +75,7 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
 
   public updateSettings(settings: Partial<UnhookSettings>): void {
     this._settings = { ...this._settings, ...settings };
-    this.emit('settingsChanged', this._settings);
+    super.emit('settingsChanged', this._settings);
   }
 
   public dispose(): void {

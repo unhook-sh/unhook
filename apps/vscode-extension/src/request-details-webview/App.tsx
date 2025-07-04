@@ -73,9 +73,9 @@ function RequestDetails({ data }: { data: RequestType }) {
   };
 
   const getStatusColor = (status: number): string => {
-    if (status >= 200 && status < 300) return 'bg-green-500 text-white';
-    if (status >= 400) return 'bg-red-500 text-white';
-    return 'bg-gray-500 text-white';
+    if (status >= 200 && status < 300) return 'status-success';
+    if (status >= 400) return 'status-error';
+    return 'status-default';
   };
 
   return (
@@ -141,7 +141,7 @@ function RequestDetails({ data }: { data: RequestType }) {
                   <dd>
                     <span
                       className={cn(
-                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
+                        'status-badge',
                         getStatusColor(data.response.status),
                       )}
                     >

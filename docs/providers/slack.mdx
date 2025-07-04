@@ -1,0 +1,541 @@
+---
+title: 'Slack Webhooks'
+description: 'Integrate Slack team messaging and collaboration webhooks with Unhook'
+---
+
+# Slack Webhook Integration
+
+Slack provides multiple webhook types for different use cases: Incoming Webhooks for posting messages, Event Subscriptions for receiving events, and Interactive Components for handling user interactions. Build powerful Slack integrations with real-time event handling.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure in Slack App Settings**: [api.slack.com/apps](https://api.slack.com/apps)
+3. **Start receiving events locally**: `unhook listen`
+
+## Webhook Types
+
+### 1. Event Subscriptions (Recommended)
+Real-time events from Slack workspace:
+- Message events
+- User activity
+- Channel changes
+- App mentions
+- File uploads
+
+### 2. Interactive Components
+User interactions with your app:
+- Button clicks
+- Menu selections
+- Dialog submissions
+- Shortcuts
+
+### 3. Slash Commands
+Custom commands triggered by users:
+- `/command` style triggers
+- Custom parameters
+- Direct responses
+
+## Configuration Steps
+
+### Setting Up Event Subscriptions
+
+#### 1. Create or Configure Slack App
+1. Go to [api.slack.com/apps](https://api.slack.com/apps)
+2. Create a new app or select existing
+3. Navigate to **Event Subscriptions**
+
+#### 2. Enable Events
+1. Toggle **Enable Events** to On
+2. Enter Request URL:
+   ```
+   https://unhook.sh/wh_YOUR_ID
+   ```
+3. Slack will send a verification challenge
+4. Once verified, the URL will show as Verified ✓
+
+#### 3. Subscribe to Events
+Select workspace events:
+
+**Message Events**
+- `message.channels` - Messages in public channels
+- `message.groups` - Messages in private channels
+- `message.im` - Direct messages
+- `message.mpim` - Group direct messages
+- `app_mention` - When your app is @mentioned
+- `message.reactions` - Reactions added/removed
+
+**User & Team Events**
+- `team_join` - New team member joined
+- `user_change` - User profile updated
+- `user_status_changed` - Status update
+- `member_joined_channel` - User joined channel
+- `member_left_channel` - User left channel
+
+**Channel Events**
+- `channel_created` - New channel created
+- `channel_deleted` - Channel deleted
+- `channel_rename` - Channel renamed
+- `channel_archive` - Channel archived
+- `channel_unarchive` - Channel unarchived
+
+**File Events**
+- `file_created` - File uploaded
+- `file_shared` - File shared
+- `file_deleted` - File deleted
+- `file_comment_added` - Comment on file
+
+#### 4. Save Changes
+Click **Save Changes** to activate subscriptions
+
+### Setting Up Interactive Components
+
+1. Navigate to **Interactivity & Shortcuts**
+2. Toggle **Interactivity** to On
+3. Enter Request URL:
+   ```
+   https://unhook.sh/wh_YOUR_ID
+   ```
+4. Optionally configure:
+   - Select Menus Options Load URL
+   - Shortcuts
+
+### Setting Up Slash Commands
+
+1. Navigate to **Slash Commands**
+2. Click **Create New Command**
+3. Configure:
+   - Command: `/yourcommand`
+   - Request URL: `https://unhook.sh/wh_YOUR_ID`
+   - Short Description
+   - Usage Hint
+4. Click **Save**
+
+## Event Payload Examples
+
+### Message Event
+```json
+{
+  "token": "verification_token",
+  "team_id": "T1234567890",
+  "api_app_id": "A1234567890",
+  "event": {
+    "type": "message",
+    "user": "U1234567890",
+    "text": "Hello team!",
+    "ts": "1234567890.123456",
+    "channel": "C1234567890",
+    "event_ts": "1234567890.123456"
+  },
+  "type": "event_callback",
+  "event_id": "Ev1234567890",
+  "event_time": 1234567890
+}
+```
+
+### App Mention Event
+```json
+{
+  "token": "verification_token",
+  "team_id": "T1234567890",
+  "api_app_id": "A1234567890",
+  "event": {
+    "type": "app_mention",
+    "user": "U1234567890",
+    "text": "<@U0LAN0Z89> can you help with this?",
+    "ts": "1234567890.123456",
+    "channel": "C1234567890",
+    "event_ts": "1234567890.123456"
+  },
+  "type": "event_callback",
+  "event_id": "Ev1234567890",
+  "event_time": 1234567890
+}
+```
+
+### Interactive Component (Button Click)
+```json
+{
+  "type": "interactive_message",
+  "actions": [
+    {
+      "name": "approve",
+      "type": "button",
+      "value": "approve_123"
+    }
+  ],
+  "callback_id": "approval_workflow",
+  "team": {
+    "id": "T1234567890",
+    "domain": "workspace"
+  },
+  "channel": {
+    "id": "C1234567890",
+    "name": "general"
+  },
+  "user": {
+    "id": "U1234567890",
+    "name": "john.doe"
+  },
+  "action_ts": "1234567890.123456",
+  "message_ts": "1234567890.123456",
+  "attachment_id": "1",
+  "token": "verification_token",
+  "response_url": "https://hooks.slack.com/actions/T123/456/xyz"
+}
+```
+
+### Slash Command
+```json
+{
+  "token": "verification_token",
+  "team_id": "T1234567890",
+  "team_domain": "workspace",
+  "channel_id": "C1234567890",
+  "channel_name": "general",
+  "user_id": "U1234567890",
+  "user_name": "john.doe",
+  "command": "/weather",
+  "text": "San Francisco",
+  "response_url": "https://hooks.slack.com/commands/T123/456/xyz",
+  "trigger_id": "1234567890.123456"
+}
+```
+
+## Webhook Verification
+
+### URL Verification Challenge
+Slack sends this when first setting up:
+
+```javascript
+app.post('/webhook', (req, res) => {
+  // URL verification challenge
+  if (req.body.type === 'url_verification') {
+    return res.send(req.body.challenge);
+  }
+
+  // Process other events...
+});
+```
+
+### Request Signature Verification
+Verify requests are from Slack:
+
+```javascript
+const crypto = require('crypto');
+
+function verifySlackRequest(req, signingSecret) {
+  const signature = req.headers['x-slack-signature'];
+  const timestamp = req.headers['x-slack-request-timestamp'];
+
+  // Check timestamp to prevent replay attacks
+  const time = Math.floor(Date.now() / 1000);
+  if (Math.abs(time - timestamp) > 300) {
+    return false;
+  }
+
+  // Create signature base string
+  const sigBasestring = `v0:${timestamp}:${req.rawBody}`;
+
+  // Create signature
+  const mySignature = 'v0=' + crypto
+    .createHmac('sha256', signingSecret)
+    .update(sigBasestring)
+    .digest('hex');
+
+  // Compare signatures
+  return crypto.timingSafeEqual(
+    Buffer.from(mySignature),
+    Buffer.from(signature)
+  );
+}
+
+// Express middleware
+app.use(express.raw({ type: 'application/json' }));
+
+app.post('/webhook', (req, res) => {
+  if (!verifySlackRequest(req, process.env.SLACK_SIGNING_SECRET)) {
+    return res.status(403).send('Forbidden');
+  }
+
+  const body = JSON.parse(req.body);
+  // Process the webhook...
+});
+```
+
+## Response Formats
+
+### Event Acknowledgment
+Always respond quickly (within 3 seconds):
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  // Acknowledge immediately
+  res.status(200).send();
+
+  // Process asynchronously
+  await processSlackEvent(req.body);
+});
+```
+
+### Interactive Response
+For interactive components, you can update the message:
+
+```javascript
+async function handleButtonClick(payload) {
+  // Immediate response
+  const immediateResponse = {
+    text: "Processing your request...",
+    replace_original: true
+  };
+
+  // Send to response_url within 30 minutes
+  await fetch(payload.response_url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text: "✅ Request approved!",
+      replace_original: true
+    })
+  });
+}
+```
+
+### Slash Command Response
+```javascript
+app.post('/slash-command', (req, res) => {
+  // Immediate response (visible only to user)
+  res.json({
+    response_type: "ephemeral",
+    text: "Got it! Processing your request..."
+  });
+
+  // Or public response
+  res.json({
+    response_type: "in_channel",
+    text: "Weather for San Francisco: ☀️ 72°F"
+  });
+});
+```
+
+## Best Practices
+
+### 1. Handle Rate Limits
+Respect Slack's rate limits:
+
+```javascript
+const rateLimiter = new Map();
+
+async function postToSlack(channel, message) {
+  const key = `${channel}:${Math.floor(Date.now() / 1000)}`;
+  const count = rateLimiter.get(key) || 0;
+
+  if (count >= 1) {
+    // Slack allows ~1 message per second per channel
+    await sleep(1000);
+  }
+
+  rateLimiter.set(key, count + 1);
+  await slack.chat.postMessage({ channel, text: message });
+}
+```
+
+### 2. Use Slack SDK
+```javascript
+const { WebClient } = require('@slack/web-api');
+const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
+
+async function handleMention(event) {
+  // React to the message
+  await slack.reactions.add({
+    channel: event.channel,
+    timestamp: event.ts,
+    name: 'eyes'
+  });
+
+  // Reply in thread
+  await slack.chat.postMessage({
+    channel: event.channel,
+    thread_ts: event.ts,
+    text: "I'm on it! 🚀"
+  });
+}
+```
+
+### 3. Handle Retries
+Slack may retry failed webhooks:
+
+```javascript
+const processedEvents = new Set();
+
+function handleSlackEvent(event) {
+  const eventId = event.event_id;
+
+  if (processedEvents.has(eventId)) {
+    console.log(`Duplicate event ${eventId} ignored`);
+    return;
+  }
+
+  processedEvents.add(eventId);
+
+  // Process event...
+
+  // Clean up old events periodically
+  setTimeout(() => processedEvents.delete(eventId), 3600000);
+}
+```
+
+### 4. Error Handling
+Implement robust error handling:
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  try {
+    // Acknowledge immediately
+    res.status(200).send();
+
+    const { event } = req.body;
+
+    switch (event.type) {
+      case 'message':
+        await handleMessage(event);
+        break;
+      case 'app_mention':
+        await handleMention(event);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+
+    // Notify monitoring
+    await notifyError({
+      type: 'slack_webhook_error',
+      event: req.body,
+      error: error.message
+    });
+  }
+});
+```
+
+## Common Use Cases
+
+### Auto-respond to Keywords
+```javascript
+async function handleMessage(event) {
+  if (event.text?.toLowerCase().includes('help')) {
+    await slack.chat.postMessage({
+      channel: event.channel,
+      text: "Need help? Try these commands:\n• `/status` - Check system status\n• `/docs` - View documentation"
+    });
+  }
+}
+```
+
+### Approval Workflows
+```javascript
+async function requestApproval(request) {
+  await slack.chat.postMessage({
+    channel: '#approvals',
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Approval Request*\n${request.description}`
+        }
+      },
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: { type: 'plain_text', text: 'Approve' },
+            style: 'primary',
+            action_id: 'approve_request',
+            value: request.id
+          },
+          {
+            type: 'button',
+            text: { type: 'plain_text', text: 'Deny' },
+            style: 'danger',
+            action_id: 'deny_request',
+            value: request.id
+          }
+        ]
+      }
+    ]
+  });
+}
+```
+
+## Testing Webhooks
+
+### Using Slack's Event Tester
+1. Go to Event Subscriptions page
+2. Find "Send Test Event" button
+3. Select event type and send
+
+### Manual Testing
+```javascript
+// Send test message
+await slack.chat.postMessage({
+  channel: '#test',
+  text: 'Test message for webhook'
+});
+
+// Trigger app mention
+await slack.chat.postMessage({
+  channel: '#test',
+  text: '<@U1234567890> test mention'
+});
+```
+
+## Environment Variables
+
+```bash
+# Slack App Credentials
+SLACK_BOT_TOKEN=xoxb-1234567890-1234567890123-xxxxxxxxxxxx
+SLACK_SIGNING_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SLACK_CLIENT_ID=1234567890.1234567890
+SLACK_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional
+SLACK_APP_TOKEN=xapp-1-xxxxxxxxxxxx-xxxxxxxxxxxx
+SLACK_VERIFICATION_TOKEN=xxxxxxxxxxxxxxxxxxxx (deprecated)
+```
+
+## Common Issues
+
+### URL Verification Failing
+- Ensure webhook responds with challenge value
+- Check response is plain text, not JSON
+- Verify URL is publicly accessible
+
+### Missing Events
+- Check bot has required scopes
+- Ensure bot is in the channel
+- Verify event subscriptions are saved
+
+### Rate Limit Errors
+- Implement exponential backoff
+- Use batching where possible
+- Cache frequently accessed data
+
+## Useful Links
+
+- **Slack API**: [api.slack.com](https://api.slack.com)
+- **App Management**: [api.slack.com/apps](https://api.slack.com/apps)
+- **Event Types Reference**: [api.slack.com/events](https://api.slack.com/events)
+- **Interactive Components**: [api.slack.com/interactivity](https://api.slack.com/interactivity)
+- **Block Kit Builder**: [app.slack.com/block-kit-builder](https://app.slack.com/block-kit-builder)
+- **Slack SDK**: [slack.dev/node-slack-sdk](https://slack.dev/node-slack-sdk)
+
+## Support
+
+Need help with Slack webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Visit [Slack Community](https://slackcommunity.com)
+- Check [Slack API Docs](https://api.slack.com/docs)
+- Email us at support@unhook.sh

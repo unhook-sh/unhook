@@ -1,0 +1,498 @@
+---
+title: 'Shopify Webhooks'
+description: 'Integrate Shopify e-commerce and order webhooks with Unhook'
+---
+
+# Shopify Webhook Integration
+
+Shopify webhooks notify your application in real-time when events occur in your Shopify store, including order creation, inventory updates, customer actions, and more. Perfect for order fulfillment, inventory management, and customer engagement automation.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure via Shopify Admin API or Partner Dashboard**
+3. **Start receiving events locally**: `unhook listen`
+
+## Configuration Methods
+
+### Method 1: Using Shopify Admin API
+
+```javascript
+// Create webhook subscription
+const webhook = {
+  webhook: {
+    topic: 'orders/create',
+    address: 'https://unhook.sh/wh_YOUR_ID',
+    format: 'json'
+  }
+};
+
+fetch(`https://${shop}.myshopify.com/admin/api/2024-01/webhooks.json`, {
+  method: 'POST',
+  headers: {
+    'X-Shopify-Access-Token': accessToken,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(webhook)
+});
+```
+
+### Method 2: Using GraphQL Admin API
+
+```graphql
+mutation webhookSubscriptionCreate($topic: WebhookSubscriptionTopic!, $webhookSubscription: WebhookSubscriptionInput!) {
+  webhookSubscriptionCreate(topic: $topic, webhookSubscription: $webhookSubscription) {
+    webhookSubscription {
+      id
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "topic": "ORDERS_CREATE",
+  "webhookSubscription": {
+    "callbackUrl": "https://unhook.sh/wh_YOUR_ID",
+    "format": "JSON"
+  }
+}
+```
+
+### Method 3: Using Shopify CLI (Development)
+
+```bash
+# Install Shopify CLI
+npm install -g @shopify/cli
+
+# Create webhook
+shopify webhook create \
+  --topic=orders/create \
+  --address=https://unhook.sh/wh_YOUR_ID
+```
+
+## Webhook Topics
+
+### Order Events
+- `orders/create` - New order placed
+- `orders/updated` - Order modified
+- `orders/paid` - Order payment received
+- `orders/cancelled` - Order cancelled
+- `orders/fulfilled` - Order shipped
+- `orders/partially_fulfilled` - Partial shipment
+- `refunds/create` - Refund issued
+- `transactions/create` - Payment transaction
+
+### Product Events
+- `products/create` - Product added
+- `products/update` - Product modified
+- `products/delete` - Product removed
+- `inventory_levels/update` - Stock level changed
+- `inventory_items/create` - Inventory item added
+- `inventory_items/update` - Inventory item modified
+- `inventory_items/delete` - Inventory item removed
+
+### Customer Events
+- `customers/create` - New customer registered
+- `customers/update` - Customer profile updated
+- `customers/delete` - Customer deleted
+- `customers/enable` - Customer account activated
+- `customers/disable` - Customer account deactivated
+
+### Collection Events
+- `collections/create` - Collection created
+- `collections/update` - Collection modified
+- `collections/delete` - Collection removed
+- `collection_listings/add` - Product added to collection
+- `collection_listings/remove` - Product removed from collection
+
+### Cart & Checkout Events
+- `carts/create` - Cart created
+- `carts/update` - Cart modified
+- `checkouts/create` - Checkout started
+- `checkouts/update` - Checkout updated
+- `checkouts/delete` - Checkout abandoned
+
+### App Events
+- `app/uninstalled` - App uninstalled
+- `shop/update` - Shop settings changed
+- `themes/publish` - Theme published
+- `themes/update` - Theme modified
+
+## Event Payload Examples
+
+### Order Created
+```json
+{
+  "id": 820982911946154508,
+  "admin_graphql_api_id": "gid://shopify/Order/820982911946154508",
+  "app_id": null,
+  "browser_ip": "192.168.1.1",
+  "buyer_accepts_marketing": true,
+  "cancel_reason": null,
+  "cancelled_at": null,
+  "cart_token": "68778783ad298f1c80c3bafcddeea02f",
+  "checkout_id": 901414060,
+  "checkout_token": "bd5a8aa1ecd019dd3520ff791ee3a24c",
+  "confirmed": true,
+  "created_at": "2023-11-20T12:00:00-05:00",
+  "currency": "USD",
+  "current_subtotal_price": "100.00",
+  "current_total_price": "110.00",
+  "customer": {
+    "id": 115310627314723954,
+    "email": "customer@example.com",
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "email": "customer@example.com",
+  "financial_status": "paid",
+  "fulfillment_status": null,
+  "line_items": [
+    {
+      "id": 866550311766439020,
+      "variant_id": 808950810,
+      "title": "Example Product",
+      "quantity": 1,
+      "sku": "EXAMPLE-001",
+      "variant_title": "Medium",
+      "vendor": "Example Vendor",
+      "fulfillment_service": "manual",
+      "product_id": 632910392,
+      "price": "100.00",
+      "price_set": {
+        "shop_money": {
+          "amount": "100.00",
+          "currency_code": "USD"
+        }
+      }
+    }
+  ],
+  "name": "#1001",
+  "number": 1,
+  "order_number": 1001,
+  "payment_gateway_names": ["stripe"],
+  "processed_at": "2023-11-20T12:00:00-05:00",
+  "shipping_address": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "address1": "123 Main St",
+    "city": "New York",
+    "province": "New York",
+    "country": "United States",
+    "zip": "10001"
+  },
+  "total_price": "110.00",
+  "total_tax": "10.00"
+}
+```
+
+### Product Updated
+```json
+{
+  "id": 788032119674292922,
+  "title": "Example T-Shirt",
+  "body_html": "<p>Comfortable cotton t-shirt</p>",
+  "vendor": "Example Vendor",
+  "product_type": "Shirts",
+  "created_at": "2023-11-01T12:00:00-05:00",
+  "handle": "example-t-shirt",
+  "updated_at": "2023-11-20T14:30:00-05:00",
+  "published_at": "2023-11-01T12:00:00-05:00",
+  "status": "active",
+  "tags": "cotton, summer, casual",
+  "variants": [
+    {
+      "id": 808950810,
+      "product_id": 788032119674292922,
+      "title": "Small",
+      "price": "19.99",
+      "sku": "TSHIRT-S",
+      "inventory_quantity": 100,
+      "old_inventory_quantity": 95
+    }
+  ],
+  "options": [
+    {
+      "id": 594680422,
+      "product_id": 788032119674292922,
+      "name": "Size",
+      "position": 1,
+      "values": ["Small", "Medium", "Large"]
+    }
+  ],
+  "images": [
+    {
+      "id": 850703190,
+      "product_id": 788032119674292922,
+      "src": "https://cdn.shopify.com/s/files/1/0001/0001/products/example.jpg"
+    }
+  ]
+}
+```
+
+### Customer Created
+```json
+{
+  "id": 706405506930370084,
+  "email": "customer@example.com",
+  "accepts_marketing": true,
+  "created_at": "2023-11-20T15:00:00-05:00",
+  "updated_at": "2023-11-20T15:00:00-05:00",
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "phone": "+1-555-123-4567",
+  "verified_email": true,
+  "addresses": [
+    {
+      "id": 1053317181,
+      "customer_id": 706405506930370084,
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "address1": "456 Oak St",
+      "city": "Los Angeles",
+      "province": "California",
+      "country": "United States",
+      "zip": "90001",
+      "default": true
+    }
+  ],
+  "tags": "VIP, newsletter",
+  "note": "Preferred customer",
+  "state": "enabled",
+  "total_spent": "0.00",
+  "orders_count": 0
+}
+```
+
+## Webhook Verification
+
+### Verify HMAC Signature
+
+Shopify signs all webhooks. Always verify:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyShopifyWebhook(data, hmacHeader) {
+  const hash = crypto
+    .createHmac('sha256', process.env.SHOPIFY_WEBHOOK_SECRET)
+    .update(data, 'utf8')
+    .digest('base64');
+
+  return hash === hmacHeader;
+}
+
+// Express middleware
+app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
+  const hmac = req.get('X-Shopify-Hmac-Sha256');
+
+  if (!verifyShopifyWebhook(req.body, hmac)) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const topic = req.get('X-Shopify-Topic');
+  const shop = req.get('X-Shopify-Shop-Domain');
+
+  const data = JSON.parse(req.body);
+
+  // Process webhook based on topic
+  console.log(`Webhook from ${shop}: ${topic}`);
+
+  res.status(200).send('OK');
+});
+```
+
+### Additional Headers
+
+Shopify includes useful headers:
+- `X-Shopify-Topic` - Event type (e.g., 'orders/create')
+- `X-Shopify-Shop-Domain` - Shop domain
+- `X-Shopify-API-Version` - API version used
+- `X-Shopify-Webhook-Id` - Unique webhook ID
+
+## Best Practices
+
+### 1. Idempotent Processing
+Handle duplicate webhooks:
+
+```javascript
+const processedWebhooks = new Set();
+
+async function processWebhook(webhookId, data) {
+  if (processedWebhooks.has(webhookId)) {
+    console.log(`Webhook ${webhookId} already processed`);
+    return;
+  }
+
+  processedWebhooks.add(webhookId);
+
+  // Process the webhook
+  await handleWebhookData(data);
+}
+```
+
+### 2. Quick Response
+Respond within 5 seconds:
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  // Verify webhook (as shown above)
+
+  // Respond immediately
+  res.status(200).send('OK');
+
+  // Process asynchronously
+  setImmediate(async () => {
+    try {
+      await processWebhookAsync(req.body, req.headers);
+    } catch (error) {
+      console.error('Webhook processing error:', error);
+      // Implement retry logic if needed
+    }
+  });
+});
+```
+
+### 3. Mandatory Webhooks
+For public apps, implement mandatory webhooks:
+
+```javascript
+// GDPR mandatory webhooks
+const mandatoryWebhooks = [
+  { topic: 'customers/redact', path: '/webhooks/customers/redact' },
+  { topic: 'shop/redact', path: '/webhooks/shop/redact' },
+  { topic: 'customers/data_request', path: '/webhooks/customers/data_request' }
+];
+
+// Register during app installation
+async function registerMandatoryWebhooks(shop, accessToken) {
+  for (const webhook of mandatoryWebhooks) {
+    await createWebhook(shop, accessToken, webhook);
+  }
+}
+```
+
+### 4. Error Handling
+Implement robust error handling:
+
+```javascript
+async function handleWebhook(topic, data) {
+  try {
+    switch (topic) {
+      case 'orders/create':
+        await handleNewOrder(data);
+        break;
+      case 'products/update':
+        await handleProductUpdate(data);
+        break;
+      default:
+        console.log(`Unhandled webhook topic: ${topic}`);
+    }
+  } catch (error) {
+    console.error(`Error processing ${topic}:`, error);
+
+    // Log to monitoring service
+    await logError({
+      type: 'webhook_processing_error',
+      topic,
+      error: error.message,
+      data
+    });
+
+    // Implement retry if appropriate
+    if (shouldRetry(error)) {
+      await queueForRetry(topic, data);
+    }
+  }
+}
+```
+
+## Testing Webhooks
+
+### Create Test Notifications
+
+```bash
+# Using Shopify CLI
+shopify webhook trigger --topic=orders/create
+
+# Using API
+curl -X POST https://{shop}.myshopify.com/admin/api/2024-01/webhooks/{webhook_id}/notifications.json \
+  -H "X-Shopify-Access-Token: {access_token}" \
+  -H "Content-Type: application/json"
+```
+
+### Development Testing
+
+Use ngrok or similar for local testing:
+
+```bash
+# Start local server
+npm run dev
+
+# In another terminal
+ngrok http 3000
+
+# Use ngrok URL for webhook address
+```
+
+## Common Issues
+
+### Webhook Not Received
+- Verify webhook is registered correctly
+- Check webhook notification history in admin
+- Ensure Unhook tunnel is active
+- Verify HMAC secret is correct
+
+### Verification Failures
+- Use raw request body for HMAC calculation
+- Ensure webhook secret matches
+- Check for middleware modifying body
+
+### Missing Topics
+- Some topics require specific API access scopes
+- Check app permissions
+- Verify API version compatibility
+
+### Rate Limits
+- Shopify limits webhook creation (4 per second)
+- Maximum 1000 webhooks per app
+- Consider batching operations
+
+## Environment Variables
+
+```bash
+# Shopify App Credentials
+SHOPIFY_API_KEY=your_api_key
+SHOPIFY_API_SECRET=your_api_secret
+SHOPIFY_WEBHOOK_SECRET=your_webhook_secret
+
+# Shop Details
+SHOPIFY_SHOP_DOMAIN=yourstore.myshopify.com
+SHOPIFY_ACCESS_TOKEN=shpat_xxxxxxxxxxxxx
+
+# App URL (for OAuth)
+SHOPIFY_APP_URL=https://yourapp.com
+```
+
+## Useful Links
+
+- **Shopify Admin**: [admin.shopify.com](https://admin.shopify.com)
+- **Webhook Documentation**: [shopify.dev/docs/apps/webhooks](https://shopify.dev/docs/apps/webhooks)
+- **Webhook Topics Reference**: [shopify.dev/docs/api/admin-rest/2024-01/resources/webhook#event-topics](https://shopify.dev/docs/api/admin-rest/2024-01/resources/webhook#event-topics)
+- **Partner Dashboard**: [partners.shopify.com](https://partners.shopify.com)
+- **Shopify CLI**: [shopify.dev/docs/apps/tools/cli](https://shopify.dev/docs/apps/tools/cli)
+- **API Reference**: [shopify.dev/docs/api](https://shopify.dev/docs/api)
+
+## Support
+
+Need help with Shopify webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Visit [Shopify Community](https://community.shopify.com)
+- Check [Shopify Help Center](https://help.shopify.com)
+- Email us at support@unhook.sh

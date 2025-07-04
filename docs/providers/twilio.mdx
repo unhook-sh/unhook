@@ -1,0 +1,395 @@
+---
+title: 'Twilio Webhooks'
+description: 'Integrate Twilio SMS, voice, and communication webhooks with Unhook'
+---
+
+# Twilio Webhook Integration
+
+Twilio webhooks enable real-time notifications for SMS messages, voice calls, WhatsApp messages, and other communication events. Configure webhooks to receive updates about message delivery, call status, and user interactions.
+
+## Quick Start
+
+1. **Get your Unhook URL**: `https://unhook.sh/wh_YOUR_ID`
+2. **Configure in Twilio Console**: [console.twilio.com](https://console.twilio.com)
+3. **Start receiving events locally**: `unhook listen`
+
+## Configuration Steps
+
+### 1. Access Twilio Console
+
+Navigate to the Twilio Console:
+- **Direct Link**: [console.twilio.com](https://console.twilio.com)
+- Sign in with your Twilio account
+
+### 2. Configure Webhooks by Service
+
+Twilio webhooks are configured per service and resource:
+
+#### SMS/MMS Webhooks
+
+1. Navigate to **Phone Numbers** → **Manage** → **Active Numbers**
+2. Click on the phone number you want to configure
+3. In the **Messaging** section:
+   - **Webhook URL for incoming messages**:
+     ```
+     https://unhook.sh/wh_YOUR_ID?type=sms
+     ```
+   - **Status callback URL**:
+     ```
+     https://unhook.sh/wh_YOUR_ID?type=sms-status
+     ```
+4. Select **HTTP POST** as the method
+5. Click **Save**
+
+#### Voice Call Webhooks
+
+1. In the same phone number configuration
+2. In the **Voice & Fax** section:
+   - **Webhook URL for incoming calls**:
+     ```
+     https://unhook.sh/wh_YOUR_ID?type=voice
+     ```
+   - **Status callback URL**:
+     ```
+     https://unhook.sh/wh_YOUR_ID?type=call-status
+     ```
+3. Select **HTTP POST** as the method
+4. Click **Save**
+
+#### WhatsApp Webhooks
+
+1. Navigate to **Messaging** → **Services**
+2. Select your WhatsApp sender
+3. Configure webhooks:
+   - **Incoming Message URL**:
+     ```
+     https://unhook.sh/wh_YOUR_ID?type=whatsapp
+     ```
+   - **Status Callback URL**:
+     ```
+     https://unhook.sh/wh_YOUR_ID?type=whatsapp-status
+     ```
+
+#### Programmable Voice (SIP)
+
+1. Navigate to **Voice** → **Manage** → **SIP Domains**
+2. Click on your SIP domain
+3. Set the **Voice URL**:
+   ```
+   https://unhook.sh/wh_YOUR_ID?type=sip
+   ```
+
+### 3. Event Types
+
+#### SMS/MMS Events
+
+**Incoming Message Parameters**:
+- `MessageSid` - Unique message identifier
+- `From` - Sender's phone number
+- `To` - Recipient's phone number
+- `Body` - Message content
+- `NumMedia` - Number of media attachments
+- `MediaUrl{N}` - URLs for media attachments
+- `FromCity`, `FromState`, `FromCountry` - Sender location
+
+**Status Callback Events**:
+- `sent` - Message sent to carrier
+- `delivered` - Message delivered to device
+- `undelivered` - Message failed to deliver
+- `failed` - Message could not be sent
+- `receiving` - Inbound message received
+- `received` - Inbound message processed
+
+#### Voice Call Events
+
+**Incoming Call Parameters**:
+- `CallSid` - Unique call identifier
+- `From` - Caller's phone number
+- `To` - Called phone number
+- `CallStatus` - Current call status
+- `Direction` - inbound/outbound-api/outbound-dial
+- `CallerName` - Caller ID name (if available)
+
+**Call Status Events**:
+- `initiated` - Call started
+- `ringing` - Phone is ringing
+- `answered` - Call answered
+- `completed` - Call ended
+- `busy` - Busy signal
+- `failed` - Call failed
+- `no-answer` - No answer
+
+#### WhatsApp Events
+
+Similar to SMS with additional parameters:
+- `ProfileName` - WhatsApp profile name
+- `WaId` - WhatsApp ID
+- `ButtonText` - Text of button pressed (interactive messages)
+- `ButtonPayload` - Payload of button pressed
+
+## Testing Webhooks
+
+### Using Twilio Test Credentials
+
+1. Find test credentials in Console → **Account** → **API keys & tokens**
+2. Use test phone numbers:
+   - `PHONE_NUMBER` - Valid number for testing
+   - `PHONE_NUMBER` - Invalid number (triggers error)
+
+### Send Test Messages
+
+```bash
+# Send test SMS using Twilio CLI
+twilio api:core:messages:create \
+  --from "PHONE_NUMBER" \
+  --to "PHONE_NUMBER" \
+  --body "Test message"
+
+# Make test call
+twilio api:core:calls:create \
+  --from "PHONE_NUMBER" \
+  --to "PHONE_NUMBER" \
+  --url "http://demo.twilio.com/docs/voice.xml"
+```
+
+## Request Examples
+
+### Incoming SMS
+```json
+{
+  "MessageSid": "MESSAGE_SID",
+  "AccountSid": "ACCOUNT_SID",
+  "MessagingServiceSid": "MESSAGING_SERVICE_SID",
+  "From": "PHONE_NUMBER",
+  "To": "PHONE_NUMBER",
+  "Body": "Hello from Twilio!",
+  "NumMedia": "0",
+  "FromCity": "SAN FRANCISCO",
+  "FromState": "CA",
+  "FromCountry": "US",
+  "FromZip": "94105",
+  "ToCity": "NEW YORK",
+  "ToState": "NY",
+  "ToCountry": "US",
+  "ToZip": "10001"
+}
+```
+
+### SMS Status Callback
+```json
+{
+  "MessageSid": "MESSAGE_SID",
+  "MessageStatus": "delivered",
+  "To": "PHONE_NUMBER",
+  "From": "PHONE_NUMBER",
+  "ApiVersion": "2010-04-01",
+  "AccountSid": "ACCOUNT_SID",
+  "ErrorCode": null,
+  "ErrorMessage": null
+}
+```
+
+### Incoming Voice Call
+```json
+{
+  "CallSid": "CALL_SID",
+  "AccountSid": "ACCOUNT_SID",
+  "From": "PHONE_NUMBER",
+  "To": "PHONE_NUMBER",
+  "CallStatus": "ringing",
+  "Direction": "inbound",
+  "CallerName": "John Doe",
+  "FromCity": "SAN FRANCISCO",
+  "FromState": "CA",
+  "FromCountry": "US",
+  "FromZip": "94105"
+}
+```
+
+## Webhook Security
+
+### Validate Requests with X-Twilio-Signature
+
+Twilio signs all webhook requests. Verify them:
+
+```javascript
+const twilio = require('twilio');
+
+function validateTwilioWebhook(req, res, next) {
+  const twilioSignature = req.headers['x-twilio-signature'];
+  const url = `https://unhook.sh${req.originalUrl}`;
+  const params = req.body;
+
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+  const isValid = twilio.validateRequest(
+    authToken,
+    twilioSignature,
+    url,
+    params
+  );
+
+  if (!isValid) {
+    return res.status(403).send('Forbidden');
+  }
+
+  next();
+}
+```
+
+### IP Allowlisting (Optional)
+
+For additional security, allowlist Twilio's IP ranges:
+- North America: `54.172.60.0/23`
+- Europe: `54.171.127.192/26`
+- Australia: `54.65.63.192/26`
+- Full list: [twilio.com/docs/sip/ip-addresses](https://www.twilio.com/docs/sip/ip-addresses)
+
+## Response Format
+
+### TwiML Responses
+
+For voice and messaging webhooks, respond with TwiML:
+
+```xml
+<!-- SMS Auto-reply -->
+<Response>
+  <Message>Thanks for your message!</Message>
+</Response>
+
+<!-- Voice Response -->
+<Response>
+  <Say>Hello! Thanks for calling.</Say>
+  <Play>https://example.com/hold-music.mp3</Play>
+</Response>
+```
+
+### Status Callbacks
+
+For status callbacks, return HTTP 200 OK:
+
+```javascript
+app.post('/webhook/status', (req, res) => {
+  // Process the status update
+  console.log(`Message ${req.body.MessageSid} status: ${req.body.MessageStatus}`);
+
+  // Acknowledge receipt
+  res.status(200).send('OK');
+});
+```
+
+## Best Practices
+
+### 1. Handle Retries
+Twilio retries failed webhooks with exponential backoff:
+
+```javascript
+const processedEvents = new Map();
+
+function handleWebhook(req, res) {
+  const eventId = req.body.MessageSid || req.body.CallSid;
+
+  if (processedEvents.has(eventId)) {
+    console.log(`Event ${eventId} already processed`);
+    return res.status(200).send('OK');
+  }
+
+  processedEvents.set(eventId, Date.now());
+  // Process the webhook...
+}
+```
+
+### 2. Respond Quickly
+Twilio expects a response within 15 seconds:
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  // Send response immediately
+  res.status(200).send('<Response></Response>');
+
+  // Process asynchronously
+  setImmediate(() => {
+    processWebhookAsync(req.body);
+  });
+});
+```
+
+### 3. Error Handling
+Implement proper error handling:
+
+```javascript
+app.post('/webhook', (req, res) => {
+  try {
+    // Process webhook
+    const response = processIncomingMessage(req.body);
+    res.type('text/xml').send(response);
+  } catch (error) {
+    console.error('Webhook error:', error);
+    // Return empty TwiML to prevent Twilio errors
+    res.type('text/xml').send('<Response></Response>');
+  }
+});
+```
+
+### 4. Use Appropriate Status Codes
+- `200 OK` - Successfully processed
+- `204 No Content` - Acknowledged, no response needed
+- `400 Bad Request` - Invalid request
+- `403 Forbidden` - Failed authentication
+
+## Common Issues
+
+### Webhook URL Not Reachable
+- Ensure your Unhook tunnel is running
+- Check the URL format is correct
+- Verify no typos in the webhook ID
+
+### Signature Validation Failing
+- Use the exact URL configured in Twilio
+- Include query parameters in validation
+- Ensure auth token is correct
+
+### Missing Parameters
+- Different event types have different parameters
+- Use optional chaining for safety:
+  ```javascript
+  const from = req.body?.From || 'Unknown';
+  ```
+
+### Timeout Errors
+- Respond within 15 seconds
+- Process heavy operations asynchronously
+- Return minimal TwiML if needed
+
+## Environment Variables
+
+```bash
+# Twilio Account Credentials
+TWILIO_ACCOUNT_SID=SID
+TWILIO_AUTH_TOKEN=TOKEN
+
+# Phone Numbers
+TWILIO_PHONE_NUMBER=PHONE_NUMBER
+TWILIO_WHATSAPP_NUMBER=whatsapp:PHONE_NUMBER
+
+# Optional
+TWILIO_MESSAGING_SERVICE_SID=SID
+TWILIO_API_KEY=KEY
+TWILIO_API_SECRET=SECRET
+```
+
+## Useful Links
+
+- **Twilio Console**: [console.twilio.com](https://console.twilio.com)
+- **Webhook Documentation**: [twilio.com/docs/usage/webhooks](https://www.twilio.com/docs/usage/webhooks)
+- **TwiML Reference**: [twilio.com/docs/voice/twiml](https://www.twilio.com/docs/voice/twiml)
+- **Security Best Practices**: [twilio.com/docs/usage/security](https://www.twilio.com/docs/usage/security)
+- **Status Callback Events**: [twilio.com/docs/sms/api/message-resource#message-status-values](https://www.twilio.com/docs/sms/api/message-resource#message-status-values)
+- **Test Credentials**: [twilio.com/docs/iam/test-credentials](https://www.twilio.com/docs/iam/test-credentials)
+
+## Support
+
+Need help with Twilio webhooks?
+- Join our [Discord community](https://discord.gg/unhook)
+- Visit [Twilio Support](https://support.twilio.com)
+- Email us at support@unhook.sh

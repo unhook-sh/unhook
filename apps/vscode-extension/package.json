@@ -271,11 +271,11 @@
   "scripts": {
     "build": "bun run typecheck && bun run build:webview && NODE_ENV=production tsup",
     "build:base": "tsup",
-    "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup --dev",
+    "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup",
     "build:webview": "vite build",
     "clean": "rm -rf .turbo node_modules dist *.vsix",
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
-    "dev:extension": "NODE_ENV=development tsup --dev --watch",
+    "dev:extension": "NODE_ENV=development tsup --watch",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
     "package": "bun run prepare && bun run build && bun run package:vsix",
     "package:vsix": "bunx vsce package",

@@ -10,7 +10,9 @@
       "Bash(node:*)",
       "Bash(cp:*)",
       "Bash(bun:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }

@@ -25,40 +25,6 @@ export class RequestDetailsWebviewProvider {
     // In development mode, set up file watching
     if (process.env.NODE_ENV === 'development') {
       this._devServerUrl = 'http://localhost:5173';
-
-      // Set up file watcher for the webview directory
-      const webviewPath = vscode.Uri.joinPath(
-        this._extensionUri,
-        'src',
-        'request-details-webview',
-      );
-
-      const watcher = vscode.workspace.createFileSystemWatcher(
-        new vscode.RelativePattern(webviewPath, '**/*'),
-        false,
-        false,
-        false,
-      );
-      if (this._panel) {
-        const newHtml = this.getHtmlForWebview(this._panel.webview);
-        if (newHtml !== this._lastHtml) {
-          this._lastHtml = newHtml;
-          this._panel.webview.html = newHtml;
-        }
-      }
-
-      this._disposables.push(
-        watcher.onDidChange(() => {
-          if (this._panel) {
-            // Update the HTML content
-            const newHtml = this.getHtmlForWebview(this._panel.webview);
-            if (newHtml !== this._lastHtml) {
-              this._lastHtml = newHtml;
-              this._panel.webview.html = newHtml;
-            }
-          }
-        }),
-      );
     }
   }
 
@@ -153,7 +119,44 @@ export class RequestDetailsWebviewProvider {
 
   private getHtmlForWebview(webview: vscode.Webview): string {
     log('Getting HTML for webview');
-    // In both development and production, use the built files
+
+    // In development mode, load from Vite dev server
+    if (process.env.NODE_ENV === 'development' && this._devServerUrl) {
+      log('Using development mode with Vite dev server');
+
+      // Create a simple HTML that loads from the Vite dev server
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; 
+    img-src ${webview.cspSource} https: http://localhost:5173; 
+    script-src 'unsafe-inline' 'unsafe-eval' ${webview.cspSource} http://localhost:5173; 
+    style-src 'unsafe-inline' ${webview.cspSource} http://localhost:5173; 
+    connect-src ${webview.cspSource} http://localhost:5173 ws://localhost:5173;
+    font-src ${webview.cspSource} http://localhost:5173;">
+  <title>Unhook</title>
+  <base href="/">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import RefreshRuntime from 'http://localhost:5173/@react-refresh'
+    RefreshRuntime.injectIntoGlobalHook(window)
+    window.$RefreshReg$ = () => {}
+    window.$RefreshSig$ = () => (type) => type
+    window.__vite_plugin_react_preamble_installed__ = true
+  </script>
+  <script type="module" src="http://localhost:5173/@vite/client"></script>
+  <script type="module" src="http://localhost:5173/main.tsx"></script>
+</body>
+</html>`;
+
+      return html;
+    }
+
+    // In production, use the built files
     const htmlPath = join(
       this._extensionUri.path,
       'dist',

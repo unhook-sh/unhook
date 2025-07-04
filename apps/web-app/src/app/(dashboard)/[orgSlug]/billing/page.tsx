@@ -19,15 +19,10 @@ import {
 } from './actions';
 
 interface BillingPageProps {
-  params: Promise<{ orgSlug: string }>;
   searchParams: Promise<{ success?: string; canceled?: string }>;
 }
 
-export default async function BillingPage({
-  params,
-  searchParams,
-}: BillingPageProps) {
-  const { orgSlug } = await params;
+export default async function BillingPage({ searchParams }: BillingPageProps) {
   const { success, canceled } = await searchParams;
   const { orgId } = await auth();
 

@@ -253,9 +253,11 @@
   },
   "dependencies": {
     "@unhook/client": "0.4.6",
+    "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "tailwind-merge": "3.3.1",
     "ws": "8.18.2"
   },
   "vsce": {
@@ -264,6 +266,7 @@
   },
   "description": "Webhook Development",
   "devDependencies": {
+    "@tailwindcss/postcss": "4.1.10",
     "@types/bun": "1.2.17",
     "@types/glob": "8.1.0",
     "@types/node": "24.0.3",
@@ -279,6 +282,8 @@
     "globals": "16.2.0",
     "mocha": "11.7.0",
     "ovsx": "0.10.4",
+    "postcss": "8.4.49",
+    "tailwindcss": "4.1.10",
     "tsup": "8.5.0",
     "typescript": "5.8.3",
     "vite": "6.3.5"

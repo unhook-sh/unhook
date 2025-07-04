@@ -9,7 +9,11 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": ["Debuggers", "Testing", "Other"],
+  "categories": [
+    "Debuggers",
+    "Testing",
+    "Other"
+  ],
   "contributes": {
     "authentication": [
       {
@@ -221,16 +225,27 @@
     "languages": [
       {
         "id": "unhook-yaml",
-        "aliases": ["Unhook YAML", "unhook-yaml"],
+        "aliases": [
+          "Unhook YAML",
+          "unhook-yaml"
+        ],
         "extensions": [],
-        "filenames": ["unhook.yaml", "unhook.yml"],
+        "filenames": [
+          "unhook.yaml",
+          "unhook.yml"
+        ],
         "configuration": "./language-configuration.json"
       },
       {
         "id": "unhook-json",
-        "aliases": ["Unhook JSON", "unhook-json"],
+        "aliases": [
+          "Unhook JSON",
+          "unhook-json"
+        ],
         "extensions": [],
-        "filenames": ["unhook.json"],
+        "filenames": [
+          "unhook.json"
+        ],
         "configuration": "./language-configuration.json"
       }
     ]
@@ -273,7 +288,12 @@
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "icon": "logo.png",
-  "keywords": ["webhook", "development", "testing", "debugging"],
+  "keywords": [
+    "webhook",
+    "development",
+    "testing",
+    "debugging"
+  ],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,

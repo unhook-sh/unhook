@@ -1,15 +1,22 @@
-import { ComparisonHero } from '../_components/sections/comparison-hero';
-import { ComparisonFeatures } from '../_components/sections/comparison-features';
-import { ComparisonPricing } from '../_components/sections/comparison-pricing';
 import { ComparisonCTA } from '../_components/sections/comparison-cta';
+import { ComparisonFeatures } from '../_components/sections/comparison-features';
+import { ComparisonHero } from '../_components/sections/comparison-hero';
+import { ComparisonPricing } from '../_components/sections/comparison-pricing';
 import { FooterSection } from '../_components/sections/footer-section';
 import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
   title: 'Unhook vs Beeceptor: Better Webhook Testing for Teams | Unhook',
-  description: 'Compare Unhook and Beeceptor for webhook testing. See why teams choose Unhook for better collaboration, VS Code integration, and team-focused features.',
-  keywords: ['Unhook vs Beeceptor', 'Beeceptor alternative', 'webhook testing', 'API mocking', 'team collaboration'],
+  description:
+    'Compare Unhook and Beeceptor for webhook testing. See why teams choose Unhook for better collaboration, VS Code integration, and team-focused features.',
+  keywords: [
+    'Unhook vs Beeceptor',
+    'Beeceptor alternative',
+    'webhook testing',
+    'API mocking',
+    'team collaboration',
+  ],
 };
 
 const beeceptorComparison = {
@@ -17,7 +24,8 @@ const beeceptorComparison = {
   hero: {
     title: 'Unhook vs Beeceptor',
     subtitle: 'Focused Webhook Testing vs General API Tools',
-    description: 'While Beeceptor offers general API mocking and testing, Unhook is laser-focused on webhook development with team collaboration and VS Code integration.',
+    description:
+      'While Beeceptor offers general API mocking and testing, Unhook is laser-focused on webhook development with team collaboration and VS Code integration.',
     competitorLogo: (
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
@@ -213,22 +221,26 @@ const beeceptorComparison = {
   reasons: [
     {
       title: 'Webhook-Focused',
-      description: 'Unlike Beeceptor\'s general API approach, Unhook is specifically designed for webhook development with purpose-built features.',
+      description:
+        "Unlike Beeceptor's general API approach, Unhook is specifically designed for webhook development with purpose-built features.",
       icon: '🎯',
     },
     {
       title: 'Team Collaboration',
-      description: 'One shared webhook URL for your entire team with a config file that lives in your repo. No more manual URL sharing or setup for new team members.',
+      description:
+        'One shared webhook URL for your entire team with a config file that lives in your repo. No more manual URL sharing or setup for new team members.',
       icon: '👥',
     },
     {
       title: 'Editor Integration',
-      description: 'Debug webhooks directly in VS Code without switching to a web interface. Stay in your development flow.',
+      description:
+        'Debug webhooks directly in VS Code without switching to a web interface. Stay in your development flow.',
       icon: '💻',
     },
     {
       title: 'Better Value',
-      description: 'More webhook-specific features at a better price point. Our team plan costs less than Beeceptor\'s professional plan.',
+      description:
+        "More webhook-specific features at a better price point. Our team plan costs less than Beeceptor's professional plan.",
       icon: '💰',
     },
   ],
@@ -242,8 +254,11 @@ export default function UnhookVsBeeceptorPage() {
       <Navbar navs={siteConfig.nav.links} />
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...beeceptorComparison.hero} />
-        <ComparisonFeatures features={beeceptorComparison.features} competitor="Beeceptor" />
-        <ComparisonPricing 
+        <ComparisonFeatures
+          features={beeceptorComparison.features}
+          competitor="Beeceptor"
+        />
+        <ComparisonPricing
           unhookPricing={beeceptorComparison.pricing.unhook}
           competitorPricing={beeceptorComparison.pricing.competitor}
           competitor="Beeceptor"
@@ -255,12 +270,16 @@ export default function UnhookVsBeeceptorPage() {
                 Why Choose Webhook-Focused Tools Over General API Tools
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                See why teams are choosing specialized webhook tools over general-purpose API testing platforms.
+                See why teams are choosing specialized webhook tools over
+                general-purpose API testing platforms.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
-              {beeceptorComparison.reasons.map((reason, index) => (
-                <div key={index} className="bg-card border rounded-lg p-6">
+              {beeceptorComparison.reasons.map((reason) => (
+                <div
+                  key={reason.title}
+                  className="bg-card border rounded-lg p-6"
+                >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>
                   <p className="text-muted-foreground">{reason.description}</p>
@@ -269,7 +288,7 @@ export default function UnhookVsBeeceptorPage() {
             </div>
           </div>
         </section>
-        <ComparisonCTA 
+        <ComparisonCTA
           competitor="Beeceptor"
           ctaText="Switch to Webhook-Focused Tools"
           description="Join teams who've moved from general API tools to specialized webhook development platforms."

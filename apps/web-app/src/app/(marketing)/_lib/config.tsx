@@ -2,7 +2,6 @@ import { cn } from '@unhook/ui/lib/utils';
 import { FlickeringGrid } from '@unhook/ui/magicui/flickering-grid';
 import { Globe } from '@unhook/ui/magicui/globe';
 import { motion } from 'motion/react';
-import { FirstBentoAnimation } from '~/app/(marketing)/_components/first-bento-animation';
 import { FourthBentoAnimation } from '~/app/(marketing)/_components/fourth-bento-animation';
 import { SecondBentoAnimation } from '~/app/(marketing)/_components/second-bento-animation';
 import { ThirdBentoAnimation } from '~/app/(marketing)/_components/third-bento-animation';
@@ -283,7 +282,9 @@ export const siteConfig = {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 className="text-primary"
+                aria-label="Team collaboration shield"
               >
+                <title>Team collaboration shield</title>
                 <path d="M12 2L2 7v10c0 5.55 3.84 9.05 9 10 5.16-.95 9-4.45 9-10V7l-10-5z" />
                 <path d="M9 12l2 2 4-4" />
               </svg>

@@ -9,7 +9,11 @@ interface ComparisonCTAProps {
   description: string;
 }
 
-export function ComparisonCTA({ competitor, ctaText, description }: ComparisonCTAProps) {
+export function ComparisonCTA({
+  competitor: _competitor,
+  ctaText,
+  description,
+}: ComparisonCTAProps) {
   return (
     <section className="w-full py-20">
       <div className="container mx-auto px-6">

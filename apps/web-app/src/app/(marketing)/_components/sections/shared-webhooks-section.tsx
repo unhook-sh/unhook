@@ -3,8 +3,8 @@
 import { Badge } from '@unhook/ui/components/badge';
 import { Button } from '@unhook/ui/components/button';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
-import { motion } from 'motion/react';
 import { Copy, FileText, Share2, Users } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export function SharedWebhooksSection() {
   return (
@@ -18,7 +18,8 @@ export function SharedWebhooksSection() {
             One Webhook URL, Entire Team
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Share the same webhook URL across all services and team members. No more hunting for the right URL or managing individual endpoints.
+            Share the same webhook URL across all services and team members. No
+            more hunting for the right URL or managing individual endpoints.
           </p>
         </div>
 
@@ -30,10 +31,13 @@ export function SharedWebhooksSection() {
                 <Share2 className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Universal Webhook URL</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Universal Webhook URL
+                </h3>
                 <p className="text-muted-foreground">
-                  Use the same webhook URL across Stripe, GitHub, Clerk, and all your services. 
-                  One URL that routes to the right developer automatically.
+                  Use the same webhook URL across Stripe, GitHub, Clerk, and all
+                  your services. One URL that routes to the right developer
+                  automatically.
                 </p>
               </div>
             </div>
@@ -43,10 +47,13 @@ export function SharedWebhooksSection() {
                 <FileText className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Config File in Your Repo</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Config File in Your Repo
+                </h3>
                 <p className="text-muted-foreground">
-                  Check in your webhook configuration with your code. New team members get 
-                  instant access without manual setup or URL sharing.
+                  Check in your webhook configuration with your code. New team
+                  members get instant access without manual setup or URL
+                  sharing.
                 </p>
               </div>
             </div>
@@ -56,10 +63,12 @@ export function SharedWebhooksSection() {
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Intelligent Routing</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Intelligent Routing
+                </h3>
                 <p className="text-muted-foreground">
-                  Webhooks automatically route to active developers. No conflicts, 
-                  no confusion - just seamless team collaboration.
+                  Webhooks automatically route to active developers. No
+                  conflicts, no confusion - just seamless team collaboration.
                 </p>
               </div>
             </div>
@@ -79,51 +88,63 @@ export function SharedWebhooksSection() {
               className="relative bg-card border rounded-lg overflow-hidden"
             >
               <BorderBeam size={250} duration={12} delay={9} />
-              
+
               {/* Terminal Header */}
               <div className="bg-muted/50 px-4 py-3 border-b flex items-center gap-2">
                 <div className="flex gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-red-500 rounded-full" />
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+                  <div className="w-3 h-3 bg-green-500 rounded-full" />
                 </div>
-                <span className="text-sm text-muted-foreground ml-2">unhook.config.json</span>
+                <span className="text-sm text-muted-foreground ml-2">
+                  unhook.config.json
+                </span>
               </div>
 
               {/* Config File Content */}
               <div className="p-6 font-mono text-sm">
                 <div className="space-y-2">
-                  <div className="text-muted-foreground">// Shared across your entire team</div>
-                  <div className="text-blue-400">{"{"}</div>
+                  <div className="text-muted-foreground">
+                    {/* Shared across your entire team */}
+                  </div>
+                  <div className="text-blue-400">{'{'}</div>
                   <div className="ml-4">
                     <span className="text-green-400">"webhookUrl"</span>
                     <span className="text-white">: </span>
-                    <span className="text-yellow-400">"https://unhook.sh/wh_abc123"</span>
+                    <span className="text-yellow-400">
+                      "https://unhook.sh/wh_abc123"
+                    </span>
                     <span className="text-white">,</span>
                   </div>
                   <div className="ml-4">
                     <span className="text-green-400">"services"</span>
-                    <span className="text-white">: {</span>
+                    <span className="text-white">: {'{'}</span>
                   </div>
                   <div className="ml-8">
                     <span className="text-green-400">"stripe"</span>
                     <span className="text-white">: </span>
-                    <span className="text-yellow-400">"https://unhook.sh/wh_abc123?from=stripe"</span>
+                    <span className="text-yellow-400">
+                      "https://unhook.sh/wh_abc123?from=stripe"
+                    </span>
                     <span className="text-white">,</span>
                   </div>
                   <div className="ml-8">
                     <span className="text-green-400">"github"</span>
                     <span className="text-white">: </span>
-                    <span className="text-yellow-400">"https://unhook.sh/wh_abc123?from=github"</span>
+                    <span className="text-yellow-400">
+                      "https://unhook.sh/wh_abc123?from=github"
+                    </span>
                     <span className="text-white">,</span>
                   </div>
                   <div className="ml-8">
                     <span className="text-green-400">"clerk"</span>
                     <span className="text-white">: </span>
-                    <span className="text-yellow-400">"https://unhook.sh/wh_abc123?from=clerk"</span>
+                    <span className="text-yellow-400">
+                      "https://unhook.sh/wh_abc123?from=clerk"
+                    </span>
                   </div>
-                  <div className="ml-4 text-white">{"}"}</div>
-                  <div className="text-blue-400">{"}"}</div>
+                  <div className="ml-4 text-white">{'}'}</div>
+                  <div className="text-blue-400">{'}'}</div>
                 </div>
               </div>
 
@@ -139,7 +160,7 @@ export function SharedWebhooksSection() {
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
                   <span className="text-sm font-medium text-green-700 dark:text-green-400">
                     Version Controlled
                   </span>
@@ -151,7 +172,7 @@ export function SharedWebhooksSection() {
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
                   <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                     Zero Setup
                   </span>
@@ -198,7 +219,9 @@ export function SharedWebhooksSection() {
               <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-green-500 mt-1">•</span>
-                  <span>One URL shared across all services and team members</span>
+                  <span>
+                    One URL shared across all services and team members
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-500 mt-1">•</span>

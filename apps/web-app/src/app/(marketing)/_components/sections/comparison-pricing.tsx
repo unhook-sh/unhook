@@ -1,8 +1,8 @@
 'use client';
 
-import { Check } from 'lucide-react';
-import { Button } from '@unhook/ui/components/button';
 import { Badge } from '@unhook/ui/components/badge';
+import { Button } from '@unhook/ui/components/button';
+import { Check } from 'lucide-react';
 
 interface PricingPlan {
   name: string;
@@ -18,7 +18,11 @@ interface ComparisonPricingProps {
   competitor: string;
 }
 
-export function ComparisonPricing({ unhookPricing, competitorPricing, competitor }: ComparisonPricingProps) {
+export function ComparisonPricing({
+  unhookPricing,
+  competitorPricing,
+  competitor,
+}: ComparisonPricingProps) {
   return (
     <section className="w-full py-20">
       <div className="container mx-auto px-6">
@@ -27,7 +31,8 @@ export function ComparisonPricing({ unhookPricing, competitorPricing, competitor
             Pricing Comparison
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Compare pricing plans and get more value with Unhook's team-friendly approach.
+            Compare pricing plans and get more value with Unhook's team-friendly
+            approach.
           </p>
         </div>
 
@@ -36,12 +41,14 @@ export function ComparisonPricing({ unhookPricing, competitorPricing, competitor
           <div>
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-primary mb-2">Unhook</h3>
-              <p className="text-muted-foreground">Built for teams and collaboration</p>
+              <p className="text-muted-foreground">
+                Built for teams and collaboration
+              </p>
             </div>
             <div className="space-y-6">
-              {unhookPricing.map((plan, index) => (
+              {unhookPricing.map((plan) => (
                 <div
-                  key={index}
+                  key={plan.name}
                   className={`bg-card border rounded-lg p-6 relative ${
                     plan.popular ? 'border-primary ring-2 ring-primary/20' : ''
                   }`}
@@ -56,23 +63,29 @@ export function ComparisonPricing({ unhookPricing, competitorPricing, competitor
                     <div className="flex items-baseline gap-1">
                       <span className="text-3xl font-bold">{plan.price}</span>
                       {plan.period !== 'forever' && (
-                        <span className="text-muted-foreground">/{plan.period}</span>
+                        <span className="text-muted-foreground">
+                          /{plan.period}
+                        </span>
                       )}
                     </div>
                   </div>
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3">
                         <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant={plan.popular ? 'default' : 'outline'}
                   >
-                    {plan.price === '$0' ? 'Start Free' : plan.price === 'Custom' ? 'Contact Sales' : 'Start Trial'}
+                    {plan.price === '$0'
+                      ? 'Start Free'
+                      : plan.price === 'Custom'
+                        ? 'Contact Sales'
+                        : 'Start Trial'}
                   </Button>
                 </div>
               ))}
@@ -83,12 +96,14 @@ export function ComparisonPricing({ unhookPricing, competitorPricing, competitor
           <div>
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold mb-2">{competitor}</h3>
-              <p className="text-muted-foreground">Individual-focused pricing</p>
+              <p className="text-muted-foreground">
+                Individual-focused pricing
+              </p>
             </div>
             <div className="space-y-6">
-              {competitorPricing.map((plan, index) => (
+              {competitorPricing.map((plan) => (
                 <div
-                  key={index}
+                  key={plan.name}
                   className="bg-card border rounded-lg p-6 opacity-75"
                 >
                   <div className="flex items-baseline gap-2 mb-4">
@@ -96,15 +111,19 @@ export function ComparisonPricing({ unhookPricing, competitorPricing, competitor
                     <div className="flex items-baseline gap-1">
                       <span className="text-3xl font-bold">{plan.price}</span>
                       {plan.period !== 'forever' && (
-                        <span className="text-muted-foreground">/{plan.period}</span>
+                        <span className="text-muted-foreground">
+                          /{plan.period}
+                        </span>
                       )}
                     </div>
                   </div>
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start gap-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3">
                         <Check className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -119,7 +138,9 @@ export function ComparisonPricing({ unhookPricing, competitorPricing, competitor
 
         <div className="mt-16 text-center">
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Why Unhook Offers Better Value</h3>
+            <h3 className="text-2xl font-bold mb-4">
+              Why Unhook Offers Better Value
+            </h3>
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div>
                 <h4 className="font-semibold mb-2">No Hidden Fees</h4>

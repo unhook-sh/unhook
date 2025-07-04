@@ -1,6 +1,12 @@
 import { Badge } from '@unhook/ui/components/badge';
 import { Button } from '@unhook/ui/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@unhook/ui/components/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@unhook/ui/components/card';
 import { ArrowRight, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { FooterSection } from '../_components/sections/footer-section';
@@ -9,8 +15,15 @@ import { siteConfig } from '../_lib/config';
 
 export const metadata = {
   title: 'Unhook vs Competitors: Webhook Testing Tool Comparisons | Unhook',
-  description: 'Compare Unhook with ngrok, Webhook.site, Beeceptor, Localtunnel and other webhook testing tools. See why teams choose Unhook for better collaboration and VS Code integration.',
-  keywords: ['webhook testing comparison', 'ngrok vs unhook', 'webhook.site alternative', 'beeceptor alternative', 'webhook testing tools'],
+  description:
+    'Compare Unhook with ngrok, Webhook.site, Beeceptor, Localtunnel and other webhook testing tools. See why teams choose Unhook for better collaboration and VS Code integration.',
+  keywords: [
+    'webhook testing comparison',
+    'ngrok vs unhook',
+    'webhook.site alternative',
+    'beeceptor alternative',
+    'webhook testing tools',
+  ],
 };
 
 const competitors = [
@@ -22,14 +35,18 @@ const competitors = [
     pricing: 'From $8/month',
     marketShare: 'High',
     strengths: ['Easy to use', 'Popular', 'Good documentation'],
-    weaknesses: ['Expensive for teams', 'No team features', 'Per-domain pricing'],
+    weaknesses: [
+      'Expensive for teams',
+      'No team features',
+      'Per-domain pricing',
+    ],
     comparison: '/vs-ngrok',
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'VS Code integration',
-      'No per-domain fees'
-    ]
+      'No per-domain fees',
+    ],
   },
   {
     name: 'Webhook.site',
@@ -39,14 +56,18 @@ const competitors = [
     pricing: 'From $7.5/month',
     marketShare: 'Medium',
     strengths: ['Simple interface', 'Quick setup', 'Good for testing'],
-    weaknesses: ['Limited team features', 'Basic functionality', 'No editor integration'],
+    weaknesses: [
+      'Limited team features',
+      'Basic functionality',
+      'No editor integration',
+    ],
     comparison: '/vs-webhook-site',
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'VS Code integration',
-      'Professional features'
-    ]
+      'Professional features',
+    ],
   },
   {
     name: 'Beeceptor',
@@ -62,8 +83,8 @@ const competitors = [
       'One shared URL for entire team',
       'Config file in your repo',
       'Webhook-focused design',
-      'Better pricing'
-    ]
+      'Better pricing',
+    ],
   },
   {
     name: 'Localtunnel',
@@ -73,15 +94,20 @@ const competitors = [
     pricing: 'Free only',
     marketShare: 'Low',
     strengths: ['Free', 'Simple', 'Open source'],
-    weaknesses: ['Unmaintained', 'Unreliable', 'No team features', 'Basic functionality'],
+    weaknesses: [
+      'Unmaintained',
+      'Unreliable',
+      'No team features',
+      'Basic functionality',
+    ],
     comparison: '/vs-localtunnel',
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'Active maintenance',
-      'Enterprise reliability'
-    ]
-  }
+      'Enterprise reliability',
+    ],
+  },
 ];
 
 const comparisonMatrix = [
@@ -150,7 +176,6 @@ export default function ComparisonsPage() {
       <div className="block w-px h-full border-r border-border absolute top-0 right-6 z-10" />
       <Navbar navs={siteConfig.nav.links} />
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
-        
         {/* Hero Section */}
         <section className="w-full py-20 lg:py-32">
           <div className="container mx-auto px-6">
@@ -165,7 +190,10 @@ export default function ComparisonsPage() {
                 See why teams choose Unhook over other webhook testing tools
               </p>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Compare Unhook with popular webhook testing and tunneling tools. Discover why development teams are switching to Unhook for better collaboration, VS Code integration, and team-friendly features.
+                Compare Unhook with popular webhook testing and tunneling tools.
+                Discover why development teams are switching to Unhook for
+                better collaboration, VS Code integration, and team-friendly
+                features.
               </p>
             </div>
           </div>
@@ -179,64 +207,93 @@ export default function ComparisonsPage() {
                 Detailed Competitor Comparisons
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                In-depth analysis of how Unhook compares to each major competitor in the webhook testing space.
+                In-depth analysis of how Unhook compares to each major
+                competitor in the webhook testing space.
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
-              {competitors.map((competitor, index) => (
-                <Card key={index} className="relative overflow-hidden">
+              {competitors.map((competitor) => (
+                <Card
+                  key={competitor.name}
+                  className="relative overflow-hidden"
+                >
                   <CardHeader>
                     <div className="flex items-center gap-4 mb-4">
                       <span className="text-4xl">{competitor.logo}</span>
                       <div>
-                        <CardTitle className="text-xl">{competitor.name}</CardTitle>
+                        <CardTitle className="text-xl">
+                          {competitor.name}
+                        </CardTitle>
                         <CardDescription>{competitor.category}</CardDescription>
                       </div>
                       <Badge variant="secondary" className="ml-auto">
                         {competitor.marketShare} Usage
                       </Badge>
                     </div>
-                    <p className="text-muted-foreground">{competitor.description}</p>
+                    <p className="text-muted-foreground">
+                      {competitor.description}
+                    </p>
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-6">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Starting Price:</span>
-                      <span className="text-primary font-semibold">{competitor.pricing}</span>
+                      <span className="text-primary font-semibold">
+                        {competitor.pricing}
+                      </span>
                     </div>
-                    
+
                     <div>
-                      <h4 className="font-semibold mb-3 text-green-600">Why Teams Choose Unhook:</h4>
+                      <h4 className="font-semibold mb-3 text-green-600">
+                        Why Teams Choose Unhook:
+                      </h4>
                       <ul className="space-y-2">
-                        {competitor.unhookAdvantages.map((advantage, i) => (
-                          <li key={i} className="flex items-center gap-2 text-sm">
+                        {competitor.unhookAdvantages.map((advantage) => (
+                          <li
+                            key={advantage}
+                            className="flex items-center gap-2 text-sm"
+                          >
                             <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                             {advantage}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <h5 className="font-medium mb-2 text-green-600">Strengths:</h5>
+                        <h5 className="font-medium mb-2 text-green-600">
+                          Strengths:
+                        </h5>
                         <ul className="space-y-1">
-                          {competitor.strengths.map((strength, i) => (
-                            <li key={i} className="text-sm text-muted-foreground">• {strength}</li>
+                          {competitor.strengths.map((strength) => (
+                            <li
+                              key={strength}
+                              className="text-sm text-muted-foreground"
+                            >
+                              • {strength}
+                            </li>
                           ))}
                         </ul>
                       </div>
                       <div>
-                        <h5 className="font-medium mb-2 text-red-600">Limitations:</h5>
+                        <h5 className="font-medium mb-2 text-red-600">
+                          Limitations:
+                        </h5>
                         <ul className="space-y-1">
-                          {competitor.weaknesses.map((weakness, i) => (
-                            <li key={i} className="text-sm text-muted-foreground">• {weakness}</li>
+                          {competitor.weaknesses.map((weakness) => (
+                            <li
+                              key={weakness}
+                              className="text-sm text-muted-foreground"
+                            >
+                              • {weakness}
+                            </li>
                           ))}
                         </ul>
                       </div>
                     </div>
-                    
+
                     <Link href={competitor.comparison}>
                       <Button className="w-full">
                         View Detailed Comparison
@@ -258,25 +315,33 @@ export default function ComparisonsPage() {
                 Feature Comparison Matrix
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Quick overview of key features across all webhook testing platforms.
+                Quick overview of key features across all webhook testing
+                platforms.
               </p>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full bg-card border rounded-lg">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left p-4 font-medium">Feature</th>
-                    <th className="text-center p-4 font-medium text-primary">Unhook</th>
+                    <th className="text-center p-4 font-medium text-primary">
+                      Unhook
+                    </th>
                     <th className="text-center p-4 font-medium">ngrok</th>
-                    <th className="text-center p-4 font-medium">Webhook.site</th>
+                    <th className="text-center p-4 font-medium">
+                      Webhook.site
+                    </th>
                     <th className="text-center p-4 font-medium">Beeceptor</th>
                     <th className="text-center p-4 font-medium">Localtunnel</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {comparisonMatrix.map((row, index) => (
-                    <tr key={index} className="border-b last:border-b-0 hover:bg-muted/30">
+                  {comparisonMatrix.map((row) => (
+                    <tr
+                      key={row.feature}
+                      className="border-b last:border-b-0 hover:bg-muted/30"
+                    >
                       <td className="p-4 font-medium">{row.feature}</td>
                       <td className="p-4 text-center">
                         {row.unhook ? (
@@ -329,7 +394,8 @@ export default function ComparisonsPage() {
                 Ready to See the Difference?
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands of developers who've made the switch to better webhook testing with team collaboration and VS Code integration.
+                Join thousands of developers who've made the switch to better
+                webhook testing with team collaboration and VS Code integration.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="px-8">

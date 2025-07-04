@@ -32,7 +32,14 @@ const features = [
   },
 ];
 
-const FeatureItem = ({ icon, title, description, time }: any) => (
+interface FeatureItemProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  time: string;
+}
+
+const FeatureItem = ({ icon, title, description, time }: FeatureItemProps) => (
   <div className="flex items-center space-x-4 p-4 bg-background/50 rounded-lg border border-border/50 backdrop-blur-sm">
     <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
       {icon}
@@ -139,8 +146,8 @@ export function VSCodeFeaturesSection() {
             viewport={{ once: true }}
           >
             <AnimatedList>
-              {features.map((feature, index) => (
-                <FeatureItem key={index} {...feature} />
+              {features.map((feature) => (
+                <FeatureItem key={feature.title} {...feature} />
               ))}
             </AnimatedList>
           </motion.div>

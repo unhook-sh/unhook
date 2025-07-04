@@ -1,15 +1,22 @@
-import { ComparisonHero } from '../_components/sections/comparison-hero';
-import { ComparisonFeatures } from '../_components/sections/comparison-features';
-import { ComparisonPricing } from '../_components/sections/comparison-pricing';
 import { ComparisonCTA } from '../_components/sections/comparison-cta';
+import { ComparisonFeatures } from '../_components/sections/comparison-features';
+import { ComparisonHero } from '../_components/sections/comparison-hero';
+import { ComparisonPricing } from '../_components/sections/comparison-pricing';
 import { FooterSection } from '../_components/sections/footer-section';
 import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
   title: 'Unhook vs Webhook.site: Professional Webhook Testing | Unhook',
-  description: 'Compare Unhook and Webhook.site for webhook testing. See why teams choose Unhook for better collaboration, VS Code integration, and professional features.',
-  keywords: ['Unhook vs webhook.site', 'webhook.site alternative', 'webhook testing', 'team collaboration', 'professional webhook tools'],
+  description:
+    'Compare Unhook and Webhook.site for webhook testing. See why teams choose Unhook for better collaboration, VS Code integration, and professional features.',
+  keywords: [
+    'Unhook vs webhook.site',
+    'webhook.site alternative',
+    'webhook testing',
+    'team collaboration',
+    'professional webhook tools',
+  ],
 };
 
 const webhookSiteComparison = {
@@ -17,7 +24,8 @@ const webhookSiteComparison = {
   hero: {
     title: 'Unhook vs Webhook.site',
     subtitle: 'Professional Webhook Testing for Development Teams',
-    description: 'While Webhook.site is great for quick testing, Unhook provides the professional features teams need. Compare capabilities and see why teams choose Unhook for serious webhook development.',
+    description:
+      'While Webhook.site is great for quick testing, Unhook provides the professional features teams need. Compare capabilities and see why teams choose Unhook for serious webhook development.',
     competitorLogo: (
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
@@ -214,22 +222,26 @@ const webhookSiteComparison = {
   reasons: [
     {
       title: 'Team-First Design',
-      description: 'Unlike Webhook.site\'s individual focus, Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo. New team members get instant access.',
+      description:
+        "Unlike Webhook.site's individual focus, Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo. New team members get instant access.",
       icon: '👥',
     },
     {
       title: 'Editor Integration',
-      description: 'Debug webhooks without leaving VS Code. Our native extension brings webhook monitoring directly into your development environment.',
+      description:
+        'Debug webhooks without leaving VS Code. Our native extension brings webhook monitoring directly into your development environment.',
       icon: '💻',
     },
     {
       title: 'Professional Features',
-      description: 'Get enterprise-grade features like custom domains, advanced security, and SLA guarantees that Webhook.site lacks.',
+      description:
+        'Get enterprise-grade features like custom domains, advanced security, and SLA guarantees that Webhook.site lacks.',
       icon: '🏢',
     },
     {
       title: 'Better Value',
-      description: 'More features for less money. Our team plan includes everything you need without nickel-and-diming for basic features.',
+      description:
+        'More features for less money. Our team plan includes everything you need without nickel-and-diming for basic features.',
       icon: '💰',
     },
   ],
@@ -243,8 +255,11 @@ export default function UnhookVsWebhookSitePage() {
       <Navbar navs={siteConfig.nav.links} />
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...webhookSiteComparison.hero} />
-        <ComparisonFeatures features={webhookSiteComparison.features} competitor="Webhook.site" />
-        <ComparisonPricing 
+        <ComparisonFeatures
+          features={webhookSiteComparison.features}
+          competitor="Webhook.site"
+        />
+        <ComparisonPricing
           unhookPricing={webhookSiteComparison.pricing.unhook}
           competitorPricing={webhookSiteComparison.pricing.competitor}
           competitor="Webhook.site"
@@ -256,12 +271,16 @@ export default function UnhookVsWebhookSitePage() {
                 Why Teams Upgrade from Webhook.site to Unhook
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                See why development teams are moving from basic webhook testing to professional webhook development.
+                See why development teams are moving from basic webhook testing
+                to professional webhook development.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
-              {webhookSiteComparison.reasons.map((reason, index) => (
-                <div key={index} className="bg-card border rounded-lg p-6">
+              {webhookSiteComparison.reasons.map((reason) => (
+                <div
+                  key={reason.title}
+                  className="bg-card border rounded-lg p-6"
+                >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>
                   <p className="text-muted-foreground">{reason.description}</p>
@@ -270,7 +289,7 @@ export default function UnhookVsWebhookSitePage() {
             </div>
           </div>
         </section>
-        <ComparisonCTA 
+        <ComparisonCTA
           competitor="Webhook.site"
           ctaText="Upgrade from Webhook.site"
           description="Join teams who've upgraded from basic webhook testing to professional webhook development."

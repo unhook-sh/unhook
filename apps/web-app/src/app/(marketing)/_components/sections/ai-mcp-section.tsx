@@ -2,20 +2,22 @@
 
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { RetroGrid } from '@unhook/ui/magicui/retro-grid';
+import { ArrowRight, Brain, Code, Play, Settings, Zap } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Brain, Code, Zap, ArrowRight, Play, Settings } from 'lucide-react';
 
 const MCPWorkflow = () => {
   return (
     <div className="relative w-full max-w-5xl mx-auto bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden border border-gray-700">
       <BorderBeam size={300} duration={15} delay={0} />
-      
+
       {/* Header */}
       <div className="bg-gray-800/50 border-b border-gray-700 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Brain className="w-6 h-6 text-blue-400" />
-            <span className="text-white font-medium">AI + MCP + Webhook Testing</span>
+            <span className="text-white font-medium">
+              AI + MCP + Webhook Testing
+            </span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
@@ -41,7 +43,8 @@ const MCPWorkflow = () => {
               <span className="text-white font-medium">AI Agent</span>
             </div>
             <p className="text-gray-300 text-sm">
-              AI agent receives user request and needs to execute actions via MCP tools
+              AI agent receives user request and needs to execute actions via
+              MCP tools
             </p>
           </motion.div>
 
@@ -59,7 +62,8 @@ const MCPWorkflow = () => {
               <span className="text-white font-medium">MCP Server</span>
             </div>
             <p className="text-gray-300 text-sm">
-              MCP server processes tool calls and triggers webhooks to external services
+              MCP server processes tool calls and triggers webhooks to external
+              services
             </p>
           </motion.div>
 
@@ -77,7 +81,8 @@ const MCPWorkflow = () => {
               <span className="text-white font-medium">Unhook Testing</span>
             </div>
             <p className="text-gray-300 text-sm">
-              Capture, inspect, and replay webhook events triggered by AI actions
+              Capture, inspect, and replay webhook events triggered by AI
+              actions
             </p>
           </motion.div>
         </div>
@@ -85,7 +90,9 @@ const MCPWorkflow = () => {
         {/* Code Example */}
         <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-600">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-400">MCP Tool Implementation</span>
+            <span className="text-sm text-gray-400">
+              MCP Tool Implementation
+            </span>
             <Code className="w-4 h-4 text-gray-400" />
           </div>
           <motion.pre
@@ -94,7 +101,7 @@ const MCPWorkflow = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-{`// AI Agent triggers MCP tool
+            {`// AI Agent triggers MCP tool
 await mcp.callTool('webhook-trigger', {
   endpoint: 'https://unhook.sh/wh_abc123',
   action: 'user_created',
@@ -114,7 +121,9 @@ POST /wh_abc123
         {/* Real-time Demo */}
         <div className="bg-gray-900/30 rounded-lg p-4 border border-gray-600">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-white font-medium">Live AI Testing Session</span>
+            <span className="text-white font-medium">
+              Live AI Testing Session
+            </span>
             <Play className="w-4 h-4 text-green-400" />
           </div>
           <div className="space-y-2">
@@ -125,7 +134,9 @@ POST /wh_abc123
               transition={{ delay: 1.0 }}
             >
               <span className="text-blue-400">AI:</span>
-              <span className="text-gray-300">"Creating user account via MCP tool..."</span>
+              <span className="text-gray-300">
+                "Creating user account via MCP tool..."
+              </span>
             </motion.div>
             <motion.div
               className="flex items-center space-x-3 text-sm"
@@ -134,7 +145,9 @@ POST /wh_abc123
               transition={{ delay: 1.2 }}
             >
               <span className="text-purple-400">MCP:</span>
-              <span className="text-gray-300">Tool execution → Webhook triggered</span>
+              <span className="text-gray-300">
+                Tool execution → Webhook triggered
+              </span>
             </motion.div>
             <motion.div
               className="flex items-center space-x-3 text-sm"
@@ -143,7 +156,9 @@ POST /wh_abc123
               transition={{ delay: 1.4 }}
             >
               <span className="text-green-400">Unhook:</span>
-              <span className="text-gray-300">✓ Webhook captured & ready for inspection</span>
+              <span className="text-gray-300">
+                ✓ Webhook captured & ready for inspection
+              </span>
             </motion.div>
           </div>
         </div>
@@ -158,7 +173,7 @@ export function AIMCPSection() {
       <div className="absolute inset-0">
         <RetroGrid />
       </div>
-      
+
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <motion.div
           className="text-center mb-16"
@@ -175,14 +190,17 @@ export function AIMCPSection() {
             viewport={{ once: true }}
           >
             <Brain className="w-4 h-4 text-blue-400" />
-            <span className="text-blue-400 text-sm font-medium">AI Integration</span>
+            <span className="text-blue-400 text-sm font-medium">
+              AI Integration
+            </span>
           </motion.div>
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             Test AI Actions with MCP Servers
           </h2>
           <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-            Debug AI agent workflows by testing webhooks triggered by Model Context Protocol (MCP) servers. 
-            Perfect for validating AI-driven automations and agentic systems.
+            Debug AI agent workflows by testing webhooks triggered by Model
+            Context Protocol (MCP) servers. Perfect for validating AI-driven
+            automations and agentic systems.
           </p>
         </motion.div>
 
@@ -208,12 +226,16 @@ export function AIMCPSection() {
             <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
               <Brain className="w-6 h-6 text-white" />
             </div>
-            <h3 className="font-semibold text-primary mb-3">AI Agent Testing</h3>
+            <h3 className="font-semibold text-primary mb-3">
+              AI Agent Testing
+            </h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Test AI agents that trigger webhooks through MCP tools. Validate that your AI correctly executes actions and handles responses.
+              Test AI agents that trigger webhooks through MCP tools. Validate
+              that your AI correctly executes actions and handles responses.
             </p>
             <div className="text-xs text-blue-400">
-              Use Cases: Customer service bots, task automation, data processing agents
+              Use Cases: Customer service bots, task automation, data processing
+              agents
             </div>
           </div>
 
@@ -221,12 +243,16 @@ export function AIMCPSection() {
             <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
               <Settings className="w-6 h-6 text-white" />
             </div>
-            <h3 className="font-semibold text-primary mb-3">MCP Tool Validation</h3>
+            <h3 className="font-semibold text-primary mb-3">
+              MCP Tool Validation
+            </h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Debug MCP server tools that call external APIs. Ensure your tools properly format requests and handle webhook responses.
+              Debug MCP server tools that call external APIs. Ensure your tools
+              properly format requests and handle webhook responses.
             </p>
             <div className="text-xs text-purple-400">
-              Use Cases: CRM integrations, payment processing, notification systems
+              Use Cases: CRM integrations, payment processing, notification
+              systems
             </div>
           </div>
 
@@ -234,12 +260,16 @@ export function AIMCPSection() {
             <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
               <Zap className="w-6 h-6 text-white" />
             </div>
-            <h3 className="font-semibold text-primary mb-3">End-to-End AI Workflows</h3>
+            <h3 className="font-semibold text-primary mb-3">
+              End-to-End AI Workflows
+            </h3>
             <p className="text-muted-foreground text-sm mb-4">
-              Test complete AI workflows from trigger to completion. Monitor webhook chains and validate multi-step AI processes.
+              Test complete AI workflows from trigger to completion. Monitor
+              webhook chains and validate multi-step AI processes.
             </p>
             <div className="text-xs text-green-400">
-              Use Cases: Order processing, content generation, security monitoring
+              Use Cases: Order processing, content generation, security
+              monitoring
             </div>
           </div>
         </motion.div>
@@ -257,14 +287,21 @@ export function AIMCPSection() {
               Ready to test your AI-powered webhooks?
             </h3>
             <p className="text-muted-foreground mb-6">
-              Set up Unhook in VS Code and start debugging your MCP-powered AI agents today.
+              Set up Unhook in VS Code and start debugging your MCP-powered AI
+              agents today.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+              <button
+                type="button"
+                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
                 <span>Install VS Code Extension</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <button className="inline-flex items-center space-x-2 border border-border hover:bg-accent text-primary px-6 py-3 rounded-lg font-medium transition-colors">
+              <button
+                type="button"
+                className="inline-flex items-center space-x-2 border border-border hover:bg-accent text-primary px-6 py-3 rounded-lg font-medium transition-colors"
+              >
                 <span>View MCP Examples</span>
                 <Code className="w-4 h-4" />
               </button>

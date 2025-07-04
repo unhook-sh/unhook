@@ -1,15 +1,22 @@
-import { ComparisonHero } from '../_components/sections/comparison-hero';
-import { ComparisonFeatures } from '../_components/sections/comparison-features';
-import { ComparisonPricing } from '../_components/sections/comparison-pricing';
 import { ComparisonCTA } from '../_components/sections/comparison-cta';
+import { ComparisonFeatures } from '../_components/sections/comparison-features';
+import { ComparisonHero } from '../_components/sections/comparison-hero';
+import { ComparisonPricing } from '../_components/sections/comparison-pricing';
 import { FooterSection } from '../_components/sections/footer-section';
 import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
   title: 'Unhook vs Localtunnel: Professional vs Basic Tunneling | Unhook',
-  description: 'Compare Unhook and Localtunnel for webhook testing. See why teams choose Unhook for reliability, team features, and professional webhook development.',
-  keywords: ['Unhook vs Localtunnel', 'Localtunnel alternative', 'webhook testing', 'tunneling', 'team collaboration'],
+  description:
+    'Compare Unhook and Localtunnel for webhook testing. See why teams choose Unhook for reliability, team features, and professional webhook development.',
+  keywords: [
+    'Unhook vs Localtunnel',
+    'Localtunnel alternative',
+    'webhook testing',
+    'tunneling',
+    'team collaboration',
+  ],
 };
 
 const localtunnelComparison = {
@@ -17,7 +24,8 @@ const localtunnelComparison = {
   hero: {
     title: 'Unhook vs Localtunnel',
     subtitle: 'Professional Webhook Platform vs Basic Tunneling',
-    description: 'While Localtunnel provides basic tunneling, Unhook offers a complete webhook development platform with team collaboration, reliability, and professional features.',
+    description:
+      'While Localtunnel provides basic tunneling, Unhook offers a complete webhook development platform with team collaboration, reliability, and professional features.',
     competitorLogo: (
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-gray-600 rounded-md flex items-center justify-center">
@@ -202,22 +210,26 @@ const localtunnelComparison = {
   reasons: [
     {
       title: 'Reliability You Can Trust',
-      description: 'Unlike Localtunnel\'s aging infrastructure, Unhook provides enterprise-grade reliability with SLA guarantees and active maintenance.',
+      description:
+        "Unlike Localtunnel's aging infrastructure, Unhook provides enterprise-grade reliability with SLA guarantees and active maintenance.",
       icon: '🛡️',
     },
     {
       title: 'Built for Teams',
-      description: 'Localtunnel creates individual tunnels. Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo.',
+      description:
+        'Localtunnel creates individual tunnels. Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo.',
       icon: '👥',
     },
     {
       title: 'Professional Features',
-      description: 'Go beyond basic tunneling with custom domains, authentication, monitoring, and VS Code integration.',
+      description:
+        'Go beyond basic tunneling with custom domains, authentication, monitoring, and VS Code integration.',
       icon: '🏢',
     },
     {
       title: 'Webhook-Focused',
-      description: 'Purpose-built for webhook development with intelligent routing, event replay, and provider integrations.',
+      description:
+        'Purpose-built for webhook development with intelligent routing, event replay, and provider integrations.',
       icon: '🎯',
     },
   ],
@@ -231,8 +243,11 @@ export default function UnhookVsLocaltunnelPage() {
       <Navbar navs={siteConfig.nav.links} />
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...localtunnelComparison.hero} />
-        <ComparisonFeatures features={localtunnelComparison.features} competitor="Localtunnel" />
-        <ComparisonPricing 
+        <ComparisonFeatures
+          features={localtunnelComparison.features}
+          competitor="Localtunnel"
+        />
+        <ComparisonPricing
           unhookPricing={localtunnelComparison.pricing.unhook}
           competitorPricing={localtunnelComparison.pricing.competitor}
           competitor="Localtunnel"
@@ -241,15 +256,20 @@ export default function UnhookVsLocaltunnelPage() {
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Teams Upgrade from Basic Tunneling to Professional Webhook Platforms
+                Why Teams Upgrade from Basic Tunneling to Professional Webhook
+                Platforms
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                See why teams are moving from basic tunneling tools to comprehensive webhook development platforms.
+                See why teams are moving from basic tunneling tools to
+                comprehensive webhook development platforms.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
-              {localtunnelComparison.reasons.map((reason, index) => (
-                <div key={index} className="bg-card border rounded-lg p-6">
+              {localtunnelComparison.reasons.map((reason) => (
+                <div
+                  key={reason.title}
+                  className="bg-card border rounded-lg p-6"
+                >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>
                   <p className="text-muted-foreground">{reason.description}</p>
@@ -258,7 +278,7 @@ export default function UnhookVsLocaltunnelPage() {
             </div>
           </div>
         </section>
-        <ComparisonCTA 
+        <ComparisonCTA
           competitor="Localtunnel"
           ctaText="Upgrade to Professional Webhook Platform"
           description="Join teams who've upgraded from basic tunneling to comprehensive webhook development."

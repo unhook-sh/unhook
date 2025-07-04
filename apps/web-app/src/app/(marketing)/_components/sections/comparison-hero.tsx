@@ -12,11 +12,11 @@ interface ComparisonHeroProps {
   competitorLogo?: React.ReactNode;
 }
 
-export function ComparisonHero({ 
-  title, 
-  subtitle, 
-  description, 
-  competitorLogo 
+export function ComparisonHero({
+  title,
+  subtitle,
+  description,
+  competitorLogo,
 }: ComparisonHeroProps) {
   return (
     <section id="hero" className="w-full py-20 lg:py-32">
@@ -36,7 +36,9 @@ export function ComparisonHero({
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 className="text-primary"
+                aria-label="Unhook Logo"
               >
+                <title>Unhook Logo</title>
                 <path
                   d="M16 2L2 8v16c0 8.84 6.11 14.41 14 16 7.89-1.59 14-7.16 14-16V8L16 2z"
                   fill="currentColor"
@@ -46,9 +48,7 @@ export function ComparisonHero({
             </div>
             <span className="text-2xl text-muted-foreground">vs</span>
             {competitorLogo && (
-              <div className="flex items-center">
-                {competitorLogo}
-              </div>
+              <div className="flex items-center">{competitorLogo}</div>
             )}
           </motion.div>
 

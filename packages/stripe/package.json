@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "stripe": "18.3.0"
+  },
+  "devDependencies": {
+    "@unhook/tsconfig": "workspace:*",
+    "typescript": "5.8.3"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/index.ts",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "license": "MIT",
+  "name": "@unhook/stripe",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf .turbo node_modules dist",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

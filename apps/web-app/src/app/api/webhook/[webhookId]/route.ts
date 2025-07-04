@@ -1,8 +1,9 @@
 import { posthog } from '@unhook/analytics/posthog/server';
 import { filterHeaders } from '@unhook/client/utils/headers';
 import { db } from '@unhook/db/client';
-import { Events, type RequestPayload, Webhooks } from '@unhook/db/schema';
+import { Events, Orgs, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
+import { recordUsage } from '@unhook/stripe';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -309,6 +310,33 @@ export async function POST(
         apiKey,
       },
     });
+
+    // Record usage for billing
+    try {
+      // Get the organization's Stripe customer ID
+      const org = await db.query.Orgs.findFirst({
+        where: eq(Orgs.id, webhook.orgId),
+      });
+
+      if (org?.stripeCustomerId && org?.stripeSubscriptionStatus === 'active') {
+        // Record the webhook event usage to Stripe
+        await recordUsage({
+          customerId: org.stripeCustomerId,
+          quantity: 1,
+          idempotencyKey: event.id, // Use event ID for idempotency
+        });
+      }
+    } catch (error) {
+      // Log error but don't fail the webhook request
+      console.error('Failed to record usage:', error);
+      posthog.captureException(error, userId, {
+        properties: {
+          webhookId,
+          orgId: webhook.orgId,
+          eventId: event.id,
+        },
+      });
+    }
 
     return NextResponse.json(
       {

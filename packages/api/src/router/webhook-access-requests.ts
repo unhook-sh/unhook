@@ -15,7 +15,8 @@ import {
 import { and, desc, eq, inArray } from 'drizzle-orm';
 import React from 'react';
 import { z } from 'zod';
-import { env } from '../env.server';
+import { env as envClient } from '../env.client';
+import { env as envServer } from '../env.server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const webhookAccessRequestsRouter = createTRPCRouter({
@@ -94,12 +95,12 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
         .returning();
 
       // Send email notification to webhook owner(s)
-      if (env.RESEND_API_KEY) {
+      if (envServer.RESEND_API_KEY) {
         try {
           const emailClient = createEmailClient({
-            apiKey: env.RESEND_API_KEY,
-            from: env.EMAIL_FROM,
-            replyTo: env.EMAIL_REPLY_TO,
+            apiKey: envServer.RESEND_API_KEY,
+            from: envServer.EMAIL_FROM,
+            replyTo: envServer.EMAIL_REPLY_TO,
           });
 
           // Get all organization members who should be notified
@@ -133,9 +134,9 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
                 webhookName: webhook.name,
                 webhookId: webhook.id,
                 message: input.requesterMessage,
-                approveUrl: `${env.APP_URL}/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
-                rejectUrl: `${env.APP_URL}/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
-                dashboardUrl: `${env.APP_URL}/webhooks/${webhook.id}/access-requests`,
+                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
+                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
+                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests`,
               }),
             });
           }
@@ -273,12 +274,12 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       }
 
       // Send email notification to requester
-      if (env.RESEND_API_KEY && updatedRequest) {
+      if (envServer.RESEND_API_KEY && updatedRequest) {
         try {
           const emailClient = createEmailClient({
-            apiKey: env.RESEND_API_KEY,
-            from: env.EMAIL_FROM,
-            replyTo: env.EMAIL_REPLY_TO,
+            apiKey: envServer.RESEND_API_KEY,
+            from: envServer.EMAIL_FROM,
+            replyTo: envServer.EMAIL_REPLY_TO,
           });
 
           // Get requester details
@@ -298,7 +299,7 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
                 responseMessage: input.responseMessage,
                 dashboardUrl:
                   input.status === 'approved'
-                    ? `${env.APP_URL}/webhooks/${accessRequest.webhook.id}`
+                    ? `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${accessRequest.webhook.id}`
                     : undefined,
                 cliCommand:
                   input.status === 'approved'

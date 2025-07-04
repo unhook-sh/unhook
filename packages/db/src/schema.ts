@@ -35,6 +35,16 @@ export const requestStatusEnum = pgEnum('requestStatus', [
   'completed',
   'failed',
 ]);
+export const stripeSubscriptionStatusEnum = pgEnum('stripeSubscriptionStatus', [
+  'active',
+  'canceled',
+  'incomplete',
+  'incomplete_expired',
+  'past_due',
+  'paused',
+  'trialing',
+  'unpaid',
+]);
 
 export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
 export const WebhookStatusType = z.enum(webhookStatusEnum.enumValues).Enum;
@@ -43,6 +53,9 @@ export const LocalConnectionStatusType = z.enum(
 ).Enum;
 export const EventStatusType = z.enum(eventStatusEnum.enumValues).Enum;
 export const RequestStatusType = z.enum(requestStatusEnum.enumValues).Enum;
+export const StripeSubscriptionStatusType = z.enum(
+  stripeSubscriptionStatusEnum.enumValues,
+).Enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
@@ -105,6 +118,12 @@ export const Orgs = pgTable('orgs', {
     mode: 'date',
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
+  // Stripe fields
+  stripeCustomerId: text('stripeCustomerId').unique(),
+  stripeSubscriptionId: text('stripeSubscriptionId').unique(),
+  stripeSubscriptionStatus: stripeSubscriptionStatusEnum(
+    'stripeSubscriptionStatus',
+  ),
 });
 
 export type OrgType = typeof Orgs.$inferSelect;

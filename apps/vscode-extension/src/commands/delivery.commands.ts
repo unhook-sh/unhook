@@ -27,7 +27,7 @@ export function registerDeliveryCommands(context: vscode.ExtensionContext) {
       await config.update(
         'delivery.enabled',
         newState,
-        vscode.ConfigurationTarget.Workspace,
+        vscode.ConfigurationTarget.Global,
       );
 
       const status = newState ? 'enabled' : 'disabled';

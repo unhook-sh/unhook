@@ -10,6 +10,7 @@ import {
   Orgs,
   Requests,
   Users,
+  WebhookAccessRequests,
   Webhooks,
 } from './schema';
 
@@ -23,6 +24,7 @@ await db.delete(Requests);
 await db.delete(Connections);
 await db.delete(Events);
 await db.delete(AuthCodes);
+await db.delete(WebhookAccessRequests);
 
 await seed(db, {
   Orgs,
@@ -32,7 +34,14 @@ await seed(db, {
   Requests,
   Connections,
   Events,
+  WebhookAccessRequests,
 }).refine((funcs) => ({
+  WebhookAccessRequests: {
+    columns: {
+      webhookId: funcs.default({ defaultValue: 'wh_internal' }),
+    },
+    count: 1,
+  },
   OrgMembers: {
     columns: {
       orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),

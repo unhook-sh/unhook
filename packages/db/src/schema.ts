@@ -723,7 +723,7 @@ export const WebhookAccessRequestStatusType = z.enum(
 ).Enum;
 
 export const WebhookAccessRequests = pgTable(
-  'webhook_access_requests',
+  'webhookAccessRequests',
   {
     id: varchar('id', { length: 128 })
       .$defaultFn(() => createId({ prefix: 'war' }))

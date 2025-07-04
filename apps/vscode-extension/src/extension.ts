@@ -7,6 +7,7 @@ import { registerEventCommands } from './commands/events.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
+import { ConfigManager } from './config.manager';
 import { EventsProvider } from './providers/events.provider';
 import { EventQuickPick } from './quick-pick';
 import { registerUriHandler } from './register-auth-uri-handler';
@@ -26,6 +27,15 @@ let requestDetailsWebviewProvider: RequestDetailsWebviewProvider;
 
 export async function activate(context: vscode.ExtensionContext) {
   log('Unhook extension is activating...');
+
+  // Initialize ConfigManager and load configuration
+  const configManager = ConfigManager.getInstance();
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  await configManager.loadConfiguration(workspaceFolder);
+
+  if (configManager.isSelfHosted()) {
+    log('Using self-hosted configuration:', configManager.getApiUrl());
+  }
 
   // Initialize auth store
   const authStore = new AuthStore(context);

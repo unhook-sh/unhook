@@ -158,3 +158,40 @@ interface WebhookConfig {
   }>;
 }
 ```
+
+## Deployment
+
+Unhook can be deployed both as a self-hosted solution or on cloud infrastructure.
+
+### Self-Hosted Deployment
+
+Deploy Unhook on your own infrastructure using Docker:
+
+```bash
+# Quick start
+make deploy-local
+
+# Production deployment with nginx
+make deploy-prod
+```
+
+### Cloud Deployment
+
+Deploy to Kubernetes or cloud providers:
+
+```bash
+# Deploy to Kubernetes
+make deploy-k8s
+
+# Or use cloud-specific deployment guides
+```
+
+For detailed deployment instructions, see our [Deployment Guide](docs/DEPLOYMENT.md).
+
+### Key Features for Self-Hosting
+
+- **Complete Control**: Run on your own infrastructure
+- **Data Privacy**: Keep all webhook data within your organization
+- **Custom Configuration**: Adapt to your specific needs
+- **Docker & Kubernetes**: Production-ready deployment options
+- **High Availability**: Built for scale with Redis and PostgreSQL

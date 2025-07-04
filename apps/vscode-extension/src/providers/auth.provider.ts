@@ -1,5 +1,6 @@
 import * as http from 'node:http';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import { env } from '../env';
 import type { AuthStore } from '../services/auth.service';
 
@@ -81,7 +82,10 @@ export class UnhookAuthProvider implements AuthenticationProvider {
   async createSession(scopes: string[]): Promise<vscode.AuthenticationSession> {
     try {
       // Open browser for auth
-      const authUrl = new URL('/cli-token', env.NEXT_PUBLIC_API_URL);
+      const authUrl = new URL(
+        '/cli-token',
+        ConfigManager.getInstance().getApiUrl(),
+      );
       const editorScheme = this.getEditorUriScheme();
       authUrl.searchParams.set(
         'redirect_uri',

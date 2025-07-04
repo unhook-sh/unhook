@@ -8,6 +8,12 @@ const isDevelopment =
   process.env.NODE_ENV === 'development' || process.env.DEV === 'true';
 const shouldSkipValidation = !!process.env.CI || isHelpMode || isDevelopment;
 
+// Function to get API URL (will be set by the CLI after loading config)
+let configApiUrl: string | undefined;
+export function setConfigApiUrl(url: string | undefined) {
+  configApiUrl = url;
+}
+
 export const env = createEnv({
   clientPrefix: 'NEXT_PUBLIC_',
   runtimeEnv: {
@@ -16,7 +22,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || configApiUrl,
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
     NEXT_PUBLIC_APP_TYPE: process.env.NEXT_PUBLIC_APP_TYPE,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

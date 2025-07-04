@@ -1,0 +1,416 @@
+---
+title: "VSCode Extension"
+description: "The complete guide to using Unhook's VSCode extension for webhook development"
+---
+
+# Unhook VSCode Extension
+
+<div align="center">
+  <img src="/images/vscode-extension-hero.png" alt="Unhook VSCode Extension" width="600" />
+</div>
+
+The Unhook VSCode extension brings powerful webhook development capabilities directly into your code editor. Test, debug, and collaborate on webhooks without leaving your development environment.
+
+## Features Overview
+
+### 🎯 **Webhook Event Explorer**
+- View all webhook events in a dedicated sidebar panel
+- Real-time updates as events are received
+- Hierarchical view of events and their associated requests
+- Quick filtering and search capabilities
+
+### 🔄 **Request Replay & Debugging**
+- Instantly replay webhook events and individual requests
+- Copy event data to clipboard for analysis
+- Detailed request/response inspection in a native webview
+- Support for debugging failed webhook deliveries
+
+### 👥 **Team Collaboration**
+- See active team members and their webhook sessions
+- Share webhook URLs while maintaining individual environments
+- Real-time collaboration features
+
+### 🔐 **Secure Authentication**
+- OAuth-based authentication with Unhook
+- Secure session management and token handling
+- Automatic session validation and refresh
+
+### ⚙️ **Smart Configuration**
+- Automatic detection of Unhook config files in workspace
+- Configurable settings for output behavior and event history
+- Integration with VS Code's settings system
+
+### 📊 **Real-Time Monitoring**
+- Live webhook event monitoring in the sidebar
+- Integrated output panel with configurable logging
+- Status bar integration showing connection status
+
+## Installation
+
+### From VS Code Marketplace
+
+1. Open VS Code
+2. Go to Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. Search for "Unhook - Webhook Development"
+4. Click **Install**
+
+### From VSIX File
+
+If you have a `.vsix` file:
+
+1. Open VS Code
+2. Go to Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. Click the `...` menu and select "Install from VSIX..."
+4. Select the downloaded `.vsix` file
+
+## Getting Started
+
+### 1. Authentication
+
+After installation, you'll need to authenticate with Unhook:
+
+1. **Open the Unhook sidebar** - Click the Unhook icon in the Activity Bar
+2. **Sign in** - Click "Sign in to Unhook" in the status bar or use `Ctrl+Shift+P` → "Unhook: Sign in to Unhook"
+3. **Complete OAuth flow** - Your browser will open to complete authentication
+4. **Return to VS Code** - The extension will automatically detect the successful authentication
+
+<Note>
+If you don't have an Unhook account, you can create one for free at [unhook.sh](https://unhook.sh)
+</Note>
+
+### 2. Configure Your Workspace
+
+The extension will automatically look for Unhook configuration files in your workspace:
+
+- `unhook.yaml` or `unhook.yml` in the workspace root
+- Custom path via the `unhook.configFilePath` setting
+
+Example `unhook.yaml`:
+```yaml
+version: 1
+apiKey: your-api-key-here
+delivery:
+  destinations:
+    - name: local
+      url: http://localhost:3000/webhook
+      ping: true
+```
+
+### 3. Start Receiving Webhooks
+
+Once authenticated and configured:
+
+1. **Create a webhook URL** at [unhook.sh/app](https://unhook.sh/app)
+2. **Configure your webhook provider** (Stripe, GitHub, etc.) to use the Unhook URL
+3. **View events in VS Code** - Events will appear in the Unhook sidebar as they're received
+
+## Core Features
+
+### Event Explorer Sidebar
+
+The main interface for webhook management:
+
+- **Events Tree View**: Hierarchical display of events and requests
+- **Real-time Updates**: Events appear automatically as they're received
+- **Context Actions**: Right-click for replay, copy, and view options
+- **Quick Actions**: Toolbar buttons for common operations
+
+#### Event Actions
+
+Each event supports these actions:
+
+- **View Event** (`👁️`) - Open detailed view in webview panel
+- **Replay Event** (`▶️`) - Resend the event to all configured destinations  
+- **Copy Event** (`📋`) - Copy event JSON to clipboard
+
+#### Request Actions
+
+Individual requests within events support:
+
+- **View Request** (`👁️`) - Open detailed request/response view
+- **Replay Request** (`▶️`) - Resend just this specific request
+
+### Request Details Webview
+
+Beautiful, interactive panel for inspecting webhook data:
+
+- **Request Information**: Method, URL, headers, and body
+- **Response Data**: Status code, headers, and response body
+- **Timing Information**: Request duration and timestamps
+- **Syntax Highlighting**: JSON and other formats are beautifully formatted
+- **Copy to Clipboard**: Easy copying of any data section
+
+### Quick Pick Interface
+
+Access common actions quickly with `Ctrl+Shift+P` → "Unhook: Quick Pick Event":
+
+- Browse recent events
+- Quick replay functionality
+- Fast navigation to event details
+
+### Status Bar Integration
+
+The status bar shows your current Unhook connection status:
+
+- **🔄 Validating Session** - When checking authentication
+- **✅ Unhook** - Connected and ready (click for quick actions)
+- **🔑 Sign in to Unhook** - Not authenticated (click to sign in)
+
+### Output Panel Integration
+
+Integrated logging and output management:
+
+- **Automatic Output Panel** - Shows webhook events as they arrive
+- **Configurable Behavior** - Control when the output panel appears
+- **Log Management** - Automatic cleanup of old log entries
+- **Manual Controls** - Clear, focus, and toggle output panel
+
+## Commands Reference
+
+### Authentication Commands
+
+| Command | Description | Shortcut |
+|---------|-------------|----------|
+| `unhook.signIn` | Sign in to Unhook | - |
+| `unhook.signOut` | Sign out of Unhook | - |
+
+### Event Management Commands
+
+| Command | Description | Shortcut |
+|---------|-------------|----------|
+| `unhook.showEvents` | Show Events sidebar | - |
+| `unhook.addEvent` | Add new event | - |
+| `unhook.events.refresh` | Refresh events list | - |
+| `unhook.events.filter` | Filter events | - |
+| `unhook.quickPick` | Show Quick Pick interface | - |
+
+### Event Actions
+
+| Command | Description | Context |
+|---------|-------------|---------|
+| `unhook.viewEvent` | View event details | Event item |
+| `unhook.replayEvent` | Replay event | Event item |
+| `unhook.copyEvent` | Copy event to clipboard | Event item |
+| `unhook.viewRequest` | View request details | Request item |
+| `unhook.replayRequest` | Replay request | Request item |
+
+### Output & Settings Commands
+
+| Command | Description | Shortcut |
+|---------|-------------|----------|
+| `unhook.focusOutput` | Focus output panel | - |
+| `unhook.clearOutput` | Clear output panel | - |
+| `unhook.toggleOutput` | Toggle output panel | - |
+| `unhook.toggleAutoShowOutput` | Toggle auto-show output | - |
+| `unhook.toggleAutoClearEvents` | Toggle auto-clear events | - |
+| `unhook.toggleDelivery` | Toggle event delivery | - |
+
+## Configuration
+
+### Extension Settings
+
+Configure the extension through VS Code settings (`Ctrl+,` / `Cmd+,`):
+
+#### Output Settings
+
+```json
+{
+  "unhook.output.autoShow": true,
+  "unhook.output.maxLines": 1000
+}
+```
+
+- **`unhook.output.autoShow`** (boolean, default: `true`)  
+  Automatically show the output panel when new events are received
+
+- **`unhook.output.maxLines`** (number, default: `1000`)  
+  Maximum number of lines to keep in the output panel
+
+#### Event Management Settings
+
+```json
+{
+  "unhook.events.maxHistory": 100,
+  "unhook.events.autoClear": false
+}
+```
+
+- **`unhook.events.maxHistory`** (number, default: `100`)  
+  Maximum number of events to keep in history
+
+- **`unhook.events.autoClear`** (boolean, default: `false`)  
+  Automatically clear old events when the maximum history is reached
+
+#### Configuration File Settings
+
+```json
+{
+  "unhook.configFilePath": "./custom/path/unhook.yaml"
+}
+```
+
+- **`unhook.configFilePath`** (string, default: `""`)  
+  Path to the Unhook config file. If not set, the extension will look in the workspace root.
+
+### Workspace Configuration
+
+The extension integrates with your existing Unhook configuration:
+
+```yaml
+# unhook.yaml
+version: 1
+apiKey: your-api-key
+
+delivery:
+  destinations:
+    - name: local-dev
+      url: http://localhost:3000/webhooks
+      ping: true
+      headers:
+        Authorization: Bearer dev-token
+    
+    - name: staging
+      url: https://staging.example.com/webhooks
+      ping: false
+
+destination:
+  port: 3001
+  path: /webhook
+```
+
+## Advanced Usage
+
+### Team Collaboration
+
+When working with a team:
+
+1. **Shared Configuration** - Use a shared `unhook.yaml` in your repository
+2. **Individual API Keys** - Each team member uses their own API key
+3. **Environment-Specific Destinations** - Configure different endpoints per developer
+
+### Provider Integration
+
+The extension works with all supported webhook providers:
+
+- **Stripe** - Payment and subscription webhooks
+- **GitHub** - Repository and organization events  
+- **Clerk** - Authentication and user management events
+- **Discord** - Bot and server events
+- **Custom Providers** - Any webhook-enabled service
+
+### Debugging Workflows
+
+Common debugging patterns:
+
+1. **Event Inspection** - Use the webview to examine request/response data
+2. **Selective Replay** - Replay specific events or requests for testing
+3. **Local Testing** - Route webhooks to different local endpoints
+4. **Response Analysis** - Check response codes and timing information
+
+### Keyboard Shortcuts
+
+While there are no default keyboard shortcuts, you can set custom ones:
+
+1. Open Keyboard Shortcuts (`Ctrl+K Ctrl+S` / `Cmd+K Cmd+S`)
+2. Search for "unhook"
+3. Assign shortcuts to frequently used commands
+
+Recommended shortcuts:
+```json
+{
+  "key": "ctrl+shift+u",
+  "command": "unhook.quickPick"
+},
+{
+  "key": "ctrl+shift+r",
+  "command": "unhook.events.refresh"
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Authentication Problems
+
+**Issue**: "Failed to authenticate with Unhook"
+- **Solution**: Sign out and sign in again using the command palette
+- **Check**: Ensure you have a valid Unhook account at [unhook.sh](https://unhook.sh)
+
+#### No Events Appearing
+
+**Issue**: Events not showing in the sidebar
+- **Check**: Verify your `unhook.yaml` configuration is correct
+- **Check**: Ensure the webhook URL is properly configured with your provider
+- **Solution**: Use the refresh button in the Events panel
+
+#### Configuration Not Found
+
+**Issue**: "No config loaded" error
+- **Check**: Ensure `unhook.yaml` exists in your workspace root
+- **Alternative**: Set custom path via `unhook.configFilePath` setting
+- **Verify**: Check YAML syntax is valid
+
+#### Replay Failures
+
+**Issue**: Event replay not working
+- **Check**: Ensure delivery is not paused (use "Toggle Event Delivery")
+- **Check**: Verify destination URLs are accessible
+- **Debug**: Check the output panel for error messages
+
+### Debug Mode
+
+Enable debug logging by setting the log level:
+
+1. Open Output panel (`Ctrl+Shift+U` / `Cmd+Shift+U`)
+2. Select "Unhook" from the dropdown
+3. Look for detailed logging information
+
+### Getting Help
+
+- **Documentation**: [unhook.sh/docs](https://unhook.sh/docs)
+- **GitHub Issues**: [github.com/unhook-sh/unhook/issues](https://github.com/unhook-sh/unhook/issues)
+- **Discord Community**: [discord.gg/qRZzTCK6MZ](https://discord.gg/qRZzTCK6MZ)
+- **Email Support**: [chris.watts.t@gmail.com](mailto:chris.watts.t@gmail.com)
+
+## Development & Contributing
+
+### Building from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/unhook-sh/unhook.git
+cd unhook/apps/vscode-extension
+
+# Install dependencies
+bun install
+
+# Build the extension
+bun run build
+
+# Package as VSIX
+bun run package
+```
+
+### Development Mode
+
+```bash
+# Start development mode
+bun run dev
+
+# This runs both:
+# - Extension compilation in watch mode
+# - Webview development server
+```
+
+### Contributing
+
+We welcome contributions! See our [Contributing Guide](https://github.com/unhook-sh/unhook/blob/main/CONTRIBUTING.md) for details.
+
+## Changelog
+
+See the [full changelog](https://github.com/unhook-sh/unhook/blob/main/apps/vscode-extension/CHANGELOG.md) for all updates and improvements.
+
+## License
+
+The Unhook VSCode Extension is open source software licensed under the MIT License.

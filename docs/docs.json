@@ -45,6 +45,7 @@
             "group": "Reference",
             "pages": [
               "cli",
+              "vscode-extension",
               "architecture",
               "cross-platform-setup",
               "essentials/data-model"

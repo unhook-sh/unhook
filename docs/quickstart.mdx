@@ -3,31 +3,71 @@ title: 'Quickstart'
 description: 'Get started with Unhook in under 5 minutes'
 ---
 
-## Quick Start Steps
+## Choose Your Setup Method
 
-<Steps>
-  <Step title="Installation">
-    Install Unhook using your preferred package manager:
-    ```bash
-    # Using Homebrew
-    brew install unhook
+<Tabs>
+  <Tab title="VS Code Extension">
+    The fastest way to get started with Unhook is using our VS Code extension:
 
-    # Using npm
-    npm install -g @unhook/cli
+    <Steps>
+      <Step title="Install Extension">
+        1. Open VS Code
+        2. Go to Extensions (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+        3. Search for "Unhook - Webhook Development"
+        4. Click **Install**
+      </Step>
+      <Step title="Authenticate">
+        1. Click the Unhook icon in the Activity Bar
+        2. Click "Sign in to Unhook" in the status bar
+        3. Complete the OAuth flow in your browser
+      </Step>
+      <Step title="Configure">
+        Create an `unhook.yaml` file in your workspace:
+        ```yaml
+        version: 1
+        apiKey: your-api-key-here
+        delivery:
+          destinations:
+            - name: local
+              url: http://localhost:3000/webhook
+              ping: true
+        ```
+      </Step>
+      <Step title="Start Receiving Webhooks">
+        1. Create a webhook URL at [unhook.sh/app](https://unhook.sh/app)
+        2. Configure your provider to use the Unhook URL
+        3. View events in the VS Code sidebar as they arrive
+      </Step>
+    </Steps>
 
-    # Using yarn
-    yarn global add @unhook/cli
+    <Note>
+      The VS Code extension provides a complete webhook development environment with real-time monitoring, request replay, and team collaboration features. [Learn more →](/vscode-extension)
+    </Note>
+  </Tab>
+  <Tab title="CLI">
+    <Steps>
+      <Step title="Installation">
+        Install Unhook using your preferred package manager:
+        ```bash
+        # Using Homebrew
+        brew install unhook
 
-    # Using pnpm
-    pnpm add -g @unhook/cli
+        # Using npm
+        npm install -g @unhook/cli
 
-    # Using bun
-    bun add -g @unhook/cli
+        # Using yarn
+        yarn global add @unhook/cli
 
-    # Using deno
-    deno install @unhook/cli
-    ```
-  </Step>
+        # Using pnpm
+        pnpm add -g @unhook/cli
+
+        # Using bun
+        bun add -g @unhook/cli
+
+        # Using deno
+        deno install @unhook/cli
+        ```
+      </Step>
   <Step title="Initialize Project">
     Run the initialization command:
     ```bash
@@ -67,7 +107,9 @@ description: 'Get started with Unhook in under 5 minutes'
     https://unhook.sh/wh_your_webhook_id
     ```
   </Step>
-</Steps>
+    </Steps>
+  </Tab>
+</Tabs>
 
 ## Configuration
 
@@ -190,6 +232,13 @@ rm ~/.unhook/auth-storage.json
 
 <CardGroup>
   <Card
+    title="VS Code Extension"
+    icon="code"
+    href="/vscode-extension"
+  >
+    Complete webhook development environment in VS Code
+  </Card>
+  <Card
     title="Team Setup"
     icon="users"
     href="/team-setup"
@@ -209,13 +258,6 @@ rm ~/.unhook/auth-storage.json
     href="/providers"
   >
     Detailed setup guides for all supported webhook providers
-  </Card>
-  <Card
-    title="Security"
-    icon="shield"
-    href="/security"
-  >
-    Learn about Unhook's security features and best practices
   </Card>
 </CardGroup>
 

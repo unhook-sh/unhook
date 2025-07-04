@@ -1,8 +1,8 @@
 // biome-ignore lint/style/useFilenamingConvention: rename to app.tsx
 
 import { debug } from '@unhook/logger';
+import { cn } from '@unhook/ui/lib/utils';
 import { useEffect, useRef, useState } from 'react';
-import { cn } from './lib/utils';
 
 const log = debug('unhook:vscode:request-details-webview');
 

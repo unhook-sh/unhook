@@ -2,10 +2,10 @@ import { cn } from '@unhook/ui/lib/utils';
 import { FlickeringGrid } from '@unhook/ui/magicui/flickering-grid';
 import { Globe } from '@unhook/ui/magicui/globe';
 import { motion } from 'motion/react';
+import { FirstBentoAnimation } from '~/app/(marketing)/_components/first-bento-animation';
 import { FourthBentoAnimation } from '~/app/(marketing)/_components/fourth-bento-animation';
 import { SecondBentoAnimation } from '~/app/(marketing)/_components/second-bento-animation';
 import { ThirdBentoAnimation } from '~/app/(marketing)/_components/third-bento-animation';
-import { VSCodeBentoAnimation } from '~/app/(marketing)/_components/vscode-bento-animation';
 
 export const Highlight = ({
   children,
@@ -50,8 +50,9 @@ export const siteConfig = {
     links: [
       { id: 1, name: 'Home', href: '#hero' },
       { id: 2, name: 'How it Works', href: '#bento' },
-      // { id: 3, name: 'Features', href: '#features' },
-      // { id: 4, name: 'Pricing', href: '#pricing' },
+      { id: 3, name: 'VS Code Extension', href: '/vscode' },
+      // { id: 4, name: 'Features', href: '#features' },
+      // { id: 5, name: 'Pricing', href: '#pricing' },
     ],
   },
   hero: {
@@ -64,24 +65,26 @@ export const siteConfig = {
         xmlns="http://www.w3.org/2000/svg"
         className="dark:fill-white fill-[#364153]"
         role="img"
-        aria-label="VS Code Icon"
+        aria-label="Webhook Icon"
       >
-        <title>VS Code Icon</title>
-        <path d="M11.2 1.04L4.8 0.04C4.64 0.02 4.48 0.06 4.34 0.16L0.34 3.16C0.12 3.32 0 3.58 0 3.86V12.14C0 12.42 0.12 12.68 0.34 12.84L4.34 15.84C4.48 15.94 4.64 15.98 4.8 15.96L11.2 14.96C11.64 14.9 12 14.52 12 14.06V1.94C12 1.48 11.64 1.1 11.2 1.04ZM10 13.5L5.5 14.25V1.75L10 2.5V13.5ZM2 4.5L4 3V13L2 11.5V4.5Z" />
+        <title>Webhook Icon</title>
+        <path d="M7.62758 1.09876C7.74088 1.03404 7.8691 1 7.99958 1C8.13006 1 8.25828 1.03404 8.37158 1.09876L13.6216 4.09876C13.7363 4.16438 13.8316 4.25915 13.8979 4.37347C13.9642 4.48779 13.9992 4.6176 13.9992 4.74976C13.9992 4.88191 13.9642 5.01172 13.8979 5.12604C13.8316 5.24036 13.7363 5.33513 13.6216 5.40076L8.37158 8.40076C8.25828 8.46548 8.13006 8.49952 7.99958 8.49952C7.8691 8.49952 7.74088 8.46548 7.62758 8.40076L2.37758 5.40076C2.26287 5.33513 2.16753 5.24036 2.10123 5.12604C2.03492 5.01172 2 4.88191 2 4.74976C2 4.6176 2.03492 4.48779 2.10123 4.37347C2.16753 4.25915 2.26287 4.16438 2.37758 4.09876L7.62758 1.09876Z" />
+        <path d="M2.56958 7.23928L2.37758 7.34928C2.26287 7.41491 2.16753 7.50968 2.10123 7.624C2.03492 7.73831 2 7.86813 2 8.00028C2 8.13244 2.03492 8.26225 2.10123 8.37657C2.16753 8.49089 2.26287 8.58566 2.37758 8.65128L7.62758 11.6513C7.74088 11.716 7.8691 11.75 7.99958 11.75C8.13006 11.75 8.25828 11.716 8.37158 11.6513L13.6216 8.65128C13.7365 8.58573 13.8321 8.49093 13.8986 8.3765C13.965 8.26208 14 8.13211 14 7.99978C14 7.86745 13.965 7.73748 13.8986 7.62306C13.8321 7.50864 13.7365 7.41384 13.6216 7.34828L13.4296 7.23828L9.11558 9.70328C8.77568 9.89744 8.39102 9.99956 7.99958 9.99956C7.60814 9.99956 7.22347 9.89744 6.88358 9.70328L2.56958 7.23928Z" />
+        <path d="M2.37845 10.5993L2.57045 10.4893L6.88445 12.9533C7.22435 13.1474 7.60901 13.2496 8.00045 13.2496C8.39189 13.2496 8.77656 13.1474 9.11645 12.9533L13.4305 10.4883L13.6225 10.5983C13.7374 10.6638 13.833 10.7586 13.8994 10.8731C13.9659 10.9875 14.0009 11.1175 14.0009 11.2498C14.0009 11.3821 13.9659 11.5121 13.8994 11.6265C13.833 11.7409 13.7374 11.8357 13.6225 11.9013L8.37245 14.9013C8.25915 14.966 8.13093 15 8.00045 15C7.86997 15 7.74175 14.966 7.62845 14.9013L2.37845 11.9013C2.2635 11.8357 2.16795 11.7409 2.10148 11.6265C2.03501 11.5121 2 11.3821 2 11.2498C2 11.1175 2.03501 10.9875 2.10148 10.8731C2.16795 10.7586 2.2635 10.6638 2.37845 10.5983V10.5993Z" />
       </svg>
     ),
-    badge: 'Now Available: VS Code Extension',
-    title: 'Webhook Development in VS Code',
+    badge: 'Introducing shared webhook URLs',
+    title: 'Webhook Development Simplified',
     description:
-      'Debug webhooks directly in your editor with shared team URLs and config files. Test AI-driven automations, MCP server integrations, and traditional webhook flows without leaving VS Code.',
+      'Open source toolkit for webhook development. Test, debug, and share webhooks with your team - all from your local environment.',
     cta: {
       primary: {
-        text: 'Install Extension',
-        href: 'vscode:extension/unhook.unhook-vscode',
+        text: 'Create Webhook URL',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
       },
       secondary: {
-        text: 'View on Marketplace',
-        href: 'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
+        text: 'View Docs',
+        href: 'https://docs.unhook.sh',
       },
     },
   },
@@ -204,66 +207,66 @@ export const siteConfig = {
     ],
   },
   bentoSection: {
-    title: 'Webhook Development in Your Editor',
+    title: 'Empower Your Webhook Development',
     description:
-      'Experience seamless webhook debugging with VS Code integration. View, replay, and manage webhook events without context switching.',
+      'Test webhooks locally, share URLs with your team, and monitor everything in real-time.',
     items: [
       {
         id: 1,
-        content: <VSCodeBentoAnimation />,
-        title: 'Native VS Code Integration',
+        content: <FirstBentoAnimation />,
+        title: 'Inspect Webhook Events',
         description:
-          'View webhook events directly in the VS Code sidebar. No need to switch between tools - debug where you code.',
+          'Inspect webhook events in real-time. Inspect payloads, headers, and routing information.',
       },
       {
         id: 2,
         content: <SecondBentoAnimation />,
-        title: 'Real-time Event Explorer',
+        title: 'Provider Integrations',
         description:
-          'Monitor incoming webhooks in real-time with the built-in event explorer. Filter, search, and inspect payloads instantly.',
+          'Built-in support for major webhook providers like Stripe, GitHub, and Clerk. Easy to extend for custom providers.',
       },
       {
         id: 3,
         content: <ThirdBentoAnimation />,
-        title: 'One-Click Event Replay',
+        title: 'Local Event Routing',
         description:
-          'Replay webhook events with a single click. Perfect for testing different scenarios and debugging edge cases.',
+          'Automatically route webhooks to local development environments based on routing rules.',
       },
       {
         id: 4,
         content: <FourthBentoAnimation once={false} />,
-        title: 'Team Collaboration',
+        title: 'Replay Webhook Events',
         description:
-          'See active team members and collaborate on webhook debugging. Share events and work together seamlessly.',
+          'Replay webhook events to test your webhooks in different scenarios.',
       },
     ],
   },
   benefits: [
     {
       id: 1,
-      text: 'Debug webhooks directly in VS Code without switching between tools.',
+      text: 'Test webhooks locally without exposing your development environment.',
       image: '/Device-6.png',
     },
     {
       id: 2,
-      text: 'View webhook events in real-time with the integrated sidebar explorer.',
+      text: 'Share webhook URLs across your team while maintaining individual environments.',
       image: '/Device-7.png',
     },
     {
       id: 3,
-      text: 'Replay webhook requests instantly with one-click debugging.',
+      text: 'Debug faster with real-time monitoring and payload inspection.',
       image: '/Device-8.png',
     },
     {
       id: 4,
-      text: 'Collaborate with your team seamlessly within your coding environment.',
+      text: 'Collaborate with your team seamlessly.',
       image: '/Device-1.png',
     },
   ],
   growthSection: {
-    title: 'Built for Developer Productivity',
+    title: 'Built for Secure Development',
     description:
-      'Streamline your webhook development workflow with powerful VS Code integration and developer-first features.',
+      'Where advanced security meets team collaboration—designed to protect your webhooks and empower your development.',
     items: [
       {
         id: 1,
@@ -602,25 +605,25 @@ export const siteConfig = {
   faqSection: {
     title: 'Frequently Asked Questions',
     description:
-      'Common questions about the Unhook VS Code extension. Need more help? Check our documentation or contact support.',
+      "Answers to common questions about Unhook and its features. If you have any other questions, please don't hesitate to contact us.",
     faQitems: [
       {
         id: 1,
-        question: 'How do I install the Unhook VS Code extension?',
+        question: 'What is Unhook?',
         answer:
-          'You can install the Unhook extension directly from the VS Code marketplace by searching for "Unhook" or by clicking the install button on this page. The extension will automatically integrate with your VS Code sidebar.',
+          'Unhook is a modern webhook development platform that enables teams to test webhooks locally while sharing URLs across the team. It provides real-time monitoring, payload inspection, and team collaboration features to streamline the webhook testing process.',
       },
       {
         id: 2,
-        question: 'Do I need a separate Unhook account?',
+        question: 'How does Unhook work?',
         answer:
-          "Yes, you'll need to sign in with your Unhook account to use the extension. If you don't have an account, you can create one for free at unhook.sh. The extension will guide you through the authentication process.",
+          'Unhook works by creating shareable webhook URLs that route to your local development environment. Team members can then test these webhooks by sending requests to these URLs. Unhook provides a web dashboard for real-time monitoring and payload inspection, allowing you to see who is accessing your webhooks and what data is being sent.',
       },
       {
         id: 3,
-        question: 'Can I use this with other editors besides VS Code?',
+        question: 'Is my data secure?',
         answer:
-          'The Unhook extension is specifically designed for VS Code and compatible editors like Cursor. We also provide a CLI tool and web dashboard that work with any development environment.',
+          'Yes, Unhook uses end-to-end encryption for all webhook traffic. We do not store webhook payload data permanently, and all data is encrypted in transit. Your API keys and sensitive information are protected with industry-standard security measures.',
       },
       {
         id: 4,
@@ -662,13 +665,13 @@ export const siteConfig = {
   },
   ctaSection: {
     id: 'cta',
-    title: 'Debug Webhooks in VS Code',
+    title: 'Test Webhooks Locally',
     backgroundImage: '/agent-cta-background.png',
     button: {
-      text: 'Install VS Code Extension',
-      href: 'vscode:extension/unhook.unhook-vscode',
+      text: 'Create Your Webhook URL Today',
+      href: '/webhooks/create?utm_source=marketing-site&utm_medium=cta-button',
     },
-    subtext: 'Start debugging webhooks directly in your editor',
+    subtext: 'Start testing webhooks in minutes',
   },
   footerLinks: [
     {

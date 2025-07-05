@@ -1,3 +1,17 @@
 {
-  "ignoreCommand": "git log -1 --pretty=format:%s | grep -E '^chore: version packages' && exit 0 || exit 1"
+  "ignoreCommand": "git log -1 --pretty=format:%s | grep -E '^chore: version packages' && exit 0 || exit 1",
+  "buildCommand": "turbo run build --filter=@unhook/web-app",
+  "outputDirectory": "apps/web-app/.next",
+  "installCommand": "npm install --force",
+  "framework": "nextjs",
+  "rootDirectory": ".",
+  "functions": {
+    "apps/web-app/app/api/**/*": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "CI": "1",
+    "NEXT_PUBLIC_APP_TYPE": "nextjs"
+  }
 }

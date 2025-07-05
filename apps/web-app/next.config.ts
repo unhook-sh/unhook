@@ -13,7 +13,8 @@ const nextConfig = {
     '@unhook/logger',
   ],
   // Enable standalone output for Docker deployment
-  output: 'standalone',
+  // Comment out for Vercel deployment
+  // output: 'standalone',
   // Optimize for production
   swcMinify: true,
   compress: true,

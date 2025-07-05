@@ -13,6 +13,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "unhook-next-config.d.ts",
     "next.config.ts",
     "**/*.ts",
     "**/*.tsx",

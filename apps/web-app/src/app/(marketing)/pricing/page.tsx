@@ -162,7 +162,9 @@ export default function PricingPage() {
                         : tier.price === '$0'
                         ? '$0'
                         : billingPeriod === 'yearly'
-                        ? `$${parseInt(tier.price.slice(1)) * 10}`
+                        ? `$${Math.round(
+                            parseInt(tier.price.slice(1)) * 12 * 0.8,
+                          )}`
                         : tier.price}
                     </span>
                     {tier.price !== 'Custom' && tier.price !== '$0' && (
@@ -219,9 +221,10 @@ export default function PricingPage() {
                 How does team pricing work?
               </h3>
               <p className="mt-2 text-muted-foreground">
-                The Team plan starts at $49/month (or $490/year) with 1 user
-                included. Each additional team member is $5/month. For example,
-                a team of 10 would pay $49 + (9 × $5) = $94/month.
+                The Team plan starts at $49/month (or $470/year with 20%
+                discount) with 1 user included. Each additional team member is
+                $5/month. For example, a team of 10 would pay $49 + (9 × $5) =
+                $94/month.
               </p>
             </div>
 

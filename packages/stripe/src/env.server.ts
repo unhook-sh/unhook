@@ -8,6 +8,7 @@ export const env = createEnv({
    */
   server: {
     STRIPE_SECRET_KEY: z.string(),
+    STRIPE_PUBLISHABLE_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
     STRIPE_METER_EVENT_NAME: z.string(),
     STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY: z.string(),
@@ -20,6 +21,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_METER_EVENT_NAME: process.env.STRIPE_METER_EVENT_NAME,
     STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY:

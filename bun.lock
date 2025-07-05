@@ -96,7 +96,6 @@
       "version": "0.1.6",
       "dependencies": {
         "@unhook/client": "0.4.6",
-        "@unhook/ui": "workspace:*",
         "clsx": "2.1.1",
         "date-fns": "4.1.0",
         "react": "19.1.0",
@@ -427,7 +426,6 @@
         "@radix-ui/react-tooltip": "1.2.7",
         "@tailwindcss/typography": "0.5.16",
         "class-variance-authority": "0.7.1",
-        "clsx": "2.1.1",
         "cmdk": "1.1.1",
         "cobe": "0.6.4",
         "date-fns": "4.1.0",
@@ -455,7 +453,6 @@
         "remark-gfm": "4.0.1",
         "shiki": "3.7.0",
         "sonner": "2.0.5",
-        "tailwind-merge": "3.3.1",
         "tailwindcss-animate": "1.0.7",
         "tinykeys": "3.0.0",
         "vaul": "1.1.2",

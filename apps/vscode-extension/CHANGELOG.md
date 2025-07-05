@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.2.0
+
+### Minor Changes
+
+- [`bcc0682`](https://github.com/unhook-sh/unhook/commit/bcc068200f849bc7555bda1b7f1ce753ed167787) Thanks [@seawatts](https://github.com/seawatts)! - Working
+
+### Patch Changes
+
+- Updated dependencies [[`bcc0682`](https://github.com/unhook-sh/unhook/commit/bcc068200f849bc7555bda1b7f1ce753ed167787)]:
+  - @unhook/client@0.5.0
+
 ## 0.1.5
 
 ### Patch Changes

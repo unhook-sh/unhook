@@ -29,14 +29,22 @@ export function InstallationTabs({
     <div className="space-y-2">
       <Label>Installation</Label>
       <Tabs defaultValue="cli" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="cli">
-            <Icons.ChevronsLeftRightEllipsis className="mr-2 h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+          <TabsTrigger value="cli" className="px-2 text-xs sm:text-sm">
+            <Icons.ChevronsLeftRightEllipsis className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             CLI
           </TabsTrigger>
-          <TabsTrigger value="vscode">
-            <Icons.FunctionSquare className="mr-2 h-4 w-4" />
+          <TabsTrigger value="vscode" className="px-2 text-xs sm:text-sm">
+            <Icons.FunctionSquare className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             VS Code
+          </TabsTrigger>
+          <TabsTrigger value="cursor" className="px-2 text-xs sm:text-sm">
+            <Icons.Sparkles className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            Cursor
+          </TabsTrigger>
+          <TabsTrigger value="windsurf" className="px-2 text-xs sm:text-sm">
+            <Icons.FlaskConical className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            Windsurf
           </TabsTrigger>
         </TabsList>
 
@@ -143,6 +151,206 @@ export function InstallationTabs({
                 variant="outline"
               />
             </div>
+          </div>
+
+          <div className="rounded-lg border bg-blue-500/10 p-4">
+            <p className="text-xs font-medium text-blue-600 mb-2">
+              One-click install (when available):
+            </p>
+            <a
+              href="vscode:extension/unhook.unhook"
+              className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              <Icons.Download className="h-4 w-4" />
+              Install Unhook Extension
+            </a>
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              Extension coming soon to VS Code Marketplace
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="cursor" className="space-y-4 mt-4">
+          <Alert>
+            <AlertDescription>
+              Install the Unhook extension in Cursor to receive webhooks
+              directly in your AI-powered editor.
+            </AlertDescription>
+          </Alert>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
+                <Icons.Sparkles className="h-5 w-5 text-purple-500" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Open Cursor</p>
+                <p className="text-xs text-muted-foreground">
+                  Launch Cursor IDE on your machine
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
+                <span className="text-sm font-medium text-purple-500">2</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Open Extensions</p>
+                <p className="text-xs text-muted-foreground">
+                  Press{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    Cmd+Shift+X
+                  </code>{' '}
+                  (Mac) or{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    Ctrl+Shift+X
+                  </code>{' '}
+                  (Windows/Linux)
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
+                <span className="text-sm font-medium text-purple-500">3</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Install from Open VSX</p>
+                <p className="text-xs text-muted-foreground">
+                  Search for "Unhook" in the Open VSX registry
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
+                <span className="text-sm font-medium text-purple-500">4</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Configure the extension</p>
+                <p className="text-xs text-muted-foreground">
+                  Use webhook ID:{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    {webhookId}
+                  </code>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-xs text-muted-foreground mb-2">
+              Direct install URL (when available):
+            </p>
+            <div className="flex gap-2">
+              <Textarea
+                value="https://open-vsx.org/extension/unhook/unhook"
+                readOnly
+                className="font-mono text-sm resize-none opacity-50"
+                rows={1}
+              />
+              <CopyButton
+                text="https://open-vsx.org/extension/unhook/unhook"
+                variant="outline"
+                disabled
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              Extension coming soon to Open VSX registry
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="windsurf" className="space-y-4 mt-4">
+          <Alert>
+            <AlertDescription>
+              Install the Unhook extension in Windsurf to receive webhooks in
+              your Codeium-powered editor.
+            </AlertDescription>
+          </Alert>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10">
+                <Icons.FlaskConical className="h-5 w-5 text-teal-500" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Open Windsurf</p>
+                <p className="text-xs text-muted-foreground">
+                  Launch Windsurf IDE on your machine
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10">
+                <span className="text-sm font-medium text-teal-500">2</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Open Extensions</p>
+                <p className="text-xs text-muted-foreground">
+                  Press{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    Cmd+Shift+X
+                  </code>{' '}
+                  (Mac) or{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    Ctrl+Shift+X
+                  </code>{' '}
+                  (Windows/Linux)
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10">
+                <span className="text-sm font-medium text-teal-500">3</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Install from Open VSX</p>
+                <p className="text-xs text-muted-foreground">
+                  Search for "Unhook" in the Open VSX registry
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-500/10">
+                <span className="text-sm font-medium text-teal-500">4</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Configure the extension</p>
+                <p className="text-xs text-muted-foreground">
+                  Use webhook ID:{' '}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    {webhookId}
+                  </code>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-xs text-muted-foreground mb-2">
+              Direct install URL (when available):
+            </p>
+            <div className="flex gap-2">
+              <Textarea
+                value="https://open-vsx.org/extension/unhook/unhook"
+                readOnly
+                className="font-mono text-sm resize-none opacity-50"
+                rows={1}
+              />
+              <CopyButton
+                text="https://open-vsx.org/extension/unhook/unhook"
+                variant="outline"
+                disabled
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              Extension coming soon to Open VSX registry
+            </p>
           </div>
         </TabsContent>
       </Tabs>

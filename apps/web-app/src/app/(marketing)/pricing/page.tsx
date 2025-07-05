@@ -160,10 +160,10 @@ export default function PricingPage() {
                       {tier.price === 'Custom'
                         ? tier.price
                         : tier.price === '$0'
-                        ? '$0'
-                        : billingPeriod === 'yearly'
-                        ? `$${parseInt(tier.price.slice(1)) * 10}`
-                        : tier.price}
+                          ? '$0'
+                          : billingPeriod === 'yearly'
+                            ? `$${Number.parseInt(tier.price.slice(1)) * 10}`
+                            : tier.price}
                     </span>
                     {tier.price !== 'Custom' && tier.price !== '$0' && (
                       <span className="ml-2 text-sm text-muted-foreground">

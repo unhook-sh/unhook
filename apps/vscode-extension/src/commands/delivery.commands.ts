@@ -14,7 +14,7 @@ const log = debug('unhook:vscode:delivery-commands');
  */
 
 export function registerDeliveryCommands(context: vscode.ExtensionContext) {
-  const settingsService = SettingsService.getInstance();
+  const _settingsService = SettingsService.getInstance();
 
   // Register toggle delivery command
   const toggleDeliveryCommand = vscode.commands.registerCommand(

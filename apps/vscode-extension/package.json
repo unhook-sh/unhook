@@ -9,7 +9,11 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": ["Debuggers", "Testing", "Other"],
+  "categories": [
+    "Debuggers",
+    "Testing",
+    "Other"
+  ],
   "contributes": {
     "authentication": [
       {
@@ -294,7 +298,12 @@
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "icon": "logo.png",
-  "keywords": ["webhook", "development", "testing", "debugging"],
+  "keywords": [
+    "webhook",
+    "development",
+    "testing",
+    "debugging"
+  ],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "private": true,

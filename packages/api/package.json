@@ -42,10 +42,6 @@
     "./client": {
       "default": "./src/client.ts",
       "types": "./dist/client.d.ts"
-    },
-    "./stripe": {
-      "default": "./src/stripe.ts",
-      "types": "./dist/stripe.d.ts"
     }
   },
   "license": "MIT",

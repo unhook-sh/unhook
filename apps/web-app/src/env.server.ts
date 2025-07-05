@@ -22,9 +22,9 @@ export const env = createEnv({
       .default('development'),
     POSTGRES_URL: z.string().url(),
     POSTHOG_KEY: z.string(),
-    STRIPE_SECRET_KEY: z.string(),
-    STRIPE_WEBHOOK_SECRET: z.string(),
-    STRIPE_USAGE_RECORD_PRICE_ID: z.string(),
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_USAGE_RECORD_PRICE_ID: z.string().optional(),
   },
 
   skipValidation:

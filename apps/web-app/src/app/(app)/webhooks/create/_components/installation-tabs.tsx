@@ -141,13 +141,13 @@ export function InstallationTabs({
             </p>
             <div className="flex gap-2">
               <Textarea
-                value="code --install-extension unhook.unhook"
+                value="code --install-extension unhook.unhook-vscode"
                 readOnly
                 className="font-mono text-sm resize-none"
                 rows={1}
               />
               <CopyButton
-                text="code --install-extension unhook.unhook"
+                text="code --install-extension unhook.unhook-vscode"
                 variant="outline"
               />
             </div>
@@ -155,18 +155,26 @@ export function InstallationTabs({
 
           <div className="rounded-lg border bg-blue-500/10 p-4">
             <p className="text-xs font-medium text-blue-600 mb-2">
-              One-click install (when available):
+              Direct links
             </p>
-            <a
-              href="vscode:extension/unhook.unhook"
-              className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              <Icons.Download className="h-4 w-4" />
-              Install Unhook Extension
-            </a>
-            <p className="text-xs text-muted-foreground mt-2 italic">
-              Extension coming soon to VS Code Marketplace
-            </p>
+            <div className="flex flex-col gap-2">
+              <a
+                href="vscode:extension/unhook.unhook-vscode"
+                className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <Icons.Download className="h-4 w-4" />
+                Install from VS Code
+              </a>
+              <a
+                href="https://open-vsx.org/extension/unhook/unhook-vscode"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <Icons.ExternalLink className="h-4 w-4" />
+                View on Open VSX Registry
+              </a>
+            </div>
           </div>
         </TabsContent>
 
@@ -216,9 +224,9 @@ export function InstallationTabs({
                 <span className="text-sm font-medium text-purple-500">3</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Install from Open VSX</p>
+                <p className="text-sm font-medium">Search for "Unhook"</p>
                 <p className="text-xs text-muted-foreground">
-                  Search for "Unhook" in the Open VSX registry
+                  The extension is available in Cursor's Open VSX marketplace
                 </p>
               </div>
             </div>
@@ -241,24 +249,32 @@ export function InstallationTabs({
 
           <div className="rounded-lg border bg-muted/50 p-4">
             <p className="text-xs text-muted-foreground mb-2">
-              Direct install URL (when available):
+              Alternative installation methods
             </p>
-            <div className="flex gap-2">
-              <Textarea
-                value="https://open-vsx.org/extension/unhook/unhook"
-                readOnly
-                className="font-mono text-sm resize-none opacity-50"
-                rows={1}
-              />
-              <CopyButton
-                text="https://open-vsx.org/extension/unhook/unhook"
-                variant="outline"
-                disabled
-              />
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                • Download the .vsix file from Open VSX and drag it into the
+                Extensions panel
+              </p>
+              <p className="text-xs text-muted-foreground">
+                • Use "Install from VSIX..." in the Extensions menu
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 italic">
-              Extension coming soon to Open VSX registry
+          </div>
+
+          <div className="rounded-lg border bg-purple-500/10 p-4">
+            <p className="text-xs font-medium text-purple-600 mb-2">
+              Direct link
             </p>
+            <a
+              href="https://open-vsx.org/extension/unhook/unhook-vscode"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+            >
+              <Icons.ExternalLink className="h-4 w-4" />
+              View on Open VSX Registry
+            </a>
           </div>
         </TabsContent>
 
@@ -266,7 +282,7 @@ export function InstallationTabs({
           <Alert>
             <AlertDescription>
               Install the Unhook extension in Windsurf to receive webhooks in
-              your Codeium-powered editor.
+              your AI-powered editor.
             </AlertDescription>
           </Alert>
 
@@ -308,9 +324,9 @@ export function InstallationTabs({
                 <span className="text-sm font-medium text-teal-500">3</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Install from Open VSX</p>
+                <p className="text-sm font-medium">Search for "Unhook"</p>
                 <p className="text-xs text-muted-foreground">
-                  Search for "Unhook" in the Open VSX registry
+                  The extension is available in Windsurf's Open VSX marketplace
                 </p>
               </div>
             </div>
@@ -333,24 +349,32 @@ export function InstallationTabs({
 
           <div className="rounded-lg border bg-muted/50 p-4">
             <p className="text-xs text-muted-foreground mb-2">
-              Direct install URL (when available):
+              Alternative installation methods
             </p>
-            <div className="flex gap-2">
-              <Textarea
-                value="https://open-vsx.org/extension/unhook/unhook"
-                readOnly
-                className="font-mono text-sm resize-none opacity-50"
-                rows={1}
-              />
-              <CopyButton
-                text="https://open-vsx.org/extension/unhook/unhook"
-                variant="outline"
-                disabled
-              />
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                • Download the .vsix file from Open VSX and drag it into the
+                Extensions panel
+              </p>
+              <p className="text-xs text-muted-foreground">
+                • Use "Install from VSIX..." in the Extensions menu
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 italic">
-              Extension coming soon to Open VSX registry
+          </div>
+
+          <div className="rounded-lg border bg-teal-500/10 p-4">
+            <p className="text-xs font-medium text-teal-600 mb-2">
+              Direct link
             </p>
+            <a
+              href="https://open-vsx.org/extension/unhook/unhook-vscode"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+            >
+              <Icons.ExternalLink className="h-4 w-4" />
+              View on Open VSX Registry
+            </a>
           </div>
         </TabsContent>
       </Tabs>

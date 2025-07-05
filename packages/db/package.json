@@ -78,7 +78,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "build.todo": "bun gen-types && tsc",
+    "build.todo": "bun gen-supabase-types && tsc",
     "clean": "rm -rf .turbo node_modules dist",
     "create-supabase-policies": "tsx scripts/create-supabase-policies.ts",
     "dev": "tsx ./scripts/watch.ts",

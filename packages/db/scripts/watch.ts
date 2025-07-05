@@ -8,7 +8,7 @@ import { debounce } from 'lodash-es';
 async function generateTypes() {
   console.log('🔄 Generating types...');
   try {
-    const process = spawn('bun', ['gen-types'], {
+    const process = spawn('bun', ['gen-supabase-types'], {
       stdio: 'inherit',
       shell: true,
     });

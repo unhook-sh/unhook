@@ -256,7 +256,7 @@
     ]
   },
   "dependencies": {
-    "@unhook/client": "0.4.6",
+    "@unhook/client": "0.5.0",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
@@ -334,5 +334,5 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "commonjs",
-  "version": "0.1.6"
+  "version": "0.2.0"
 }

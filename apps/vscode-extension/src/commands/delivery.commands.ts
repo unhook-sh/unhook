@@ -36,22 +36,7 @@ export function registerDeliveryCommands(context: vscode.ExtensionContext) {
     },
   );
 
-  // Listen for configuration changes to update settings service
-  const configChangeListener = vscode.workspace.onDidChangeConfiguration(
-    (e) => {
-      if (e.affectsConfiguration('unhook.delivery.enabled')) {
-        const config = vscode.workspace.getConfiguration('unhook');
-        const newSettings = {
-          delivery: {
-            enabled: config.get<boolean>('delivery.enabled', true),
-          },
-        };
-        settingsService.updateSettings(newSettings);
-      }
-    },
-  );
-
-  context.subscriptions.push(toggleDeliveryCommand, configChangeListener);
+  context.subscriptions.push(toggleDeliveryCommand);
 }
 
 export function isDeliveryPaused(): boolean {

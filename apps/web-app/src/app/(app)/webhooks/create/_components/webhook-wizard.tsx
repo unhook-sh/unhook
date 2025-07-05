@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { createAuthCode } from '~/app/(app)/cli-token/actions';
 import { env } from '~/env.client';
 import { createWebhook } from './actions';
-import { InstallationCommand } from './installation-command';
+import { InstallationTabs } from './installation-tabs';
 import { RealTimeEventStream } from './real-time-event-stream';
 import { SourceStep } from './source-step';
 import { WebhookUrlStep } from './webhook-url-step';
@@ -156,7 +156,7 @@ export function WebhookWizard(_props: { authToken?: string }) {
               <>
                 <WebhookUrlStep webhookUrl={webhookUrl} source={source} />
                 <SourceStep value={source} onChange={setSource} />
-                <InstallationCommand
+                <InstallationTabs
                   authCode={authCode.id}
                   webhookId={webhook.id}
                   source={source}

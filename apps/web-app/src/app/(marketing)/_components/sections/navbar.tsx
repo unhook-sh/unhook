@@ -126,6 +126,12 @@ export function Navbar({ navs }: { navs?: NavItem[] }) {
             <div className="flex flex-row items-center gap-1 md:gap-3 shrink-0">
               <div className="flex items-center space-x-4">
                 <Link
+                  className="hidden md:flex items-center text-sm font-medium text-primary/80 hover:text-primary transition-colors"
+                  href="/pricing"
+                >
+                  Pricing
+                </Link>
+                <Link
                   className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
                   href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
                 >
@@ -248,6 +254,12 @@ export function Navbar({ navs }: { navs?: NavItem[] }) {
 
                 {/* Action buttons */}
                 <div className="flex flex-col gap-2">
+                  <Link
+                    href="/pricing"
+                    className="h-8 flex items-center justify-center text-sm font-medium text-primary/80 hover:text-primary transition-colors"
+                  >
+                    Pricing
+                  </Link>
                   <Link
                     href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
                     className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"

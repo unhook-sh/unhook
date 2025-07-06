@@ -7,7 +7,8 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title: 'Unhook vs Smee.io: Professional Webhook Testing vs Basic Proxy | Unhook',
+  title:
+    'Unhook vs Smee.io: Professional Webhook Testing vs Basic Proxy | Unhook',
   description:
     'Compare Unhook and Smee.io for webhook testing. While Smee.io offers basic webhook proxying, Unhook provides team collaboration, VS Code integration, and enterprise features.',
   keywords: [
@@ -226,7 +227,8 @@ export default function UnhookVsSmeePage() {
                 Why Teams Choose Unhook Over Smee.io
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Smee.io is great for quick tests, but professional teams need more than basic proxying.
+                Smee.io is great for quick tests, but professional teams need
+                more than basic proxying.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">

@@ -87,7 +87,9 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     };
   }
 
-  async createSession(scopes: string[]): Promise<vscode.AuthenticationSession> {
+  async createSession(
+    _scopes: string[],
+  ): Promise<vscode.AuthenticationSession> {
     try {
       // Open browser for auth
       const authUrl = new URL(

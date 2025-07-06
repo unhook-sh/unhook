@@ -276,7 +276,8 @@ export default function UnhookVsHookdeckPage() {
                 Why Development Teams Choose Unhook
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Hookdeck is great for production events, but Unhook is designed for where you spend 90% of your time: development and testing.
+                Hookdeck is great for production events, but Unhook is designed
+                for where you spend 90% of your time: development and testing.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">

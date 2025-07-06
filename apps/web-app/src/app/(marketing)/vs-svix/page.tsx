@@ -276,7 +276,9 @@ export default function UnhookVsSvixPage() {
                 Why Development Teams Choose Unhook
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Svix is excellent for production webhook infrastructure, but Unhook is designed for the development workflow where testing happens.
+                Svix is excellent for production webhook infrastructure, but
+                Unhook is designed for the development workflow where testing
+                happens.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">

@@ -61,6 +61,7 @@ export function Navbar({ navs }: { navs?: NavItem[] }) {
   // Helper to check if a link is an anchor link
   const isAnchorLink = (href: string) => href.startsWith('#');
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: will cause infinite loop
   useEffect(() => {
     const handleScroll = () => {
       // Only handle scroll for anchor links

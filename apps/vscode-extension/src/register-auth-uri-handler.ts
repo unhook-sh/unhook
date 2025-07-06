@@ -12,7 +12,7 @@ import type { AuthStore } from './services/auth.service';
  */
 export function registerUriHandler(
   context: vscode.ExtensionContext,
-  authStore: AuthStore,
+  _authStore: AuthStore,
   log: (...args: unknown[]) => void,
   authProvider?: UnhookAuthProvider,
 ) {

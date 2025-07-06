@@ -181,7 +181,11 @@ const competitors = [
     category: 'Webhook Infrastructure',
     pricing: 'From $490/month',
     marketShare: 'High',
-    strengths: ['Enterprise-grade', 'Sending & receiving', 'Full infrastructure'],
+    strengths: [
+      'Enterprise-grade',
+      'Sending & receiving',
+      'Full infrastructure',
+    ],
     weaknesses: [
       'Production-focused',
       'Complex integration',
@@ -312,8 +316,9 @@ export default function ComparisonsPage() {
                 features.
               </p>
               <p className="text-sm text-muted-foreground max-w-3xl mx-auto mt-4">
-                Also evaluating: Webhook Relay, Zrok, Bore, Serveo, Pagekite, 
-                Tailscale Funnel, Localhost.run, Pinggy, and more emerging tools...
+                Also evaluating: Webhook Relay, Zrok, Bore, Serveo, Pagekite,
+                Tailscale Funnel, Localhost.run, Pinggy, and more emerging
+                tools...
               </p>
             </div>
           </div>

@@ -7,7 +7,8 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title: 'Unhook vs Cloudflare Tunnel: Webhook Testing vs Infrastructure Tunneling | Unhook',
+  title:
+    'Unhook vs Cloudflare Tunnel: Webhook Testing vs Infrastructure Tunneling | Unhook',
   description:
     'Compare Unhook and Cloudflare Tunnel. While Cloudflare Tunnel excels at infrastructure tunneling, Unhook specializes in webhook testing with team collaboration and VS Code integration.',
   keywords: [
@@ -287,7 +288,9 @@ export default function UnhookVsCloudflareTunnelPage() {
                 Why Developers Choose Unhook for Webhook Testing
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Cloudflare Tunnel is excellent for infrastructure access, but Unhook is designed specifically for webhook development workflows.
+                Cloudflare Tunnel is excellent for infrastructure access, but
+                Unhook is designed specifically for webhook development
+                workflows.
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">

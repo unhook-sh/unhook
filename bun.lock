@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.12.21",
+      "version": "0.13.0",
       "bin": {
         "unhook": "./bin/cli.js",
       },
@@ -93,9 +93,9 @@
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.1.6",
+      "version": "0.2.0",
       "dependencies": {
-        "@unhook/client": "0.4.6",
+        "@unhook/client": "0.5.0",
         "clsx": "2.1.1",
         "date-fns": "4.1.0",
         "react": "19.1.0",
@@ -129,7 +129,7 @@
     },
     "apps/web-app": {
       "name": "@unhook/web-app",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "dependencies": {
         "@clerk/elements": "0.23.33",
         "@clerk/nextjs": "6.22.0",
@@ -252,7 +252,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.4.6",
+      "version": "0.5.0",
       "dependencies": {
         "@supabase/supabase-js": "2.50.0",
         "@t3-oss/env-core": "0.13.8",
@@ -499,10 +499,6 @@
     },
     "tooling/github": {
       "name": "@unhook/github",
-    },
-    "tooling/homebrew": {
-      "name": "@unhook/homebrew",
-      "version": "0.1.0",
     },
     "tooling/next": {
       "name": "@unhook/next-config",
@@ -2002,8 +1998,6 @@
     "@unhook/forwarding": ["@unhook/forwarding@workspace:packages/forwarding"],
 
     "@unhook/github": ["@unhook/github@workspace:tooling/github"],
-
-    "@unhook/homebrew": ["@unhook/homebrew@workspace:tooling/homebrew"],
 
     "@unhook/id": ["@unhook/id@workspace:packages/id"],
 

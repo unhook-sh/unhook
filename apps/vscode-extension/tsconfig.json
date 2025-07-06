@@ -1,19 +1,12 @@
 {
   "extends": "@unhook/tsconfig/react-library.json",
   "compilerOptions": {
-    // "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "noEmit": false,
-    // "composite": true,
-    // "declaration": true,
-    // "declarationDir": "dist",
-    "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": "src",
     "module": "ESNext",
-    "target": "ES2022",
-    "lib": ["ES2022"],
-    "types": ["node", "vscode"],
-    "skipLibCheck": true
+    "types": ["node", "vscode", "bun", "vitest/globals"]
     // "baseUrl": ".",
     // "paths": {
     //   "~/*": ["src/*"]

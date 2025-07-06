@@ -165,7 +165,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
       // Show success message
       vscode.window.showInformationMessage('Successfully signed in to Unhook');
     } catch (error) {
-      this._pendingAuth.reject(error as Error);
+      this._pendingAuth?.reject(error as Error);
       this._pendingAuth = undefined;
     }
   }

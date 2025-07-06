@@ -1,8 +1,6 @@
 {
   "commitlint": {
-    "extends": [
-      "@unhook/commitlint-config"
-    ]
+    "extends": ["@unhook/commitlint-config"]
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.4",
@@ -49,16 +47,15 @@
     "postinstall": "bun lint:ws",
     "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... --filter=./apps/vscode-extension... && changeset publish",
     "test": "bun test",
+    "test:integ": "turbo run test --filter=@unhook/integ-test",
+    "test:integ:watch": "turbo run test:watch --filter=@unhook/integ-test",
+    "test:integ:ci": "turbo run test:ci --filter=@unhook/integ-test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
     "with-env": "infisical run --",
     "version": "changeset version && bun biome check --write"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*",
-    "tooling/*"
-  ],
+  "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "trustedDependencies": [
     "@biomejs/biome",
     "@clerk/shared",

@@ -115,6 +115,22 @@
     "ui-add": {
       "cache": false,
       "interactive": true
+    },
+    "test": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "env": ["USE_LOCAL_DB"],
+      "outputs": ["coverage/**"]
+    },
+    "test:ci": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
     }
   },
   "ui": "tui"

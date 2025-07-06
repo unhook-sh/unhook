@@ -1,0 +1,50 @@
+{
+  "name": "@unhook/integ-test",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "CI=true vitest run --coverage",
+    "test:debug": "vitest --inspect-brk --inspect --logHeapUsage --threads=false",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:watch": "vitest --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf node_modules dist coverage .turbo"
+  },
+  "dependencies": {
+    "@unhook/api": "workspace:*",
+    "@unhook/client": "workspace:*",
+    "@unhook/db": "workspace:*",
+    "@unhook/id": "workspace:*",
+    "@unhook/utils": "workspace:*",
+    "@supabase/supabase-js": "2.50.4",
+    "drizzle-orm": "0.39.2",
+    "postgres": "3.5.1",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "9.4.1",
+    "@types/node": "22.13.1",
+    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/ui": "3.2.4",
+    "dotenv": "16.4.7",
+    "tsup": "8.4.2",
+    "tsx": "4.20.1",
+    "typescript": "5.8.3",
+    "vitest": "3.2.4",
+    "wait-for-expect": "3.0.2",
+    "ws": "8.18.0",
+    "@types/ws": "8.5.14",
+    "node-fetch": "3.3.2",
+    "execa": "8.0.1",
+    "@testcontainers/postgresql": "11.0.5",
+    "testcontainers": "11.0.5",
+    "express": "4.21.2",
+    "@types/express": "5.0.1"
+  },
+  "engines": {
+    "node": ">=20.12.0"
+  }
+}

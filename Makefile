@@ -18,6 +18,12 @@ help:
 	@echo "  make logs           - View logs for all services"
 	@echo "  make db-backup      - Backup database"
 	@echo "  make db-restore     - Restore database from backup.sql"
+	@echo ""
+	@echo "Testing:"
+	@echo "  make test-integ     - Run integration tests"
+	@echo "  make test-integ-watch - Run tests in watch mode"
+	@echo "  make test-integ-ci  - Run tests for CI/CD"
+	@echo "  make test-integ-local - Run tests with local DB"
 
 # Build Docker images
 build:
@@ -63,3 +69,20 @@ db-restore:
 # Check if .env exists
 check-env:
 	@test -f .env || (echo "Error: .env file not found. Run 'cp .env.example .env' and configure it." && exit 1)
+
+# Integration tests
+test-integ:
+	@echo "Running integration tests..."
+	cd packages/integ-test && bun test
+
+test-integ-watch:
+	@echo "Running integration tests in watch mode..."
+	cd packages/integ-test && bun test:watch
+
+test-integ-ci:
+	@echo "Running integration tests for CI..."
+	cd packages/integ-test && bun test:ci
+
+test-integ-local:
+	@echo "Running integration tests with local database..."
+	cd packages/integ-test && USE_LOCAL_DB=true bun test

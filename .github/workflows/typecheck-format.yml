@@ -8,7 +8,7 @@ on:
       - "packages/**"
       - "tooling/**"
       - "package.json"
-      - "bun.lockb"
+      - "bun.lock"
   push:
     branches: ["main"]
     paths:
@@ -16,7 +16,7 @@ on:
       - "packages/**"
       - "tooling/**"
       - "package.json"
-      - "bun.lockb"
+      - "bun.lock"
   merge_group:
 
 concurrency:
@@ -39,8 +39,11 @@ jobs:
       - name: Setup
         uses: ./tooling/github/setup
 
+      - name: Clear Biome cache
+        run: rm -rf ~/.cache/biome
+
       - name: Format
-        run: bun format
+        run: bun format --diagnostic-level=warn
 
   typecheck:
     runs-on: ubuntu-latest

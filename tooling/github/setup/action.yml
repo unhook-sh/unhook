@@ -12,6 +12,8 @@ runs:
         restore-keys: |
           ${{ runner.os }}-turbo-
     - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: 1.2.27
 
     - shell: bash
       run: bun add -g turbo

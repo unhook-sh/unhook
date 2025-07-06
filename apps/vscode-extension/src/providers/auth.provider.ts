@@ -19,6 +19,13 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
   readonly onDidChangeSessions = this._onDidChangeSessions.event;
 
+  private _pendingAuth:
+    | {
+        resolve: (session: vscode.AuthenticationSession) => void;
+        reject: (error: Error) => void;
+      }
+    | undefined;
+
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly authStore: AuthStore,
@@ -46,7 +53,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
 
   static register(context: vscode.ExtensionContext, authStore: AuthStore) {
     const provider = new UnhookAuthProvider(context, authStore);
-    return vscode.authentication.registerAuthenticationProvider(
+    const disposable = vscode.authentication.registerAuthenticationProvider(
       UnhookAuthProvider.AUTH_TYPE,
       'Unhook',
       provider,
@@ -54,6 +61,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
         supportsMultipleAccounts: false,
       },
     );
+    return { provider, disposable };
   }
 
   async getSessions(scopes: string[]): Promise<vscode.AuthenticationSession[]> {
@@ -91,31 +99,56 @@ export class UnhookAuthProvider implements AuthenticationProvider {
         'redirect_uri',
         `${editorScheme}://${env.NEXT_PUBLIC_VSCODE_EXTENSION_ID}`,
       );
-      await vscode.env.openExternal(vscode.Uri.parse(authUrl.toString()));
 
-      // Wait for the auth code from VS Code
-      const session = await vscode.authentication.getSession(
-        UnhookAuthProvider.AUTH_TYPE,
-        scopes,
-        { createIfNone: true },
+      // Create a promise that will be resolved by the URI handler
+      const authPromise = new Promise<vscode.AuthenticationSession>(
+        (resolve, reject) => {
+          this._pendingAuth = { resolve, reject };
+
+          // Set a timeout in case the auth flow fails
+          setTimeout(() => {
+            if (this._pendingAuth) {
+              this._pendingAuth = undefined;
+              reject(new Error('Authentication timed out'));
+            }
+          }, 120000); // 2 minute timeout
+        },
       );
 
-      if (!session) {
-        throw new Error('No session returned from VS Code auth');
-      }
+      // Open the browser
+      await vscode.env.openExternal(vscode.Uri.parse(authUrl.toString()));
 
-      // Use your existing code exchange
+      // Wait for the auth to complete
+      const session = await authPromise;
+
+      this._onDidChangeSessions.fire({
+        added: [session],
+        removed: [],
+        changed: [],
+      });
+
+      return session;
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Failed to create authentication session: ${(error as Error).message}`,
+      );
+      throw error;
+    }
+  }
+
+  // Method to be called by the URI handler when auth is complete
+  async completeAuth(code: string): Promise<void> {
+    if (!this._pendingAuth) {
+      // No pending auth flow
+      return;
+    }
+
+    try {
+      // Exchange the auth code
       const { authToken, sessionId, user } =
-        await this.authStore.api.auth.exchangeAuthCode.mutate({
-          code: session.accessToken, // VS Code will pass the code as the accessToken
-        });
+        await this.authStore.exchangeAuthCode({ code });
 
-      // Update auth store
-      await this.authStore.setAuthToken({ token: authToken });
-      await this.authStore.setSessionId({ sessionId });
-      this.authStore.setUser(user);
-
-      const newSession: vscode.AuthenticationSession = {
+      const session: vscode.AuthenticationSession = {
         id: sessionId,
         accessToken: authToken,
         account: {
@@ -125,18 +158,15 @@ export class UnhookAuthProvider implements AuthenticationProvider {
         scopes: UnhookAuthProvider.SCOPES,
       };
 
-      this._onDidChangeSessions.fire({
-        added: [newSession],
-        removed: [],
-        changed: [],
-      });
+      // Resolve the pending auth promise
+      this._pendingAuth.resolve(session);
+      this._pendingAuth = undefined;
 
-      return newSession;
+      // Show success message
+      vscode.window.showInformationMessage('Successfully signed in to Unhook');
     } catch (error) {
-      vscode.window.showErrorMessage(
-        `Failed to create authentication session: ${(error as Error).message}`,
-      );
-      throw error;
+      this._pendingAuth.reject(error as Error);
+      this._pendingAuth = undefined;
     }
   }
 

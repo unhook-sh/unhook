@@ -113,7 +113,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Add status bar item to subscriptions
   context.subscriptions.push(
     authStore,
-    authProvider,
     signInCommand,
     signOutCommand,
     statusBarItem,
@@ -132,7 +131,7 @@ export async function activate(context: vscode.ExtensionContext) {
   quickPick.setAuthStore(authStore);
 
   // Register the custom URI scheme handler
-  registerUriHandler(context, authStore, log);
+  registerUriHandler(context, authStore, log, authProvider);
 
   // Register commands
   registerOutputCommands(context, outputDestination);

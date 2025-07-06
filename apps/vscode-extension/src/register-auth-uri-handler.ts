@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { env } from './env';
+import type { UnhookAuthProvider } from './providers/auth.provider';
 import type { AuthStore } from './services/auth.service';
 
 /**
@@ -7,11 +8,13 @@ import type { AuthStore } from './services/auth.service';
  * @param context The extension context
  * @param authStore The authentication store
  * @param log Logger function
+ * @param authProvider Optional auth provider for handling auth completion
  */
 export function registerUriHandler(
   context: vscode.ExtensionContext,
   authStore: AuthStore,
   log: (...args: unknown[]) => void,
+  authProvider?: UnhookAuthProvider,
 ) {
   const disposable = vscode.window.registerUriHandler({
     async handleUri(uri: vscode.Uri) {
@@ -19,19 +22,16 @@ export function registerUriHandler(
       // Handle any of our supported editor schemes
       if (uri.authority === env.NEXT_PUBLIC_VSCODE_EXTENSION_ID) {
         const code = uri.query.split('=')[1];
-        if (code) {
-          await authStore.exchangeAuthCode({ code });
-          vscode.window.showInformationMessage(
-            'Successfully signed into Unhook',
-          );
-          // The auth provider will handle the code exchange
-          vscode.authentication.getSession(
-            'unhook',
-            ['openid', 'email', 'profile'],
-            {
-              createIfNone: true,
-            },
-          );
+        if (code && authProvider) {
+          try {
+            // Complete the auth flow in the provider
+            await authProvider.completeAuth(code);
+          } catch (error) {
+            log('Error completing auth:', error);
+            vscode.window.showErrorMessage(
+              `Failed to complete authentication: ${(error as Error).message}`,
+            );
+          }
         }
       }
     },

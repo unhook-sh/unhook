@@ -58,11 +58,16 @@ export function Navbar({ navs }: { navs?: NavItem[] }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
 
+  // Helper to check if a link is an anchor link
+  const isAnchorLink = (href: string) => href.startsWith('#');
+
   useEffect(() => {
     const handleScroll = () => {
-      const sections = siteConfig.nav.links.map((item) =>
-        item.href.substring(1),
+      // Only handle scroll for anchor links
+      const anchorLinks = siteConfig.nav.links.filter((item) =>
+        isAnchorLink(item.href),
       );
+      const sections = anchorLinks.map((item) => item.href.substring(1));
 
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -223,32 +228,49 @@ export function Navbar({ navs }: { navs?: NavItem[] }) {
                   variants={drawerMenuContainerVariants}
                 >
                   <AnimatePresence>
-                    {siteConfig.nav.links.map((item) => (
-                      <motion.li
-                        key={item.id}
-                        className="p-2.5 border-b border-border last:border-b-0"
-                        variants={drawerMenuVariants}
-                      >
-                        <a
-                          href={item.href}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            const element = document.getElementById(
-                              item.href.substring(1),
-                            );
-                            element?.scrollIntoView({ behavior: 'smooth' });
-                            setIsDrawerOpen(false);
-                          }}
-                          className={`underline-offset-4 hover:text-primary/80 transition-colors ${
-                            activeSection === item.href.substring(1)
-                              ? 'text-primary font-medium'
-                              : 'text-primary/60'
-                          }`}
+                    {siteConfig.nav.links.map((item) => {
+                      const isAnchor = isAnchorLink(item.href);
+                      const isActive = isAnchor
+                        ? activeSection === item.href.substring(1)
+                        : false;
+
+                      return (
+                        <motion.li
+                          key={item.id}
+                          className="p-2.5 border-b border-border last:border-b-0"
+                          variants={drawerMenuVariants}
                         >
-                          {item.name}
-                        </a>
-                      </motion.li>
-                    ))}
+                          {isAnchor ? (
+                            <a
+                              href={item.href}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const element = document.getElementById(
+                                  item.href.substring(1),
+                                );
+                                element?.scrollIntoView({ behavior: 'smooth' });
+                                setIsDrawerOpen(false);
+                              }}
+                              className={`underline-offset-4 hover:text-primary/80 transition-colors ${
+                                isActive
+                                  ? 'text-primary font-medium'
+                                  : 'text-primary/60'
+                              }`}
+                            >
+                              {item.name}
+                            </a>
+                          ) : (
+                            <Link
+                              href={item.href}
+                              onClick={() => setIsDrawerOpen(false)}
+                              className="underline-offset-4 hover:text-primary/80 transition-colors text-primary/60"
+                            >
+                              {item.name}
+                            </Link>
+                          )}
+                        </motion.li>
+                      );
+                    })}
                   </AnimatePresence>
                 </motion.ul>
 

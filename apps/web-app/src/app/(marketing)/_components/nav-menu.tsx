@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
+import Link from 'next/link';
 import React, { useRef, useState } from 'react';
 
 export interface NavItem {
@@ -16,10 +17,14 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
   const [activeSection, setActiveSection] = useState('hero');
   const [isManualScroll, setIsManualScroll] = useState(false);
 
+  // Separate anchor links from page links
+  const anchorLinks = navs?.filter((item) => item.href.startsWith('#')) ?? [];
+  const isAnchorLink = (href: string) => href.startsWith('#');
+
   React.useEffect(() => {
     // Initialize with first nav item
     const firstItem = ref.current?.querySelector(
-      `[href="#${navs?.[0]?.href.substring(1)}"]`,
+      `[href="${navs?.[0]?.href}"]`,
     )?.parentElement;
     if (firstItem) {
       const rect = firstItem.getBoundingClientRect();
@@ -34,7 +39,8 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
       // Skip scroll handling during manual click scrolling
       if (isManualScroll) return;
 
-      const sections = navs?.map((item) => item.href.substring(1)) ?? [];
+      // Only handle scroll for anchor links
+      const sections = anchorLinks.map((item) => item.href.substring(1));
 
       // Find the section closest to viewport top
       let closestSection = sections[0];
@@ -67,12 +73,17 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Initial check
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isManualScroll, navs]);
+  }, [isManualScroll, anchorLinks]);
 
   const handleClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     item: NavItem,
   ) => {
+    // Don't prevent default for external links
+    if (!isAnchorLink(item.href)) {
+      return;
+    }
+
     e.preventDefault();
 
     const targetId = item.href.substring(1);
@@ -114,20 +125,29 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
         className="relative mx-auto flex w-fit rounded-full h-11 px-2 items-center justify-center"
         ref={ref}
       >
-        {navs?.map((item) => (
-          <li
-            key={item.name}
-            className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-              activeSection === item.href.substring(1)
-                ? 'text-primary'
-                : 'text-primary/60 hover:text-primary'
-            } tracking-tight`}
-          >
-            <a href={item.href} onClick={(e) => handleClick(e, item)}>
-              {item.name}
-            </a>
-          </li>
-        ))}
+        {navs?.map((item) => {
+          const isAnchor = isAnchorLink(item.href);
+          const isActive = isAnchor
+            ? activeSection === item.href.substring(1)
+            : false;
+
+          return (
+            <li
+              key={item.name}
+              className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                isActive ? 'text-primary' : 'text-primary/60 hover:text-primary'
+              } tracking-tight`}
+            >
+              {isAnchor ? (
+                <a href={item.href} onClick={(e) => handleClick(e, item)}>
+                  {item.name}
+                </a>
+              ) : (
+                <Link href={item.href}>{item.name}</Link>
+              )}
+            </li>
+          );
+        })}
         {isReady && (
           <motion.li
             animate={{ left, width }}

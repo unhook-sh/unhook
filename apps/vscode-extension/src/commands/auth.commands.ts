@@ -7,8 +7,8 @@ export function registerAuthCommands(
   authStore: AuthStore,
 ) {
   // Register auth provider
-  const provider = new UnhookAuthProvider(context, authStore);
-  const authProvider = UnhookAuthProvider.register(context, authStore);
+  const { provider, disposable: authProviderDisposable } =
+    UnhookAuthProvider.register(context, authStore);
 
   // Register sign in command
   const signInCommand = vscode.commands.registerCommand(
@@ -62,10 +62,14 @@ export function registerAuthCommands(
   );
 
   // Add commands to extension context
-  context.subscriptions.push(signInCommand, signOutCommand);
+  context.subscriptions.push(
+    signInCommand,
+    signOutCommand,
+    authProviderDisposable,
+  );
 
   return {
-    authProvider,
+    authProvider: provider,
     signInCommand,
     signOutCommand,
   };

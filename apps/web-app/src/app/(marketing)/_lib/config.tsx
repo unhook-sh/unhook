@@ -685,10 +685,13 @@ export const siteConfig = {
       title: 'Compare',
       links: [
         { id: 3, title: 'All Comparisons', url: '/comparisons' },
-        { id: 4, title: 'Unhook vs ngrok', url: '/vs-ngrok' },
-        { id: 5, title: 'Unhook vs Webhook.site', url: '/vs-webhook-site' },
-        { id: 6, title: 'Unhook vs Beeceptor', url: '/vs-beeceptor' },
-        { id: 7, title: 'Unhook vs Localtunnel', url: '/vs-localtunnel' },
+        { id: 4, title: 'vs ngrok', url: '/vs-ngrok' },
+        { id: 5, title: 'vs Webhook.site', url: '/vs-webhook-site' },
+        { id: 6, title: 'vs Beeceptor', url: '/vs-beeceptor' },
+        { id: 7, title: 'vs Localtunnel', url: '/vs-localtunnel' },
+        { id: 8, title: 'vs Smee.io', url: '/vs-smee' },
+        { id: 9, title: 'vs Cloudflare Tunnel', url: '/vs-cloudflare-tunnel' },
+        { id: 10, title: 'vs Hookdeck', url: '/vs-hookdeck' },
       ],
     },
     // {

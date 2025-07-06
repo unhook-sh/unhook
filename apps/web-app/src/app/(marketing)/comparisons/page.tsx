@@ -174,6 +174,28 @@ const competitors = [
       'Better for testing',
     ],
   },
+  {
+    name: 'Svix',
+    logo: '🚀',
+    description: 'Enterprise webhook infrastructure as a service',
+    category: 'Webhook Infrastructure',
+    pricing: 'From $490/month',
+    marketShare: 'High',
+    strengths: ['Enterprise-grade', 'Sending & receiving', 'Full infrastructure'],
+    weaknesses: [
+      'Production-focused',
+      'Complex integration',
+      'High pricing',
+      'Not for testing',
+    ],
+    comparison: '/vs-svix',
+    unhookAdvantages: [
+      'Built for development',
+      'Simple team setup',
+      'VS Code integration',
+      'Testing-focused',
+    ],
+  },
 ];
 
 const comparisonMatrix = [
@@ -187,6 +209,7 @@ const comparisonMatrix = [
     smee: false,
     cloudflare: false,
     hookdeck: false,
+    svix: false,
   },
   {
     feature: 'Config File in Repo',
@@ -198,6 +221,7 @@ const comparisonMatrix = [
     smee: false,
     cloudflare: false,
     hookdeck: false,
+    svix: false,
   },
   {
     feature: 'VS Code Integration',
@@ -209,6 +233,7 @@ const comparisonMatrix = [
     smee: false,
     cloudflare: false,
     hookdeck: false,
+    svix: false,
   },
   {
     feature: 'Custom Domains Included',
@@ -220,6 +245,7 @@ const comparisonMatrix = [
     smee: false,
     cloudflare: false,
     hookdeck: false,
+    svix: false,
   },
   {
     feature: 'Event Replay',
@@ -231,6 +257,7 @@ const comparisonMatrix = [
     smee: false,
     cloudflare: false,
     hookdeck: true,
+    svix: true,
   },
   {
     feature: 'Free Tier',
@@ -242,6 +269,7 @@ const comparisonMatrix = [
     smee: true,
     cloudflare: true,
     hookdeck: true,
+    svix: true,
   },
   {
     feature: 'Enterprise Features',
@@ -253,6 +281,7 @@ const comparisonMatrix = [
     smee: false,
     cloudflare: true,
     hookdeck: true,
+    svix: true,
   },
 ];
 
@@ -283,8 +312,8 @@ export default function ComparisonsPage() {
                 features.
               </p>
               <p className="text-sm text-muted-foreground max-w-3xl mx-auto mt-4">
-                Also comparing with: Webhook Relay, Zrok, Bore, Serveo, Pagekite, 
-                Tailscale Funnel, Localhost.run, Pinggy, and more...
+                Also evaluating: Webhook Relay, Zrok, Bore, Serveo, Pagekite, 
+                Tailscale Funnel, Localhost.run, Pinggy, and more emerging tools...
               </p>
             </div>
           </div>
@@ -428,6 +457,7 @@ export default function ComparisonsPage() {
                     <th className="text-center p-4 font-medium">Smee.io</th>
                     <th className="text-center p-4 font-medium">Cloudflare</th>
                     <th className="text-center p-4 font-medium">Hookdeck</th>
+                    <th className="text-center p-4 font-medium">Svix</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -488,6 +518,13 @@ export default function ComparisonsPage() {
                       </td>
                       <td className="p-4 text-center">
                         {row.hookdeck ? (
+                          <CheckCircle className="w-5 h-5 text-green-500 mx-auto" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-500 mx-auto" />
+                        )}
+                      </td>
+                      <td className="p-4 text-center">
+                        {row.svix ? (
                           <CheckCircle className="w-5 h-5 text-green-500 mx-auto" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-500 mx-auto" />

@@ -692,6 +692,7 @@ export const siteConfig = {
         { id: 8, title: 'vs Smee.io', url: '/vs-smee' },
         { id: 9, title: 'vs Cloudflare Tunnel', url: '/vs-cloudflare-tunnel' },
         { id: 10, title: 'vs Hookdeck', url: '/vs-hookdeck' },
+        { id: 11, title: 'vs Svix', url: '/vs-svix' },
       ],
     },
     // {

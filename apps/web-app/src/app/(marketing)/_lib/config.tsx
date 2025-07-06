@@ -681,6 +681,20 @@ export const siteConfig = {
         { id: 2, title: 'Terms of Service', url: '/terms-of-service' },
       ],
     },
+    {
+      title: 'Compare',
+      links: [
+        { id: 3, title: 'All Comparisons', url: '/comparisons' },
+        { id: 4, title: 'vs ngrok', url: '/vs-ngrok' },
+        { id: 5, title: 'vs Webhook.site', url: '/vs-webhook-site' },
+        { id: 6, title: 'vs Beeceptor', url: '/vs-beeceptor' },
+        { id: 7, title: 'vs Localtunnel', url: '/vs-localtunnel' },
+        { id: 8, title: 'vs Smee.io', url: '/vs-smee' },
+        { id: 9, title: 'vs Cloudflare Tunnel', url: '/vs-cloudflare-tunnel' },
+        { id: 10, title: 'vs Hookdeck', url: '/vs-hookdeck' },
+        { id: 11, title: 'vs Svix', url: '/vs-svix' },
+      ],
+    },
     // {
     //   title: 'Products',
     //   links: [

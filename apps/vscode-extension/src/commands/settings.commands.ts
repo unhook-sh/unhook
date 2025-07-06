@@ -18,7 +18,9 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
   const setConfigFilePathCommand = vscode.commands.registerCommand(
     'unhook.setConfigFilePath',
     async () => {
-      const config = vscode.workspace.getConfiguration('unhook');
+      const config = vscode.workspace.getConfiguration(
+        env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+      );
       const currentPath = config.get('configFilePath');
       const newPath = await vscode.window.showInputBox({
         prompt: 'Enter the path to your Unhook config file',
@@ -40,7 +42,9 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
   const toggleAutoShowOutputCommand = vscode.commands.registerCommand(
     'unhook.toggleAutoShowOutput',
     async () => {
-      const config = vscode.workspace.getConfiguration('unhook');
+      const config = vscode.workspace.getConfiguration(
+        env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+      );
       const currentValue = config.get('output.autoShow');
       await config.update('output.autoShow', !currentValue, true);
 
@@ -55,7 +59,9 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
   const toggleAutoClearEventsCommand = vscode.commands.registerCommand(
     'unhook.toggleAutoClearEvents',
     async () => {
-      const config = vscode.workspace.getConfiguration('unhook');
+      const config = vscode.workspace.getConfiguration(
+        env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+      );
       const currentValue = config.get('events.autoClear');
       await config.update('events.autoClear', !currentValue, true);
 
@@ -70,7 +76,9 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
   const toggleNotificationsCommand = vscode.commands.registerCommand(
     'unhook.toggleNotifications',
     async () => {
-      const config = vscode.workspace.getConfiguration('unhook');
+      const config = vscode.workspace.getConfiguration(
+        env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+      );
       const currentValue = config.get('notifications.showForNewEvents');
       await config.update(
         'notifications.showForNewEvents',

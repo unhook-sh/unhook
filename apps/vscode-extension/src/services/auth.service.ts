@@ -1,6 +1,7 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { type ApiClient, type AuthUser, createApiClient } from '../api';
+import { ConfigManager } from '../config.manager';
 
 const TOKEN_KEY = 'unhook.auth.token';
 const SESSION_ID_KEY = 'unhook.auth.sessionId';
@@ -20,6 +21,10 @@ export class AuthStore implements vscode.Disposable {
   private _api: ApiClient;
 
   constructor(private readonly context: vscode.ExtensionContext) {
+    // Set the API URL environment variable based on ConfigManager
+    const configManager = ConfigManager.getInstance();
+    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
+
     this._api = createApiClient();
   }
 
@@ -66,6 +71,9 @@ export class AuthStore implements vscode.Disposable {
 
     this._authToken = token;
     this._isSignedIn = !!token;
+    // Update API URL before creating client
+    const configManager = ConfigManager.getInstance();
+    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
     this._api = createApiClient({ authToken: token ?? undefined });
     this._onDidChangeAuth.fire();
     log('Auth token updated', { isSignedIn: this._isSignedIn });

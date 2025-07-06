@@ -32,7 +32,7 @@ export async function activate(context: vscode.ExtensionContext) {
   log('Unhook extension is activating...');
 
   // Initialize ConfigManager and load configuration
-  const configManager = ConfigManager.getInstance();
+  const configManager = ConfigManager.getInstance(context);
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   await configManager.loadConfiguration(workspaceFolder);
 

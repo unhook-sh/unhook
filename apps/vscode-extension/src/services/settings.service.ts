@@ -9,6 +9,7 @@ export interface UnhookSettings {
   events: {
     maxHistory: number;
     autoClear: boolean;
+    pollIntervalMs: number;
   };
   notifications: {
     showForNewEvents: boolean;
@@ -52,12 +53,13 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
     const config = vscode.workspace.getConfiguration('unhook');
     return {
       output: {
-        autoShow: config.get('output.autoShow') ?? true,
+        autoShow: config.get('output.autoShow') ?? false,
         maxLines: config.get('output.maxLines') ?? 1000,
       },
       events: {
         maxHistory: config.get('events.maxHistory') ?? 100,
         autoClear: config.get('events.autoClear') ?? false,
+        pollIntervalMs: config.get('events.pollIntervalMs') ?? 2000,
       },
       notifications: {
         showForNewEvents: config.get('notifications.showForNewEvents') ?? true,

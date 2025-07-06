@@ -42,6 +42,7 @@ export const configSchema = z
     clientId: z.string().optional(),
     debug: z.boolean().default(false).optional(),
     telemetry: z.boolean().default(true).optional(),
+    version: z.string().optional(),
     destination: z.array(
       z.object({
         name: z.string(),

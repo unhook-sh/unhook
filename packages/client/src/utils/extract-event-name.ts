@@ -1,3 +1,5 @@
+import { tryDecodeBase64 } from './try-decode-base64';
+
 function getNestedField(
   obj: Record<string, unknown>,
   path: string,
@@ -11,14 +13,6 @@ function getNestedField(
 }
 
 const knownEventTypeNames = ['event', 'type', 'event_type', 'eventType'];
-
-export function tryDecodeBase64(str: string): string {
-  try {
-    return Buffer.from(str, 'base64').toString('utf-8');
-  } catch {
-    return str;
-  }
-}
 
 export function extractEventName(body?: string | null): string | null {
   if (!body) return null;

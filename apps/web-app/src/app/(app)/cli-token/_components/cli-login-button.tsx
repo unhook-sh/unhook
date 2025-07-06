@@ -70,7 +70,7 @@ export function CliLoginButton() {
           ) : (
             <>
               <Icons.LogIn size="sm" className="mr-2" />
-              Login to CLI
+              Grant Access
             </>
           )}
         </Button>

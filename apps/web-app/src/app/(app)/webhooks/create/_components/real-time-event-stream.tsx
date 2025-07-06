@@ -1,10 +1,8 @@
 'use client';
 
 import { api } from '@unhook/api/react';
-import {
-  extractEventName,
-  tryDecodeBase64,
-} from '@unhook/client/utils/extract-event-name';
+import { extractBody } from '@unhook/client/utils/extract-body';
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
@@ -195,8 +193,7 @@ export function RealTimeEventStream({
                           {(() => {
                             const body = event.originRequest.body;
                             if (typeof body === 'string') {
-                              const decodedBody = tryDecodeBase64(body);
-                              return decodedBody.slice(0, 50);
+                              return extractBody(body)?.slice(0, 50);
                             }
                             return JSON.stringify(body).slice(0, 50);
                           })()}

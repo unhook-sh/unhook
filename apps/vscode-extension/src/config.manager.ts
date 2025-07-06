@@ -1,20 +1,73 @@
 import type { WebhookConfig } from '@unhook/client/config';
 import { findUpConfig, loadConfig } from '@unhook/client/config';
 import * as vscode from 'vscode';
+import { env } from './env';
 
 export class ConfigManager {
   private static instance: ConfigManager;
   private config: WebhookConfig | null = null;
   private apiUrl = 'https://unhook.sh';
   private dashboardUrl = 'https://unhook.sh';
+  private context: vscode.ExtensionContext | undefined;
 
-  private constructor() {}
+  private constructor() {
+    // Set default URLs based on development mode
+    if (this.isDevelopment()) {
+      this.apiUrl = 'http://localhost:3000';
+      this.dashboardUrl = 'http://localhost:3000';
+    }
+  }
 
-  static getInstance(): ConfigManager {
+  static getInstance(context?: vscode.ExtensionContext): ConfigManager {
     if (!ConfigManager.instance) {
       ConfigManager.instance = new ConfigManager();
     }
+    // Store context if provided
+    if (context) {
+      ConfigManager.instance.context = context;
+      // Re-check development mode with the context
+      if (ConfigManager.instance.isDevelopment()) {
+        ConfigManager.instance.apiUrl = 'http://localhost:3000';
+        ConfigManager.instance.dashboardUrl = 'http://localhost:3000';
+      }
+    }
     return ConfigManager.instance;
+  }
+
+  private isDevelopment(): boolean {
+    // Check ExtensionMode from context if available
+    if (
+      this.context &&
+      this.context.extensionMode === vscode.ExtensionMode.Development
+    ) {
+      return true;
+    }
+
+    // Check if running in Extension Development Host (most reliable for VS Code extensions)
+    if (vscode.env.appName.includes('Extension Development Host')) {
+      return true;
+    }
+
+    // Check environment variables
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.VSCODE_DEV === 'true'
+    ) {
+      return true;
+    }
+
+    // Check if the extension is not installed from marketplace (development scenario)
+    const extension = vscode.extensions.getExtension(
+      env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+    );
+    if (
+      extension &&
+      extension.extensionPath.includes('.vscode/extensions') === false
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   async loadConfiguration(workspacePath?: string): Promise<void> {
@@ -49,6 +102,14 @@ export class ConfigManager {
           this.dashboardUrl = this.config.server.apiUrl;
         }
       }
+
+      // Log current configuration
+      console.log('Unhook Config Manager:', {
+        isDevelopment: this.isDevelopment(),
+        apiUrl: this.apiUrl,
+        dashboardUrl: this.dashboardUrl,
+        configFound: !!configPath,
+      });
     } catch (error) {
       console.error('Failed to load Unhook configuration:', error);
     }

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { env } from './env';
 import type { AuthStore } from './services/auth.service';
 
 export class EventQuickPick {
@@ -91,7 +92,7 @@ export class EventQuickPick {
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(
             'workbench.action.openSettings',
-            '@ext:unhook',
+            `@ext:${env.NEXT_PUBLIC_VSCODE_EXTENSION_ID}`,
           );
           break;
         case '$(play) Toggle Webhook Delivery':

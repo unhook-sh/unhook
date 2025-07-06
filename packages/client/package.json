@@ -43,6 +43,10 @@
     "./utils/extract-event-name": {
       "default": "./src/utils/extract-event-name.ts",
       "types": "./dist/utils/extract-event-name.d.ts"
+    },
+    "./utils/extract-body": {
+      "default": "./src/utils/extract-body.ts",
+      "types": "./dist/utils/extract-body.d.ts"
     }
   },
   "files": [

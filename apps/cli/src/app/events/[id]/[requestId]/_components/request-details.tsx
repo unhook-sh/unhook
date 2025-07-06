@@ -1,4 +1,4 @@
-import { tryDecodeBase64 } from '@unhook/client/utils/extract-event-name';
+import { extractBody } from '@unhook/client/utils/extract-body';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { Box, Text } from 'ink';
@@ -9,15 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/tabs';
 import { useEventStore } from '~/stores/events-store';
 
 const log = debug('unhook:cli:event-details');
-
-function tryParseJson(str: string): string {
-  try {
-    const json = JSON.parse(str);
-    return JSON.stringify(json, null, 2);
-  } catch {
-    return str;
-  }
-}
 
 interface EventRequestDetailsProps {
   event?: EventTypeWithRequest;
@@ -46,17 +37,8 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
 
   const lastRequest = event.requests?.[0];
 
-  const requestBody = event.originRequest.body
-    ? tryDecodeBase64(event.originRequest.body)
-    : null;
-  const responseBody = lastRequest?.response?.body
-    ? tryDecodeBase64(lastRequest.response.body)
-    : null;
-
-  const formattedRequestBody = requestBody ? tryParseJson(requestBody) : null;
-  const formattedResponseBody = responseBody
-    ? tryParseJson(responseBody)
-    : null;
+  const formattedRequestBody = extractBody(event.originRequest.body);
+  const formattedResponseBody = extractBody(lastRequest?.response?.body);
 
   return (
     <Box>

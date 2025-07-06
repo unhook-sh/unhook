@@ -14,10 +14,10 @@ export default function CliTokenPage() {
     <div className="flex flex-col gap-4 items-center justify-center">
       <Card className="w-full">
         <CardHeader className="space-y-1">
-          <CardTitle>Login to CLI</CardTitle>
+          <CardTitle>Grant Access</CardTitle>
           <CardDescription>
             Select or create an organization, then click the button below to
-            authenticate with the Unhook CLI.
+            authenticate with Unhook.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

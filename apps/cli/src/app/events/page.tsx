@@ -1,4 +1,4 @@
-import { tryDecodeBase64 } from '@unhook/client/utils/extract-event-name';
+import { extractBody } from '@unhook/client/utils/extract-body';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Box, Text, useInput } from 'ink';
 import type { FC } from 'react';
@@ -12,15 +12,6 @@ import { useEventStore } from '~/stores/events-store';
 import type { RouteProps } from '~/stores/router-store';
 import { useRouterStore } from '~/stores/router-store';
 import { columns } from './_components/events-table-columns';
-
-function tryParseJson(str: string): string {
-  try {
-    const json = JSON.parse(str);
-    return JSON.stringify(json, null, 2);
-  } catch {
-    return str;
-  }
-}
 
 export const EventsPage: FC<RouteProps> = () => {
   const selectedEventId = useEventStore.use.selectedEventId();
@@ -76,8 +67,7 @@ export const EventsPage: FC<RouteProps> = () => {
   // Compute the body to display: use originRequest.body if available
   let formattedRequestBody: string | null = null;
   if (selectedEvent?.originRequest?.body) {
-    const decoded = tryDecodeBase64(selectedEvent.originRequest.body);
-    formattedRequestBody = tryParseJson(decoded);
+    formattedRequestBody = extractBody(selectedEvent.originRequest.body);
   }
 
   const ref = useRef<React.ComponentRef<typeof Box>>(null);

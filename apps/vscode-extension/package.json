@@ -9,7 +9,11 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": ["Debuggers", "Testing", "Other"],
+  "categories": [
+    "Debuggers",
+    "Testing",
+    "Other"
+  ],
   "contributes": {
     "authentication": [
       {
@@ -144,8 +148,18 @@
           "description": "Maximum number of events to keep in history",
           "type": "number"
         },
-        "unhook.output.autoShow": {
+        "unhook.events.pollIntervalMs": {
+          "default": 2000,
+          "description": "How often to check for new events (in milliseconds). Lower values provide more real-time updates but may increase resource usage.",
+          "type": "number"
+        },
+        "unhook.notifications.showForNewEvents": {
           "default": true,
+          "description": "Show notifications when new webhook events are received",
+          "type": "boolean"
+        },
+        "unhook.output.autoShow": {
+          "default": false,
           "description": "Automatically show the output panel when new events are received",
           "type": "boolean"
         },
@@ -159,17 +173,28 @@
     },
     "languages": [
       {
-        "aliases": ["Unhook YAML", "unhook-yaml"],
+        "aliases": [
+          "Unhook YAML",
+          "unhook-yaml"
+        ],
         "configuration": "./language-configuration.json",
         "extensions": [],
-        "filenames": ["unhook.yaml", "unhook.yml"],
+        "filenames": [
+          "unhook.yaml",
+          "unhook.yml"
+        ],
         "id": "unhook-yaml"
       },
       {
-        "aliases": ["Unhook JSON", "unhook-json"],
+        "aliases": [
+          "Unhook JSON",
+          "unhook-json"
+        ],
         "configuration": "./language-configuration.json",
         "extensions": [],
-        "filenames": ["unhook.json"],
+        "filenames": [
+          "unhook.json"
+        ],
         "id": "unhook-json"
       }
     ],
@@ -275,7 +300,12 @@
     "url": "https://github.com/sponsors/seawatts"
   },
   "icon": "logo.png",
-  "keywords": ["webhook", "development", "testing", "debugging"],
+  "keywords": [
+    "webhook",
+    "development",
+    "testing",
+    "debugging"
+  ],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "pricing": "Trial",

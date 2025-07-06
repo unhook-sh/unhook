@@ -1,7 +1,5 @@
-import {
-  extractEventName,
-  tryDecodeBase64,
-} from '@unhook/client/utils/extract-event-name';
+import { extractBody } from '@unhook/client/utils/extract-body';
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { Box, Text, useInput } from 'ink';
 import { type FC, useCallback, useEffect, useState } from 'react';
@@ -14,15 +12,6 @@ import { useEventStore } from '~/stores/events-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
 import { formatRelativeTime } from '~/utils/format-relative-time';
 import { columns } from './_components/requests-table-columns';
-
-function tryParseJson(str: string): string {
-  try {
-    const json = JSON.parse(str);
-    return JSON.stringify(json, null, 2);
-  } catch {
-    return str;
-  }
-}
 
 export const EventPage: FC<RouteProps> = ({ params }) => {
   const eventId = params?.id;
@@ -86,8 +75,7 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
   // Compute the body to display: prefer selected request's response, else event originRequest response
   let formattedResponseBody: string | null = null;
   if (selectedRequest?.response?.body) {
-    const decoded = tryDecodeBase64(selectedRequest.response.body);
-    formattedResponseBody = tryParseJson(decoded);
+    formattedResponseBody = extractBody(selectedRequest.response.body);
   }
 
   return (

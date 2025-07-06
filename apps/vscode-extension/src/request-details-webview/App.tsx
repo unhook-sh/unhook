@@ -1,5 +1,6 @@
 // biome-ignore lint/style/useFilenamingConvention: rename to app.tsx
 
+import { extractBody } from '@unhook/client/utils/extract-body';
 import { debug } from '@unhook/logger';
 import { cn } from '@unhook/ui/lib/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -63,15 +64,6 @@ const vscode = window.acquireVsCodeApi?.() || {
 };
 
 function RequestDetails({ data }: { data: RequestType }) {
-  const parseBody = (body?: string) => {
-    if (!body) return null;
-    try {
-      return JSON.parse(body);
-    } catch {
-      return body;
-    }
-  };
-
   const getStatusColor = (status: number): string => {
     if (status >= 200 && status < 300) return 'status-success';
     if (status >= 400) return 'status-error';
@@ -123,9 +115,7 @@ function RequestDetails({ data }: { data: RequestType }) {
           <div className="rounded-lg border bg-card p-6">
             <h3 className="mb-4 text-lg font-semibold">Request Body</h3>
             <pre className="overflow-x-auto rounded-md bg-muted p-4 text-sm">
-              <code>
-                {JSON.stringify(parseBody(data.request.body), null, 2)}
-              </code>
+              <code>{extractBody(data.request.body)}</code>
             </pre>
           </div>
         )}
@@ -171,9 +161,7 @@ function RequestDetails({ data }: { data: RequestType }) {
               <div className="rounded-lg border bg-card p-6">
                 <h3 className="mb-4 text-lg font-semibold">Response Body</h3>
                 <pre className="overflow-x-auto rounded-md bg-muted p-4 text-sm">
-                  <code>
-                    {JSON.stringify(parseBody(data.response.body), null, 2)}
-                  </code>
+                  <code>{extractBody(data.response.body)}</code>
                 </pre>
               </div>
             )}

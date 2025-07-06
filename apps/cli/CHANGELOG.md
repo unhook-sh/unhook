@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.1
+
+### Patch Changes
+
+- [`9d4b4f7`](https://github.com/unhook-sh/unhook/commit/9d4b4f7036c36be5f18df9fa749d597480909f00) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with request body
+
+- Updated dependencies [[`9d4b4f7`](https://github.com/unhook-sh/unhook/commit/9d4b4f7036c36be5f18df9fa749d597480909f00)]:
+  - @unhook/client@0.5.1
+
 ## 0.13.0
 
 ### Minor Changes

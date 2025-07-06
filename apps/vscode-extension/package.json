@@ -251,7 +251,7 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "icon": "logo.svg",
+          "icon": "activitybar-icon.svg",
           "id": "unhook",
           "title": "Unhook"
         }

@@ -681,6 +681,16 @@ export const siteConfig = {
         { id: 2, title: 'Terms of Service', url: '/terms-of-service' },
       ],
     },
+    {
+      title: 'Compare',
+      links: [
+        { id: 3, title: 'All Comparisons', url: '/comparisons' },
+        { id: 4, title: 'Unhook vs ngrok', url: '/vs-ngrok' },
+        { id: 5, title: 'Unhook vs Webhook.site', url: '/vs-webhook-site' },
+        { id: 6, title: 'Unhook vs Beeceptor', url: '/vs-beeceptor' },
+        { id: 7, title: 'Unhook vs Localtunnel', url: '/vs-localtunnel' },
+      ],
+    },
     // {
     //   title: 'Products',
     //   links: [

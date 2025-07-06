@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 export class ConfigManager {
   private static instance: ConfigManager;
   private config: WebhookConfig | null = null;
-  private apiUrl = 'https://api.unhook.sh';
+  private apiUrl = 'https://unhook.sh';
   private dashboardUrl = 'https://unhook.sh';
 
   private constructor() {}
@@ -100,7 +100,7 @@ export class ConfigManager {
   }
 
   isSelfHosted(): boolean {
-    return this.apiUrl !== 'https://api.unhook.sh';
+    return this.apiUrl !== 'https://unhook.sh';
   }
 
   // Reload configuration when settings change

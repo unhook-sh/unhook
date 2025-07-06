@@ -69,76 +69,133 @@
       {
         "category": "Unhook",
         "command": "unhook.quickPick",
-        "title": "Quick Pick Event",
-        "icon": "$(list-selection)"
+        "icon": "$(list-selection)",
+        "title": "Quick Pick Event"
       },
       {
         "command": "unhook.events.filter",
-        "title": "Filter Events",
-        "icon": "$(filter)"
+        "icon": "$(filter)",
+        "title": "Filter Events"
       },
       {
         "category": "Unhook",
         "command": "unhook.focusOutput",
-        "title": "Focus Output",
-        "icon": "$(output)"
+        "icon": "$(output)",
+        "title": "Focus Output"
       },
       {
         "category": "Unhook",
         "command": "unhook.clearOutput",
-        "title": "Clear Output",
-        "icon": "$(clear-all)"
+        "icon": "$(clear-all)",
+        "title": "Clear Output"
       },
       {
         "category": "Unhook",
         "command": "unhook.toggleOutput",
-        "title": "Toggle Output",
-        "icon": "$(eye)"
+        "icon": "$(eye)",
+        "title": "Toggle Output"
       },
       {
         "category": "Unhook",
         "command": "unhook.toggleAutoShowOutput",
-        "title": "Toggle Auto-Show Output",
-        "icon": "$(eye)"
+        "icon": "$(eye)",
+        "title": "Toggle Auto-Show Output"
       },
       {
         "category": "Unhook",
         "command": "unhook.toggleAutoClearEvents",
-        "title": "Toggle Auto-Clear Events",
-        "icon": "$(trash)"
+        "icon": "$(trash)",
+        "title": "Toggle Auto-Clear Events"
       },
       {
         "category": "Unhook",
         "command": "unhook.toggleDelivery",
-        "title": "Toggle Event Forwarding",
-        "icon": "$(play)"
+        "icon": "$(play)",
+        "title": "Toggle Event Forwarding"
       },
       {
         "category": "Unhook",
         "command": "unhook.signIn",
-        "title": "Sign in to Unhook",
-        "icon": "$(sign-in)"
+        "icon": "$(sign-in)",
+        "title": "Sign in to Unhook"
       },
       {
         "category": "Unhook",
         "command": "unhook.signOut",
-        "title": "Sign out of Unhook",
-        "icon": "$(sign-out)"
+        "icon": "$(sign-out)",
+        "title": "Sign out of Unhook"
+      }
+    ],
+    "configuration": {
+      "properties": {
+        "unhook.configFilePath": {
+          "default": "",
+          "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root.",
+          "type": "string"
+        },
+        "unhook.delivery.enabled": {
+          "default": true,
+          "description": "Enable or disable forwarding new events to their destinations. When disabled, events will be received but not forwarded to local endpoints.",
+          "type": "boolean"
+        },
+        "unhook.events.autoClear": {
+          "default": false,
+          "description": "Automatically clear old events when the maximum history is reached",
+          "type": "boolean"
+        },
+        "unhook.events.maxHistory": {
+          "default": 100,
+          "description": "Maximum number of events to keep in history",
+          "type": "number"
+        },
+        "unhook.output.autoShow": {
+          "default": true,
+          "description": "Automatically show the output panel when new events are received",
+          "type": "boolean"
+        },
+        "unhook.output.maxLines": {
+          "default": 1000,
+          "description": "Maximum number of lines to keep in the output panel",
+          "type": "number"
+        }
+      },
+      "title": "Unhook"
+    },
+    "iconThemes": [
+      {
+        "id": "unhook-file-icons",
+        "label": "Unhook File Icons",
+        "path": "./icons/file-icon-theme.json"
+      }
+    ],
+    "languages": [
+      {
+        "aliases": [
+          "Unhook YAML",
+          "unhook-yaml"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [],
+        "filenames": [
+          "unhook.yaml",
+          "unhook.yml"
+        ],
+        "id": "unhook-yaml"
+      },
+      {
+        "aliases": [
+          "Unhook JSON",
+          "unhook-json"
+        ],
+        "configuration": "./language-configuration.json",
+        "extensions": [],
+        "filenames": [
+          "unhook.json"
+        ],
+        "id": "unhook-json"
       }
     ],
     "menus": {
-      "view/title": [
-        {
-          "command": "unhook.quickPick",
-          "when": "view == unhook.events",
-          "group": "navigation"
-        },
-        {
-          "command": "unhook.events.filter",
-          "when": "view == unhook.events",
-          "group": "navigation@1"
-        }
-      ],
       "view/item/context": [
         {
           "command": "unhook.copyEvent",
@@ -165,6 +222,18 @@
           "group": "inline",
           "when": "view == unhook.events && viewItem == request"
         }
+      ],
+      "view/title": [
+        {
+          "command": "unhook.quickPick",
+          "group": "navigation",
+          "when": "view == unhook.events"
+        },
+        {
+          "command": "unhook.events.filter",
+          "group": "navigation@1",
+          "when": "view == unhook.events"
+        }
       ]
     },
     "views": {
@@ -184,76 +253,7 @@
           "title": "Unhook"
         }
       ]
-    },
-    "configuration": {
-      "title": "Unhook",
-      "properties": {
-        "unhook.output.autoShow": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically show the output panel when new events are received"
-        },
-        "unhook.output.maxLines": {
-          "type": "number",
-          "default": 1000,
-          "description": "Maximum number of lines to keep in the output panel"
-        },
-        "unhook.events.maxHistory": {
-          "type": "number",
-          "default": 100,
-          "description": "Maximum number of events to keep in history"
-        },
-        "unhook.events.autoClear": {
-          "type": "boolean",
-          "default": false,
-          "description": "Automatically clear old events when the maximum history is reached"
-        },
-        "unhook.configFilePath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root."
-        },
-        "unhook.delivery.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable or disable forwarding new events to their destinations. When disabled, events will be received but not forwarded to local endpoints."
-        }
-      }
-    },
-    "iconThemes": [
-      {
-        "id": "unhook-file-icons",
-        "label": "Unhook File Icons",
-        "path": "./icons/file-icon-theme.json"
-      }
-    ],
-    "languages": [
-      {
-        "id": "unhook-yaml",
-        "aliases": [
-          "Unhook YAML",
-          "unhook-yaml"
-        ],
-        "extensions": [],
-        "filenames": [
-          "unhook.yaml",
-          "unhook.yml"
-        ],
-        "configuration": "./language-configuration.json"
-      },
-      {
-        "id": "unhook-json",
-        "aliases": [
-          "Unhook JSON",
-          "unhook-json"
-        ],
-        "extensions": [],
-        "filenames": [
-          "unhook.json"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ]
+    }
   },
   "dependencies": {
     "@unhook/client": "0.5.0",
@@ -263,10 +263,6 @@
     "react-dom": "19.1.0",
     "tailwind-merge": "3.3.1",
     "ws": "8.18.2"
-  },
-  "vsce": {
-    "dependencies": false,
-    "yarn": false
   },
   "description": "Webhook Development",
   "devDependencies": {
@@ -297,6 +293,9 @@
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
+  "sponsor": {
+    "url": "https://github.com/sponsors/seawatts"
+  },
   "icon": "logo.png",
   "keywords": [
     "webhook",
@@ -306,6 +305,7 @@
   ],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
+  "pricing": "Trial",
   "private": true,
   "publisher": "unhook",
   "repository": {
@@ -334,5 +334,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "commonjs",
-  "version": "0.2.0"
+  "version": "0.2.0",
+  "vsce": {
+    "dependencies": false,
+    "yarn": false
+  }
 }

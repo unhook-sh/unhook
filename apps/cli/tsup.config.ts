@@ -22,7 +22,7 @@ const envDefines = {
     process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
   ),
   'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(
-    process.env.NEXT_PUBLIC_API_URL || 'https://api.unhook.sh',
+    process.env.NEXT_PUBLIC_API_URL || 'https://unhook.sh',
   ),
   'process.env.NEXT_PUBLIC_APP_ENV': JSON.stringify(
     process.env.NEXT_PUBLIC_APP_ENV || 'production',

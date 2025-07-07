@@ -34,7 +34,9 @@ export class EventQuickPick {
         items.push({
           label: '$(sign-out) Sign Out',
           description: 'Sign out of your Unhook account',
-          detail: `Currently signed in as ${this.authStore.user?.email ?? 'User'}`,
+          detail: `Currently signed in as ${
+            this.authStore.user?.email ?? 'User'
+          }`,
         });
       } else {
         items.push({
@@ -57,6 +59,11 @@ export class EventQuickPick {
           label: '$(refresh) Refresh Events',
           description: 'Refresh the events list',
           detail: 'Update the list of events',
+        },
+        {
+          label: '$(copy) Copy Webhook URL',
+          description: 'Copy the webhook URL to clipboard',
+          detail: 'Copy your webhook URL for use in external services',
         },
       );
     }
@@ -88,6 +95,9 @@ export class EventQuickPick {
           break;
         case '$(refresh) Refresh Events':
           await vscode.commands.executeCommand('unhook.events.refresh');
+          break;
+        case '$(copy) Copy Webhook URL':
+          await vscode.commands.executeCommand('unhook.copyWebhookUrl');
           break;
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(

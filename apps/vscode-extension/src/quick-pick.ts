@@ -34,7 +34,9 @@ export class EventQuickPick {
         items.push({
           label: '$(sign-out) Sign Out',
           description: 'Sign out of your Unhook account',
-          detail: `Currently signed in as ${this.authStore.user?.email ?? 'User'}`,
+          detail: `Currently signed in as ${
+            this.authStore.user?.email ?? 'User'
+          }`,
         });
       } else {
         items.push({
@@ -60,6 +62,13 @@ export class EventQuickPick {
         },
       );
     }
+
+    // Add configuration item
+    items.push({
+      label: '$(new-file) Create Configuration File',
+      description: 'Create unhook.yml configuration file',
+      detail: 'Generate a new Unhook configuration file for your project',
+    });
 
     // Add settings item
     items.push({
@@ -88,6 +97,9 @@ export class EventQuickPick {
           break;
         case '$(refresh) Refresh Events':
           await vscode.commands.executeCommand('unhook.events.refresh');
+          break;
+        case '$(new-file) Create Configuration File':
+          await vscode.commands.executeCommand('unhook.createConfig');
           break;
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(

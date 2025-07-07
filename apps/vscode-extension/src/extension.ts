@@ -7,6 +7,7 @@ import {
   registerDeliveryCommands,
 } from './commands/delivery.commands';
 import { registerEventCommands } from './commands/events.commands';
+import { registerInitCommands } from './commands/init.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
@@ -138,6 +139,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerQuickPickCommand(context);
   registerSettingsCommands(context);
   registerDeliveryCommands(context);
+  registerInitCommands(context);
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(

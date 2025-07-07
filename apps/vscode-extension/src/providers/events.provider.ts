@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
 import type { AuthStore } from '../services/auth.service';
 import { SettingsService } from '../services/settings.service';
+import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 import { EventItem } from '../tree-items/event.item';
 import { RequestItem } from '../tree-items/request.item';
 
@@ -28,15 +29,6 @@ export class EventsProvider
     EventItem | RequestItem | undefined
   > = this._onDidChangeTreeData.event;
 
-  private _onWebhookAuthorizationError = new vscode.EventEmitter<{
-    webhookId: string;
-  }>();
-  readonly onWebhookAuthorizationError =
-    this._onWebhookAuthorizationError.event;
-
-  private _onWebhookAuthorized = new vscode.EventEmitter<void>();
-  readonly onWebhookAuthorized = this._onWebhookAuthorized.event;
-
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
   private previousEvents: EventTypeWithRequest[] = [];
@@ -45,9 +37,11 @@ export class EventsProvider
   private readonly POLL_INTERVAL_MS = 2000; // Changed from 10000 to 2000 for more responsive updates
   private config: WebhookConfig | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
+  private authorizationService: WebhookAuthorizationService;
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
+    this.authorizationService = WebhookAuthorizationService.getInstance();
   }
 
   public setAuthStore(authStore: AuthStore) {
@@ -126,6 +120,11 @@ export class EventsProvider
     this._onDidChangeTreeData.fire(undefined);
   }
 
+  public refreshAndFetchEvents(): void {
+    log('Refreshing and fetching events');
+    this.fetchAndUpdateEvents();
+  }
+
   public updateEvents(events: EventTypeWithRequest[]): void {
     log('Updating events', { eventCount: events.length });
 
@@ -155,8 +154,6 @@ export class EventsProvider
       this.configWatcher.dispose();
       this.configWatcher = null;
     }
-    this._onWebhookAuthorizationError.dispose();
-    this._onWebhookAuthorized.dispose();
   }
 
   private checkForNewEventsAndNotify(newEvents: EventTypeWithRequest[]): void {
@@ -308,8 +305,8 @@ export class EventsProvider
         webhookId,
       });
       this.updateEvents(events);
-      // If we successfully fetched events, emit authorized event
-      this._onWebhookAuthorized.fire();
+      // If we successfully fetched events, notify authorization service
+      this.authorizationService.handleAuthorizationSuccess();
     } catch (error) {
       log('Failed to fetch events', { error });
       // Check if it's an authorization error
@@ -321,10 +318,11 @@ export class EventsProvider
           error.message.indexOf('not authorized') !== -1)
       ) {
         const config = await this.getConfig();
-        if (config?.webhookId) {
-          this._onWebhookAuthorizationError.fire({
-            webhookId: config.webhookId,
-          });
+        if (config?.webhookId && this.authStore) {
+          await this.authorizationService.handleAuthorizationError(
+            config.webhookId,
+            this.authStore,
+          );
         }
       }
     }

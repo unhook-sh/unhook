@@ -16,6 +16,7 @@ import { EventQuickPick } from './quick-pick';
 import { registerUriHandler } from './register-auth-uri-handler';
 import { RequestDetailsWebviewProvider } from './request-details-webview/request-details.webview';
 import { AuthStore } from './services/auth.service';
+import { FirstTimeUserService } from './services/first-time-user.service';
 import { SettingsService } from './services/settings.service';
 import type { EventItem } from './tree-items/event.item';
 import type { RequestItem } from './tree-items/request.item';
@@ -43,6 +44,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // Initialize auth store
   const authStore = new AuthStore(context);
   await authStore.initialize();
+
+  // Initialize first-time user service
+  const firstTimeUserService = new FirstTimeUserService(context);
 
   // Register auth commands and provider
   const { authProvider, signInCommand, signOutCommand } = registerAuthCommands(
@@ -97,7 +101,25 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   // Listen for auth state changes
-  authStore.onDidChangeAuth(() => updateStatusBar());
+  let previousAuthState = authStore.isSignedIn;
+  authStore.onDidChangeAuth(() => {
+    updateStatusBar();
+
+    // Check if user just signed in (transition from not signed in to signed in)
+    if (!previousAuthState && authStore.isSignedIn) {
+      // Check if first-time user
+      firstTimeUserService.isFirstTimeUser().then((isFirstTime) => {
+        if (isFirstTime) {
+          // Show prompt after a short delay to let the success message appear first
+          setTimeout(() => {
+            firstTimeUserService.promptForUnhookYmlCreation();
+          }, 2000);
+        }
+      });
+    }
+
+    previousAuthState = authStore.isSignedIn;
+  });
 
   // Listen for delivery setting changes
   const configChangeListener = vscode.workspace.onDidChangeConfiguration(
@@ -147,6 +169,15 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   );
   context.subscriptions.push(showQuickPickCommand);
+
+  // Register the create config command
+  const createConfigCommand = vscode.commands.registerCommand(
+    'unhook.createConfig',
+    () => {
+      firstTimeUserService.promptForUnhookYmlCreation();
+    },
+  );
+  context.subscriptions.push(createConfigCommand);
 
   // Register the webhook events provider
   eventsTreeView = vscode.window.createTreeView('unhook.events', {

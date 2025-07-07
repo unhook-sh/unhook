@@ -29,6 +29,15 @@ export class EventsProvider
     EventItem | RequestItem | undefined
   > = this._onDidChangeTreeData.event;
 
+  private _onWebhookAuthorizationError = new vscode.EventEmitter<{
+    webhookId: string;
+  }>();
+  readonly onWebhookAuthorizationError =
+    this._onWebhookAuthorizationError.event;
+
+  private _onWebhookAuthorized = new vscode.EventEmitter<void>();
+  readonly onWebhookAuthorized = this._onWebhookAuthorized.event;
+
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
   private previousEvents: EventTypeWithRequest[] = [];
@@ -154,6 +163,8 @@ export class EventsProvider
       this.configWatcher.dispose();
       this.configWatcher = null;
     }
+    this._onWebhookAuthorizationError.dispose();
+    this._onWebhookAuthorized.dispose();
   }
 
   private checkForNewEventsAndNotify(newEvents: EventTypeWithRequest[]): void {

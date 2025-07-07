@@ -4,8 +4,7 @@
     "onUri:vscode",
     "onUri:vscode-insiders",
     "onUri:cursor",
-    "onUri:windsurf",
-    "onCommand:unhook.createConfig"
+    "onUri:windsurf"
   ],
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"

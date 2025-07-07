@@ -15,6 +15,9 @@ runs:
       with:
         bun-version: 1.2.27
 
+    - name: Setup Biome
+      uses: biomejs/setup-biome@v2
+
     - shell: bash
       run: bun add -g turbo
 

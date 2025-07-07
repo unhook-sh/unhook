@@ -43,7 +43,7 @@ jobs:
         run: rm -rf ~/.cache/biome
 
       - name: Format
-        run: bun format --diagnostic-level=warn
+        run: biome check --diagnostic-level=warn
 
   typecheck:
     runs-on: ubuntu-latest

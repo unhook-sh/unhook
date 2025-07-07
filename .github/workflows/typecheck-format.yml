@@ -31,7 +31,7 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
 
 jobs:
-  format:
+  biome:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,11 +39,8 @@ jobs:
       - name: Setup
         uses: ./tooling/github/setup
 
-      - name: Clear Biome cache
-        run: rm -rf ~/.cache/biome
-
-      - name: Format
-        run: biome check --diagnostic-level=warn
+      - name: Run Biome CI
+        run: biome ci
 
   typecheck:
     runs-on: ubuntu-latest

@@ -9,11 +9,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": [
-    "Debuggers",
-    "Testing",
-    "Other"
-  ],
+  "categories": ["Debuggers", "Testing", "Other"],
   "contributes": {
     "authentication": [
       {
@@ -124,6 +120,12 @@
         "command": "unhook.signOut",
         "icon": "$(sign-out)",
         "title": "Sign out of Unhook"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.requestWebhookAccess",
+        "icon": "$(unlock)",
+        "title": "Request Webhook Access"
       }
     ],
     "configuration": {
@@ -173,28 +175,17 @@
     },
     "languages": [
       {
-        "aliases": [
-          "Unhook YAML",
-          "unhook-yaml"
-        ],
+        "aliases": ["Unhook YAML", "unhook-yaml"],
         "configuration": "./language-configuration.json",
         "extensions": [],
-        "filenames": [
-          "unhook.yaml",
-          "unhook.yml"
-        ],
+        "filenames": ["unhook.yaml", "unhook.yml"],
         "id": "unhook-yaml"
       },
       {
-        "aliases": [
-          "Unhook JSON",
-          "unhook-json"
-        ],
+        "aliases": ["Unhook JSON", "unhook-json"],
         "configuration": "./language-configuration.json",
         "extensions": [],
-        "filenames": [
-          "unhook.json"
-        ],
+        "filenames": ["unhook.json"],
         "id": "unhook-json"
       }
     ],
@@ -300,12 +291,7 @@
     "url": "https://github.com/sponsors/seawatts"
   },
   "icon": "logo.png",
-  "keywords": [
-    "webhook",
-    "development",
-    "testing",
-    "debugging"
-  ],
+  "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "pricing": "Trial",

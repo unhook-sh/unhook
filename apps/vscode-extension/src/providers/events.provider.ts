@@ -1,7 +1,7 @@
 import {
+  type WebhookConfig,
   findUpConfig,
   loadConfig,
-  type WebhookConfig,
 } from '@unhook/client/config';
 import {
   createRequestsForEventToAllDestinations,
@@ -27,6 +27,15 @@ export class EventsProvider
   readonly onDidChangeTreeData: vscode.Event<
     EventItem | RequestItem | undefined
   > = this._onDidChangeTreeData.event;
+
+  private _onWebhookAuthorizationError = new vscode.EventEmitter<{
+    webhookId: string;
+  }>();
+  readonly onWebhookAuthorizationError =
+    this._onWebhookAuthorizationError.event;
+
+  private _onWebhookAuthorized = new vscode.EventEmitter<void>();
+  readonly onWebhookAuthorized = this._onWebhookAuthorized.event;
 
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
@@ -146,6 +155,8 @@ export class EventsProvider
       this.configWatcher.dispose();
       this.configWatcher = null;
     }
+    this._onWebhookAuthorizationError.dispose();
+    this._onWebhookAuthorized.dispose();
   }
 
   private checkForNewEventsAndNotify(newEvents: EventTypeWithRequest[]): void {
@@ -297,8 +308,25 @@ export class EventsProvider
         webhookId,
       });
       this.updateEvents(events);
+      // If we successfully fetched events, emit authorized event
+      this._onWebhookAuthorized.fire();
     } catch (error) {
       log('Failed to fetch events', { error });
+      // Check if it's an authorization error
+      if (
+        error instanceof Error &&
+        (error.message.indexOf('UNAUTHORIZED') !== -1 ||
+          error.message.indexOf('FORBIDDEN') !== -1 ||
+          error.message.indexOf('do not have access') !== -1 ||
+          error.message.indexOf('not authorized') !== -1)
+      ) {
+        const config = await this.getConfig();
+        if (config?.webhookId) {
+          this._onWebhookAuthorizationError.fire({
+            webhookId: config.webhookId,
+          });
+        }
+      }
     }
   }
 
@@ -307,11 +335,10 @@ export class EventsProvider
     for (const event of events) {
       if ('event' in event) {
         const requests = await this.getChildren(event);
-        const request = requests.find(
-          (r): r is RequestItem => 'request' in r && r.request.id === requestId,
-        );
-        if (request) {
-          return request.request;
+        for (const r of requests) {
+          if ('request' in r && r.request.id === requestId) {
+            return r.request;
+          }
         }
       }
     }

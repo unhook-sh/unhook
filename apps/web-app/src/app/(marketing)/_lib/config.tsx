@@ -682,6 +682,61 @@ export const siteConfig = {
       ],
     },
     {
+      title: 'Works With',
+      links: [
+        {
+          id: 12,
+          title: 'Claude Code Hooks',
+          url: 'https://docs.unhook.sh/providers/claude',
+        },
+        {
+          id: 13,
+          title: 'Stripe',
+          url: 'https://docs.unhook.sh/providers/stripe',
+        },
+        {
+          id: 14,
+          title: 'GitHub',
+          url: 'https://docs.unhook.sh/providers/github',
+        },
+        {
+          id: 15,
+          title: 'Clerk',
+          url: 'https://docs.unhook.sh/providers/clerk',
+        },
+        {
+          id: 16,
+          title: 'Slack',
+          url: 'https://docs.unhook.sh/providers/slack',
+        },
+        {
+          id: 17,
+          title: 'Twilio',
+          url: 'https://docs.unhook.sh/providers/twilio',
+        },
+        {
+          id: 18,
+          title: 'SendGrid',
+          url: 'https://docs.unhook.sh/providers/sendgrid',
+        },
+        {
+          id: 19,
+          title: 'Linear',
+          url: 'https://docs.unhook.sh/providers/linear',
+        },
+        {
+          id: 20,
+          title: 'Shopify',
+          url: 'https://docs.unhook.sh/providers/shopify',
+        },
+        {
+          id: 21,
+          title: 'Custom Webhooks',
+          url: 'https://docs.unhook.sh/providers/custom',
+        },
+      ],
+    },
+    {
       title: 'Compare',
       links: [
         { id: 3, title: 'All Comparisons', url: '/comparisons' },

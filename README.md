@@ -34,6 +34,7 @@
   - Stripe
   - GitHub
   - Clerk
+  - Claude Code Hooks (AI-assisted development)
   - Discord
   - And many more!
 

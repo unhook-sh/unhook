@@ -1,0 +1,316 @@
+---
+title: Claude Code Hooks
+description: Use Claude Code Hooks with Unhook to automate webhook testing during AI-assisted development
+---
+
+# Claude Code Hooks
+
+Claude Code Hooks allow you to automatically trigger actions during your AI-assisted development workflow. When combined with Unhook, you can seamlessly test webhooks without leaving your development environment.
+
+## What are Claude Code Hooks?
+
+Claude Code Hooks are user-defined shell commands that execute automatically at specific points in Claude Code's lifecycle. They provide deterministic control over Claude's behavior, ensuring certain actions always happen rather than relying on the AI to remember to run them.
+
+## Setting Up Claude Code Hooks with Unhook
+
+### 1. Configure Unhook in Your Project
+
+First, ensure you have Unhook configured in your project:
+
+```bash
+# Initialize Unhook in your project
+unhook init
+
+# Start webhook monitoring
+unhook start
+```
+
+### 2. Create Claude Code Hooks Configuration
+
+Create or modify `.claude/settings.toml` in your project root:
+
+```toml
+# Automatically test webhooks after editing webhook handlers
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/webhooks/**/*.ts", "**/webhooks/**/*.js", "**/api/webhooks/**"]
+command = "unhook test-latest"
+
+# Send notification when webhook tests complete
+[[hooks]]
+event = "Notification"
+command = 'unhook notify "Webhook tests completed: $CLAUDE_NOTIFICATION"'
+
+# Auto-validate webhook signatures after changes
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/webhook-handler.ts", "**/stripe-webhook.ts"]
+command = "unhook validate-signatures --provider stripe"
+```
+
+## Example Use Cases
+
+### 1. Automatic Webhook Testing After Code Changes
+
+When Claude edits your webhook handlers, automatically trigger a test with the latest webhook payload:
+
+```toml
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["src/api/webhooks/**/*.ts"]
+command = """
+echo "Testing webhook changes..." && \
+unhook replay-latest --wait && \
+echo "Webhook test completed"
+"""
+```
+
+### 2. Stripe Webhook Development
+
+Automatically test Stripe webhooks when working on payment integrations:
+
+```toml
+# Test Stripe webhook after editing payment handlers
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/stripe/**", "**/payment/**"]
+command = "unhook test --provider stripe --event payment_intent.succeeded"
+
+# Validate Stripe webhook signatures
+[[hooks]]
+event = "PreToolUse"
+[hooks.matcher]
+tool_name = "git_commit"
+command = """
+if unhook validate-signatures --provider stripe; then
+  echo "✓ Stripe webhook signatures valid"
+else
+  echo "✗ Invalid Stripe webhook signatures detected" >&2
+  exit 2
+fi
+"""
+```
+
+### 3. GitHub Webhook Integration
+
+Test GitHub webhooks when working on CI/CD integrations:
+
+```toml
+# Test GitHub push events
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/github-webhook/**", ".github/workflows/**"]
+command = "unhook test --provider github --event push"
+
+# Test pull request webhooks
+[[hooks]]
+event = "PostToolUse"
+run_in_background = true
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/pr-handler/**"]
+command = "unhook test --provider github --event pull_request.opened"
+```
+
+### 4. Clerk Authentication Webhooks
+
+Automatically test Clerk webhooks when working on authentication:
+
+```toml
+# Test user creation webhooks
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/auth/**", "**/clerk/**"]
+command = "unhook test --provider clerk --event user.created"
+
+# Validate session webhooks
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/session-handler/**"]
+command = """
+unhook test --provider clerk --event session.created && \
+unhook test --provider clerk --event session.ended
+"""
+```
+
+### 5. Team Collaboration Hooks
+
+Keep your team informed about webhook testing:
+
+```toml
+# Notify team when webhook endpoints change
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/webhooks/**"]
+command = "unhook team-notify 'Webhook endpoint updated by Claude: $CLAUDE_FILE_PATHS'"
+
+# Log webhook test results
+[[hooks]]
+event = "Stop"
+command = """
+if [ -f .unhook/test-results.json ]; then
+  unhook log-results --format team
+fi
+"""
+```
+
+### 6. Development Environment Setup
+
+Automatically configure webhooks when Claude creates new endpoints:
+
+```toml
+# Auto-configure webhook URL when creating new endpoints
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "Write"
+file_paths = ["**/api/webhooks/**"]
+command = """
+endpoint=$(basename $CLAUDE_FILE_PATHS .ts)
+unhook configure --endpoint "/api/webhooks/$endpoint" --auto-register
+"""
+
+# Start webhook monitoring in background
+[[hooks]]
+event = "PreToolUse"
+[hooks.matcher]
+tool_name = "Task"
+command = """
+if ! pgrep -f "unhook monitor" > /dev/null; then
+  unhook monitor --background
+fi
+"""
+```
+
+## Advanced Configuration
+
+### Environment-Specific Hooks
+
+Use different configurations for development and testing:
+
+```toml
+# Development environment hooks
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/*.ts"]
+command = """
+if [ "$NODE_ENV" = "development" ]; then
+  unhook test --env development
+fi
+"""
+
+# Staging environment validation
+[[hooks]]
+event = "PreToolUse"
+[hooks.matcher]
+tool_name = "git_commit"
+command = """
+if [ "$NODE_ENV" = "staging" ]; then
+  unhook validate --env staging --strict
+fi
+"""
+```
+
+### Custom Webhook Testing Scripts
+
+Create sophisticated testing workflows:
+
+```toml
+# Run custom test suite
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+file_paths = ["**/webhooks/**"]
+command = """
+#!/bin/bash
+# Test multiple webhook scenarios
+scenarios=("payment.success" "payment.failed" "subscription.created")
+for scenario in "${scenarios[@]}"; do
+  echo "Testing scenario: $scenario"
+  unhook test --scenario "$scenario" --timeout 5000
+done
+"""
+```
+
+## Best Practices
+
+1. **Use Background Execution**: For long-running webhook tests, use `run_in_background = true`
+2. **Validate Before Commits**: Use `PreToolUse` hooks to validate webhook configurations before commits
+3. **Team Notifications**: Keep your team informed about webhook changes
+4. **Error Handling**: Use exit code 2 to block operations when webhook tests fail
+5. **Logging**: Maintain logs of webhook test results for debugging
+
+## Troubleshooting
+
+### Debug Hook Execution
+
+```toml
+# Debug hook to log all webhook-related changes
+[[hooks]]
+event = "PostToolUse"
+[hooks.matcher]
+tool_name = "edit_file"
+command = """
+echo "[$(date)] Webhook file changed: $CLAUDE_FILE_PATHS" >> ~/.unhook/claude-hooks.log
+unhook status >> ~/.unhook/claude-hooks.log
+"""
+```
+
+### Common Issues
+
+1. **Hooks not firing**: Ensure `.claude/settings.toml` is valid TOML
+2. **Command not found**: Use absolute paths or ensure `unhook` is in your PATH
+3. **Permission errors**: Check file permissions and webhook endpoint access
+4. **Background tasks**: Monitor background webhook tests with `unhook status`
+
+## Integration with CI/CD
+
+Claude Code Hooks can prepare your webhooks for CI/CD:
+
+```toml
+# Prepare webhook tests for CI
+[[hooks]]
+event = "PreToolUse"
+[hooks.matcher]
+tool_name = "git_commit"
+command = """
+# Generate webhook test report
+unhook test --all --format junit > webhook-test-results.xml
+# Add to git
+git add webhook-test-results.xml
+"""
+```
+
+## Security Considerations
+
+When using Claude Code Hooks with Unhook:
+
+1. **Never expose secrets**: Don't include API keys in hook commands
+2. **Use environment variables**: Store sensitive data in `.env` files
+3. **Validate inputs**: Always validate webhook payloads
+4. **Limit permissions**: Run hooks with minimal required permissions
+
+## Learn More
+
+- [Claude Code Hooks Documentation](https://docs.anthropic.com/en/docs/claude-code/hooks)
+- [Unhook CLI Reference](/cli)
+- [Webhook Security Best Practices](/essentials/security)

@@ -42,7 +42,7 @@ export default defineConfig({
     'zlib',
   ],
   noExternal: [
-    // '@unhook/client',
+    '@unhook/client',
     // Bundle all dependencies except Node.js built-ins and vscode
     /^(?!vscode$|assert$|buffer$|child_process$|crypto$|events$|fs$|http$|https$|net$|os$|path$|process$|readline$|stream$|string_decoder$|url$|util$|zlib$)/,
   ],

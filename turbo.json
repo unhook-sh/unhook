@@ -51,9 +51,6 @@
         "RESEND_*"
       ]
     },
-    "@unhook/db#build": {
-      "env": ["DATABASE_*", "POSTGRES_*", "SUPABASE_*"]
-    },
     "clean": {
       "cache": false
     },
@@ -74,6 +71,10 @@
     },
     "format": {
       "dependsOn": ["^build"]
+    },
+    "format:ci": {
+      "dependsOn": ["^build"],
+      "cache": false
     },
     "gen-migration": {
       "cache": false,

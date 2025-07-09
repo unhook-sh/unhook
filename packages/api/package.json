@@ -27,28 +27,15 @@
     "typescript": "5.8.3"
   },
   "exports": {
-    ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    },
-    "./react": {
-      "default": "./src/react/client-exports.ts",
-      "types": "./dist/react/client-exports.d.ts"
-    },
-    "./server": {
-      "default": "./src/react/server-exports.ts",
-      "types": "./dist/react/server-exports.d.ts"
-    },
-    "./client": {
-      "default": "./src/client.ts",
-      "types": "./dist/client.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./react": "./src/react/client-exports.ts",
+    "./server": "./src/react/server-exports.ts",
+    "./client": "./src/client.ts"
   },
   "license": "MIT",
   "name": "@unhook/api",
   "private": true,
   "scripts": {
-    "build": "tsc",
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

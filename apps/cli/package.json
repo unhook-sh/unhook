@@ -73,10 +73,7 @@
     "node": ">=18.0.0"
   },
   "exports": {
-    ".": {
-      "default": "./src/exports.ts",
-      "types": "./dist/src/exports.d.ts"
-    }
+    ".": "./src/exports.ts"
   },
   "files": [
     "bin/cli.js",

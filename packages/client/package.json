@@ -24,30 +24,12 @@
     "typescript": "5.8.3"
   },
   "exports": {
-    ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    },
-    "./config": {
-      "default": "./src/config.ts",
-      "types": "./dist/config.d.ts"
-    },
-    "./utils/headers": {
-      "default": "./src/utils/headers.ts",
-      "types": "./dist/utils/headers.d.ts"
-    },
-    "./utils/delivery": {
-      "default": "./src/utils/delivery.ts",
-      "types": "./dist/utils/delivery.d.ts"
-    },
-    "./utils/extract-event-name": {
-      "default": "./src/utils/extract-event-name.ts",
-      "types": "./dist/utils/extract-event-name.d.ts"
-    },
-    "./utils/extract-body": {
-      "default": "./src/utils/extract-body.ts",
-      "types": "./dist/utils/extract-body.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./utils/headers": "./src/utils/headers.ts",
+    "./utils/delivery": "./src/utils/delivery.ts",
+    "./utils/extract-event-name": "./src/utils/extract-event-name.ts",
+    "./utils/extract-body": "./src/utils/extract-body.ts"
   },
   "files": [
     "dist",
@@ -85,7 +67,6 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
-    "build": "bun build ./src/bundle.ts --outdir ./dist --target node --format esm",
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc --watch",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",

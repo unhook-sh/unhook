@@ -1,11 +1,10 @@
 import { cn } from '@unhook/ui/lib/utils';
-import { FlickeringGrid } from '@unhook/ui/magicui/flickering-grid';
-import { Globe } from '@unhook/ui/magicui/globe';
-import { motion } from 'motion/react';
+import { Globe } from 'lucide-react';
 import { FirstBentoAnimation } from '~/app/(marketing)/_components/first-bento-animation';
 import { FourthBentoAnimation } from '~/app/(marketing)/_components/fourth-bento-animation';
 import { SecondBentoAnimation } from '~/app/(marketing)/_components/second-bento-animation';
 import { ThirdBentoAnimation } from '~/app/(marketing)/_components/third-bento-animation';
+import { SecurityShieldBackground } from '../_components/security-shield-background';
 
 export const Highlight = ({
   children,
@@ -270,51 +269,7 @@ export const siteConfig = {
     items: [
       {
         id: 1,
-        content: (
-          <div className="relative flex size-full items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg" />
-            <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="64"
-                height="64"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary"
-                aria-label="Team collaboration shield"
-              >
-                <title>Team collaboration shield</title>
-                <path d="M12 2L2 7v10c0 5.55 3.84 9.05 9 10 5.16-.95 9-4.45 9-10V7l-10-5z" />
-                <path d="M9 12l2 2 4-4" />
-              </svg>
-              <div className="text-center">
-                <h3 className="font-semibold text-primary">
-                  Secure by Default
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  End-to-end encryption
-                </p>
-              </div>
-            </div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="size-full absolute inset-0"
-            >
-              <FlickeringGrid
-                className="size-full"
-                gridGap={4}
-                squareSize={2}
-                maxOpacity={0.3}
-              />
-            </motion.div>
-          </div>
-        ),
+        content: <SecurityShieldBackground />,
         title: 'Seamless Workflow Integration',
         description:
           'Debug webhooks without leaving your editor. Keep your focus on code while monitoring webhook events in real-time.',

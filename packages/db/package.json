@@ -36,49 +36,21 @@
     "zx": "8.5.5"
   },
   "exports": {
-    ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    },
-    "./client": {
-      "default": "./src/client.ts",
-      "types": "./dist/client.d.ts"
-    },
-    "./schema": {
-      "default": "./src/schema.ts",
-      "types": "./dist/schema.d.ts"
-    },
-    "./supabase/cli": {
-      "default": "./src/supabase/cli.ts",
-      "types": "./dist/supabase/cli.d.ts"
-    },
-    "./supabase/client": {
-      "default": "./src/supabase/client-exports.ts",
-      "types": "./dist/supabase/client-exports.d.ts"
-    },
-    "./supabase/types": {
-      "default": "./src/supabase/types.generated.ts",
-      "types": "./dist/supabase/types.generated.d.ts"
-    },
-    "./supabase/create-channel": {
-      "default": "./src/supabase/create-channel.ts",
-      "types": "./dist/supabase/create-channel.d.ts"
-    },
-    "./supabase/rcs": {
-      "default": "./src/supabase/server.rcs.ts",
-      "types": "./dist/supabase/server.rcs.d.ts"
-    },
-    "./supabase/server": {
-      "default": "./src/supabase/server-exports.ts",
-      "types": "./dist/supabase/server-exports.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./schema": "./src/schema.ts",
+    "./supabase/cli": "./src/supabase/cli.ts",
+    "./supabase/client": "./src/supabase/client-exports.ts",
+    "./supabase/types": "./src/supabase/types.generated.ts",
+    "./supabase/create-channel": "./src/supabase/create-channel.ts",
+    "./supabase/rcs": "./src/supabase/server.rcs.ts",
+    "./supabase/server": "./src/supabase/server-exports.ts"
   },
   "license": "MIT",
   "name": "@unhook/db",
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "build.todo": "bun gen-supabase-types && tsc",
+    "build": "bun run gen-supabase-types",
     "clean": "rm -rf .turbo node_modules dist",
     "create-supabase-policies": "tsx scripts/create-supabase-policies.ts",
     "dev": "tsx ./scripts/watch.ts",

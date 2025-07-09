@@ -7,16 +7,12 @@
     "typescript": "5.8.3"
   },
   "exports": {
-    ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    }
+    ".": "./src/index.ts"
   },
   "license": "MIT",
   "name": "@unhook/stripe",
   "private": true,
   "scripts": {
-    "build": "tsc",
     "clean": "rm -rf .turbo node_modules dist",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

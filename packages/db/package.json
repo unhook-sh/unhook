@@ -50,7 +50,7 @@
   "name": "@unhook/db",
   "private": true,
   "scripts": {
-    "build": "bun run gen-supabase-types",
+    "build.skip": "bun run gen-supabase-types",
     "clean": "rm -rf .turbo node_modules dist",
     "create-supabase-policies": "tsx scripts/create-supabase-policies.ts",
     "dev": "tsx ./scripts/watch.ts",

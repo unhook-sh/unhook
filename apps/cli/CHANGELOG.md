@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.3
+
+### Patch Changes
+
+- [`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832) Thanks [@seawatts](https://github.com/seawatts)! - Fix build issue
+
+- Updated dependencies [[`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832)]:
+  - @unhook/client@0.5.3
+
 ## 0.13.2
 
 ### Patch Changes

@@ -11,6 +11,20 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/privacy-policy',
   '/terms-of-service',
+  // Marketing pages
+  '/pricing(.*)',
+  '/vscode(.*)',
+  '/webhook-graphic-demo(.*)',
+  // VS competitor pages
+  '/vs-svix(.*)',
+  '/vs-webhook-site(.*)',
+  '/vs-beeceptor(.*)',
+  '/vs-cloudflare-tunnel(.*)',
+  '/vs-hookdeck(.*)',
+  '/vs-localtunnel(.*)',
+  '/vs-ngrok(.*)',
+  '/vs-smee(.*)',
+  '/comparisons(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

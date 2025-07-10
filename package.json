@@ -54,7 +54,26 @@
     "version": "changeset version && bun biome check --write",
     "with-env": "infisical run --"
   },
-  "trustedDependencies": [],
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "@clerk/shared",
+    "@scarf/scarf",
+    "@sentry/cli",
+    "@tailwindcss/oxide",
+    "@vercel/speed-insights",
+    "browser-tabs-lock",
+    "bufferutil",
+    "bun",
+    "core-js",
+    "electron",
+    "esbuild",
+    "keytar",
+    "lefthook",
+    "puppeteer",
+    "sharp",
+    "supabase",
+    "yarn"
+  ],
   "workspaces": [
     "packages/*",
     "apps/*",

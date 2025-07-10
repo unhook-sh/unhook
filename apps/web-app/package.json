@@ -44,7 +44,7 @@
     "superjson": "2.2.2",
     "svix": "1.69.0",
     "unified": "11.0.5",
-    "zod": "4.0.2",
+    "zod": "3.25.67",
     "zustand": "5.0.6"
   },
   "devDependencies": {

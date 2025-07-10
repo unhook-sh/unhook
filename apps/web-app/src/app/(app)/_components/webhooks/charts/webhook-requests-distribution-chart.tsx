@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@unhook/ui/components/chart';
+import { ChartContainer } from '@unhook/ui/components/chart';
 import { useState } from 'react';
 import {
   Bar,
@@ -97,7 +93,7 @@ export function WebhookRequestsDistributionChart({
               tickFormatter={(value) => `${value}`}
               tickLine={false}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            {/* <ChartTooltip content={<ChartTooltipContent accessibilityLayer active coordinate={} />} /> */}
             <Bar
               dataKey="requests"
               onMouseEnter={handleMouseEnter}

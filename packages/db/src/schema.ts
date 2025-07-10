@@ -87,12 +87,7 @@ export const UsersRelations = relations(Users, ({ many }) => ({
 
 export type UserType = typeof Users.$inferSelect;
 
-export const CreateUserSchema = createInsertSchema(Users, {
-  email: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  online: z.boolean(),
-}).omit({
+export const CreateUserSchema = createInsertSchema(Users).omit({
   createdAt: true,
   id: true,
   updatedAt: true,
@@ -128,7 +123,7 @@ export const Orgs = pgTable('orgs', {
 
 export type OrgType = typeof Orgs.$inferSelect;
 
-export const updateOrgSchema = createInsertSchema(Orgs, {}).omit({
+export const updateOrgSchema = createInsertSchema(Orgs).omit({
   createdAt: true,
   createdByUserId: true,
   id: true,
@@ -276,44 +271,14 @@ export const Webhooks = pgTable('webhooks', {
 
 export type WebhookType = typeof Webhooks.$inferSelect;
 
-export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
-  config: z.object({
-    headers: z.object({
-      allowList: z.array(z.string()).optional(),
-      blockList: z.array(z.string()).optional(),
-      sensitiveHeaders: z.array(z.string()).optional(),
-    }),
-    requests: z.object({
-      allowedMethods: z.array(z.string()).optional(),
-      allowedSource: z.array(z.string()).optional(),
-      blockedSource: z.array(z.string()).optional(),
-      maxRequestsPerMinute: z.number().optional(),
-      maxRetries: z.number().optional(),
-    }),
-    storage: z.object({
-      maxRequestBodySize: z.number(),
-      maxResponseBodySize: z.number(),
-      storeHeaders: z.boolean(),
-      storeRequestBody: z.boolean(),
-      storeResponseBody: z.boolean(),
-    }),
-  }),
-  isPrivate: z.boolean().default(false).optional(),
-  name: z.string(),
-  status: z.enum(webhookStatusEnum.enumValues).default('active'),
-}).omit({
+export const CreateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
   createdAt: true,
   orgId: true,
   updatedAt: true,
   userId: true,
 });
 
-export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks, {
-  isPrivate: z.boolean().default(false),
-  name: z.string().optional(),
-  requestCount: z.number().default(0),
-  status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
-}).omit({
+export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
   createdAt: true,
   orgId: true,
   updatedAt: true,
@@ -428,17 +393,7 @@ export type EventTypeWithRequest = EventType & {
   requests: RequestType[];
 };
 
-export const CreateEventTypeSchema = createInsertSchema(Events, {
-  apiKey: z.string().optional(),
-  failedReason: z.string().optional(),
-  maxRetries: z.number().default(3),
-  originRequest: RequestPayloadSchema,
-  retryCount: z.number().default(0),
-  source: z.string().default('*'),
-  status: z.enum(eventStatusEnum.enumValues).default('pending'),
-  timestamp: z.date(),
-  webhookId: z.string(),
-}).omit({
+export const CreateEventTypeSchema = createInsertSchema(Events).omit({
   createdAt: true,
   id: true,
   orgId: true,
@@ -446,11 +401,7 @@ export const CreateEventTypeSchema = createInsertSchema(Events, {
   userId: true,
 });
 
-export const UpdateEventTypeSchema = createUpdateSchema(Events, {
-  failedReason: z.string().optional(),
-  retryCount: z.number().default(0),
-  status: z.enum(eventStatusEnum.enumValues).default('pending'),
-}).omit({
+export const UpdateEventTypeSchema = createUpdateSchema(Events).omit({
   createdAt: true,
   orgId: true,
   updatedAt: true,
@@ -559,23 +510,7 @@ export const Requests = pgTable(
 
 export type RequestType = typeof Requests.$inferSelect;
 
-export const CreateRequestTypeSchema = createInsertSchema(Requests, {
-  apiKey: z.string().optional(),
-  connectionId: z.string().optional(),
-  destination: z.object({
-    name: z.string(),
-    url: z.string(),
-  }),
-  eventId: z.string().optional(),
-  failedReason: z.string().optional(),
-  request: RequestPayloadSchema,
-  response: ResponsePayloadSchema.optional(),
-  responseTimeMs: z.number().default(0),
-  source: z.string().default('*'),
-  status: z.enum(requestStatusEnum.enumValues).default('pending'),
-  timestamp: z.date(),
-  webhookId: z.string(),
-}).omit({
+export const CreateRequestTypeSchema = createInsertSchema(Requests).omit({
   completedAt: true,
   createdAt: true,
   id: true,
@@ -676,19 +611,7 @@ export const Connections = pgTable(
 
 export type ConnectionType = typeof Connections.$inferSelect;
 
-export const CreateConnectionTypeSchema = createInsertSchema(Connections, {
-  clientHostname: z.string().optional(),
-  clientId: z.string(),
-  clientOs: z.string().optional(),
-  clientVersion: z.string().optional(),
-  connectedAt: z.date(),
-  disconnectedAt: z.date().optional(),
-  ipAddress: z.string(),
-  lastPingAt: z.date(),
-  orgId: z.string(),
-  userId: z.string(),
-  webhookId: z.string(),
-}).omit({
+export const CreateConnectionTypeSchema = createInsertSchema(Connections).omit({
   createdAt: true,
   id: true,
   orgId: true,
@@ -696,19 +619,7 @@ export const CreateConnectionTypeSchema = createInsertSchema(Connections, {
   userId: true,
 });
 
-export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
-  clientHostname: z.string().optional(),
-  clientId: z.string(),
-  clientOs: z.string().optional(),
-  clientVersion: z.string().optional(),
-  connectedAt: z.date(),
-  disconnectedAt: z.date().optional(),
-  ipAddress: z.string(),
-  lastPingAt: z.date(),
-  orgId: z.string(),
-  userId: z.string(),
-  webhookId: z.string(),
-}).omit({
+export const UpdateConnectionTypeSchema = createUpdateSchema(Connections).omit({
   createdAt: true,
   orgId: true,
   updatedAt: true,
@@ -813,10 +724,6 @@ export type WebhookAccessRequestType =
 
 export const CreateWebhookAccessRequestSchema = createInsertSchema(
   WebhookAccessRequests,
-  {
-    requesterMessage: z.string().optional(),
-    webhookId: z.string(),
-  },
 ).omit({
   createdAt: true,
   expiresAt: true,
@@ -1172,30 +1079,6 @@ export const ForwardingExecutionsRelations = relations(
 // Create schemas for validation
 export const CreateForwardingDestinationSchema = createInsertSchema(
   ForwardingDestinations,
-  {
-    config: z.object({
-      authentication: z
-        .object({
-          apiKey: z.string().optional(),
-          apiKeyHeader: z.string().optional(),
-          password: z.string().optional(),
-          token: z.string().optional(),
-          type: z.enum(['bearer', 'basic', 'apiKey']),
-          username: z.string().optional(),
-        })
-        .optional(),
-      discordWebhookUrl: z.string().url().optional(),
-      email: z.string().email().optional(),
-      headers: z.record(z.string()).optional(),
-      slackChannel: z.string().optional(),
-      slackWebhookUrl: z.string().url().optional(),
-      teamsWebhookUrl: z.string().url().optional(),
-      url: z.string().url().optional(),
-    }),
-    isActive: z.boolean().default(true),
-    name: z.string().min(1),
-    type: z.enum(destinationTypeEnum.enumValues),
-  },
 ).omit({
   createdAt: true,
   id: true,
@@ -1203,33 +1086,9 @@ export const CreateForwardingDestinationSchema = createInsertSchema(
   updatedAt: true,
 });
 
-export const CreateForwardingRuleSchema = createInsertSchema(ForwardingRules, {
-  description: z.string().optional(),
-  destinationId: z.string(),
-  filters: z
-    .object({
-      customFilter: z.string().optional(),
-      eventNames: z.array(z.string()).optional(),
-      headers: z.record(z.union([z.string(), z.array(z.string())])).optional(),
-      methods: z.array(z.string()).optional(),
-      pathPatterns: z.array(z.string()).optional(),
-    })
-    .default({}),
-  isActive: z.boolean().default(true),
-  name: z.string().min(1),
-  priority: z.number().default(0),
-  transformation: z.string().optional(),
-  transformationExamples: z
-    .array(
-      z.object({
-        description: z.string().optional(),
-        expectedOutput: z.unknown(),
-        input: z.unknown(),
-      }),
-    )
-    .default([]),
-  webhookId: z.string(),
-}).omit({
+export const CreateForwardingRuleSchema = createInsertSchema(
+  ForwardingRules,
+).omit({
   createdAt: true,
   createdByUserId: true,
   errorCount: true,
@@ -1242,31 +1101,9 @@ export const CreateForwardingRuleSchema = createInsertSchema(ForwardingRules, {
   updatedAt: true,
 });
 
-export const UpdateForwardingRuleSchema = createUpdateSchema(ForwardingRules, {
-  description: z.string().optional(),
-  filters: z
-    .object({
-      customFilter: z.string().optional(),
-      eventNames: z.array(z.string()).optional(),
-      headers: z.record(z.union([z.string(), z.array(z.string())])).optional(),
-      methods: z.array(z.string()).optional(),
-      pathPatterns: z.array(z.string()).optional(),
-    })
-    .optional(),
-  isActive: z.boolean().optional(),
-  name: z.string().min(1).optional(),
-  priority: z.number().optional(),
-  transformation: z.string().optional(),
-  transformationExamples: z
-    .array(
-      z.object({
-        description: z.string().optional(),
-        expectedOutput: z.unknown(),
-        input: z.unknown(),
-      }),
-    )
-    .optional(),
-}).omit({
+export const UpdateForwardingRuleSchema = createUpdateSchema(
+  ForwardingRules,
+).omit({
   createdAt: true,
   createdByUserId: true,
   destinationId: true,

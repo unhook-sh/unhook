@@ -118,7 +118,7 @@ const renderActiveShape = (props: {
 };
 
 export function WebhookStatusCodesChart() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [_activeIndex, setActiveIndex] = useState(0);
 
   const onPieEnter = (_: unknown, index: number) => {
     setActiveIndex(index);
@@ -137,7 +137,7 @@ export function WebhookStatusCodesChart() {
         <ResponsiveContainer height="100%" width="100%">
           <PieChart>
             <Pie
-              activeIndex={activeIndex}
+              // activeIndex={activeIndex}
               activeShape={renderActiveShape as ActiveShape<PieSectorDataItem>}
               cx="50%"
               cy="50%"

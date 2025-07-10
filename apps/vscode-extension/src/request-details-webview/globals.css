@@ -97,26 +97,26 @@ body[data-vscode-theme-kind="vscode-high-contrast"] {
 
 /* Additional VSCode-specific styles */
 body {
-  margin: 0;
   padding: 0;
-  background-color: var(--background);
+  margin: 0;
   color: var(--foreground);
+  background-color: var(--background);
 }
 
 /* VSCode-specific status colors */
 .status-200 {
-  background-color: var(--vscode-testing-iconPassed, var(--primary));
   color: var(--vscode-testing-passForeground, var(--primary-foreground));
+  background-color: var(--vscode-testing-iconPassed, var(--primary));
 }
 
 .status-4xx {
-  background-color: var(--vscode-testing-iconFailed, var(--destructive));
   color: var(--vscode-testing-failForeground, var(--destructive-foreground));
+  background-color: var(--vscode-testing-iconFailed, var(--destructive));
 }
 
 .status-5xx {
-  background-color: var(--vscode-testing-iconErrored, var(--destructive));
   color: var(--vscode-testing-errorForeground, var(--destructive-foreground));
+  background-color: var(--vscode-testing-iconErrored, var(--destructive));
 }
 
 /* VSCode-specific focus styles */
@@ -153,18 +153,18 @@ a:hover {
 }
 
 .status-success {
-  background-color: var(--vscode-testing-iconPassed, #4caf50);
   color: var(--vscode-editor-background, #ffffff);
+  background-color: var(--vscode-testing-iconPassed, #4caf50);
 }
 
 .status-error {
-  background-color: var(--vscode-testing-iconFailed, #f44336);
   color: var(--vscode-editor-background, #ffffff);
+  background-color: var(--vscode-testing-iconFailed, #f44336);
 }
 
 .status-default {
-  background-color: var(--vscode-badge-background, #6c757d);
   color: var(--vscode-badge-foreground, #ffffff);
+  background-color: var(--vscode-badge-background, #6c757d);
 }
 
 /* Ensure proper contrast in both light and dark themes */

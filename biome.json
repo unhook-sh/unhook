@@ -18,8 +18,7 @@
       "!**/dist/**",
       "!node_modules/**",
       "!**/node_modules/**",
-      "!bun.lock",
-      "!pnpm-lock.yaml"
+      "!bun.lock"
     ]
   },
   "formatter": {

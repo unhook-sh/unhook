@@ -166,6 +166,8 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
           if (adminEmails.length > 0) {
             if (!accessRequest) return;
 
+            if (!input.requesterMessage) return;
+
             await emailClient.send({
               subject: `New webhook access request for ${webhook.name}`,
               template: React.createElement(WebhookAccessRequestEmail, {

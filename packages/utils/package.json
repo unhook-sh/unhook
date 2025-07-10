@@ -13,7 +13,7 @@
   "name": "@unhook/utils",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

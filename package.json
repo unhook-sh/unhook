@@ -5,19 +5,19 @@
     ]
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.4",
+    "@biomejs/biome": "2.1.1",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.29.5",
     "@commitlint/cli": "19.8.1",
     "@testing-library/react": "16.3.0",
     "@turbo/gen": "2.5.4",
-    "@types/bun": "1.2.17",
+    "@types/bun": "1.2.18",
     "@unhook/commitlint-config": "workspace:*",
-    "bun": "1.2.17",
-    "checkly": "6.0.0",
-    "knip": "5.61.2",
-    "lefthook": "1.11.14",
-    "mintlify": "4.0.592",
+    "bun": "1.2.18",
+    "checkly": "6.1.0",
+    "knip": "5.61.3",
+    "lefthook": "1.12.1",
+    "mintlify": "4.2.11",
     "turbo": "2.5.4",
     "typescript": "5.8.3",
     "vitest": "3.2.4"
@@ -26,7 +26,7 @@
     "node": ">=20.12.0"
   },
   "name": "@unhook/root",
-  "packageManager": "bun@1.2.27",
+  "packageManager": "bun@1.2.18",
   "private": true,
   "scripts": {
     "build": "turbo run build",

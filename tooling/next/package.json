@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "@million/lint": "1.0.14",
-    "@next/bundle-analyzer": "15.3.3",
-    "next": "15.3.3"
+    "@next/bundle-analyzer": "15.3.5",
+    "next": "15.3.5"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
@@ -15,7 +15,7 @@
   "name": "@unhook/next-config",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "git clean -xdf .turbo node_modules",
     "typecheck": "tsc --noEmit"
   },
   "type": "module",

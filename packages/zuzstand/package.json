@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "zustand": "5.0.5"
+    "zustand": "5.0.6"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
@@ -13,7 +13,7 @@
   "name": "@unhook/zustand",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

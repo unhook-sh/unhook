@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "bun": "1.2.17",
+    "bun": "1.2.18",
     "debug": "4.4.1",
     "node-inspect-extracted": "3.1.0"
   },
   "devDependencies": {
-    "@types/bun": "1.2.17",
+    "@types/bun": "1.2.18",
     "@types/debug": "4.1.12",
-    "@types/vscode": "1.96.0",
+    "@types/vscode": "1.101.0",
     "typescript": "5.8.3"
   },
   "exports": {
@@ -21,7 +21,7 @@
   "name": "@unhook/logger",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

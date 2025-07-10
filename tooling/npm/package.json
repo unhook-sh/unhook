@@ -11,7 +11,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules"
+    "clean": "git clean -xdf .turbo node_modules"
   },
   "type": "module",
   "version": "0.1.0"

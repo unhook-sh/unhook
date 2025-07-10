@@ -1,26 +1,26 @@
 {
   "dependencies": {
-    "@clerk/chrome-extension": "2.4.12",
-    "@clerk/nextjs": "6.22.0",
-    "@sentry/nextjs": "9.30.0",
+    "@clerk/chrome-extension": "2.5.4",
+    "@clerk/nextjs": "6.24.0",
+    "@sentry/nextjs": "9.36.0",
     "@t3-oss/env-core": "0.13.8",
     "@t3-oss/env-nextjs": "0.13.8",
     "@vercel/analytics": "1.5.0",
     "@vercel/speed-insights": "1.2.0",
     "nextjs-google-analytics": "2.3.7",
-    "posthog-js": "1.255.1",
-    "posthog-node": "5.1.1",
+    "posthog-js": "1.257.0",
+    "posthog-node": "5.4.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "3.25.67"
+    "zod": "4.0.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.150",
-    "@types/chrome": "0.0.326",
+    "@types/chrome": "0.0.332",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@unhook/tsconfig": "workspace:*",
-    "next": "15.3.3",
+    "next": "15.3.5",
     "typescript": "5.8.3"
   },
   "exports": {
@@ -32,7 +32,7 @@
   "name": "@unhook/analytics",
   "private": true,
   "scripts": {
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

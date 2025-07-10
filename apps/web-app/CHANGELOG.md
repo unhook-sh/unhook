@@ -1,5 +1,12 @@
 # @unhook/web-app
 
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [[`a6bf4e3`](https://github.com/unhook-sh/unhook/commit/a6bf4e30a7d8f51c37c2e0d1843f2eb6e7129f4f)]:
+  - @unhook/client@0.5.2
+
 ## 0.1.10
 
 ### Patch Changes

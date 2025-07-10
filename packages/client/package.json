@@ -67,6 +67,7 @@
     "url": "git+https://github.com/unhook-sh/unhook.git"
   },
   "scripts": {
+    "build": "bun build ./src/bundle.ts --outdir ./dist --target node --format esm",
     "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "tsc --watch",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",

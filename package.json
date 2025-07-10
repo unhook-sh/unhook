@@ -26,6 +26,9 @@
     "node": ">=20.12.0"
   },
   "name": "@unhook/root",
+  "overrides": {
+    "@types/vscode": "1.96.0"
+  },
   "packageManager": "bun@1.2.18",
   "private": true,
   "scripts": {

@@ -21,11 +21,11 @@ export class SlackDestination implements Destination {
       const slackMessage = this.formatSlackMessage(data, config);
 
       const response = await fetch(config.webhookUrl, {
-        method: 'POST',
+        body: JSON.stringify(slackMessage),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(slackMessage),
+        method: 'POST',
       });
 
       const responseText = await response.text();
@@ -42,18 +42,18 @@ export class SlackDestination implements Destination {
       });
 
       return {
-        success: true,
         response: {
-          status: response.status,
-          headers,
           body: responseText,
+          headers,
+          status: response.status,
         },
+        success: true,
       };
     } catch (error) {
       log('Failed to send to Slack:', error);
       return {
-        success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
       };
     }
   }
@@ -101,27 +101,27 @@ export class SlackDestination implements Destination {
       message.text = `Webhook Event: ${eventType}`;
       message.blocks = [
         {
-          type: 'header',
           text: {
-            type: 'plain_text',
             text: `Webhook Event: ${eventType}`,
+            type: 'plain_text',
           },
+          type: 'header',
         },
         {
-          type: 'section',
           fields: [
             {
-              type: 'mrkdwn',
               text: `*Timestamp:*\n${timestamp}`,
+              type: 'mrkdwn',
             },
           ],
+          type: 'section',
         },
         {
-          type: 'section',
           text: {
-            type: 'mrkdwn',
             text: `*Event Data:*\n\`\`\`${JSON.stringify(data, null, 2)}\`\`\``,
+            type: 'mrkdwn',
           },
+          type: 'section',
         },
       ];
     } else {

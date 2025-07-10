@@ -1,18 +1,18 @@
 {
-  "name": "@unhook/npm",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "exports": {
-    ".": "./prepare-publish.js"
-  },
   "bin": {
     "prepare-publish": "./prepare-publish.js"
   },
+  "exports": {
+    ".": "./prepare-publish.js"
+  },
+  "name": "@unhook/npm",
+  "private": true,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules"
-  }
+  },
+  "type": "module",
+  "version": "0.1.0"
 }

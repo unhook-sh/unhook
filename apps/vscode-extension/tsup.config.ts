@@ -7,18 +7,9 @@ const isDevBuild =
   process.env.CI !== 'true';
 
 export default defineConfig({
-  entry: ['src/extension.ts'],
-  outDir: 'dist',
-  format: ['cjs'], // VS Code extensions require CommonJS
-  platform: 'node',
-  target: 'node18',
-  tsconfig: 'tsconfig.json',
-  minify: !isDevBuild,
-  sourcemap: isDevBuild ? 'inline' : false,
   bundle: true,
-  splitting: false,
-  treeshake: true,
-  clean: false, // We handle cleaning in the npm script
+  clean: false,
+  entry: ['src/extension.ts'], // VS Code extensions require CommonJS
   external: [
     'vscode',
     // Node.js built-ins
@@ -41,6 +32,8 @@ export default defineConfig({
     'util',
     'zlib',
   ],
+  format: ['cjs'],
+  minify: !isDevBuild,
   noExternal: [
     '@unhook/client',
     // Bundle all dependencies except Node.js built-ins and vscode
@@ -49,4 +42,11 @@ export default defineConfig({
   onSuccess: async () => {
     console.log('✅ VS Code extension build complete');
   },
+  outDir: 'dist',
+  platform: 'node',
+  sourcemap: isDevBuild ? 'inline' : false,
+  splitting: false, // We handle cleaning in the npm script
+  target: 'node18',
+  treeshake: true,
+  tsconfig: 'tsconfig.json',
 });

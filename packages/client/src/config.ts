@@ -21,16 +21,16 @@ const CONFIG_FILES = [
 ];
 
 const headerSchema = z.object({
-  type: z.literal('header'),
   key: z.string(),
+  type: z.literal('header'),
   value: z.string(),
 });
 
 const remotePatternSchema = z.object({
-  protocol: z.enum(['http', 'https']).optional(),
   hostname: z.string(),
-  port: z.string().optional(),
   pathname: z.string().optional(),
+  port: z.string().optional(),
+  protocol: z.enum(['http', 'https']).optional(),
   search: z.string().optional(),
 });
 
@@ -38,19 +38,17 @@ export type RemotePatternSchema = z.infer<typeof remotePatternSchema>;
 
 export const configSchema = z
   .object({
-    webhookId: z.string(),
     clientId: z.string().optional(),
     debug: z.boolean().default(false).optional(),
-    telemetry: z.boolean().default(true).optional(),
-    version: z.string().optional(),
+    delivery: z.array(
+      z.object({
+        destination: z.string(),
+        source: z.string().default('*').optional(),
+      }),
+    ),
     destination: z.array(
       z.object({
         name: z.string(),
-        url: z.union([
-          z.instanceof(URL),
-          z.string().url(),
-          remotePatternSchema,
-        ]),
         ping: z
           .union([
             z.instanceof(URL),
@@ -60,24 +58,11 @@ export const configSchema = z
           ])
           .default(true)
           .optional(),
-      }),
-    ),
-    source: z
-      .array(
-        z.object({
-          name: z.string(),
-          agent: headerSchema.optional(),
-          timestamp: headerSchema.optional(),
-          verification: headerSchema.optional(),
-          secret: z.string().optional(),
-          defaultTimeout: z.number().default(18000).optional(),
-        }),
-      )
-      .optional(),
-    delivery: z.array(
-      z.object({
-        source: z.string().default('*').optional(),
-        destination: z.string(),
+        url: z.union([
+          z.instanceof(URL),
+          z.string().url(),
+          remotePatternSchema,
+        ]),
       }),
     ),
     server: z
@@ -86,6 +71,21 @@ export const configSchema = z
         dashboardUrl: z.string().url().optional(),
       })
       .optional(),
+    source: z
+      .array(
+        z.object({
+          agent: headerSchema.optional(),
+          defaultTimeout: z.number().default(18000).optional(),
+          name: z.string(),
+          secret: z.string().optional(),
+          timestamp: headerSchema.optional(),
+          verification: headerSchema.optional(),
+        }),
+      )
+      .optional(),
+    telemetry: z.boolean().default(true).optional(),
+    version: z.string().optional(),
+    webhookId: z.string(),
   })
   .superRefine((data, ctx) => {
     // Runtime validation: ensure all delivery.destination values exist in destination[].name
@@ -144,11 +144,11 @@ export async function findUpConfig(
 
 export async function loadConfig(configPath: string): Promise<WebhookConfig> {
   let config = {
-    webhookId: '',
+    delivery: [] as Array<z.infer<typeof configSchema>['delivery'][number]>,
     destination: [] as Array<
       z.infer<typeof configSchema>['destination'][number]
     >,
-    delivery: [] as Array<z.infer<typeof configSchema>['delivery'][number]>,
+    webhookId: '',
   };
 
   if (configPath) {

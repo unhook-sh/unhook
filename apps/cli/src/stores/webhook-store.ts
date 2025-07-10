@@ -29,75 +29,14 @@ interface WebhookActions {
 type WebhookStore = WebhookState & WebhookActions;
 
 const defaultWebhookState: WebhookState = {
-  webhooks: [],
-  isLoading: true,
   isAuthorizedForWebhook: false,
   isCheckingWebhook: true,
+  isLoading: true,
+  webhooks: [],
 };
 
 const store = createStore<WebhookStore>()((set, get) => ({
   ...defaultWebhookState,
-  setWebhooks: (webhooks) => set({ webhooks }),
-  setIsLoading: (isLoading) => set({ isLoading }),
-  setIsAuthorizedForWebhook: (isAuthorized) =>
-    set({ isAuthorizedForWebhook: isAuthorized }),
-  setIsCheckingWebhook: (isChecking) => set({ isCheckingWebhook: isChecking }),
-  fetchWebhookById: async (id: string) => {
-    const { orgId } = useAuthStore.getState();
-    const { api } = useApiStore.getState();
-
-    log('fetchWebhookById', { id, orgId });
-
-    try {
-      const webhook = await api.webhooks.byId.query({ id });
-
-      if (webhook) {
-        log('Webhook found, updating store state', { webhookId: webhook.id });
-        set((state) => ({
-          webhooks: state.webhooks.some((t) => t.id === webhook.id)
-            ? state.webhooks.map((t) => (t.id === webhook.id ? webhook : t))
-            : [...state.webhooks, webhook],
-          isLoading: false,
-          isAuthorizedForWebhook: true,
-          isCheckingWebhook: false,
-        }));
-
-        return webhook;
-      }
-
-      log('Webhook not found', { id });
-      set({
-        isAuthorizedForWebhook: false,
-        isCheckingWebhook: false,
-      });
-      return null;
-    } catch (error) {
-      log('Error fetching webhook:', error);
-      set({
-        isAuthorizedForWebhook: false,
-        isCheckingWebhook: false,
-      });
-      return null;
-    }
-  },
-  fetchWebhooks: async () => {
-    const { api } = useApiStore.getState();
-
-    try {
-      const webhooks = await api.webhooks.all.query();
-      set({
-        webhooks,
-        isLoading: false,
-      });
-
-      return webhooks;
-    } catch (error) {
-      log('Error fetching webhooks: %O', error);
-      return [];
-    } finally {
-      set({ isLoading: false });
-    }
-  },
   checkWebhookAuth: async () => {
     const { isSignedIn } = useAuthStore.getState();
     const { webhookId } = useConfigStore.getState();
@@ -152,19 +91,19 @@ const store = createStore<WebhookStore>()((set, get) => ({
     const { api } = useApiStore.getState();
 
     const webhook = await api.webhooks.create.mutate({
-      name,
-      status: 'active',
       config: {
-        storage: {
-          storeHeaders: true,
-          storeRequestBody: true,
-          storeResponseBody: true,
-          maxRequestBodySize: 1024 * 1024, // 1MB
-          maxResponseBodySize: 1024 * 1024, // 1MB
-        },
         headers: {},
         requests: {},
+        storage: {
+          maxRequestBodySize: 1024 * 1024,
+          maxResponseBodySize: 1024 * 1024,
+          storeHeaders: true,
+          storeRequestBody: true, // 1MB
+          storeResponseBody: true, // 1MB
+        },
       },
+      name,
+      status: 'active',
     });
 
     if (!webhook) throw new Error('Failed to create webhook');
@@ -172,6 +111,67 @@ const store = createStore<WebhookStore>()((set, get) => ({
     await get().fetchWebhooks();
     return webhook;
   },
+  fetchWebhookById: async (id: string) => {
+    const { orgId } = useAuthStore.getState();
+    const { api } = useApiStore.getState();
+
+    log('fetchWebhookById', { id, orgId });
+
+    try {
+      const webhook = await api.webhooks.byId.query({ id });
+
+      if (webhook) {
+        log('Webhook found, updating store state', { webhookId: webhook.id });
+        set((state) => ({
+          isAuthorizedForWebhook: true,
+          isCheckingWebhook: false,
+          isLoading: false,
+          webhooks: state.webhooks.some((t) => t.id === webhook.id)
+            ? state.webhooks.map((t) => (t.id === webhook.id ? webhook : t))
+            : [...state.webhooks, webhook],
+        }));
+
+        return webhook;
+      }
+
+      log('Webhook not found', { id });
+      set({
+        isAuthorizedForWebhook: false,
+        isCheckingWebhook: false,
+      });
+      return null;
+    } catch (error) {
+      log('Error fetching webhook:', error);
+      set({
+        isAuthorizedForWebhook: false,
+        isCheckingWebhook: false,
+      });
+      return null;
+    }
+  },
+  fetchWebhooks: async () => {
+    const { api } = useApiStore.getState();
+
+    try {
+      const webhooks = await api.webhooks.all.query();
+      set({
+        isLoading: false,
+        webhooks,
+      });
+
+      return webhooks;
+    } catch (error) {
+      log('Error fetching webhooks: %O', error);
+      return [];
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  setIsAuthorizedForWebhook: (isAuthorized) =>
+    set({ isAuthorizedForWebhook: isAuthorized }),
+  setIsCheckingWebhook: (isChecking) => set({ isCheckingWebhook: isChecking }),
+  setIsLoading: (isLoading) => set({ isLoading }),
+  setWebhooks: (webhooks) => set({ webhooks }),
 }));
 
 export const useWebhookStore = createSelectors(store);

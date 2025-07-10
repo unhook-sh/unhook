@@ -91,35 +91,35 @@ export function registerEventCommands(
           // Update event status and retry count
           await api.events.updateEventStatus.mutate({
             eventId: item.event.id,
-            status: 'processing',
             retryCount: (item.event.retryCount ?? 0) + 1,
+            status: 'processing',
           });
 
           // Use the shared delivery utilities
           await createRequestsForEventToAllDestinations({
-            event: item.event,
+            api,
             delivery: config.delivery,
             destination: config.destination,
-            api,
+            event: item.event,
             isEventRetry: true,
-            pingEnabledFn: (destination) => !!destination.ping,
             onRequestCreated: async (request) => {
               await handlePendingRequest({
-                request: request,
+                api,
                 delivery: config.delivery,
                 destination: config.destination,
-                api,
+                request: request,
                 requestFn: async (url, options) => {
                   const response = await fetch(url, options);
                   const responseText = await response.text();
                   return {
                     body: { text: () => Promise.resolve(responseText) },
-                    statusCode: response.status,
                     headers: Object.fromEntries(response.headers.entries()),
+                    statusCode: response.status,
                   };
                 },
               });
             },
+            pingEnabledFn: (destination) => !!destination.ping,
           });
 
           // Optionally, refetch events to update the UI
@@ -175,8 +175,8 @@ export function registerEventCommands(
           log('Event details shown successfully', { eventId: item.event.id });
         } catch (error) {
           log('Failed to open event details', {
-            eventId: item.event.id,
             error,
+            eventId: item.event.id,
           });
           vscode.window.showErrorMessage(
             `Failed to open event details: ${error}`,
@@ -193,10 +193,10 @@ export function registerEventCommands(
       async (item: RequestItem) => {
         try {
           log('View request command called', {
-            item: item ? 'present' : 'undefined',
             hasRequest: item?.request ? 'yes' : 'no',
-            itemType: typeof item,
+            item: item ? 'present' : 'undefined',
             itemConstructor: item?.constructor?.name,
+            itemType: typeof item,
           });
 
           // Guard against undefined item
@@ -214,9 +214,9 @@ export function registerEventCommands(
               'View request command called with item missing request property',
               {
                 item,
+                itemConstructor: item?.constructor?.name,
                 itemKeys: Object.keys(item || {}),
                 itemType: typeof item,
-                itemConstructor: item?.constructor?.name,
               },
             );
             vscode.window.showErrorMessage(
@@ -235,8 +235,8 @@ export function registerEventCommands(
           });
         } catch (error) {
           log('Failed to open request details', {
-            requestId: item?.request?.id,
             error,
+            requestId: item?.request?.id,
           });
           vscode.window.showErrorMessage(
             `Failed to open request details: ${error}`,
@@ -275,30 +275,30 @@ export function registerEventCommands(
 
           // Create a new request with the same data
           const newRequest = await api.requests.create.mutate({
-            webhookId: item.request.webhookId,
-            eventId: item.request.eventId,
             apiKey: item.request.apiKey ?? undefined,
-            request: item.request.request,
-            source: item.request.source,
             destination: item.request.destination,
-            timestamp: new Date(),
-            status: 'pending',
+            eventId: item.request.eventId,
+            request: item.request.request,
             responseTimeMs: 0,
+            source: item.request.source,
+            status: 'pending',
+            timestamp: new Date(),
+            webhookId: item.request.webhookId,
           });
 
           // Handle the pending request using the delivery utility
           await handlePendingRequest({
-            request: newRequest,
+            api,
             delivery: config.delivery,
             destination: config.destination,
-            api,
+            request: newRequest,
             requestFn: async (url, options) => {
               const response = await fetch(url, options);
               const responseText = await response.text();
               return {
                 body: { text: () => Promise.resolve(responseText) },
-                statusCode: response.status,
                 headers: Object.fromEntries(response.headers.entries()),
+                statusCode: response.status,
               };
             },
           });

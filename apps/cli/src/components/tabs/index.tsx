@@ -30,28 +30,28 @@ interface TabsState {
 }
 
 const store = createStore<TabsState>()((set, get) => ({
-  activeTabIndex: 0,
-  direction: 'row',
   activeTab: undefined,
+  activeTabIndex: 0,
   defaultTab: undefined,
-  tabValues: [],
-  setDefaultTab: (tab: string) => set({ defaultTab: tab }),
+  direction: 'row',
+  onChangeHandler: (_tab: string) => () => {},
   setActiveTabIndex: (index: number) => {
     const newActiveTab = get().tabValues[index];
     const currentActiveTab = get().activeTab;
 
-    set({ activeTabIndex: index, activeTab: newActiveTab });
+    set({ activeTab: newActiveTab, activeTabIndex: index });
     log('store: setActiveTabIndex', newActiveTab, currentActiveTab, index);
 
     if (newActiveTab !== undefined && newActiveTab !== currentActiveTab) {
       get().onChangeHandler(newActiveTab);
     }
   },
+  setDefaultTab: (tab: string) => set({ defaultTab: tab }),
   setDirection: (direction: 'row' | 'column') => set({ direction }),
-  onChangeHandler: (_tab: string) => () => {}, // Default to first tab
   setOnChangeHandler: (onChangeHandler: (tab: string) => void) =>
-    set({ onChangeHandler }),
+    set({ onChangeHandler }), // Default to first tab
   setTabValues: (values: string[]) => set({ tabValues: values }),
+  tabValues: [],
 }));
 
 const useTabsStore = createSelectors(store);
@@ -104,9 +104,9 @@ export function Tabs({
 
   return (
     <Box
-      width={dimensions.width}
       flexDirection={direction === 'row' ? 'column' : 'row'}
       gap={1}
+      width={dimensions.width}
     >
       {children}
     </Box>
@@ -158,7 +158,7 @@ export function TabsList({
         const isActive = activeTabIndex === index;
 
         return (
-          <Box key={props.value} gap={1}>
+          <Box gap={1} key={props.value}>
             {index !== 0 && <Text dimColor> | </Text>}
             <Box
               borderBottom={isActive}

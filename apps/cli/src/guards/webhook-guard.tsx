@@ -26,14 +26,14 @@ export const WebhookAuthorized: FC<WebhookAuthorizedProps> = ({ children }) => {
 
   if (!webhookId || isCheckingWebhook || !isAuthorizedForWebhook) {
     log('WebhookAuthorized - not rendering children', {
+      isAuthorizedForWebhook,
+      isCheckingWebhook,
       reason: !webhookId
         ? 'no webhook ID'
         : isCheckingWebhook
           ? 'checking webhook'
           : 'not authorized',
       webhookId,
-      isCheckingWebhook,
-      isAuthorizedForWebhook,
     });
     return null;
   }
@@ -102,9 +102,9 @@ export const WebhookChecking: FC<WebhookCheckingProps> = ({ children }) => {
 
   if (!webhookId || !isCheckingWebhook) {
     log('WebhookChecking - not rendering children', {
+      isCheckingWebhook,
       reason: !webhookId ? 'no webhook ID' : 'not checking webhook',
       webhookId,
-      isCheckingWebhook,
     });
     return null;
   }

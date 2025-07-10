@@ -105,10 +105,10 @@ export class ConfigManager {
 
       // Log current configuration
       console.log('Unhook Config Manager:', {
-        isDevelopment: this.isDevelopment(),
         apiUrl: this.apiUrl,
-        dashboardUrl: this.dashboardUrl,
         configFound: !!configPath,
+        dashboardUrl: this.dashboardUrl,
+        isDevelopment: this.isDevelopment(),
       });
     } catch (error) {
       console.error('Failed to load Unhook configuration:', error);

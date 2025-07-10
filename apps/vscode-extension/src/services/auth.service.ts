@@ -115,8 +115,8 @@ export class AuthStore implements vscode.Disposable {
   async validateSession(): Promise<boolean> {
     if (!this._authToken || !this._sessionId) {
       log('Cannot validate session - missing token or session ID', {
-        hasToken: !!this._authToken,
         hasSessionId: !!this._sessionId,
+        hasToken: !!this._authToken,
       });
       return false;
     }
@@ -149,8 +149,8 @@ export class AuthStore implements vscode.Disposable {
     ]);
 
     log('Retrieved stored credentials', {
-      hasToken: !!token,
       hasSessionId: !!sessionId,
+      hasToken: !!token,
     });
 
     if (token) {

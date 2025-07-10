@@ -13,8 +13,8 @@ export function SecondBentoAnimation() {
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
         <div className="relative flex h-full w-full items-center justify-center translate-y-0 md:translate-y-32">
           <OrbitingCircles
-            index={0}
             iconSize={60}
+            index={0}
             radius={100}
             reverse
             speed={1}
@@ -24,15 +24,15 @@ export function SecondBentoAnimation() {
             <Icons.figma />
           </OrbitingCircles>
 
-          <OrbitingCircles index={1} iconSize={60} speed={0.5}>
+          <OrbitingCircles iconSize={60} index={1} speed={0.5}>
             <Icons.workos />
             <Icons.runwayml />
             <Icons.gemini />
           </OrbitingCircles>
 
           <OrbitingCircles
-            index={2}
             iconSize={60}
+            index={2}
             radius={230}
             reverse
             speed={0.5}

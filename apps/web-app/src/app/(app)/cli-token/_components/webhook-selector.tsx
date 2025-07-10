@@ -18,7 +18,7 @@ export function WebhookSelector() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Select value={selectedWebhookId} onValueChange={setSelectedWebhookId}>
+      <Select onValueChange={setSelectedWebhookId} value={selectedWebhookId}>
         <SelectTrigger>
           <SelectValue placeholder="Select a webhook" />
         </SelectTrigger>

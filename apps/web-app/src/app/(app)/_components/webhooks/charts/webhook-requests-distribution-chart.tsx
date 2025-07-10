@@ -64,47 +64,47 @@ export function WebhookRequestsDistributionChart({
       <ChartContainer
         config={{
           requests: {
-            label: 'Requests',
             color: 'hsl(var(--primary))',
+            label: 'Requests',
           },
         }}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer height="100%" width="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 0, left: 0, bottom: 40 }}
+            margin={{ bottom: 40, left: 0, right: 0, top: 20 }}
             onMouseLeave={handleMouseLeave}
           >
             <CartesianGrid
+              stroke="hsl(var(--border))"
               strokeDasharray="3 3"
               vertical={false}
-              stroke="hsl(var(--border))"
             />
             <XAxis
-              dataKey="name"
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
               angle={-45}
-              textAnchor="end"
+              axisLine={false}
+              dataKey="name"
+              fontSize={12}
               height={70}
+              stroke="hsl(var(--muted-foreground))"
+              textAnchor="end"
+              tickLine={false}
             />
             <YAxis
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
               axisLine={false}
+              fontSize={12}
+              stroke="hsl(var(--muted-foreground))"
               tickFormatter={(value) => `${value}`}
+              tickLine={false}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar
               dataKey="requests"
-              radius={[4, 4, 0, 0]}
               onMouseEnter={handleMouseEnter}
+              radius={[4, 4, 0, 0]}
             >
               {data.map(({ name }, index) => (
-                <Cell key={name} fill={getBarFill(index)} />
+                <Cell fill={getBarFill(index)} key={name} />
               ))}
             </Bar>
           </BarChart>

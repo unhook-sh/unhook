@@ -19,8 +19,8 @@ interface PricingTier {
 
 const pricingTiers: PricingTier[] = [
   {
-    name: 'Self-Hosted',
-    price: '$0',
+    buttonText: 'Get Started',
+    buttonVariant: 'outline',
     description: 'Perfect for individual developers and open source projects',
     features: [
       'Unlimited webhooks',
@@ -29,13 +29,13 @@ const pricingTiers: PricingTier[] = [
       'Community support',
       'Open source',
     ],
-    buttonText: 'Get Started',
-    buttonVariant: 'outline',
     href: 'https://github.com/unhook-sh/unhook',
+    name: 'Self-Hosted',
+    price: '$0',
   },
   {
-    name: 'Team',
-    price: '$49',
+    buttonText: 'Start Free Trial',
+    buttonVariant: 'default',
     description: 'For growing teams that need collaboration features',
     features: [
       'Everything in Self-Hosted',
@@ -47,14 +47,14 @@ const pricingTiers: PricingTier[] = [
       'Advanced monitoring & analytics',
       'Custom domains',
     ],
-    buttonText: 'Start Free Trial',
-    buttonVariant: 'default',
     highlight: true,
     href: '/webhooks/create?utm_source=pricing&utm_medium=team',
+    name: 'Team',
+    price: '$49',
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
+    buttonText: 'Schedule Call',
+    buttonVariant: 'secondary',
     description: 'For teams with 25+ members and advanced requirements',
     features: [
       'Everything in Team',
@@ -66,9 +66,9 @@ const pricingTiers: PricingTier[] = [
       'SLA guarantees',
       'On-premise deployment option',
     ],
-    buttonText: 'Schedule Call',
-    buttonVariant: 'secondary',
     href: 'https://cal.com/unhook/enterprise-demo',
+    name: 'Enterprise',
+    price: 'Custom',
   },
 ];
 
@@ -104,12 +104,12 @@ export default function PricingPage() {
             Monthly
           </span>
           <button
+            className="relative inline-flex h-6 w-11 items-center rounded-full bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             onClick={() =>
               setBillingPeriod(
                 billingPeriod === 'monthly' ? 'yearly' : 'monthly',
               )
             }
-            className="relative inline-flex h-6 w-11 items-center rounded-full bg-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             type="button"
           >
             <span
@@ -135,11 +135,11 @@ export default function PricingPage() {
         <div className="mx-auto mt-16 grid max-w-5xl gap-8 lg:grid-cols-3">
           {pricingTiers.map((tier) => (
             <div
-              key={tier.name}
               className={cn(
                 'relative rounded-2xl border bg-card p-8 shadow-sm',
                 tier.highlight && 'border-primary shadow-lg',
               )}
+              key={tier.name}
             >
               {tier.highlight && (
                 <div className="absolute -top-5 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
@@ -177,7 +177,7 @@ export default function PricingPage() {
 
                 <ul className="mt-8 space-y-3 flex-1">
                   {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start">
+                    <li className="flex items-start" key={feature}>
                       <CheckIcon className="h-5 w-5 flex-shrink-0 text-primary" />
                       <span className="ml-3 text-sm text-muted-foreground">
                         {feature}
@@ -187,9 +187,9 @@ export default function PricingPage() {
                 </ul>
 
                 <Button
-                  variant={tier.buttonVariant}
-                  className="mt-8 w-full"
                   asChild
+                  className="mt-8 w-full"
+                  variant={tier.buttonVariant}
                 >
                   <Link href={tier.href}>{tier.buttonText}</Link>
                 </Button>

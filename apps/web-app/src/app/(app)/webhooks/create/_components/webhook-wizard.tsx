@@ -154,12 +154,12 @@ export function WebhookWizard(_props: { authToken?: string }) {
               </div>
             ) : webhook && authCode ? (
               <>
-                <WebhookUrlStep webhookUrl={webhookUrl} source={source} />
-                <SourceStep value={source} onChange={setSource} />
+                <WebhookUrlStep source={source} webhookUrl={webhookUrl} />
+                <SourceStep onChange={setSource} value={source} />
                 <InstallationTabs
                   authCode={authCode.id}
-                  webhookId={webhook.id}
                   source={source}
+                  webhookId={webhook.id}
                 />
               </>
             ) : null}
@@ -169,8 +169,8 @@ export function WebhookWizard(_props: { authToken?: string }) {
 
       {webhook && (
         <RealTimeEventStream
-          webhookId={webhook.id}
           onEventReceived={handleFirstEventReceived}
+          webhookId={webhook.id}
         />
       )}
     </div>

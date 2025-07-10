@@ -9,8 +9,8 @@ async function generateTypes() {
   console.log('🔄 Generating types...');
   try {
     const process = spawn('bun', ['gen-supabase-types'], {
-      stdio: 'inherit',
       shell: true,
+      stdio: 'inherit',
     });
 
     await new Promise((resolve, reject) => {
@@ -34,8 +34,8 @@ const debouncedGenerateTypes = debounce(generateTypes, 1000);
 
 // Start TypeScript compiler in watch mode
 const tsc = spawn('tsc', ['--watch', '--preserveWatchOutput'], {
-  stdio: 'inherit',
   shell: true,
+  stdio: 'inherit',
 });
 
 // Watch for changes in schema files

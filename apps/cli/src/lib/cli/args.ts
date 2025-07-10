@@ -20,9 +20,9 @@ export async function parseArgs(): Promise<CliState> {
   const argv = await yargs(hideBin(process.argv))
     .option('verbose', {
       alias: 'v',
-      type: 'boolean',
-      description: 'Enable verbose debug logging for troubleshooting.',
       default: false,
+      description: 'Enable verbose debug logging for troubleshooting.',
+      type: 'boolean',
     })
     .command(
       'init',
@@ -30,27 +30,27 @@ export async function parseArgs(): Promise<CliState> {
       {
         code: {
           alias: 'c',
-          type: 'string',
           description:
             'Authentication code for direct login (advanced; usually not needed).',
-        },
-        webhook: {
-          alias: 'w',
           type: 'string',
-          description:
-            'Specify a webhook ID to use (optional; usually auto-generated).',
-        },
-        source: {
-          alias: 's',
-          type: 'string',
-          description:
-            'Set the source name or URL for incoming webhooks (e.g., "stripe").',
         },
         destination: {
           alias: 't',
-          type: 'string',
           description:
             'Set the local destination URL to forward webhooks to (e.g., "http://localhost:3000/api/webhooks").',
+          type: 'string',
+        },
+        source: {
+          alias: 's',
+          description:
+            'Set the source name or URL for incoming webhooks (e.g., "stripe").',
+          type: 'string',
+        },
+        webhook: {
+          alias: 'w',
+          description:
+            'Specify a webhook ID to use (optional; usually auto-generated).',
+          type: 'string',
         },
       },
       () => {
@@ -61,15 +61,15 @@ export async function parseArgs(): Promise<CliState> {
       'listen',
       'Start the Unhook relay to receive and forward webhooks to your local server. Keeps the CLI running and displays incoming requests.',
       {
-        path: {
-          type: 'string',
-          description: 'Directory to watch for config changes (default: ".").',
-          default: '.',
-        },
         config: {
           alias: 'c',
-          type: 'string',
           description: 'Path to a custom unhook.yaml configuration file.',
+          type: 'string',
+        },
+        path: {
+          default: '.',
+          description: 'Directory to watch for config changes (default: ".").',
+          type: 'string',
         },
       },
       () => {
@@ -82,9 +82,9 @@ export async function parseArgs(): Promise<CliState> {
       {
         code: {
           alias: 'c',
-          type: 'string',
           description:
             'Authentication code for direct login (advanced; usually not needed).',
+          type: 'string',
         },
       },
       () => {
@@ -101,14 +101,14 @@ export async function parseArgs(): Promise<CliState> {
   parsedConfig.version = version;
 
   return {
-    verbose: parsedConfig.verbose,
-    version: parsedConfig.version,
     code: parsedConfig.code,
     command,
-    path: parsedConfig.path as string,
-    webhookId: parsedConfig.webhook as string,
-    source: parsedConfig.source as string,
-    destination: parsedConfig.destination as string,
     configPath: parsedConfig.configPath as string,
+    destination: parsedConfig.destination as string,
+    path: parsedConfig.path as string,
+    source: parsedConfig.source as string,
+    verbose: parsedConfig.verbose,
+    version: parsedConfig.version,
+    webhookId: parsedConfig.webhook as string,
   };
 }

@@ -42,7 +42,7 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
 
   return (
     <Box>
-      <Tabs onChange={handleTabChange} defaultValue="request">
+      <Tabs defaultValue="request" onChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="request">Request</TabsTrigger>
           <TabsTrigger value="response">Response</TabsTrigger>
@@ -50,7 +50,7 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
 
         <TabsContent value="request">
           <Box flexDirection="row">
-            <Box width="50%" flexDirection="column">
+            <Box flexDirection="column" width="50%">
               <Text bold color="cyan">
                 {event.originRequest.method}{' '}
               </Text>
@@ -73,7 +73,7 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
                 )} */}
               </Box>
             </Box>
-            <Box width="50%" flexDirection="column">
+            <Box flexDirection="column" width="50%">
               {formattedRequestBody && (
                 <SyntaxHighlight code={formattedRequestBody} language="json" />
               )}
@@ -82,7 +82,7 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
         </TabsContent>
         <TabsContent value="response">
           <Box flexDirection="row">
-            <Box width="50%" flexDirection="column">
+            <Box flexDirection="column" width="50%">
               {/* {Object.entries(event.originRequest?.headers || {}).map(
                 ([key, value]) => (
                   <Box key={key} marginLeft={2}>
@@ -92,7 +92,7 @@ export const EventRequestDetails: FC<EventRequestDetailsProps> = (props) => {
                 ),
               )} */}
             </Box>
-            <Box width="50%" flexDirection="column">
+            <Box flexDirection="column" width="50%">
               {formattedResponseBody && (
                 <SyntaxHighlight code={formattedResponseBody} language="json" />
               )}

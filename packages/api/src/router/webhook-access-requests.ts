@@ -20,6 +20,50 @@ import { env as envServer } from '../env.server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const webhookAccessRequestsRouter = createTRPCRouter({
+  // Cancel a pending request
+  cancel: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) throw new Error('User ID is required');
+
+      const accessRequest = await ctx.db.query.WebhookAccessRequests.findFirst({
+        where: and(
+          eq(WebhookAccessRequests.id, input.id),
+          eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
+          eq(WebhookAccessRequests.status, 'pending'),
+        ),
+      });
+
+      if (!accessRequest) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Access request not found or cannot be cancelled',
+        });
+      }
+
+      await ctx.db
+        .delete(WebhookAccessRequests)
+        .where(eq(WebhookAccessRequests.id, input.id));
+
+      return { success: true };
+    }),
+
+  // Check if user has a pending request for a webhook
+  checkPendingRequest: protectedProcedure
+    .input(z.object({ webhookId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) throw new Error('User ID is required');
+
+      const request = await ctx.db.query.WebhookAccessRequests.findFirst({
+        where: and(
+          eq(WebhookAccessRequests.webhookId, input.webhookId),
+          eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
+          eq(WebhookAccessRequests.status, 'pending'),
+        ),
+      });
+
+      return request;
+    }),
   // Create a new access request
   create: protectedProcedure
     .input(CreateWebhookAccessRequestSchema)
@@ -86,11 +130,11 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       const [accessRequest] = await ctx.db
         .insert(WebhookAccessRequests)
         .values({
-          webhookId: input.webhookId,
-          requesterId: ctx.auth.userId,
-          requesterEmail: user.email,
-          requesterMessage: input.requesterMessage,
           orgId: webhook.orgId,
+          requesterEmail: user.email,
+          requesterId: ctx.auth.userId,
+          requesterMessage: input.requesterMessage,
+          webhookId: input.webhookId,
         })
         .returning();
 
@@ -123,21 +167,21 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
             if (!accessRequest) return;
 
             await emailClient.send({
-              to: adminEmails,
               subject: `New webhook access request for ${webhook.name}`,
               template: React.createElement(WebhookAccessRequestEmail, {
+                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
+                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests`,
+                message: input.requesterMessage,
+                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
+                requesterEmail: user.email,
                 requesterName:
                   user.firstName && user.lastName
                     ? `${user.firstName} ${user.lastName}`
                     : user.email,
-                requesterEmail: user.email,
-                webhookName: webhook.name,
                 webhookId: webhook.id,
-                message: input.requesterMessage,
-                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
-                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
-                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests`,
+                webhookName: webhook.name,
               }),
+              to: adminEmails,
             });
           }
         } catch (error) {
@@ -179,12 +223,12 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       }
 
       const requests = await ctx.db.query.WebhookAccessRequests.findMany({
+        orderBy: desc(WebhookAccessRequests.createdAt),
         where: and(...conditions),
         with: {
-          webhook: true,
           requester: true,
+          webhook: true,
         },
-        orderBy: desc(WebhookAccessRequests.createdAt),
       });
 
       return requests;
@@ -195,32 +239,15 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
     if (!ctx.auth.userId) throw new Error('User ID is required');
 
     const requests = await ctx.db.query.WebhookAccessRequests.findMany({
+      orderBy: desc(WebhookAccessRequests.createdAt),
       where: eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
       with: {
         webhook: true,
       },
-      orderBy: desc(WebhookAccessRequests.createdAt),
     });
 
     return requests;
   }),
-
-  // Check if user has a pending request for a webhook
-  checkPendingRequest: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      if (!ctx.auth.userId) throw new Error('User ID is required');
-
-      const request = await ctx.db.query.WebhookAccessRequests.findFirst({
-        where: and(
-          eq(WebhookAccessRequests.webhookId, input.webhookId),
-          eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
-          eq(WebhookAccessRequests.status, 'pending'),
-        ),
-      });
-
-      return request;
-    }),
 
   // Respond to an access request (approve/reject)
   respond: protectedProcedure
@@ -256,10 +283,10 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       const [updatedRequest] = await ctx.db
         .update(WebhookAccessRequests)
         .set({
-          status: input.status,
+          respondedAt: new Date(),
           responderId: ctx.auth.userId,
           responseMessage: input.responseMessage,
-          respondedAt: new Date(),
+          status: input.status,
         })
         .where(eq(WebhookAccessRequests.id, input.id))
         .returning();
@@ -268,8 +295,8 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       if (input.status === 'approved') {
         await ctx.db.insert(OrgMembers).values({
           orgId: accessRequest.orgId,
-          userId: accessRequest.requesterId,
           role: 'user',
+          userId: accessRequest.requesterId,
         });
       }
 
@@ -289,23 +316,23 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
 
           if (requester?.email) {
             await emailClient.send({
-              to: requester.email,
               subject: `Your webhook access request has been ${input.status}`,
               template: React.createElement(WebhookAccessResponseEmail, {
-                requesterName: requester.firstName || requester.email,
-                webhookName: accessRequest.webhook.name,
-                webhookId: accessRequest.webhook.id,
-                status: input.status,
-                responseMessage: input.responseMessage,
-                dashboardUrl:
-                  input.status === 'approved'
-                    ? `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${accessRequest.webhook.id}`
-                    : undefined,
                 cliCommand:
                   input.status === 'approved'
                     ? `unhook start ${accessRequest.webhook.id}`
                     : undefined,
+                dashboardUrl:
+                  input.status === 'approved'
+                    ? `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${accessRequest.webhook.id}`
+                    : undefined,
+                requesterName: requester.firstName || requester.email,
+                responseMessage: input.responseMessage,
+                status: input.status,
+                webhookId: accessRequest.webhook.id,
+                webhookName: accessRequest.webhook.name,
               }),
+              to: requester.email,
             });
           }
         } catch (error) {
@@ -315,33 +342,5 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       }
 
       return updatedRequest;
-    }),
-
-  // Cancel a pending request
-  cancel: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.userId) throw new Error('User ID is required');
-
-      const accessRequest = await ctx.db.query.WebhookAccessRequests.findFirst({
-        where: and(
-          eq(WebhookAccessRequests.id, input.id),
-          eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
-          eq(WebhookAccessRequests.status, 'pending'),
-        ),
-      });
-
-      if (!accessRequest) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Access request not found or cannot be cancelled',
-        });
-      }
-
-      await ctx.db
-        .delete(WebhookAccessRequests)
-        .where(eq(WebhookAccessRequests.id, input.id));
-
-      return { success: true };
     }),
 });

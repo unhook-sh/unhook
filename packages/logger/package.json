@@ -12,10 +12,10 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./destinations/rolling-file": "./src/destinations/rolling-file.ts",
     "./destinations/console": "./src/destinations/console.ts",
-    "./destinations/vscode-output": "./src/destinations/vscode-output.ts",
-    "./destinations/stdout": "./src/destinations/stdout.ts"
+    "./destinations/rolling-file": "./src/destinations/rolling-file.ts",
+    "./destinations/stdout": "./src/destinations/stdout.ts",
+    "./destinations/vscode-output": "./src/destinations/vscode-output.ts"
   },
   "license": "MIT",
   "name": "@unhook/logger",

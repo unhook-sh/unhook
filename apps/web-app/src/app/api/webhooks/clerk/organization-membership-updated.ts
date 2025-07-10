@@ -23,8 +23,8 @@ export async function handleOrganizationMembershipUpdated(event: WebhookEvent) {
 
   if (!user || !org) {
     console.log('User or org not found for membership update', {
-      userId: membershipData.public_user_data.user_id,
       orgId: membershipData.organization.id,
+      userId: membershipData.public_user_data.user_id,
     });
     return new Response('', { status: 200 });
   }
@@ -50,9 +50,9 @@ export async function handleOrganizationMembershipUpdated(event: WebhookEvent) {
     distinctId: member.id,
     event: 'update_organization_membership',
     properties: {
-      userId: user.id,
       orgId: org.id,
       role: member.role,
+      userId: user.id,
     },
   });
 

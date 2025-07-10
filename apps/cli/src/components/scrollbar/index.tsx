@@ -93,7 +93,7 @@ export function Scrollbar({
         >
           {getOption(option, i)}
           <Text>{getSpacing(option)}</Text>
-          <Thumb thumbCharacter={thumbCharacter} show={scrollbar.includes(i)} />
+          <Thumb show={scrollbar.includes(i)} thumbCharacter={thumbCharacter} />
         </Box>
       ))}
     </Box>

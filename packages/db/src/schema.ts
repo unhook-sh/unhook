@@ -77,12 +77,12 @@ export const Users = pgTable('user', {
 });
 
 export const UsersRelations = relations(Users, ({ many }) => ({
-  orgMembers: many(OrgMembers),
-  webhooks: many(Webhooks),
-  connections: many(Connections),
-  requests: many(Requests),
-  events: many(Events),
   authCodes: many(AuthCodes),
+  connections: many(Connections),
+  events: many(Events),
+  orgMembers: many(OrgMembers),
+  requests: many(Requests),
+  webhooks: many(Webhooks),
 }));
 
 export type UserType = typeof Users.$inferSelect;
@@ -100,7 +100,6 @@ export const CreateUserSchema = createInsertSchema(Users, {
 
 export const Orgs = pgTable('orgs', {
   clerkOrgId: text('clerkOrgId').unique().notNull(),
-  name: text('name').notNull(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
@@ -114,16 +113,17 @@ export const Orgs = pgTable('orgs', {
     .$defaultFn(() => createId({ prefix: 'org' }))
     .notNull()
     .primaryKey(),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).$onUpdateFn(() => new Date()),
+  name: text('name').notNull(),
   // Stripe fields
   stripeCustomerId: text('stripeCustomerId').unique(),
   stripeSubscriptionId: text('stripeSubscriptionId').unique(),
   stripeSubscriptionStatus: stripeSubscriptionStatusEnum(
     'stripeSubscriptionStatus',
   ),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
 });
 
 export type OrgType = typeof Orgs.$inferSelect;
@@ -136,15 +136,15 @@ export const updateOrgSchema = createInsertSchema(Orgs, {}).omit({
 });
 
 export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
+  authCodes: many(AuthCodes),
+  connections: many(Connections),
   createdByUser: one(Users, {
     fields: [Orgs.createdByUserId],
     references: [Users.id],
   }),
   orgMembers: many(OrgMembers),
-  webhooks: many(Webhooks),
-  connections: many(Connections),
   requests: many(Requests),
-  authCodes: many(AuthCodes),
+  webhooks: many(Webhooks),
 }));
 
 // Company Members Table
@@ -155,12 +155,6 @@ export const OrgMembers = pgTable(
       mode: 'date',
       withTimezone: true,
     }).defaultNow(),
-    userId: varchar('userId')
-      .references(() => Users.id, {
-        onDelete: 'cascade',
-      })
-      .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
     id: varchar('id', { length: 128 })
       .$defaultFn(() => createId({ prefix: 'member' }))
       .notNull()
@@ -176,6 +170,12 @@ export const OrgMembers = pgTable(
       mode: 'date',
       withTimezone: true,
     }).$onUpdateFn(() => new Date()),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
   },
   (table) => [
     // Add unique constraint for userId and orgId combination using the simpler syntax
@@ -189,13 +189,13 @@ export type OrgMembersType = typeof OrgMembers.$inferSelect & {
 };
 
 export const OrgMembersRelations = relations(OrgMembers, ({ one }) => ({
-  user: one(Users, {
-    fields: [OrgMembers.userId],
-    references: [Users.id],
-  }),
   org: one(Orgs, {
     fields: [OrgMembers.orgId],
     references: [Orgs.id],
+  }),
+  user: one(Users, {
+    fields: [OrgMembers.userId],
+    references: [Users.id],
   }),
 }));
 
@@ -226,36 +226,42 @@ export type WebhookConfig = {
 };
 
 export const Webhooks = pgTable('webhooks', {
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'wh' }))
-    .notNull()
-    .primaryKey(),
-  name: text('name').notNull(),
-  requestCount: integer('requestCount').notNull().default(0),
-  config: json('config')
-    .$type<WebhookConfig>()
-    .default({
-      storage: {
-        storeHeaders: true,
-        storeRequestBody: true,
-        storeResponseBody: true,
-        maxRequestBodySize: 1024 * 1024, // 1MB
-        maxResponseBodySize: 1024 * 1024, // 1MB
-      },
-      headers: {},
-      requests: {},
-    })
-    .notNull(),
-  status: webhookStatusEnum('status').notNull().default('active'),
-  isPrivate: boolean('isPrivate').notNull().default(false),
   apiKey: text('apiKey')
     .$defaultFn(() => createId({ prefix: 'whsk' }))
     .notNull()
     .unique(),
+  config: json('config')
+    .$type<WebhookConfig>()
+    .default({
+      headers: {},
+      requests: {},
+      storage: {
+        maxRequestBodySize: 1024 * 1024,
+        maxResponseBodySize: 1024 * 1024,
+        storeHeaders: true,
+        storeRequestBody: true, // 1MB
+        storeResponseBody: true, // 1MB
+      },
+    })
+    .notNull(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
   }).defaultNow(),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'wh' }))
+    .notNull()
+    .primaryKey(),
+  isPrivate: boolean('isPrivate').notNull().default(false),
+  name: text('name').notNull(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
+  requestCount: integer('requestCount').notNull().default(0),
+  status: webhookStatusEnum('status').notNull().default('active'),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
     withTimezone: true,
@@ -266,28 +272,12 @@ export const Webhooks = pgTable('webhooks', {
     })
     .notNull()
     .default(sql`auth.jwt()->>'sub'`),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
 });
 
 export type WebhookType = typeof Webhooks.$inferSelect;
 
 export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
-  name: z.string(),
-  isPrivate: z.boolean().default(false).optional(),
-  status: z.enum(webhookStatusEnum.enumValues).default('active'),
   config: z.object({
-    storage: z.object({
-      storeHeaders: z.boolean(),
-      storeRequestBody: z.boolean(),
-      storeResponseBody: z.boolean(),
-      maxRequestBodySize: z.number(),
-      maxResponseBodySize: z.number(),
-    }),
     headers: z.object({
       allowList: z.array(z.string()).optional(),
       blockList: z.array(z.string()).optional(),
@@ -300,58 +290,68 @@ export const CreateWebhookTypeSchema = createInsertSchema(Webhooks, {
       maxRequestsPerMinute: z.number().optional(),
       maxRetries: z.number().optional(),
     }),
+    storage: z.object({
+      maxRequestBodySize: z.number(),
+      maxResponseBodySize: z.number(),
+      storeHeaders: z.boolean(),
+      storeRequestBody: z.boolean(),
+      storeResponseBody: z.boolean(),
+    }),
   }),
+  isPrivate: z.boolean().default(false).optional(),
+  name: z.string(),
+  status: z.enum(webhookStatusEnum.enumValues).default('active'),
 }).omit({
   createdAt: true,
+  orgId: true,
   updatedAt: true,
   userId: true,
-  orgId: true,
 });
 
 export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks, {
-  name: z.string().optional(),
-  status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
   isPrivate: z.boolean().default(false),
+  name: z.string().optional(),
   requestCount: z.number().default(0),
+  status: z.enum(webhookStatusEnum.enumValues).default('inactive'),
 }).omit({
   createdAt: true,
+  orgId: true,
   updatedAt: true,
   userId: true,
-  orgId: true,
 });
 
 export const WebhooksRelations = relations(Webhooks, ({ one, many }) => ({
-  user: one(Users, {
-    fields: [Webhooks.userId],
-    references: [Users.id],
-  }),
+  accessRequests: many(WebhookAccessRequests),
+  connections: many(Connections),
+  events: many(Events),
   org: one(Orgs, {
     fields: [Webhooks.orgId],
     references: [Orgs.id],
   }),
   requests: many(Requests),
-  connections: many(Connections),
-  events: many(Events),
-  accessRequests: many(WebhookAccessRequests),
+  user: one(Users, {
+    fields: [Webhooks.userId],
+    references: [Users.id],
+  }),
 }));
 
 export const RequestPayloadSchema = z.object({
+  body: z.string().optional(),
+  clientIp: z.string(),
+  contentType: z.string(),
+  headers: z.record(z.string()),
   id: z.string(),
   method: z.string(),
-  sourceUrl: z.string(),
-  headers: z.record(z.string()),
   size: z.number(),
-  body: z.string().optional(),
-  contentType: z.string(),
-  clientIp: z.string(),
+  sourceUrl: z.string(),
 });
 
 export type RequestPayload = z.infer<typeof RequestPayloadSchema>;
 
 export const ResponsePayloadSchema = z.object({
-  status: z.number(),
-  headers: z.record(z.string()),
   body: z.string().optional(),
+  headers: z.record(z.string()),
+  status: z.number(),
 });
 
 export type ResponsePayload = z.infer<typeof ResponsePayloadSchema>;
@@ -359,37 +359,38 @@ export type ResponsePayload = z.infer<typeof ResponsePayloadSchema>;
 export const Events = pgTable(
   'events',
   {
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'evt' }))
-      .notNull()
-      .primaryKey(),
-    webhookId: varchar('webhookId', { length: 128 })
-      .references(() => Webhooks.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    // Original request payload that created this event
-    originRequest: json('originRequest').$type<RequestPayload>().notNull(),
-    source: text('source').notNull().default('*'),
-    // Number of retry attempts made
-    retryCount: integer('retryCount').notNull().default(0),
-    // Maximum number of retries allowed
-    maxRetries: integer('maxRetries').notNull().default(3),
-    // Current status of the event
-    status: eventStatusEnum('status').notNull().default('pending'),
     apiKey: text('apiKey'),
-    // If failed, store the reason
-    failedReason: text('failedReason'),
-    timestamp: timestamp('timestamp', {
-      mode: 'date',
-      withTimezone: true,
-    }).notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       withTimezone: true,
     })
       .defaultNow()
       .notNull(),
+    // If failed, store the reason
+    failedReason: text('failedReason'),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'evt' }))
+      .notNull()
+      .primaryKey(),
+    // Maximum number of retries allowed
+    maxRetries: integer('maxRetries').notNull().default(3),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
+    // Original request payload that created this event
+    originRequest: json('originRequest').$type<RequestPayload>().notNull(),
+    // Number of retry attempts made
+    retryCount: integer('retryCount').notNull().default(0),
+    source: text('source').notNull().default('*'),
+    // Current status of the event
+    status: eventStatusEnum('status').notNull().default('pending'),
+    timestamp: timestamp('timestamp', {
+      mode: 'date',
+      withTimezone: true,
+    }).notNull(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       withTimezone: true,
@@ -400,12 +401,11 @@ export const Events = pgTable(
       })
       .notNull()
       .default(sql`auth.jwt()->>'sub'`),
-    orgId: varchar('orgId')
-      .references(() => Orgs.id, {
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
         onDelete: 'cascade',
       })
-      .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .notNull(),
   },
   (table) => [
     // Composite indexes for common access patterns
@@ -431,106 +431,106 @@ export type EventTypeWithRequest = EventType & {
 export const CreateEventTypeSchema = createInsertSchema(Events, {
   apiKey: z.string().optional(),
   failedReason: z.string().optional(),
-  source: z.string().default('*'),
   maxRetries: z.number().default(3),
   originRequest: RequestPayloadSchema,
   retryCount: z.number().default(0),
+  source: z.string().default('*'),
   status: z.enum(eventStatusEnum.enumValues).default('pending'),
   timestamp: z.date(),
   webhookId: z.string(),
 }).omit({
-  id: true,
   createdAt: true,
+  id: true,
+  orgId: true,
   updatedAt: true,
   userId: true,
-  orgId: true,
 });
 
 export const UpdateEventTypeSchema = createUpdateSchema(Events, {
-  status: z.enum(eventStatusEnum.enumValues).default('pending'),
-  retryCount: z.number().default(0),
   failedReason: z.string().optional(),
+  retryCount: z.number().default(0),
+  status: z.enum(eventStatusEnum.enumValues).default('pending'),
 }).omit({
   createdAt: true,
+  orgId: true,
   updatedAt: true,
   userId: true,
-  orgId: true,
 });
 
 export const EventsRelations = relations(Events, ({ one, many }) => ({
-  webhook: one(Webhooks, {
-    fields: [Events.webhookId],
-    references: [Webhooks.id],
-  }),
-  user: one(Users, {
-    fields: [Events.userId],
-    references: [Users.id],
-  }),
   org: one(Orgs, {
     fields: [Events.orgId],
     references: [Orgs.id],
   }),
   requests: many(Requests),
+  user: one(Users, {
+    fields: [Events.userId],
+    references: [Users.id],
+  }),
+  webhook: one(Webhooks, {
+    fields: [Events.webhookId],
+    references: [Webhooks.id],
+  }),
 }));
 
 export const Requests = pgTable(
   'requests',
   {
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'req' }))
-      .notNull()
-      .primaryKey(),
-    webhookId: varchar('webhookId', { length: 128 })
-      .references(() => Webhooks.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    eventId: varchar('eventId', { length: 128 }).references(() => Events.id, {
-      onDelete: 'cascade',
-    }),
     apiKey: text('apiKey'),
+    completedAt: timestamp('completedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
     connectionId: varchar('connectionId', { length: 128 }).references(
       () => Connections.id,
       {
         onDelete: 'cascade',
       },
     ),
-    request: json('request').notNull().$type<RequestPayload>(),
-    source: text('source').notNull().default('*'),
-    destination: json('destination').notNull().$type<{
-      name: string;
-      url: string;
-    }>(),
-    status: requestStatusEnum('status').notNull(),
-    failedReason: text('failedReason'),
-    timestamp: timestamp('timestamp', {
-      mode: 'date',
-      withTimezone: true,
-    }).notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       withTimezone: true,
     })
       .notNull()
       .defaultNow(),
-    completedAt: timestamp('completedAt', {
-      mode: 'date',
-      withTimezone: true,
+    destination: json('destination').notNull().$type<{
+      name: string;
+      url: string;
+    }>(),
+    eventId: varchar('eventId', { length: 128 }).references(() => Events.id, {
+      onDelete: 'cascade',
     }),
-    response: json('response').$type<ResponsePayload>(),
-    responseTimeMs: integer('responseTimeMs').notNull().default(0),
-    userId: varchar('userId')
-      .references(() => Users.id, {
-        onDelete: 'cascade',
-      })
+    failedReason: text('failedReason'),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'req' }))
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .primaryKey(),
     orgId: varchar('orgId')
       .references(() => Orgs.id, {
         onDelete: 'cascade',
       })
       .notNull()
       .default(sql`auth.jwt()->>'org_id'`),
+    request: json('request').notNull().$type<RequestPayload>(),
+    response: json('response').$type<ResponsePayload>(),
+    responseTimeMs: integer('responseTimeMs').notNull().default(0),
+    source: text('source').notNull().default('*'),
+    status: requestStatusEnum('status').notNull(),
+    timestamp: timestamp('timestamp', {
+      mode: 'date',
+      withTimezone: true,
+    }).notNull(),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
   },
   (table) => [
     // Foreign key indexes
@@ -562,40 +562,28 @@ export type RequestType = typeof Requests.$inferSelect;
 export const CreateRequestTypeSchema = createInsertSchema(Requests, {
   apiKey: z.string().optional(),
   connectionId: z.string().optional(),
-  eventId: z.string().optional(),
-  failedReason: z.string().optional(),
-  source: z.string().default('*'),
-  request: RequestPayloadSchema,
-  response: ResponsePayloadSchema.optional(),
-  responseTimeMs: z.number().default(0),
-  status: z.enum(requestStatusEnum.enumValues).default('pending'),
-  timestamp: z.date(),
   destination: z.object({
     name: z.string(),
     url: z.string(),
   }),
+  eventId: z.string().optional(),
+  failedReason: z.string().optional(),
+  request: RequestPayloadSchema,
+  response: ResponsePayloadSchema.optional(),
+  responseTimeMs: z.number().default(0),
+  source: z.string().default('*'),
+  status: z.enum(requestStatusEnum.enumValues).default('pending'),
+  timestamp: z.date(),
   webhookId: z.string(),
 }).omit({
-  id: true,
-  createdAt: true,
   completedAt: true,
-  userId: true,
+  createdAt: true,
+  id: true,
   orgId: true,
+  userId: true,
 });
 
 export const RequestsRelations = relations(Requests, ({ one }) => ({
-  webhook: one(Webhooks, {
-    fields: [Requests.webhookId],
-    references: [Webhooks.id],
-  }),
-  user: one(Users, {
-    fields: [Requests.userId],
-    references: [Users.id],
-  }),
-  org: one(Orgs, {
-    fields: [Requests.orgId],
-    references: [Orgs.id],
-  }),
   connection: one(Connections, {
     fields: [Requests.connectionId],
     references: [Connections.id],
@@ -604,26 +592,34 @@ export const RequestsRelations = relations(Requests, ({ one }) => ({
     fields: [Requests.eventId],
     references: [Events.id],
   }),
+  org: one(Orgs, {
+    fields: [Requests.orgId],
+    references: [Orgs.id],
+  }),
+  user: one(Users, {
+    fields: [Requests.userId],
+    references: [Users.id],
+  }),
+  webhook: one(Webhooks, {
+    fields: [Requests.webhookId],
+    references: [Webhooks.id],
+  }),
 }));
 
 export const Connections = pgTable(
   'connections',
   {
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'c' }))
-      .notNull()
-      .primaryKey(),
-    webhookId: varchar('webhookId', { length: 128 })
-      .references(() => Webhooks.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    ipAddress: text('ipAddress').notNull(),
-    clientId: text('clientId').notNull(),
-    clientVersion: text('clientVersion'),
-    clientOs: text('clientOs'),
     clientHostname: text('clientHostname'),
+    clientId: text('clientId').notNull(),
+    clientOs: text('clientOs'),
+    clientVersion: text('clientVersion'),
     connectedAt: timestamp('connectedAt', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    createdAt: timestamp('createdAt', {
       mode: 'date',
       withTimezone: true,
     })
@@ -633,34 +629,38 @@ export const Connections = pgTable(
       mode: 'date',
       withTimezone: true,
     }),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'c' }))
+      .notNull()
+      .primaryKey(),
+    ipAddress: text('ipAddress').notNull(),
     lastPingAt: timestamp('lastPingAt', {
       mode: 'date',
       withTimezone: true,
     })
       .notNull()
       .defaultNow(),
-    updatedAt: timestamp('updatedAt', {
-      mode: 'date',
-      withTimezone: true,
-    }).$onUpdateFn(() => new Date()),
-    createdAt: timestamp('createdAt', {
-      mode: 'date',
-      withTimezone: true,
-    })
-      .notNull()
-      .defaultNow(),
-    userId: varchar('userId')
-      .references(() => Users.id, {
-        onDelete: 'cascade',
-      })
-      .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
     orgId: varchar('orgId')
       .references(() => Orgs.id, {
         onDelete: 'cascade',
       })
       .notNull()
       .default(sql`auth.jwt()->>'org_id'`),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).$onUpdateFn(() => new Date()),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
   },
   (table) => [
     // Composite index for org-based queries
@@ -677,58 +677,58 @@ export const Connections = pgTable(
 export type ConnectionType = typeof Connections.$inferSelect;
 
 export const CreateConnectionTypeSchema = createInsertSchema(Connections, {
-  webhookId: z.string(),
-  ipAddress: z.string(),
-  clientId: z.string(),
-  clientVersion: z.string().optional(),
-  clientOs: z.string().optional(),
   clientHostname: z.string().optional(),
+  clientId: z.string(),
+  clientOs: z.string().optional(),
+  clientVersion: z.string().optional(),
   connectedAt: z.date(),
   disconnectedAt: z.date().optional(),
+  ipAddress: z.string(),
   lastPingAt: z.date(),
-  userId: z.string(),
   orgId: z.string(),
+  userId: z.string(),
+  webhookId: z.string(),
 }).omit({
-  id: true,
   createdAt: true,
+  id: true,
+  orgId: true,
   updatedAt: true,
   userId: true,
-  orgId: true,
 });
 
 export const UpdateConnectionTypeSchema = createUpdateSchema(Connections, {
-  webhookId: z.string(),
-  ipAddress: z.string(),
-  clientId: z.string(),
-  clientVersion: z.string().optional(),
-  clientOs: z.string().optional(),
   clientHostname: z.string().optional(),
+  clientId: z.string(),
+  clientOs: z.string().optional(),
+  clientVersion: z.string().optional(),
   connectedAt: z.date(),
   disconnectedAt: z.date().optional(),
+  ipAddress: z.string(),
   lastPingAt: z.date(),
-  userId: z.string(),
   orgId: z.string(),
+  userId: z.string(),
+  webhookId: z.string(),
 }).omit({
   createdAt: true,
+  orgId: true,
   updatedAt: true,
   userId: true,
-  orgId: true,
 });
 
 export const ConnectionsRelations = relations(Connections, ({ one, many }) => ({
-  webhook: one(Webhooks, {
-    fields: [Connections.webhookId],
-    references: [Webhooks.id],
-  }),
-  user: one(Users, {
-    fields: [Connections.userId],
-    references: [Users.id],
-  }),
   org: one(Orgs, {
     fields: [Connections.orgId],
     references: [Orgs.id],
   }),
   requests: many(Requests),
+  user: one(Users, {
+    fields: [Connections.userId],
+    references: [Users.id],
+  }),
+  webhook: one(Webhooks, {
+    fields: [Connections.webhookId],
+    references: [Webhooks.id],
+  }),
 }));
 
 // Webhook Access Request Status
@@ -744,51 +744,51 @@ export const WebhookAccessRequestStatusType = z.enum(
 export const WebhookAccessRequests = pgTable(
   'webhookAccessRequests',
   {
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'war' }))
-      .notNull()
-      .primaryKey(),
-    webhookId: varchar('webhookId', { length: 128 })
-      .references(() => Webhooks.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    requesterId: varchar('requesterId')
-      .references(() => Users.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    requesterEmail: text('requesterEmail').notNull(),
-    requesterMessage: text('requesterMessage'),
-    status: webhookAccessRequestStatusEnum('status')
-      .notNull()
-      .default('pending'),
-    responderId: varchar('responderId').references(() => Users.id, {
-      onDelete: 'set null',
-    }),
-    responseMessage: text('responseMessage'),
-    respondedAt: timestamp('respondedAt', {
-      mode: 'date',
-      withTimezone: true,
-    }),
-    expiresAt: timestamp('expiresAt', {
-      mode: 'date',
-      withTimezone: true,
-    })
-      .notNull()
-      .$defaultFn(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)), // 7 days from now
     createdAt: timestamp('createdAt', {
       mode: 'date',
       withTimezone: true,
     })
       .notNull()
       .defaultNow(),
+    expiresAt: timestamp('expiresAt', {
+      mode: 'date',
+      withTimezone: true,
+    })
+      .notNull()
+      .$defaultFn(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'war' }))
+      .notNull()
+      .primaryKey(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    requesterEmail: text('requesterEmail').notNull(),
+    requesterId: varchar('requesterId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    requesterMessage: text('requesterMessage'),
+    respondedAt: timestamp('respondedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    responderId: varchar('responderId').references(() => Users.id, {
+      onDelete: 'set null',
+    }),
+    responseMessage: text('responseMessage'), // 7 days from now
+    status: webhookAccessRequestStatusEnum('status')
+      .notNull()
+      .default('pending'),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       withTimezone: true,
     }).$onUpdateFn(() => new Date()),
-    orgId: varchar('orgId')
-      .references(() => Orgs.id, {
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
         onDelete: 'cascade',
       })
       .notNull(),
@@ -814,35 +814,35 @@ export type WebhookAccessRequestType =
 export const CreateWebhookAccessRequestSchema = createInsertSchema(
   WebhookAccessRequests,
   {
-    webhookId: z.string(),
     requesterMessage: z.string().optional(),
+    webhookId: z.string(),
   },
 ).omit({
+  createdAt: true,
+  expiresAt: true,
   id: true,
-  requesterId: true,
+  orgId: true,
   requesterEmail: true,
-  status: true,
+  requesterId: true,
+  respondedAt: true,
   responderId: true,
   responseMessage: true,
-  respondedAt: true,
-  expiresAt: true,
-  createdAt: true,
+  status: true,
   updatedAt: true,
-  orgId: true,
 });
 
 export const RespondToWebhookAccessRequestSchema = z.object({
   id: z.string(),
-  status: z.enum(['approved', 'rejected']),
   responseMessage: z.string().optional(),
+  status: z.enum(['approved', 'rejected']),
 });
 
 export const WebhookAccessRequestsRelations = relations(
   WebhookAccessRequests,
   ({ one }) => ({
-    webhook: one(Webhooks, {
-      fields: [WebhookAccessRequests.webhookId],
-      references: [Webhooks.id],
+    org: one(Orgs, {
+      fields: [WebhookAccessRequests.orgId],
+      references: [Orgs.id],
     }),
     requester: one(Users, {
       fields: [WebhookAccessRequests.requesterId],
@@ -854,31 +854,37 @@ export const WebhookAccessRequestsRelations = relations(
       references: [Users.id],
       relationName: 'responder',
     }),
-    org: one(Orgs, {
-      fields: [WebhookAccessRequests.orgId],
-      references: [Orgs.id],
+    webhook: one(Webhooks, {
+      fields: [WebhookAccessRequests.webhookId],
+      references: [Webhooks.id],
     }),
   }),
 );
 
 export const AuthCodes = pgTable('authCodes', {
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'ac' }))
-    .notNull()
-    .primaryKey(),
-  expiresAt: timestamp('expiresAt', {
-    mode: 'date',
-    withTimezone: true,
-  })
-    .$defaultFn(() => new Date(Date.now() + 1000 * 60 * 30)) // 30 minutes
-    .notNull(),
-  sessionId: text('sessionId').notNull(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
   })
     .notNull()
     .defaultNow(),
+  expiresAt: timestamp('expiresAt', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .$defaultFn(() => new Date(Date.now() + 1000 * 60 * 30)) // 30 minutes
+    .notNull(),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'ac' }))
+    .notNull()
+    .primaryKey(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
+  sessionId: text('sessionId').notNull(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
     withTimezone: true,
@@ -893,24 +899,18 @@ export const AuthCodes = pgTable('authCodes', {
     })
     .notNull()
     .default(sql`auth.jwt()->>'sub'`),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
 });
 
 export type AuthCodeType = typeof AuthCodes.$inferSelect;
 
 export const AuthCodesRelations = relations(AuthCodes, ({ one }) => ({
-  user: one(Users, {
-    fields: [AuthCodes.userId],
-    references: [Users.id],
-  }),
   org: one(Orgs, {
     fields: [AuthCodes.orgId],
     references: [Orgs.id],
+  }),
+  user: one(Users, {
+    fields: [AuthCodes.userId],
+    references: [Users.id],
   }),
 }));
 
@@ -927,12 +927,6 @@ export const DestinationTypeType = z.enum(destinationTypeEnum.enumValues).Enum;
 
 // Forwarding Destinations Table
 export const ForwardingDestinations = pgTable('forwardingDestinations', {
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'dest' }))
-    .notNull()
-    .primaryKey(),
-  name: text('name').notNull(),
-  type: destinationTypeEnum('type').notNull(),
   // Configuration for the destination (webhook URL, Slack webhook URL, etc.)
   config: json('config')
     .$type<{
@@ -954,21 +948,27 @@ export const ForwardingDestinations = pgTable('forwardingDestinations', {
       };
     }>()
     .notNull(),
-  isActive: boolean('isActive').notNull().default(true),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: true,
   }).defaultNow(),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).$onUpdateFn(() => new Date()),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'dest' }))
+    .notNull()
+    .primaryKey(),
+  isActive: boolean('isActive').notNull().default(true),
+  name: text('name').notNull(),
   orgId: varchar('orgId')
     .references(() => Orgs.id, {
       onDelete: 'cascade',
     })
     .notNull()
     .default(sql`auth.jwt()->>'org_id'`),
+  type: destinationTypeEnum('type').notNull(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
 });
 
 export type ForwardingDestinationType =
@@ -977,11 +977,11 @@ export type ForwardingDestinationType =
 export const ForwardingDestinationsRelations = relations(
   ForwardingDestinations,
   ({ one, many }) => ({
+    forwardingRules: many(ForwardingRules),
     org: one(Orgs, {
       fields: [ForwardingDestinations.orgId],
       references: [Orgs.id],
     }),
-    forwardingRules: many(ForwardingRules),
   }),
 );
 
@@ -989,22 +989,25 @@ export const ForwardingDestinationsRelations = relations(
 export const ForwardingRules = pgTable(
   'forwardingRules',
   {
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'rule' }))
-      .notNull()
-      .primaryKey(),
-    name: text('name').notNull(),
-    description: text('description'),
-    webhookId: varchar('webhookId', { length: 128 })
-      .references(() => Webhooks.id, {
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).defaultNow(),
+    createdByUserId: varchar('createdByUserId')
+      .references(() => Users.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
+    description: text('description'),
     destinationId: varchar('destinationId', { length: 128 })
       .references(() => ForwardingDestinations.id, {
         onDelete: 'cascade',
       })
       .notNull(),
+    errorCount: integer('errorCount').notNull().default(0),
+    // Execution statistics
+    executionCount: integer('executionCount').notNull().default(0),
     // Filter configuration
     filters: json('filters')
       .$type<{
@@ -1021,6 +1024,29 @@ export const ForwardingRules = pgTable(
       }>()
       .notNull()
       .default({}),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'rule' }))
+      .notNull()
+      .primaryKey(),
+    isActive: boolean('isActive').notNull().default(true),
+    lastError: text('lastError'),
+    lastErrorAt: timestamp('lastErrorAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    lastExecutedAt: timestamp('lastExecutedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    name: text('name').notNull(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
+    // Rule execution order (lower numbers execute first)
+    priority: integer('priority').notNull().default(0),
     // JavaScript transformation function (as string)
     transformation: text('transformation'),
     // Transformation examples for testing
@@ -1033,41 +1059,15 @@ export const ForwardingRules = pgTable(
         }>
       >()
       .default([]),
-    // Rule execution order (lower numbers execute first)
-    priority: integer('priority').notNull().default(0),
-    isActive: boolean('isActive').notNull().default(true),
-    // Execution statistics
-    executionCount: integer('executionCount').notNull().default(0),
-    lastExecutedAt: timestamp('lastExecutedAt', {
-      mode: 'date',
-      withTimezone: true,
-    }),
-    errorCount: integer('errorCount').notNull().default(0),
-    lastErrorAt: timestamp('lastErrorAt', {
-      mode: 'date',
-      withTimezone: true,
-    }),
-    lastError: text('lastError'),
-    createdAt: timestamp('createdAt', {
-      mode: 'date',
-      withTimezone: true,
-    }).defaultNow(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       withTimezone: true,
     }).$onUpdateFn(() => new Date()),
-    createdByUserId: varchar('createdByUserId')
-      .references(() => Users.id, {
+    webhookId: varchar('webhookId', { length: 128 })
+      .references(() => Webhooks.id, {
         onDelete: 'cascade',
       })
-      .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
-    orgId: varchar('orgId')
-      .references(() => Orgs.id, {
-        onDelete: 'cascade',
-      })
-      .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .notNull(),
   },
   (table) => [
     // Index for finding active rules for a webhook
@@ -1085,23 +1085,23 @@ export type ForwardingRuleType = typeof ForwardingRules.$inferSelect;
 export const ForwardingRulesRelations = relations(
   ForwardingRules,
   ({ one, many }) => ({
-    webhook: one(Webhooks, {
-      fields: [ForwardingRules.webhookId],
-      references: [Webhooks.id],
+    createdByUser: one(Users, {
+      fields: [ForwardingRules.createdByUserId],
+      references: [Users.id],
     }),
     destination: one(ForwardingDestinations, {
       fields: [ForwardingRules.destinationId],
       references: [ForwardingDestinations.id],
     }),
-    createdByUser: one(Users, {
-      fields: [ForwardingRules.createdByUserId],
-      references: [Users.id],
-    }),
+    executions: many(ForwardingExecutions),
     org: one(Orgs, {
       fields: [ForwardingRules.orgId],
       references: [Orgs.id],
     }),
-    executions: many(ForwardingExecutions),
+    webhook: one(Webhooks, {
+      fields: [ForwardingRules.webhookId],
+      references: [Webhooks.id],
+    }),
   }),
 );
 
@@ -1109,39 +1109,39 @@ export const ForwardingRulesRelations = relations(
 export const ForwardingExecutions = pgTable(
   'forwardingExecutions',
   {
-    id: varchar('id', { length: 128 })
-      .$defaultFn(() => createId({ prefix: 'fexec' }))
-      .notNull()
-      .primaryKey(),
-    ruleId: varchar('ruleId', { length: 128 })
-      .references(() => ForwardingRules.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    eventId: varchar('eventId', { length: 128 })
-      .references(() => Events.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    // Original payload before transformation
-    originalPayload: json('originalPayload').notNull(),
-    // Transformed payload after JavaScript execution
-    transformedPayload: json('transformedPayload'),
-    // Response from the destination
-    destinationResponse: json('destinationResponse').$type<{
-      status: number;
-      headers: Record<string, string>;
-      body: unknown;
-    }>(),
-    success: boolean('success').notNull(),
-    error: text('error'),
-    executionTimeMs: integer('executionTimeMs'),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       withTimezone: true,
     })
       .defaultNow()
       .notNull(),
+    // Response from the destination
+    destinationResponse: json('destinationResponse').$type<{
+      status: number;
+      headers: Record<string, string>;
+      body: unknown;
+    }>(),
+    error: text('error'),
+    eventId: varchar('eventId', { length: 128 })
+      .references(() => Events.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    executionTimeMs: integer('executionTimeMs'),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'fexec' }))
+      .notNull()
+      .primaryKey(),
+    // Original payload before transformation
+    originalPayload: json('originalPayload').notNull(),
+    ruleId: varchar('ruleId', { length: 128 })
+      .references(() => ForwardingRules.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    success: boolean('success').notNull(),
+    // Transformed payload after JavaScript execution
+    transformedPayload: json('transformedPayload'),
   },
   (table) => [
     // Index for finding executions by rule
@@ -1158,13 +1158,13 @@ export type ForwardingExecutionType = typeof ForwardingExecutions.$inferSelect;
 export const ForwardingExecutionsRelations = relations(
   ForwardingExecutions,
   ({ one }) => ({
-    rule: one(ForwardingRules, {
-      fields: [ForwardingExecutions.ruleId],
-      references: [ForwardingRules.id],
-    }),
     event: one(Events, {
       fields: [ForwardingExecutions.eventId],
       references: [Events.id],
+    }),
+    rule: one(ForwardingRules, {
+      fields: [ForwardingExecutions.ruleId],
+      references: [ForwardingRules.id],
     }),
   }),
 );
@@ -1173,110 +1173,110 @@ export const ForwardingExecutionsRelations = relations(
 export const CreateForwardingDestinationSchema = createInsertSchema(
   ForwardingDestinations,
   {
-    name: z.string().min(1),
-    type: z.enum(destinationTypeEnum.enumValues),
     config: z.object({
-      url: z.string().url().optional(),
-      slackWebhookUrl: z.string().url().optional(),
-      slackChannel: z.string().optional(),
-      discordWebhookUrl: z.string().url().optional(),
-      teamsWebhookUrl: z.string().url().optional(),
-      email: z.string().email().optional(),
-      headers: z.record(z.string()).optional(),
       authentication: z
         .object({
-          type: z.enum(['bearer', 'basic', 'apiKey']),
-          token: z.string().optional(),
-          username: z.string().optional(),
-          password: z.string().optional(),
           apiKey: z.string().optional(),
           apiKeyHeader: z.string().optional(),
+          password: z.string().optional(),
+          token: z.string().optional(),
+          type: z.enum(['bearer', 'basic', 'apiKey']),
+          username: z.string().optional(),
         })
         .optional(),
+      discordWebhookUrl: z.string().url().optional(),
+      email: z.string().email().optional(),
+      headers: z.record(z.string()).optional(),
+      slackChannel: z.string().optional(),
+      slackWebhookUrl: z.string().url().optional(),
+      teamsWebhookUrl: z.string().url().optional(),
+      url: z.string().url().optional(),
     }),
     isActive: z.boolean().default(true),
+    name: z.string().min(1),
+    type: z.enum(destinationTypeEnum.enumValues),
   },
 ).omit({
-  id: true,
   createdAt: true,
-  updatedAt: true,
+  id: true,
   orgId: true,
+  updatedAt: true,
 });
 
 export const CreateForwardingRuleSchema = createInsertSchema(ForwardingRules, {
-  name: z.string().min(1),
   description: z.string().optional(),
-  webhookId: z.string(),
   destinationId: z.string(),
   filters: z
     .object({
+      customFilter: z.string().optional(),
       eventNames: z.array(z.string()).optional(),
+      headers: z.record(z.union([z.string(), z.array(z.string())])).optional(),
       methods: z.array(z.string()).optional(),
       pathPatterns: z.array(z.string()).optional(),
-      headers: z.record(z.union([z.string(), z.array(z.string())])).optional(),
-      customFilter: z.string().optional(),
     })
     .default({}),
+  isActive: z.boolean().default(true),
+  name: z.string().min(1),
+  priority: z.number().default(0),
   transformation: z.string().optional(),
   transformationExamples: z
     .array(
       z.object({
-        input: z.unknown(),
-        expectedOutput: z.unknown(),
         description: z.string().optional(),
+        expectedOutput: z.unknown(),
+        input: z.unknown(),
       }),
     )
     .default([]),
-  priority: z.number().default(0),
-  isActive: z.boolean().default(true),
+  webhookId: z.string(),
 }).omit({
-  id: true,
   createdAt: true,
-  updatedAt: true,
   createdByUserId: true,
-  orgId: true,
-  executionCount: true,
-  lastExecutedAt: true,
   errorCount: true,
-  lastErrorAt: true,
+  executionCount: true,
+  id: true,
   lastError: true,
+  lastErrorAt: true,
+  lastExecutedAt: true,
+  orgId: true,
+  updatedAt: true,
 });
 
 export const UpdateForwardingRuleSchema = createUpdateSchema(ForwardingRules, {
-  name: z.string().min(1).optional(),
   description: z.string().optional(),
   filters: z
     .object({
+      customFilter: z.string().optional(),
       eventNames: z.array(z.string()).optional(),
+      headers: z.record(z.union([z.string(), z.array(z.string())])).optional(),
       methods: z.array(z.string()).optional(),
       pathPatterns: z.array(z.string()).optional(),
-      headers: z.record(z.union([z.string(), z.array(z.string())])).optional(),
-      customFilter: z.string().optional(),
     })
     .optional(),
+  isActive: z.boolean().optional(),
+  name: z.string().min(1).optional(),
+  priority: z.number().optional(),
   transformation: z.string().optional(),
   transformationExamples: z
     .array(
       z.object({
-        input: z.unknown(),
-        expectedOutput: z.unknown(),
         description: z.string().optional(),
+        expectedOutput: z.unknown(),
+        input: z.unknown(),
       }),
     )
     .optional(),
-  priority: z.number().optional(),
-  isActive: z.boolean().optional(),
 }).omit({
-  id: true,
   createdAt: true,
-  updatedAt: true,
   createdByUserId: true,
-  orgId: true,
-  webhookId: true,
   destinationId: true,
-  executionCount: true,
-  lastExecutedAt: true,
   errorCount: true,
-  lastErrorAt: true,
+  executionCount: true,
+  id: true,
   lastError: true,
+  lastErrorAt: true,
+  lastExecutedAt: true,
+  orgId: true,
+  updatedAt: true,
+  webhookId: true,
 });

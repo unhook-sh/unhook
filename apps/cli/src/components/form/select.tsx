@@ -100,9 +100,6 @@ export function FormSelect<T extends string = string>({
   return (
     <Box flexDirection="column">
       <SelectInput<T>
-        items={items}
-        onSelect={handleSelect}
-        showHotkeys={showHotkeys}
         initialIndex={
           getValue(id)
             ? items.findIndex((item) => item.value === getValue(id))
@@ -110,6 +107,9 @@ export function FormSelect<T extends string = string>({
               ? items.findIndex((item) => item.value === defaultValue)
               : 0
         }
+        items={items}
+        onSelect={handleSelect}
+        showHotkeys={showHotkeys}
       />
       {error && (
         <Box>

@@ -19,24 +19,24 @@ export function ComparisonHero({
   competitorLogo,
 }: ComparisonHeroProps) {
   return (
-    <section id="hero" className="w-full py-20 lg:py-32">
+    <section className="w-full py-20 lg:py-32" id="hero">
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center space-y-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: BLUR_FADE_DELAY }}
             className="flex items-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ delay: BLUR_FADE_DELAY, duration: 0.5 }}
           >
             <div className="flex items-center gap-2">
               <svg
-                width="32"
+                aria-label="Unhook Logo"
+                className="text-primary"
+                fill="none"
                 height="32"
                 viewBox="0 0 32 32"
-                fill="none"
+                width="32"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-primary"
-                aria-label="Unhook Logo"
               >
                 <title>Unhook Logo</title>
                 <path
@@ -53,12 +53,12 @@ export function ComparisonHero({
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: BLUR_FADE_DELAY * 2 }}
             className="space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ delay: BLUR_FADE_DELAY * 2, duration: 0.5 }}
           >
-            <Badge variant="outline" className="px-4 py-2">
+            <Badge className="px-4 py-2" variant="outline">
               Comparison Guide
             </Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
@@ -73,15 +73,15 @@ export function ComparisonHero({
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: BLUR_FADE_DELAY * 3 }}
             className="flex flex-col sm:flex-row gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ delay: BLUR_FADE_DELAY * 3, duration: 0.5 }}
           >
-            <Button size="lg" className="px-8">
+            <Button className="px-8" size="lg">
               Try Unhook Free
             </Button>
-            <Button variant="outline" size="lg" className="px-8">
+            <Button className="px-8" size="lg" variant="outline">
               View Full Comparison
             </Button>
           </motion.div>

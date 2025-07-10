@@ -7,7 +7,6 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title: 'Unhook vs ngrok: Better Webhook Testing for Teams | Unhook',
   description:
     'Compare Unhook and ngrok for webhook testing. See why teams choose Unhook for better collaboration, VS Code integration, and team-friendly pricing.',
   keywords: [
@@ -17,59 +16,37 @@ export const metadata = {
     'team collaboration',
     'VS Code integration',
   ],
+  title: 'Unhook vs ngrok: Better Webhook Testing for Teams | Unhook',
 };
 
 const ngrokComparison = {
   competitor: 'ngrok',
-  hero: {
-    title: 'Unhook vs ngrok',
-    subtitle: 'Better Webhook Testing for Development Teams',
-    description:
-      'While ngrok is great for individual developers, Unhook is built for teams. Compare features, pricing, and see why teams are switching to Unhook for better collaboration and VS Code integration.',
-    competitorLogo: (
-      <svg
-        width="80"
-        height="32"
-        viewBox="0 0 80 32"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="dark:fill-white fill-black"
-        aria-label="ngrok Logo"
-      >
-        <title>ngrok Logo</title>
-        <path d="M8 4h8v24H8V4zm16 0h8v24h-8V4zm16 0h8v24h-8V4zm16 0h8v24h-8V4z" />
-        <text x="10" y="20" className="text-sm font-bold">
-          ngrok
-        </text>
-      </svg>
-    ),
-  },
   features: [
     {
       category: 'Team Collaboration',
       items: [
         {
+          competitor: 'Individual URLs only',
           feature: 'Shared webhook URLs',
           unhook: 'One URL for entire team + config file',
-          competitor: 'Individual URLs only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Manual URL sharing',
           feature: 'Config file sharing',
           unhook: 'Checked-in config file',
-          competitor: 'Manual URL sharing',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Individual debugging',
           feature: 'Collaborative debugging',
           unhook: 'Share events & replay',
-          competitor: 'Individual debugging',
           unhookAdvantage: true,
         },
         {
+          competitor: 'No team features',
           feature: 'Team management',
           unhook: 'Role-based access',
-          competitor: 'No team features',
           unhookAdvantage: true,
         },
       ],
@@ -78,27 +55,27 @@ const ngrokComparison = {
       category: 'Developer Experience',
       items: [
         {
+          competitor: 'CLI only',
           feature: 'VS Code integration',
           unhook: 'Native extension',
-          competitor: 'CLI only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Manual replay',
           feature: 'Event replay',
           unhook: 'One-click replay',
-          competitor: 'Manual replay',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Web dashboard only',
           feature: 'Real-time monitoring',
           unhook: 'Built into editor',
-          competitor: 'Web dashboard only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Basic webhook testing',
           feature: 'AI/MCP testing',
           unhook: 'Full AI workflow support',
-          competitor: 'Basic webhook testing',
           unhookAdvantage: true,
         },
       ],
@@ -107,27 +84,27 @@ const ngrokComparison = {
       category: 'Pricing & Limits',
       items: [
         {
+          competitor: '1GB/month',
           feature: 'Free tier bandwidth',
           unhook: 'Generous limits',
-          competitor: '1GB/month',
           unhookAdvantage: true,
         },
         {
+          competitor: '$14/domain/month',
           feature: 'Custom domains',
           unhook: 'Included in team plan',
-          competitor: '$14/domain/month',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Per-user pricing',
           feature: 'Team pricing',
           unhook: 'Per-team pricing',
-          competitor: 'Per-user pricing',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Paid plans only',
           feature: 'Commercial use',
           unhook: 'All plans',
-          competitor: 'Paid plans only',
           unhookAdvantage: true,
         },
       ],
@@ -136,49 +113,115 @@ const ngrokComparison = {
       category: 'Security & Reliability',
       items: [
         {
+          competitor: '✓',
           feature: 'End-to-end encryption',
           unhook: '✓',
-          competitor: '✓',
           unhookAdvantage: false,
         },
         {
+          competitor: 'Basic auth',
           feature: 'Custom authentication',
           unhook: 'Multiple methods',
-          competitor: 'Basic auth',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not available',
           feature: 'Self-hosting option',
           unhook: 'Enterprise plan',
-          competitor: 'Not available',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Best effort',
           feature: 'Uptime SLA',
           unhook: '99.9% (Enterprise)',
-          competitor: 'Best effort',
           unhookAdvantage: true,
         },
       ],
     },
   ],
+  hero: {
+    competitorLogo: (
+      <svg
+        aria-label="ngrok Logo"
+        className="dark:fill-white fill-black"
+        fill="none"
+        height="32"
+        viewBox="0 0 80 32"
+        width="80"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>ngrok Logo</title>
+        <path d="M8 4h8v24H8V4zm16 0h8v24h-8V4zm16 0h8v24h-8V4zm16 0h8v24h-8V4z" />
+        <text className="text-sm font-bold" x="10" y="20">
+          ngrok
+        </text>
+      </svg>
+    ),
+    description:
+      'While ngrok is great for individual developers, Unhook is built for teams. Compare features, pricing, and see why teams are switching to Unhook for better collaboration and VS Code integration.',
+    subtitle: 'Better Webhook Testing for Development Teams',
+    title: 'Unhook vs ngrok',
+  },
   pricing: {
+    competitor: [
+      {
+        features: [
+          '1GB bandwidth/month',
+          '3 endpoints',
+          'HTTP/HTTPS tunnels',
+          'Email support',
+        ],
+        name: 'Free',
+        period: 'month',
+        price: '$0',
+      },
+      {
+        features: [
+          'All free features',
+          '1 custom domain',
+          '1 reserved TCP address',
+          'TCP tunnels',
+        ],
+        name: 'Personal',
+        period: 'month',
+        price: '$8',
+      },
+      {
+        features: [
+          'All personal features',
+          'Load balancing',
+          'IP restrictions',
+          'Additional domains: $14/month each',
+        ],
+        name: 'Pro',
+        period: 'month',
+        price: '$20',
+      },
+      {
+        features: [
+          'All pro features',
+          'Mutual TLS',
+          'SAML SSO',
+          'Role-based access',
+        ],
+        name: 'Enterprise',
+        period: 'month',
+        price: '$39',
+      },
+    ],
     unhook: [
       {
-        name: 'Free',
-        price: '$0',
-        period: 'forever',
         features: [
           'Unlimited local testing',
           'Basic webhook monitoring',
           'Single developer',
           'Community support',
         ],
+        name: 'Free',
+        period: 'forever',
+        price: '$0',
       },
       {
-        name: 'Team',
-        price: '$29',
-        period: 'month',
         features: [
           'Everything in Free',
           'Team webhook sharing',
@@ -187,12 +230,12 @@ const ngrokComparison = {
           'Custom domains included',
           'Priority support',
         ],
+        name: 'Team',
+        period: 'month',
         popular: true,
+        price: '$29',
       },
       {
-        name: 'Enterprise',
-        price: 'Custom',
-        period: 'month',
         features: [
           'Everything in Team',
           'Self-hosting option',
@@ -200,79 +243,36 @@ const ngrokComparison = {
           'SLA support',
           'Dedicated account manager',
         ],
-      },
-    ],
-    competitor: [
-      {
-        name: 'Free',
-        price: '$0',
-        period: 'month',
-        features: [
-          '1GB bandwidth/month',
-          '3 endpoints',
-          'HTTP/HTTPS tunnels',
-          'Email support',
-        ],
-      },
-      {
-        name: 'Personal',
-        price: '$8',
-        period: 'month',
-        features: [
-          'All free features',
-          '1 custom domain',
-          '1 reserved TCP address',
-          'TCP tunnels',
-        ],
-      },
-      {
-        name: 'Pro',
-        price: '$20',
-        period: 'month',
-        features: [
-          'All personal features',
-          'Load balancing',
-          'IP restrictions',
-          'Additional domains: $14/month each',
-        ],
-      },
-      {
         name: 'Enterprise',
-        price: '$39',
         period: 'month',
-        features: [
-          'All pro features',
-          'Mutual TLS',
-          'SAML SSO',
-          'Role-based access',
-        ],
+        price: 'Custom',
       },
     ],
   },
   reasons: [
     {
-      title: 'Built for Teams',
       description:
         "Unlike ngrok's individual-focused approach, Unhook provides one shared webhook URL for your entire team with a config file that lives in your repo. No more hunting for the right URL.",
       icon: '👥',
+      title: 'Built for Teams',
     },
     {
-      title: 'VS Code Native',
       description:
         'Debug webhooks without leaving your editor. Our VS Code extension brings webhook monitoring directly into your development environment.',
       icon: '💻',
+      title: 'VS Code Native',
     },
     {
-      title: 'Better Pricing',
       description:
         'No per-domain fees, no bandwidth caps, and team-friendly pricing. Get more value without the nickel-and-diming.',
       icon: '💰',
+      title: 'Better Pricing',
     },
     {
-      title: 'AI-First',
       description:
         'Full support for testing AI workflows and MCP server integrations. Perfect for modern AI-driven development.',
       icon: '🤖',
+      title: 'AI-First',
     },
   ],
 };
@@ -286,13 +286,13 @@ export default function UnhookVsNgrokPage() {
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...ngrokComparison.hero} />
         <ComparisonFeatures
-          features={ngrokComparison.features}
           competitor="ngrok"
+          features={ngrokComparison.features}
         />
         <ComparisonPricing
-          unhookPricing={ngrokComparison.pricing.unhook}
-          competitorPricing={ngrokComparison.pricing.competitor}
           competitor="ngrok"
+          competitorPricing={ngrokComparison.pricing.competitor}
+          unhookPricing={ngrokComparison.pricing.unhook}
         />
         <section className="w-full py-20">
           <div className="container mx-auto px-6">
@@ -308,8 +308,8 @@ export default function UnhookVsNgrokPage() {
             <div className="grid md:grid-cols-2 gap-8">
               {ngrokComparison.reasons.map((reason) => (
                 <div
-                  key={reason.title}
                   className="bg-card border rounded-lg p-6"
+                  key={reason.title}
                 >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>

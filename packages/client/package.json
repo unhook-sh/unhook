@@ -26,10 +26,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./config": "./src/config.ts",
-    "./utils/headers": "./src/utils/headers.ts",
     "./utils/delivery": "./src/utils/delivery.ts",
+    "./utils/extract-body": "./src/utils/extract-body.ts",
     "./utils/extract-event-name": "./src/utils/extract-event-name.ts",
-    "./utils/extract-body": "./src/utils/extract-body.ts"
+    "./utils/headers": "./src/utils/headers.ts"
   },
   "files": [
     "dist",

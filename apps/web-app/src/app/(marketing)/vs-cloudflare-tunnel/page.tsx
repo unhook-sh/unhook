@@ -7,8 +7,6 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title:
-    'Unhook vs Cloudflare Tunnel: Webhook Testing vs Infrastructure Tunneling | Unhook',
   description:
     'Compare Unhook and Cloudflare Tunnel. While Cloudflare Tunnel excels at infrastructure tunneling, Unhook specializes in webhook testing with team collaboration and VS Code integration.',
   keywords: [
@@ -18,56 +16,38 @@ export const metadata = {
     'tunneling solution',
     'team collaboration',
   ],
+  title:
+    'Unhook vs Cloudflare Tunnel: Webhook Testing vs Infrastructure Tunneling | Unhook',
 };
 
 const cloudflareComparison = {
   competitor: 'Cloudflare Tunnel',
-  hero: {
-    title: 'Unhook vs Cloudflare Tunnel',
-    subtitle: 'Purpose-Built Webhook Testing vs General Tunneling',
-    description:
-      'Cloudflare Tunnel is excellent for secure infrastructure access, but Unhook is specifically designed for webhook testing. Compare features and see why developers choose Unhook for webhook development.',
-    competitorLogo: (
-      <svg
-        width="80"
-        height="32"
-        viewBox="0 0 80 32"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="dark:fill-white fill-orange-500"
-        aria-label="Cloudflare Logo"
-      >
-        <title>Cloudflare Logo</title>
-        <path d="M20 8c0-2.2 1.8-4 4-4h32c2.2 0 4 1.8 4 4v16c0 2.2-1.8 4-4 4H24c-2.2 0-4-1.8-4-4V8z" />
-      </svg>
-    ),
-  },
   features: [
     {
       category: 'Webhook Features',
       items: [
         {
+          competitor: 'General tunneling',
           feature: 'Webhook-specific tools',
           unhook: 'Purpose-built for webhooks',
-          competitor: 'General tunneling',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not available',
           feature: 'Event replay',
           unhook: 'One-click replay',
-          competitor: 'Not available',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Basic logging',
           feature: 'Webhook monitoring',
           unhook: 'Real-time dashboard',
-          competitor: 'Basic logging',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not available',
           feature: 'VS Code integration',
           unhook: 'Native extension',
-          competitor: 'Not available',
           unhookAdvantage: true,
         },
       ],
@@ -76,27 +56,27 @@ const cloudflareComparison = {
       category: 'Team Collaboration',
       items: [
         {
+          competitor: 'Individual tunnels',
           feature: 'Shared webhook URLs',
           unhook: 'Built-in sharing',
-          competitor: 'Individual tunnels',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Manual configuration',
           feature: 'Config file in repo',
           unhook: 'Version controlled',
-          competitor: 'Manual configuration',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Cloudflare account based',
           feature: 'Team management',
           unhook: 'Role-based access',
-          competitor: 'Cloudflare account based',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not designed for this',
           feature: 'Collaborative debugging',
           unhook: 'Share & replay events',
-          competitor: 'Not designed for this',
           unhookAdvantage: true,
         },
       ],
@@ -105,27 +85,27 @@ const cloudflareComparison = {
       category: 'Infrastructure & Security',
       items: [
         {
+          competitor: 'Advanced zero-trust',
           feature: 'Zero-trust network',
           unhook: 'Standard security',
-          competitor: 'Advanced zero-trust',
           unhookAdvantage: false,
         },
         {
+          competitor: 'Enterprise-grade',
           feature: 'DDoS protection',
           unhook: 'Basic protection',
-          competitor: 'Enterprise-grade',
           unhookAdvantage: false,
         },
         {
+          competitor: 'Cloudflare network',
           feature: 'Global network',
           unhook: 'Standard CDN',
-          competitor: 'Cloudflare network',
           unhookAdvantage: false,
         },
         {
+          competitor: 'Complex configuration',
           feature: 'Setup complexity',
           unhook: 'Simple, webhook-focused',
-          competitor: 'Complex configuration',
           unhookAdvantage: true,
         },
       ],
@@ -134,49 +114,101 @@ const cloudflareComparison = {
       category: 'Pricing & Usage',
       items: [
         {
+          competitor: 'Limited free tier',
           feature: 'Free tier',
           unhook: 'Generous free tier',
-          competitor: 'Limited free tier',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Cloudflare DNS required',
           feature: 'Domain requirements',
           unhook: 'Any domain',
-          competitor: 'Cloudflare DNS required',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Steep learning curve',
           feature: 'Learning curve',
           unhook: 'Minutes to start',
-          competitor: 'Steep learning curve',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Infrastructure access',
           feature: 'Target use case',
           unhook: 'Webhook development',
-          competitor: 'Infrastructure access',
           unhookAdvantage: true,
         },
       ],
     },
   ],
+  hero: {
+    competitorLogo: (
+      <svg
+        aria-label="Cloudflare Logo"
+        className="dark:fill-white fill-orange-500"
+        fill="none"
+        height="32"
+        viewBox="0 0 80 32"
+        width="80"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>Cloudflare Logo</title>
+        <path d="M20 8c0-2.2 1.8-4 4-4h32c2.2 0 4 1.8 4 4v16c0 2.2-1.8 4-4 4H24c-2.2 0-4-1.8-4-4V8z" />
+      </svg>
+    ),
+    description:
+      'Cloudflare Tunnel is excellent for secure infrastructure access, but Unhook is specifically designed for webhook testing. Compare features and see why developers choose Unhook for webhook development.',
+    subtitle: 'Purpose-Built Webhook Testing vs General Tunneling',
+    title: 'Unhook vs Cloudflare Tunnel',
+  },
   pricing: {
+    competitor: [
+      {
+        features: [
+          'Up to 50 users',
+          'Basic tunneling',
+          'Cloudflare DNS required',
+          'Community support',
+        ],
+        name: 'Free',
+        period: 'month',
+        price: '$0',
+      },
+      {
+        features: [
+          'Advanced security',
+          'Access policies',
+          'Device posture',
+          'WARP client',
+        ],
+        name: 'Zero Trust',
+        period: 'user/month',
+        price: '$7',
+      },
+      {
+        features: [
+          'Everything in Zero Trust',
+          'Advanced analytics',
+          'Dedicated support',
+          'Custom contracts',
+        ],
+        name: 'Enterprise',
+        period: 'month',
+        price: 'Custom',
+      },
+    ],
     unhook: [
       {
-        name: 'Free',
-        price: '$0',
-        period: 'forever',
         features: [
           'Unlimited local testing',
           'Basic webhook monitoring',
           'Single developer',
           'Community support',
         ],
+        name: 'Free',
+        period: 'forever',
+        price: '$0',
       },
       {
-        name: 'Team',
-        price: '$29',
-        period: 'month',
         features: [
           'Everything in Free',
           'Team webhook sharing',
@@ -185,12 +217,12 @@ const cloudflareComparison = {
           'Custom domains',
           'Priority support',
         ],
+        name: 'Team',
+        period: 'month',
         popular: true,
+        price: '$29',
       },
       {
-        name: 'Enterprise',
-        price: 'Custom',
-        period: 'month',
         features: [
           'Everything in Team',
           'Self-hosting option',
@@ -198,68 +230,36 @@ const cloudflareComparison = {
           'SLA support',
           'Dedicated account manager',
         ],
-      },
-    ],
-    competitor: [
-      {
-        name: 'Free',
-        price: '$0',
-        period: 'month',
-        features: [
-          'Up to 50 users',
-          'Basic tunneling',
-          'Cloudflare DNS required',
-          'Community support',
-        ],
-      },
-      {
-        name: 'Zero Trust',
-        price: '$7',
-        period: 'user/month',
-        features: [
-          'Advanced security',
-          'Access policies',
-          'Device posture',
-          'WARP client',
-        ],
-      },
-      {
         name: 'Enterprise',
-        price: 'Custom',
         period: 'month',
-        features: [
-          'Everything in Zero Trust',
-          'Advanced analytics',
-          'Dedicated support',
-          'Custom contracts',
-        ],
+        price: 'Custom',
       },
     ],
   },
   reasons: [
     {
-      title: 'Built for Webhooks',
       description:
         'While Cloudflare Tunnel is great for infrastructure, Unhook is purpose-built for webhook development with specialized tools.',
       icon: '🎯',
+      title: 'Built for Webhooks',
     },
     {
-      title: 'Simple Setup',
       description:
         'Get started in minutes, not hours. No complex configuration or DNS requirements.',
       icon: '⚡',
+      title: 'Simple Setup',
     },
     {
-      title: 'Team Collaboration',
       description:
         'Share webhook URLs with your team through a config file. Built for collaborative development.',
       icon: '👥',
+      title: 'Team Collaboration',
     },
     {
-      title: 'Developer Experience',
       description:
         'VS Code integration, one-click replay, and webhook-specific features that developers love.',
       icon: '💻',
+      title: 'Developer Experience',
     },
   ],
 };
@@ -273,13 +273,13 @@ export default function UnhookVsCloudflareTunnelPage() {
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...cloudflareComparison.hero} />
         <ComparisonFeatures
-          features={cloudflareComparison.features}
           competitor="Cloudflare Tunnel"
+          features={cloudflareComparison.features}
         />
         <ComparisonPricing
-          unhookPricing={cloudflareComparison.pricing.unhook}
-          competitorPricing={cloudflareComparison.pricing.competitor}
           competitor="Cloudflare Tunnel"
+          competitorPricing={cloudflareComparison.pricing.competitor}
+          unhookPricing={cloudflareComparison.pricing.unhook}
         />
         <section className="w-full py-20">
           <div className="container mx-auto px-6">
@@ -296,8 +296,8 @@ export default function UnhookVsCloudflareTunnelPage() {
             <div className="grid md:grid-cols-2 gap-8">
               {cloudflareComparison.reasons.map((reason) => (
                 <div
-                  key={reason.title}
                   className="bg-card border rounded-lg p-6"
+                  key={reason.title}
                 >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>

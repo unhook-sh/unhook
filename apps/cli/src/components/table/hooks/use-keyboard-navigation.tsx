@@ -45,9 +45,9 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
           hotkey: 'gg',
           hotkeyName: 'Go To Top',
-          currentPage,
           newIndex,
           source: 'table',
         },
@@ -62,9 +62,9 @@ export function useKeyboardNavigation<T extends ScalarDict>({
         capture({
           event: 'hotkey_pressed',
           properties: {
+            currentPage,
             hotkey: 'g',
             hotkeyName: 'G Key Timeout',
-            currentPage,
             source: 'table',
           },
         });
@@ -84,10 +84,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
         capture({
           event: 'hotkey_pressed',
           properties: {
+            currentPage,
             hotkey: `g${newBuffer}`,
             hotkeyName: 'Number Input Timeout',
             numberBuffer: newBuffer,
-            currentPage,
             source: 'table',
           },
         });
@@ -113,10 +113,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
         capture({
           event: 'hotkey_pressed',
           properties: {
+            currentPage,
             hotkey: `g${numberBuffer}`,
             hotkeyName: 'Go To Line',
             lineNumber,
-            currentPage,
             source: 'table',
           },
         });
@@ -177,9 +177,9 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
           hotkey: 'G',
           hotkeyName: 'Go To Bottom',
-          currentPage,
           source: 'table',
         },
       });
@@ -206,9 +206,9 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          fromPage: currentPage,
           hotkey: input || 'right',
           hotkeyName: 'Next Page',
-          fromPage: currentPage,
           source: 'table',
         },
       });
@@ -219,9 +219,9 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          fromPage: currentPage,
           hotkey: input || 'left',
           hotkeyName: 'Previous Page',
-          fromPage: currentPage,
           source: 'table',
         },
       });
@@ -234,10 +234,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
+          fromIndex: selectedIndex,
           hotkey: input || 'up',
           hotkeyName: 'Move Up',
-          fromIndex: selectedIndex,
-          currentPage,
           source: 'table',
         },
       });
@@ -250,10 +250,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
+          fromIndex: selectedIndex,
           hotkey: input || 'down',
           hotkeyName: 'Move Down',
-          fromIndex: selectedIndex,
-          currentPage,
           source: 'table',
         },
       });
@@ -269,10 +269,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
+          fromIndex: selectedIndex,
           hotkey: 'ctrl+b',
           hotkeyName: 'Page Up',
-          fromIndex: selectedIndex,
-          currentPage,
           source: 'table',
         },
       });
@@ -281,10 +281,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
+          fromIndex: selectedIndex,
           hotkey: 'ctrl+f',
           hotkeyName: 'Page Down',
-          fromIndex: selectedIndex,
-          currentPage,
           source: 'table',
         },
       });
@@ -293,10 +293,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
+          fromIndex: selectedIndex,
           hotkey: 'ctrl+u',
           hotkeyName: 'Half Page Up',
-          fromIndex: selectedIndex,
-          currentPage,
           source: 'table',
         },
       });
@@ -305,10 +305,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
+          currentPage,
+          fromIndex: selectedIndex,
           hotkey: 'ctrl+d',
           hotkeyName: 'Half Page Down',
-          fromIndex: selectedIndex,
-          currentPage,
           source: 'table',
         },
       });
@@ -329,10 +329,10 @@ export function useKeyboardNavigation<T extends ScalarDict>({
           capture({
             event: 'hotkey_pressed',
             properties: {
+              currentPage,
               hotkey: action.key,
               hotkeyName: action.label,
               selectedIndex,
-              currentPage,
               source: 'table',
             },
           });
@@ -346,11 +346,11 @@ export function useKeyboardNavigation<T extends ScalarDict>({
       capture({
         event: 'hotkey_pressed',
         properties: {
-          hotkey: 'g',
           abortedBy: input,
+          currentPage,
+          hotkey: 'g',
           hotkeyName: 'G Key Sequence Aborted',
           numberBuffer,
-          currentPage,
           source: 'table',
         },
       });

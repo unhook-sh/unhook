@@ -95,14 +95,14 @@ export const requestsRouter = createTRPCRouter({
   markCompleted: protectedProcedure
     .input(
       z.object({
+        connectionId: z.string().optional(),
         requestId: z.string(),
         response: z.object({
-          status: z.number(),
-          headers: z.record(z.string()),
           body: z.string(),
+          headers: z.record(z.string()),
+          status: z.number(),
         }),
         responseTimeMs: z.number(),
-        connectionId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -111,11 +111,11 @@ export const requestsRouter = createTRPCRouter({
       const [request] = await ctx.db
         .update(Requests)
         .set({
-          status: 'completed',
-          response: input.response,
-          responseTimeMs: input.responseTimeMs,
           completedAt: new Date(),
           connectionId: input.connectionId ?? undefined,
+          response: input.response,
+          responseTimeMs: input.responseTimeMs,
+          status: 'completed',
         })
         .where(eq(Requests.id, input.requestId))
         .returning();
@@ -126,9 +126,9 @@ export const requestsRouter = createTRPCRouter({
   markFailed: protectedProcedure
     .input(
       z.object({
-        requestId: z.string(),
-        failedReason: z.string(),
         connectionId: z.string().optional(),
+        failedReason: z.string(),
+        requestId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -137,10 +137,10 @@ export const requestsRouter = createTRPCRouter({
       const [request] = await ctx.db
         .update(Requests)
         .set({
-          status: 'failed',
-          failedReason: input.failedReason,
           completedAt: new Date(),
           connectionId: input.connectionId ?? undefined,
+          failedReason: input.failedReason,
+          status: 'failed',
         })
         .where(eq(Requests.id, input.requestId))
         .returning();

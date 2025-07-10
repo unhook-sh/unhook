@@ -16,18 +16,18 @@ export async function POST(request: Request) {
   if (requestTimestamp && timeDiff > 300) {
     return new Response(
       JSON.stringify({
-        status: 410,
+        currentTime: new Date().toISOString(),
         error: 'Request expired',
         message: 'Request timestamp is over 300 seconds old',
-        timestamp: requestTimestamp,
-        currentTime: new Date().toISOString(),
+        status: 410,
         timeDiffMs: Math.round(timeDiff),
+        timestamp: requestTimestamp,
       }),
       {
-        status: 410,
         headers: {
           'Content-Type': 'application/json',
         },
+        status: 410,
       },
     );
   }
@@ -50,18 +50,18 @@ export async function POST(request: Request) {
 
   return new Response(
     JSON.stringify({
-      status: statusCode,
-      message: 'Request received',
-      timestamp: requestTimestamp,
       currentTime: new Date().toISOString(),
+      message: 'Request received',
       received: true,
+      status: statusCode,
       timeDiffMs: Math.round(timeDiff),
+      timestamp: requestTimestamp,
     }),
     {
-      status: statusCode,
       headers: {
         'Content-Type': 'application/json',
       },
+      status: statusCode,
     },
   );
 }

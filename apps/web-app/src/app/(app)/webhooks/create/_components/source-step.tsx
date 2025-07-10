@@ -12,9 +12,9 @@ export function SourceStep({ value, onChange }: FromStepProps) {
       <Label htmlFor="from">Source Service (Optional)</Label>
       <Input
         id="from"
+        onChange={(e) => onChange(e.target.value)}
         placeholder="e.g., Stripe, GitHub, Clerk, etc."
         value={value}
-        onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );

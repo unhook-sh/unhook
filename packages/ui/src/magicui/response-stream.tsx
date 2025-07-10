@@ -121,8 +121,8 @@ function useTextStream({
           const segmentIterator = segmenter.segment(text);
           const newSegments = Array.from(segmentIterator).map(
             (segment, index) => ({
-              text: segment.segment,
               index,
+              text: segment.segment,
             }),
           );
           setSegments(newSegments);
@@ -131,8 +131,8 @@ function useTextStream({
             .split(/(\s+)/)
             .filter(Boolean)
             .map((word, index) => ({
-              text: word,
               index,
+              text: word,
             }));
           setSegments(newSegments);
           onError?.(error);
@@ -271,14 +271,14 @@ function useTextStream({
 
   return {
     displayedText,
-    isComplete,
-    segments,
     getFadeDuration,
     getSegmentDelay,
-    reset,
-    startStreaming,
+    isComplete,
     pause,
+    reset,
     resume,
+    segments,
+    startStreaming,
   };
 }
 
@@ -314,13 +314,13 @@ function ResponseStream({
     getFadeDuration,
     getSegmentDelay,
   } = useTextStream({
-    textStream,
-    speed,
+    characterChunkSize,
+    fadeDuration,
     mode,
     onComplete,
-    fadeDuration,
     segmentDelay,
-    characterChunkSize,
+    speed,
+    textStream,
   });
 
   useEffect(() => {
@@ -367,17 +367,17 @@ function ResponseStream({
 
                 return (
                   <span
-                    key={`${segment.text}-${idx}`}
                     className={cn(
                       'fade-segment',
                       isWhitespace && 'fade-segment-space',
                     )}
-                    style={{
-                      animationDelay: `${idx * getSegmentDelay()}ms`,
-                    }}
+                    key={`${segment.text}-${idx}`}
                     onAnimationEnd={
                       isLastSegment ? handleLastSegmentAnimationEnd : undefined
                     }
+                    style={{
+                      animationDelay: `${idx * getSegmentDelay()}ms`,
+                    }}
                   >
                     {segment.text}
                   </span>

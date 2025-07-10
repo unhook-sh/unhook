@@ -25,8 +25,8 @@ window.dispatchEvent = (event: Event) => {
   if (event.type === 'online' || event.type === 'offline') {
     // Simulate network state change
     Object.defineProperty(navigator, 'onLine', {
-      value: event.type === 'online',
       configurable: true,
+      value: event.type === 'online',
     });
   }
   return originalDispatchEvent.call(window, event);

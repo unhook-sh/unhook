@@ -11,28 +11,28 @@ export function WebhookMetrics({ webhook }: WebhookMetricsProps) {
   const metrics = [
     {
       label: 'Requests Handled',
-      value: webhook.metrics?.requestsHandled || 0,
       unit: '',
+      value: webhook.metrics?.requestsHandled || 0,
     },
     {
       label: 'Average Response Time',
-      value: webhook.metrics?.avgResponseTime || 0,
       unit: 'ms',
+      value: webhook.metrics?.avgResponseTime || 0,
     },
     {
       label: 'Memory Usage',
-      value: webhook.metrics?.memoryUsage || 0,
       unit: 'MB',
+      value: webhook.metrics?.memoryUsage || 0,
     },
     {
       label: 'CPU Usage',
-      value: webhook.metrics?.cpuUsage || 0,
       unit: '%',
+      value: webhook.metrics?.cpuUsage || 0,
     },
     {
       label: 'Bandwidth Used',
-      value: webhook.metrics?.bandwidthUsed || 0,
       unit: 'MB',
+      value: webhook.metrics?.bandwidthUsed || 0,
     },
   ];
 
@@ -41,7 +41,7 @@ export function WebhookMetrics({ webhook }: WebhookMetricsProps) {
       <CardContent className="p-0">
         <div className="grid grid-cols-2 divide-x divide-y md:grid-cols-5 md:divide-y-0">
           {metrics.map((metric) => (
-            <div key={metric.label} className="flex flex-col p-4">
+            <div className="flex flex-col p-4" key={metric.label}>
               <span className="text-xs font-medium text-muted-foreground">
                 {metric.label}
               </span>

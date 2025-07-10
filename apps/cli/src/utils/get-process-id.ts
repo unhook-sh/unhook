@@ -65,8 +65,8 @@ export async function getProcessIdForPort(
           'unknown';
 
         return {
-          pid,
           name: processName,
+          pid,
         };
       }
       return null;
@@ -92,14 +92,14 @@ export async function getProcessIdForPort(
         ?.split('/')
         .pop();
       return {
-        pid,
         name: scriptName ? `node (${scriptName})` : 'node',
+        pid,
       };
     }
 
     return {
-      pid,
       name: executableName,
+      pid,
     };
   } catch (error) {
     // Log error for debugging but return null to maintain the function's contract

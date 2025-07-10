@@ -56,9 +56,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Add VS Code output destination to default logger
   const outputDestination = new VSCodeOutputDestination({
+    autoShow: settingsService.getSettings().output.autoShow,
     name: 'Unhook',
     vscode,
-    autoShow: settingsService.getSettings().output.autoShow,
   });
   defaultLogger.addDestination(outputDestination);
 
@@ -150,8 +150,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register the webhook events provider
   eventsTreeView = vscode.window.createTreeView('unhook.events', {
-    treeDataProvider: eventsProvider,
     showCollapseAll: true,
+    treeDataProvider: eventsProvider,
   });
 
   eventsTreeView.onDidChangeVisibility(() => {

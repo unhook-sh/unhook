@@ -36,6 +36,10 @@ export function ShineBorder({
 }: ShineBorderProps) {
   return (
     <div
+      className={cn(
+        'pointer-events-none absolute inset-0 size-full rounded-[inherit] will-change-[background-position] motion-safe:animate-shine',
+        className,
+      )}
       style={
         {
           '--border-width': `${borderWidth}px`,
@@ -45,18 +49,14 @@ export function ShineBorder({
           },transparent,transparent)`,
           backgroundSize: '300% 300%',
           mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          maskComposite: 'exclude',
+          padding: 'var(--border-width)',
           WebkitMask:
             'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
-          maskComposite: 'exclude',
-          padding: 'var(--border-width)',
           ...style,
         } as React.CSSProperties
       }
-      className={cn(
-        'pointer-events-none absolute inset-0 size-full rounded-[inherit] will-change-[background-position] motion-safe:animate-shine',
-        className,
-      )}
       {...props}
     />
   );

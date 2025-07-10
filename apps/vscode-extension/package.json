@@ -296,9 +296,6 @@
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
-  "sponsor": {
-    "url": "https://github.com/sponsors/seawatts"
-  },
   "icon": "logo.png",
   "keywords": [
     "webhook",
@@ -335,6 +332,9 @@
     "test:ovsx": "infisical run --env prod -- bunx ovsx verify-pat",
     "test:vsce": "infisical run --env prod -- bunx vsce verify-pat",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/seawatts"
   },
   "type": "commonjs",
   "version": "0.2.1",

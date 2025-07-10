@@ -97,14 +97,14 @@ export const FormInput: FC<FormInputProps> = ({
   return (
     <Box flexDirection="column">
       <TextInput
-        value={getValue(id)}
+        focus={isInputActive(id)}
+        highlightPastedText={highlightPastedText}
+        mask={mask}
         onChange={(value) => setValue(id, value)}
         onSubmit={handleSubmit}
         placeholder={placeholder}
-        mask={mask}
         showCursor={showCursor}
-        highlightPastedText={highlightPastedText}
-        focus={isInputActive(id)}
+        value={getValue(id)}
       />
       {error && (
         <Box>

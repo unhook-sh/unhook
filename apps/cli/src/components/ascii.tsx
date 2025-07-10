@@ -22,9 +22,9 @@ export const Ascii = ({
 }: AsciiProps) => {
   const ascii = figlet.textSync(text, {
     font,
-    width,
     horizontalLayout,
     verticalLayout,
+    width,
   });
 
   return <Text color={color}>{ascii}</Text>;

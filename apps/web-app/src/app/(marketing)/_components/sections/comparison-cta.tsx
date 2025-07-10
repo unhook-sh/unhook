@@ -25,11 +25,11 @@ export function ComparisonCTA({
             {description}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="px-8">
+            <Button className="px-8" size="lg">
               Start Free Trial
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-            <Button variant="outline" size="lg" className="px-8">
+            <Button className="px-8" size="lg" variant="outline">
               Schedule Demo
             </Button>
           </div>

@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
+  "globalEnv": ["NODE_ENV"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",
@@ -12,33 +13,7 @@
     "NPM_TOKEN",
     "VERCEL_TOKEN"
   ],
-  "globalEnv": ["NODE_ENV"],
   "tasks": {
-    "//#clean": {
-      "cache": false
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "next-env.d.ts",
-        ".expo/**",
-        ".output/**",
-        ".vercel/output/**",
-        "dist/**"
-      ],
-      "env": [
-        "NEXT_PUBLIC_*",
-        "CLERK_*",
-        "SUPABASE_*",
-        "POSTGRES_*",
-        "POSTHOG_*",
-        "OPENAI_API_KEY",
-        "STRIPE_*",
-        "RESEND_*"
-      ]
-    },
     "@unhook/web-app#build": {
       "env": [
         "NEXT_PUBLIC_*",
@@ -51,12 +26,36 @@
         "RESEND_*"
       ]
     },
+    "//#clean": {
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "next-env.d.ts",
+        ".expo/**",
+        ".output/**",
+        ".vercel/output/**",
+        "dist/**"
+      ]
+    },
     "clean": {
       "cache": false
     },
     "dev": {
       "cache": false,
-      "persistent": true,
       "env": [
         "PORT",
         "NEXT_PUBLIC_*",
@@ -67,39 +66,40 @@
         "OPENAI_API_KEY",
         "STRIPE_*",
         "RESEND_*"
-      ]
+      ],
+      "persistent": true
     },
     "format": {
       "dependsOn": ["^build"]
     },
     "format:ci": {
-      "dependsOn": ["^build"],
-      "cache": false
+      "cache": false,
+      "dependsOn": ["^build"]
     },
     "gen-migration": {
       "cache": false,
-      "interactive": true,
-      "env": ["DATABASE_*", "POSTGRES_*"]
+      "env": ["DATABASE_*", "POSTGRES_*"],
+      "interactive": true
     },
     "migrate": {
       "cache": false,
-      "interactive": true,
-      "env": ["DATABASE_*", "POSTGRES_*"]
+      "env": ["DATABASE_*", "POSTGRES_*"],
+      "interactive": true
     },
     "push": {
       "cache": false,
-      "interactive": true,
-      "env": ["DATABASE_*", "POSTGRES_*"]
+      "env": ["DATABASE_*", "POSTGRES_*"],
+      "interactive": true
     },
     "seed": {
       "cache": false,
-      "interactive": true,
-      "env": ["DATABASE_*", "POSTGRES_*", "SUPABASE_*"]
+      "env": ["DATABASE_*", "POSTGRES_*", "SUPABASE_*"],
+      "interactive": true
     },
     "studio": {
       "cache": false,
-      "persistent": true,
-      "env": ["DATABASE_*", "POSTGRES_*"]
+      "env": ["DATABASE_*", "POSTGRES_*"],
+      "persistent": true
     },
     "typecheck": {
       "dependsOn": ["^build"],

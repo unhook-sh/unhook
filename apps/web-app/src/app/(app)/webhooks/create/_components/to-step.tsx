@@ -19,9 +19,9 @@ export function ToStep({ value, onChange }: ToStepProps) {
         <Label htmlFor="to">Local Server URL</Label>
         <Input
           id="to"
+          onChange={(e) => onChange(e.target.value)}
           placeholder="e.g., http://localhost:3000/api/webhooks"
           value={value}
-          onChange={(e) => onChange(e.target.value)}
         />
       </div>
     </div>

@@ -8,31 +8,31 @@ describe('handleOrganizationUpdated', () => {
   it('should update an organization', async () => {
     const orgId = 'org_123';
     await db.insert(Users).values({
-      id: 'user_1',
       clerkId: 'user_1',
       email: 'example@example.org',
       firstName: 'Example',
+      id: 'user_1',
       lastName: 'Example',
     });
     await db.insert(Orgs).values({
-      id: orgId,
       clerkOrgId: orgId,
-      name: 'Old Org',
       createdByUserId: 'user_1',
+      id: orgId,
+      name: 'Old Org',
     });
 
     const event = {
       data: {
+        admin_delete_enabled: true,
+        created_at: 0,
+        has_image: false,
         id: orgId,
-        updated_at: 0,
+        max_allowed_memberships: 10,
         name: 'New Org',
         object: 'organization',
-        slug: 'new-org',
-        has_image: false,
-        max_allowed_memberships: 10,
-        admin_delete_enabled: true,
         public_metadata: {},
-        created_at: 0,
+        slug: 'new-org',
+        updated_at: 0,
       },
       object: 'event',
       type: 'organization.updated',

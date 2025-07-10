@@ -15,10 +15,10 @@ export function WebhookUrlStep({ webhookUrl, source }: WebhookUrlStepProps) {
         <Label>Webhook URL</Label>
         <div className="flex items-center gap-2 w-full">
           <Input
-            value={webhookUrl}
-            readOnly
             aria-label="Webhook URL"
             className="w-full"
+            readOnly
+            value={webhookUrl}
           />
           <CopyButton text={webhookUrl} variant="outline" />
         </div>

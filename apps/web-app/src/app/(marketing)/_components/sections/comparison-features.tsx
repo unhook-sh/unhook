@@ -40,12 +40,12 @@ export function ComparisonFeatures({
         <div className="space-y-12">
           {features.map((category, categoryIndex) => (
             <motion.div
-              key={category.category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
-              viewport={{ once: true }}
               className="bg-card border rounded-lg overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              key={category.category}
+              transition={{ delay: categoryIndex * 0.1, duration: 0.5 }}
+              viewport={{ once: true }}
+              whileInView={{ opacity: 1, y: 0 }}
             >
               <div className="bg-muted/50 px-6 py-4 border-b">
                 <h3 className="text-xl font-semibold">{category.category}</h3>
@@ -65,8 +65,8 @@ export function ComparisonFeatures({
                   <tbody>
                     {category.items.map((item) => (
                       <tr
-                        key={item.feature}
                         className="border-b last:border-b-0 hover:bg-muted/30"
+                        key={item.feature}
                       >
                         <td className="p-4 font-medium">{item.feature}</td>
                         <td className="p-4 text-center">

@@ -42,10 +42,10 @@ export async function setupDebug({
       log('Connecting to React DevTools...');
       connectToDevTools({
         host: 'localhost',
-        port: 8097,
         isAppActive: () => true,
-        websocket: true,
+        port: 8097,
         resolveRNStyle: null,
+        websocket: true,
       });
       log('React DevTools connection setup complete');
     } catch (error) {

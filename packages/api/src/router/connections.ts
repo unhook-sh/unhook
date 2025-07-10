@@ -90,21 +90,6 @@ export const connectionsRouter = createTRPCRouter({
       return connection;
     }),
 
-  update: protectedProcedure
-    .input(UpdateConnectionTypeSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-      if (!input.id) throw new Error('Connection ID is required');
-
-      const [connection] = await ctx.db
-        .update(Connections)
-        .set(input)
-        .where(eq(Connections.id, input.id))
-        .returning();
-
-      return connection;
-    }),
-
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -118,6 +103,21 @@ export const connectionsRouter = createTRPCRouter({
             eq(Connections.orgId, ctx.auth.orgId),
           ),
         )
+        .returning();
+
+      return connection;
+    }),
+
+  update: protectedProcedure
+    .input(UpdateConnectionTypeSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      if (!input.id) throw new Error('Connection ID is required');
+
+      const [connection] = await ctx.db
+        .update(Connections)
+        .set(input)
+        .where(eq(Connections.id, input.id))
         .returning();
 
       return connection;

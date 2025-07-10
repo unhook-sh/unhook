@@ -14,10 +14,10 @@ export interface LoggerProps {
 // Store original console methods
 export const originalConsole: Record<ConsoleMethod, typeof console.log> = {
   debug: console.debug,
-  info: console.info,
-  warn: console.warn,
   error: console.error,
+  info: console.info,
   log: console.log,
+  warn: console.warn,
 };
 
 const isBrowser = typeof window !== 'undefined';
@@ -108,11 +108,11 @@ export class UnhookLogger {
     args: unknown[],
   ): void {
     const logMessage: BufferedLogMessage = {
+      args,
       level,
       namespace,
-      args,
-      timestamp: new Date(),
       sequence: this.sequence++,
+      timestamp: new Date(),
     };
 
     this.logBuffer.push(logMessage);

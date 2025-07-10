@@ -45,10 +45,10 @@ export function RequestList({
         ) : (
           requests.map((request) => (
             <RequestRow
-              key={request.id}
-              request={request}
-              onClick={() => onSelectRequest(request)}
               isSelected={request.id === selectedRequestId}
+              key={request.id}
+              onClick={() => onSelectRequest(request)}
+              request={request}
             />
           ))
         )}
@@ -88,10 +88,10 @@ function RequestRow({ request, onClick, isSelected }: RequestRowProps) {
       </div>
       <div className="flex items-center gap-2">
         <Badge
+          className="font-mono"
           variant={
             (request.response?.status ?? 0) >= 400 ? 'destructive' : 'outline'
           }
-          className="font-mono"
         >
           {request.request.method} {request.response?.status}
         </Badge>

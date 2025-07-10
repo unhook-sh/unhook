@@ -13,21 +13,21 @@ import {
 } from './validations';
 
 const clerk = initBaseAuth({
-  authUrl: env.NEXT_PUBLIC_AUTH_URL,
   apiKey: env.clerk_API_KEY,
+  authUrl: env.NEXT_PUBLIC_AUTH_URL,
 });
 
 function mapclerkUserToMember(user: UserInOrgMetadata): Member {
   return {
-    userId: user.userId,
     email: user.email,
-    firstName: user.firstName ?? null,
-    lastName: user.lastName ?? null,
-    role: user.roleInOrg as Role,
-    joinedAt: user.createdAt,
-    pictureUrl: user.pictureUrl ?? null,
-    lastActiveAt: user.lastActiveAt,
     emailConfirmed: user.emailConfirmed,
+    firstName: user.firstName ?? null,
+    joinedAt: user.createdAt,
+    lastActiveAt: user.lastActiveAt,
+    lastName: user.lastName ?? null,
+    pictureUrl: user.pictureUrl ?? null,
+    role: user.roleInOrg as Role,
+    userId: user.userId,
   };
 }
 
@@ -40,17 +40,17 @@ export const getOrgMembersAction = actionClient
     try {
       const { orgId } = parsedInput;
       const result = await clerk.fetchUsersInOrg({
-        orgId,
         includeOrgs: true,
+        orgId,
       });
 
       return {
-        success: true,
         data: result.users.map(mapclerkUserToMember),
+        success: true,
       };
     } catch (error) {
       console.error('Failed to fetch org members:', error);
-      return { success: false, error: 'Failed to fetch org members' };
+      return { error: 'Failed to fetch org members', success: false };
     }
   });
 
@@ -69,9 +69,9 @@ export const inviteMemberAction = actionClient
     } catch (error) {
       console.error('Failed to invite member:', error);
       return {
-        success: false,
         error:
           error instanceof Error ? error.message : 'Failed to invite member',
+        success: false,
       };
     }
   });
@@ -83,14 +83,14 @@ export const updateMemberRoleAction = actionClient
       const { userId, role, orgId } = parsedInput;
       await clerk.changeUserRoleInOrg({
         orgId,
-        userId,
         role,
+        userId,
       });
 
       return { success: true };
     } catch (error) {
       console.error('Failed to update member role:', error);
-      return { success: false, error: 'Failed to update member role' };
+      return { error: 'Failed to update member role', success: false };
     }
   });
 
@@ -107,6 +107,6 @@ export const removeMemberAction = actionClient
       return { success: true };
     } catch (error) {
       console.error('Failed to remove member:', error);
-      return { success: false, error: 'Failed to remove member' };
+      return { error: 'Failed to remove member', success: false };
     }
   });

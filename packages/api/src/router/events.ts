@@ -11,18 +11,6 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const eventsRouter = createTRPCRouter({
-  count: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-
-      const totalCount = await ctx.db
-        .select({ count: count() })
-        .from(Events)
-        .where(eq(Events.webhookId, input.webhookId));
-
-      return totalCount[0]?.count ?? 0;
-    }),
   all: protectedProcedure.query(async ({ ctx }) => {
     if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
@@ -57,11 +45,11 @@ export const eventsRouter = createTRPCRouter({
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
       const events = await ctx.db.query.Events.findMany({
+        orderBy: [desc(Events.timestamp)],
         where: and(
           eq(Events.webhookId, input.webhookId),
           eq(Events.orgId, ctx.auth.orgId),
         ),
-        orderBy: [desc(Events.timestamp)],
         with: {
           requests: {
             orderBy: [desc(Requests.createdAt)],
@@ -71,61 +59,17 @@ export const eventsRouter = createTRPCRouter({
 
       return events satisfies EventTypeWithRequest[];
     }),
-
-  update: protectedProcedure
-    .input(UpdateEventTypeSchema)
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-      if (!input.id) throw new Error('Event ID is required');
-
-      const [event] = await ctx.db
-        .update(Events)
-        .set(input)
-        .where(and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)))
-        .returning();
-
-      return event;
-    }),
-
-  delete: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+  count: protectedProcedure
+    .input(z.object({ webhookId: z.string() }))
+    .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      const [event] = await ctx.db
-        .delete(Events)
-        .where(and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)))
-        .returning();
+      const totalCount = await ctx.db
+        .select({ count: count() })
+        .from(Events)
+        .where(eq(Events.webhookId, input.webhookId));
 
-      return event;
-    }),
-
-  updateEventStatus: protectedProcedure
-    .input(
-      z.object({
-        eventId: z.string(),
-        status: z.enum(['pending', 'processing', 'completed', 'failed']),
-        retryCount: z.number().optional(),
-        failedReason: z.string().optional(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-
-      const [event] = await ctx.db
-        .update(Events)
-        .set({
-          status: input.status,
-          retryCount: input.retryCount,
-          failedReason: input.failedReason,
-          updatedAt: new Date(),
-        })
-        .where(
-          and(eq(Events.id, input.eventId), eq(Events.orgId, ctx.auth.orgId)),
-        )
-        .returning();
-
-      return event;
+      return totalCount[0]?.count ?? 0;
     }),
 
   create: protectedProcedure
@@ -144,5 +88,61 @@ export const eventsRouter = createTRPCRouter({
         .returning();
 
       return request;
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [event] = await ctx.db
+        .delete(Events)
+        .where(and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)))
+        .returning();
+
+      return event;
+    }),
+
+  update: protectedProcedure
+    .input(UpdateEventTypeSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      if (!input.id) throw new Error('Event ID is required');
+
+      const [event] = await ctx.db
+        .update(Events)
+        .set(input)
+        .where(and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)))
+        .returning();
+
+      return event;
+    }),
+
+  updateEventStatus: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+        failedReason: z.string().optional(),
+        retryCount: z.number().optional(),
+        status: z.enum(['pending', 'processing', 'completed', 'failed']),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [event] = await ctx.db
+        .update(Events)
+        .set({
+          failedReason: input.failedReason,
+          retryCount: input.retryCount,
+          status: input.status,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(eq(Events.id, input.eventId), eq(Events.orgId, ctx.auth.orgId)),
+        )
+        .returning();
+
+      return event;
     }),
 });

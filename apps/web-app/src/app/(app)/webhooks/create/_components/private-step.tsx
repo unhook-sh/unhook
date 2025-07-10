@@ -37,10 +37,10 @@ export function PrivateStep({ value, onChange }: PrivateStepProps) {
                 enable this feature.
               </p>
               <Button
-                variant="default"
-                size="sm"
                 className="mt-2"
                 onClick={handleUpgrade}
+                size="sm"
+                variant="default"
               >
                 View Pricing
               </Button>

@@ -55,8 +55,8 @@ export function WebhookActivityChart({ timeRange }: WebhookActivityChartProps) {
         const minute = time.getMinutes().toString().padStart(2, '0');
 
         data.push({
-          time: `${hour}:${minute}`,
           invocations: Math.floor(Math.random() * 10),
+          time: `${hour}:${minute}`,
         });
       }
 
@@ -68,25 +68,25 @@ export function WebhookActivityChart({ timeRange }: WebhookActivityChartProps) {
 
   return (
     <div className="h-[200px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer height="100%" width="100%">
         <LineChart
           data={data}
-          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+          margin={{ bottom: 5, left: 0, right: 10, top: 5 }}
         >
           <XAxis
-            dataKey="time"
-            stroke="#888888"
-            fontSize={12}
-            tickLine={false}
             axisLine={false}
+            dataKey="time"
+            fontSize={12}
             minTickGap={30}
+            stroke="#888888"
+            tickLine={false}
           />
           <YAxis
-            stroke="#888888"
-            fontSize={12}
-            tickLine={false}
             axisLine={false}
+            fontSize={12}
+            stroke="#888888"
             tickFormatter={(value) => `${value}`}
+            tickLine={false}
           />
           <Tooltip
             content={({ active, payload }) => {
@@ -116,12 +116,12 @@ export function WebhookActivityChart({ timeRange }: WebhookActivityChartProps) {
             }}
           />
           <Line
-            type="monotone"
+            activeDot={{ r: 4, strokeWidth: 0 }}
             dataKey="invocations"
+            dot={false}
             stroke="#f59e0b"
             strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4, strokeWidth: 0 }}
+            type="monotone"
           />
         </LineChart>
       </ResponsiveContainer>

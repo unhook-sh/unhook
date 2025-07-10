@@ -48,10 +48,10 @@ export function ComparisonPricing({
             <div className="space-y-6">
               {unhookPricing.map((plan) => (
                 <div
-                  key={plan.name}
                   className={`bg-card border rounded-lg p-6 relative ${
                     plan.popular ? 'border-primary ring-2 ring-primary/20' : ''
                   }`}
+                  key={plan.name}
                 >
                   {plan.popular && (
                     <Badge className="absolute -top-3 left-6 bg-primary text-primary-foreground">
@@ -71,7 +71,7 @@ export function ComparisonPricing({
                   </div>
                   <ul className="space-y-3 mb-6">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
+                      <li className="flex items-start gap-3" key={feature}>
                         <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                         <span className="text-sm">{feature}</span>
                       </li>
@@ -103,8 +103,8 @@ export function ComparisonPricing({
             <div className="space-y-6">
               {competitorPricing.map((plan) => (
                 <div
-                  key={plan.name}
                   className="bg-card border rounded-lg p-6 opacity-75"
+                  key={plan.name}
                 >
                   <div className="flex items-baseline gap-2 mb-4">
                     <h4 className="text-xl font-semibold">{plan.name}</h4>
@@ -119,7 +119,7 @@ export function ComparisonPricing({
                   </div>
                   <ul className="space-y-3 mb-6">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
+                      <li className="flex items-start gap-3" key={feature}>
                         <Check className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-muted-foreground">
                           {feature}
@@ -127,7 +127,7 @@ export function ComparisonPricing({
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full" disabled>
+                  <Button className="w-full" disabled variant="outline">
                     {competitor} Plan
                   </Button>
                 </div>

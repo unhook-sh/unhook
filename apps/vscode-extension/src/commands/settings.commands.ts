@@ -23,8 +23,8 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
       );
       const currentPath = config.get('configFilePath');
       const newPath = await vscode.window.showInputBox({
-        prompt: 'Enter the path to your Unhook config file',
         placeHolder: 'e.g., .unhook/config.json',
+        prompt: 'Enter the path to your Unhook config file',
         value: currentPath as string,
       });
 

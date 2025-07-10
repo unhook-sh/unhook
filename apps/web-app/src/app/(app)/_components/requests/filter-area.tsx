@@ -30,13 +30,13 @@ export function FilterArea({ className }: FilterAreaProps) {
     <div className={cn('flex flex-col bg-background overflow-auto', className)}>
       <div className="flex items-center justify-between p-4">
         <h2 className="text-lg font-semibold">Filters</h2>
-        <Button variant="outline" size="sm">
+        <Button size="sm" variant="outline">
           Reset
         </Button>
       </div>
 
       <div className="flex-1 overflow-auto">
-        <Collapsible defaultOpen className="border-t">
+        <Collapsible className="border-t" defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
             <div className="flex items-center gap-2">
               <ChevronDown className="h-4 w-4 transition-transform group-data-[state=closed]:rotate-[-90deg]" />
@@ -59,7 +59,7 @@ export function FilterArea({ className }: FilterAreaProps) {
           </CollapsibleContent>
         </Collapsible>
 
-        <Collapsible defaultOpen className="border-t">
+        <Collapsible className="border-t" defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
             <div className="flex items-center gap-2">
               <ChevronDown className="h-4 w-4 transition-transform group-data-[state=closed]:rotate-[-90deg]" />
@@ -71,7 +71,7 @@ export function FilterArea({ className }: FilterAreaProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="warning" />
-                  <label htmlFor="warning" className="text-sm">
+                  <label className="text-sm" htmlFor="warning">
                     Warning
                   </label>
                 </div>
@@ -82,7 +82,7 @@ export function FilterArea({ className }: FilterAreaProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="error" />
-                  <label htmlFor="error" className="text-sm">
+                  <label className="text-sm" htmlFor="error">
                     Error
                   </label>
                 </div>
@@ -108,7 +108,7 @@ export function FilterArea({ className }: FilterAreaProps) {
           </CollapsibleContent>
         </Collapsible>
 
-        <Collapsible defaultOpen className="border-t">
+        <Collapsible className="border-t" defaultOpen>
           <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
             <div className="flex items-center gap-2">
               <ChevronDown className="h-4 w-4 transition-transform group-data-[state=closed]:rotate-[-90deg]" />
@@ -120,17 +120,17 @@ export function FilterArea({ className }: FilterAreaProps) {
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search Route..."
                   className="pl-8"
-                  value={routeSearch}
                   onChange={(e) => setRouteSearch(e.target.value)}
+                  placeholder="Search Route..."
+                  value={routeSearch}
                 />
               </div>
               <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Checkbox id="api-webhook" />
-                    <label htmlFor="api-webhook" className="text-sm">
+                    <label className="text-sm" htmlFor="api-webhook">
                       /api/webhook
                     </label>
                   </div>
@@ -141,7 +141,7 @@ export function FilterArea({ className }: FilterAreaProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Checkbox id="null" />
-                    <label htmlFor="null" className="text-sm">
+                    <label className="text-sm" htmlFor="null">
                       null
                     </label>
                   </div>

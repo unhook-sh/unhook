@@ -19,13 +19,13 @@ vi.mock('../client', () => ({
         };
       }),
     })),
-    removeChannel: vi.fn(),
-    removeAllChannels: vi.fn(),
     realtime: {
       connect: vi.fn(),
       disconnect: vi.fn(),
       isConnected: vi.fn().mockReturnValue(true),
     },
+    removeAllChannels: vi.fn(),
+    removeChannel: vi.fn(),
   })),
 }));
 
@@ -55,8 +55,8 @@ describe('useSubscription', () => {
     const { result } = renderHook(
       () =>
         useSubscription({
-          table: mockTable,
           onInsert: mockCallback,
+          table: mockTable,
         }),
       { wrapper },
     );
@@ -69,8 +69,8 @@ describe('useSubscription', () => {
     const { result } = renderHook(
       () =>
         useSubscription({
-          table: mockTable,
           onInsert: mockCallback,
+          table: mockTable,
         }),
       { wrapper },
     );
@@ -98,8 +98,8 @@ describe('useSubscription', () => {
     const { result } = renderHook(
       () =>
         useSubscription({
-          table: mockTable,
           onInsert: mockCallback,
+          table: mockTable,
         }),
       { wrapper },
     );
@@ -137,9 +137,9 @@ describe('useSubscription', () => {
     const { result } = renderHook(
       () =>
         useSubscription({
-          table: mockTable,
-          onInsert: mockCallback,
           onError: errorCallback,
+          onInsert: mockCallback,
+          table: mockTable,
         }),
       { wrapper },
     );
@@ -161,8 +161,8 @@ describe('useSubscription', () => {
     const { unmount } = renderHook(
       () =>
         useSubscription({
-          table: mockTable,
           onInsert: mockCallback,
+          table: mockTable,
         }),
       { wrapper },
     );
@@ -188,8 +188,8 @@ describe('useSubscription', () => {
     const { result } = renderHook(
       () =>
         useSubscription({
-          table: mockTable,
           onInsert: mockCallback,
+          table: mockTable,
         }),
       { wrapper },
     );

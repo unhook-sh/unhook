@@ -15,20 +15,20 @@ export const Router: FC = () => {
   if (routes.length === 0) {
     log('No routes', {
       currentPath,
-      routes,
       history,
       params,
+      routes,
     });
     return null;
   }
 
   if (!matchedRoute?.component) {
     log('404: Page not found', {
-      matchedRoute,
       currentPath,
-      routes,
       history,
+      matchedRoute,
       params,
+      routes,
     });
     return <Text color="red">404: Page not found {currentPath}</Text>;
   }

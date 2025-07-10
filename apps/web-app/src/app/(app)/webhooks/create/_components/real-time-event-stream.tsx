@@ -133,14 +133,14 @@ export function RealTimeEventStream({
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {events.map((event) => (
               <div
-                key={event.id}
                 className="p-3 bg-muted/50 rounded-lg border border-border/50 animate-in fade-in-0 slide-in-from-top-1"
+                key={event.id}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant="secondary"
                       className={`${getStatusColor(event.status)} flex items-center gap-1`}
+                      variant="secondary"
                     >
                       {getStatusIcon(event.status)}
                       {event.status}

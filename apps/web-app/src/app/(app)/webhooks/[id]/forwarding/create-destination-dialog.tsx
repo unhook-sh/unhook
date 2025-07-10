@@ -70,18 +70,18 @@ export function CreateDestinationDialog() {
           }
           if (authType && authToken) {
             config.authentication = {
-              type: authType,
               token: authToken,
+              type: authType,
             };
           }
           break;
       }
 
       const destinationData = {
-        name,
-        type,
         config,
         isActive: true,
+        name,
+        type,
       };
 
       console.log('Create destination:', destinationData);
@@ -108,10 +108,10 @@ export function CreateDestinationDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button>
-          <Icons.Plus size="sm" className="mr-2" />
+          <Icons.Plus className="mr-2" size="sm" />
           Create Destination
         </Button>
       </DialogTrigger>
@@ -128,15 +128,15 @@ export function CreateDestinationDialog() {
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
-              value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Payments Slack Channel"
+              value={name}
             />
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="type">Type</Label>
-            <Select value={type} onValueChange={setType}>
+            <Select onValueChange={setType} value={type}>
               <SelectTrigger id="type">
                 <SelectValue placeholder="Select a destination type" />
               </SelectTrigger>
@@ -177,10 +177,10 @@ export function CreateDestinationDialog() {
                     <Label htmlFor="slack-webhook">Slack Webhook URL</Label>
                     <Input
                       id="slack-webhook"
-                      type="url"
-                      value={slackWebhookUrl}
                       onChange={(e) => setSlackWebhookUrl(e.target.value)}
                       placeholder="https://hooks.slack.com/services/..."
+                      type="url"
+                      value={slackWebhookUrl}
                     />
                     <p className="text-xs text-muted-foreground">
                       Get this from your Slack app's Incoming Webhooks settings
@@ -190,9 +190,9 @@ export function CreateDestinationDialog() {
                     <Label htmlFor="slack-channel">Channel (optional)</Label>
                     <Input
                       id="slack-channel"
-                      value={slackChannel}
                       onChange={(e) => setSlackChannel(e.target.value)}
                       placeholder="#general"
+                      value={slackChannel}
                     />
                     <p className="text-xs text-muted-foreground">
                       Override the default channel configured in Slack
@@ -206,10 +206,10 @@ export function CreateDestinationDialog() {
                   <Label htmlFor="discord-webhook">Discord Webhook URL</Label>
                   <Input
                     id="discord-webhook"
-                    type="url"
-                    value={discordWebhookUrl}
                     onChange={(e) => setDiscordWebhookUrl(e.target.value)}
                     placeholder="https://discord.com/api/webhooks/..."
+                    type="url"
+                    value={discordWebhookUrl}
                   />
                   <p className="text-xs text-muted-foreground">
                     Get this from your Discord channel settings → Integrations →
@@ -223,10 +223,10 @@ export function CreateDestinationDialog() {
                   <Label htmlFor="teams-webhook">Teams Webhook URL</Label>
                   <Input
                     id="teams-webhook"
-                    type="url"
-                    value={teamsWebhookUrl}
                     onChange={(e) => setTeamsWebhookUrl(e.target.value)}
                     placeholder="https://outlook.office.com/webhook/..."
+                    type="url"
+                    value={teamsWebhookUrl}
                   />
                   <p className="text-xs text-muted-foreground">
                     Get this from your Teams channel → Connectors → Incoming
@@ -241,28 +241,28 @@ export function CreateDestinationDialog() {
                     <Label htmlFor="webhook-url">Webhook URL</Label>
                     <Input
                       id="webhook-url"
-                      type="url"
-                      value={webhookUrl}
                       onChange={(e) => setWebhookUrl(e.target.value)}
                       placeholder="https://api.example.com/webhooks"
+                      type="url"
+                      value={webhookUrl}
                     />
                   </div>
 
                   <div className="grid gap-2">
                     <Label htmlFor="headers">Custom Headers (JSON)</Label>
                     <Textarea
+                      className="font-mono text-sm"
                       id="headers"
-                      value={webhookHeaders}
                       onChange={(e) => setWebhookHeaders(e.target.value)}
                       placeholder='{"X-API-Key": "your-api-key"}'
                       rows={3}
-                      className="font-mono text-sm"
+                      value={webhookHeaders}
                     />
                   </div>
 
                   <div className="grid gap-2">
                     <Label>Authentication (optional)</Label>
-                    <Select value={authType} onValueChange={setAuthType}>
+                    <Select onValueChange={setAuthType} value={authType}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select authentication type" />
                       </SelectTrigger>
@@ -275,13 +275,13 @@ export function CreateDestinationDialog() {
 
                     {authType && (
                       <Input
-                        type="password"
-                        value={authToken}
+                        className="mt-2"
                         onChange={(e) => setAuthToken(e.target.value)}
                         placeholder={
                           authType === 'bearer' ? 'Bearer token' : 'API key'
                         }
-                        className="mt-2"
+                        type="password"
+                        value={authToken}
                       />
                     )}
                   </div>
@@ -293,15 +293,15 @@ export function CreateDestinationDialog() {
 
         <DialogFooter>
           <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
             disabled={loading}
+            onClick={() => setOpen(false)}
+            variant="outline"
           >
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={loading || !name || !type}>
+          <Button disabled={loading || !name || !type} onClick={handleSubmit}>
             {loading && (
-              <Icons.Spinner size="sm" className="mr-2 animate-spin" />
+              <Icons.Spinner className="mr-2 animate-spin" size="sm" />
             )}
             Create Destination
           </Button>

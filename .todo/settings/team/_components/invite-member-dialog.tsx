@@ -42,7 +42,7 @@ export function InviteMemberDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite Team Member</DialogTitle>
@@ -51,28 +51,28 @@ export function InviteMemberDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="email">
               Email
             </label>
             <Input
               id="email"
-              type="email"
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="colleague@company.com"
               required
+              type="email"
+              value={email}
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="role" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="role">
               Role
             </label>
             <Select
-              value={role}
               onValueChange={(value) => setRole(value as Role)}
+              value={role}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a role" />
@@ -87,14 +87,14 @@ export function InviteMemberDialog({
 
           <DialogFooter>
             <Button
+              disabled={isLoading}
+              onClick={() => onOpenChange(false)}
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button disabled={isLoading} type="submit">
               {isLoading ? 'Sending...' : 'Send Invitation'}
             </Button>
           </DialogFooter>

@@ -62,13 +62,13 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   }, [open]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
-          ref={triggerRef}
           aria-expanded={open}
-          variant="outline"
           className="w-full justify-between"
+          ref={triggerRef}
+          variant="outline"
         >
           {value
             ? userMemberships.find((org) => org.organization.id === value)
@@ -78,18 +78,19 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        style={popoverWidth ? { width: popoverWidth } : {}}
         className="p-0"
+        style={popoverWidth ? { width: popoverWidth } : {}}
       >
         <Command>
           <CommandInput
+            onValueChange={setInput}
             placeholder="Search or create organization..."
             value={input}
-            onValueChange={setInput}
           />
           <CommandList>
             <CommandEmpty>
               <Button
+                disabled={!input.trim() || isCreating}
                 onClick={async () => {
                   if (input.trim()) {
                     setIsCreating(true);
@@ -115,7 +116,6 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                     }
                   }
                 }}
-                disabled={!input.trim() || isCreating}
               >
                 {isCreating ? <Icons.Spinner /> : <Plus />}
                 Create new organization:{' '}
@@ -126,7 +126,6 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
               {filteredOrgs.map((membership) => (
                 <CommandItem
                   key={membership.organization.id}
-                  value={membership.organization.id}
                   keywords={[membership.organization.name]}
                   onSelect={async () => {
                     setValue(membership.organization.id);
@@ -145,6 +144,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                       orgName: membership.organization.name,
                     });
                   }}
+                  value={membership.organization.id}
                 >
                   {membership.organization.name}
                   <Icons.Check

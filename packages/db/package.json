@@ -41,10 +41,10 @@
     "./schema": "./src/schema.ts",
     "./supabase/cli": "./src/supabase/cli.ts",
     "./supabase/client": "./src/supabase/client-exports.ts",
-    "./supabase/types": "./src/supabase/types.generated.ts",
     "./supabase/create-channel": "./src/supabase/create-channel.ts",
     "./supabase/rcs": "./src/supabase/server.rcs.ts",
-    "./supabase/server": "./src/supabase/server-exports.ts"
+    "./supabase/server": "./src/supabase/server-exports.ts",
+    "./supabase/types": "./src/supabase/types.generated.ts"
   },
   "license": "MIT",
   "name": "@unhook/db",

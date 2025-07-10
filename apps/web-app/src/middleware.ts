@@ -11,6 +11,10 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/privacy-policy',
   '/terms-of-service',
+  // Marketing pages
+  '/pricing(.*)',
+  '/vscode(.*)',
+  '/webhook-graphic-demo(.*)',
   // VS competitor pages
   '/vs-svix(.*)',
   '/vs-webhook-site(.*)',

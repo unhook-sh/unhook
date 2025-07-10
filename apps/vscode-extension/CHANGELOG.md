@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.4
+
+### Patch Changes
+
+- [`5d2e259`](https://github.com/unhook-sh/unhook/commit/5d2e2594f84c26340006f1a59292a3b103b58d41) Thanks [@seawatts](https://github.com/seawatts)! - Fix changeset
+
 ## 0.2.3
 
 ### Patch Changes

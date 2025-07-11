@@ -61,6 +61,13 @@ export class EventQuickPick {
       );
     }
 
+    // Add configuration item
+    items.push({
+      label: '$(new-file) Create Configuration File',
+      description: 'Create unhook.yml configuration file',
+      detail: 'Generate a new Unhook configuration file for your project',
+    });
+
     // Add settings item
     items.push({
       description: 'Open settings panel',
@@ -88,6 +95,9 @@ export class EventQuickPick {
           break;
         case '$(refresh) Refresh Events':
           await vscode.commands.executeCommand('unhook.events.refresh');
+          break;
+        case '$(new-file) Create Configuration File':
+          await vscode.commands.executeCommand('unhook.createConfig');
           break;
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(

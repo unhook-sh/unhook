@@ -38,6 +38,6 @@ export function GitHubStarsButton({
   // }
 
   return (
-    <GitHubStarsButtonClient stars={stars} className={className} repo={repo} />
+    <GitHubStarsButtonClient className={className} repo={repo} stars={stars} />
   );
 }

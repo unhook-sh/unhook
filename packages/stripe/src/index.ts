@@ -30,12 +30,12 @@ export async function recordUsage({
   // Create a meter event to record usage
   const meterEvent = await stripe.billing.meterEvents.create({
     event_name: env.STRIPE_METER_EVENT_NAME,
+    identifier: idempotencyKey,
     payload: {
       stripe_customer_id: customerId,
       value: quantity.toString(), // Meter events expect value as string
-    },
-    timestamp: timestamp ? Math.floor(timestamp) : undefined, // Use Unix timestamp directly
-    identifier: idempotencyKey,
+    }, // Use Unix timestamp directly
+    timestamp: timestamp ? Math.floor(timestamp) : undefined,
   });
 
   return meterEvent;
@@ -55,14 +55,14 @@ export async function createCheckoutSession({
 }) {
   const meterEvent = await stripe.prices.list({
     active: true,
-    lookup_keys: [env.STRIPE_PRICE_METER_LOOKUP_KEY],
     limit: 1,
+    lookup_keys: [env.STRIPE_PRICE_METER_LOOKUP_KEY],
   });
 
   const subscriptionPrice = await stripe.prices.list({
     active: true,
-    lookup_keys: [env.STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY],
     limit: 1,
+    lookup_keys: [env.STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY],
   });
 
   if (meterEvent.data.length === 0) {
@@ -70,9 +70,11 @@ export async function createCheckoutSession({
   }
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
-    mode: 'subscription',
-    success_url: successUrl,
+    allow_promotion_codes: true,
+    billing_address_collection: 'required',
     cancel_url: cancelUrl,
+    customer: customerId,
+    customer_creation: customerId ? undefined : 'always',
     line_items: [
       {
         price: subscriptionPrice.data[0]?.id,
@@ -84,15 +86,13 @@ export async function createCheckoutSession({
     metadata: {
       orgId,
     },
-    allow_promotion_codes: true,
-    billing_address_collection: 'required',
-    customer_creation: customerId ? undefined : 'always',
-    customer: customerId,
+    mode: 'subscription',
     subscription_data: {
       metadata: {
         orgId,
       },
     },
+    success_url: successUrl,
   };
 
   return stripe.checkout.sessions.create(sessionParams);
@@ -147,7 +147,7 @@ export async function getOrCreateCustomer({
   // Create new customer
   return stripe.customers.create({
     email,
-    name,
     metadata,
+    name,
   });
 }

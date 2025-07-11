@@ -30,9 +30,9 @@ export class WebhookHandler {
 
     log.request('Received webhook request %s', record.id);
     log.request('Request details: %o', {
+      headers: record.request.headers,
       method: record.request.method,
       url: record.request.url,
-      headers: record.request.headers,
     });
 
     try {
@@ -59,11 +59,11 @@ export class WebhookHandler {
     const response = await fetch(
       this.localAddr + new URL(record.request.url).pathname,
       {
-        method: record.request.method,
-        headers: record.request.headers,
         body: record.request.body
           ? Buffer.from(record.request.body, 'base64')
           : undefined,
+        headers: record.request.headers,
+        method: record.request.method,
       },
     );
 
@@ -97,13 +97,13 @@ export class WebhookHandler {
     await db
       .update(Requests)
       .set({
-        status: 'completed',
         completedAt: new Date(),
         response: {
-          status: response.status,
-          headers: responseHeaders,
           body: responseBodyBase64,
+          headers: responseHeaders,
+          status: response.status,
         },
+        status: 'completed',
       })
       .where(eq(Requests.id, record.id));
 
@@ -120,15 +120,15 @@ export class WebhookHandler {
     await db
       .update(Requests)
       .set({
-        status: 'failed',
         completedAt: new Date(),
         response: {
-          status: 500,
-          headers: { 'content-type': 'text/plain' },
           body: Buffer.from(
             error instanceof Error ? error.message : 'Internal error',
           ).toString('base64'),
+          headers: { 'content-type': 'text/plain' },
+          status: 500,
         },
+        status: 'failed',
       })
       .where(eq(Requests.id, requestId));
 

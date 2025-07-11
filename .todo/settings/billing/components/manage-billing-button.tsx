@@ -13,6 +13,9 @@ export function ManageBillingButton({ orgId }: ManageBillingButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { execute } = useAction(getStripePortalLink, {
+    onError: () => {
+      setIsLoading(false);
+    },
     onExecute: () => {
       setIsLoading(true);
     },
@@ -20,9 +23,6 @@ export function ManageBillingButton({ orgId }: ManageBillingButtonProps) {
       if (result.data?.success && result.data?.data?.url) {
         window.open(result.data.data.url, '_blank', 'noopener,noreferrer');
       }
-      setIsLoading(false);
-    },
-    onError: () => {
       setIsLoading(false);
     },
   });
@@ -36,9 +36,9 @@ export function ManageBillingButton({ orgId }: ManageBillingButtonProps) {
 
   return (
     <Button
-      variant="outline"
-      onClick={handleManageBilling}
       disabled={isLoading}
+      onClick={handleManageBilling}
+      variant="outline"
     >
       {isLoading ? 'Loading...' : 'Manage Billing'}
     </Button>

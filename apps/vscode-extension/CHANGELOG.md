@@ -1,5 +1,35 @@
 # Change Log
 
+## 0.2.5
+
+### Patch Changes
+
+- [`412a037`](https://github.com/unhook-sh/unhook/commit/412a03707f81bc6c541a5083801ca46bdd4219fc) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with login
+
+## 0.2.4
+
+### Patch Changes
+
+- [`5d2e259`](https://github.com/unhook-sh/unhook/commit/5d2e2594f84c26340006f1a59292a3b103b58d41) Thanks [@seawatts](https://github.com/seawatts)! - Fix changeset
+
+## 0.2.3
+
+### Patch Changes
+
+- [`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832) Thanks [@seawatts](https://github.com/seawatts)! - Fix build issue
+
+- Updated dependencies [[`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832)]:
+  - @unhook/client@0.5.3
+
+## 0.2.2
+
+### Patch Changes
+
+- [`a6bf4e3`](https://github.com/unhook-sh/unhook/commit/a6bf4e30a7d8f51c37c2e0d1843f2eb6e7129f4f) Thanks [@seawatts](https://github.com/seawatts)! - Fix build
+
+- Updated dependencies [[`a6bf4e3`](https://github.com/unhook-sh/unhook/commit/a6bf4e30a7d8f51c37c2e0d1843f2eb6e7129f4f)]:
+  - @unhook/client@0.5.2
+
 ## 0.2.1
 
 ### Patch Changes

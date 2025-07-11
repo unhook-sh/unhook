@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@unhook/ui/components/chart';
+import { ChartContainer } from '@unhook/ui/components/chart';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Area,
@@ -88,8 +84,8 @@ export function WebhookConnectionsChart({
         }
 
         data.push({
-          time: `${hour}:${minute}`,
           connections,
+          time: `${hour}:${minute}`,
         });
       }
 
@@ -134,8 +130,8 @@ export function WebhookConnectionsChart({
         newConnections = Math.max(0, newConnections);
 
         newData.push({
-          time: newTimeStr,
           connections: newConnections,
+          time: newTimeStr,
         });
 
         return newData;
@@ -150,18 +146,18 @@ export function WebhookConnectionsChart({
       <ChartContainer
         config={{
           connections: {
-            label: 'Active Connections',
             color: 'hsl(var(--chart-1))',
+            label: 'Active Connections',
           },
         }}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer height="100%" width="100%">
           <AreaChart
             data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            margin={{ bottom: 0, left: 0, right: 10, top: 10 }}
           >
             <defs>
-              <linearGradient id="colorConnections" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="colorConnections" x1="0" x2="0" y1="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor="var(--color-connections)"
@@ -175,43 +171,43 @@ export function WebhookConnectionsChart({
               </linearGradient>
             </defs>
             <CartesianGrid
+              stroke="hsl(var(--border))"
               strokeDasharray="3 3"
               vertical={false}
-              stroke="hsl(var(--border))"
             />
             <XAxis
-              dataKey="time"
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
               axisLine={false}
+              dataKey="time"
+              fontSize={12}
               minTickGap={30}
+              stroke="hsl(var(--muted-foreground))"
+              tickLine={false}
             />
             <YAxis
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
               axisLine={false}
+              fontSize={12}
+              stroke="hsl(var(--muted-foreground))"
               tickFormatter={(value) => `${value}`}
+              tickLine={false}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
             <Area
-              type="monotone"
-              dataKey="connections"
-              stroke="var(--color-connections)"
-              fillOpacity={1}
-              fill="url(#colorConnections)"
-              strokeWidth={2}
               activeDot={{ r: 6, strokeWidth: 0 }}
+              dataKey="connections"
+              fill="url(#colorConnections)"
+              fillOpacity={1}
+              stroke="var(--color-connections)"
+              strokeWidth={2}
+              type="monotone"
             />
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>
       <div className="mt-2 flex items-center justify-end">
         <button
-          type="button"
-          onClick={() => setIsLive(!isLive)}
           className={`text-xs ${isLive ? 'text-green-500' : 'text-muted-foreground'} flex items-center gap-1`}
+          onClick={() => setIsLive(!isLive)}
+          type="button"
         >
           <span
             className={`h-2 w-2 rounded-full ${isLive ? 'bg-green-500' : 'bg-muted-foreground'}`}

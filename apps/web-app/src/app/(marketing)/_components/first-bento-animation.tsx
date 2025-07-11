@@ -32,36 +32,36 @@ export function FirstBentoAnimation() {
   }, [isInView]);
 
   const event = {
+    code: 200,
+    event: 'payment.created',
     expires: {
-      label: '2 minutes ago',
-      icon: <Clock className="size-4 text-warning" />, // Use your icon system
       color: 'text-warning',
+      icon: <Clock className="size-4 text-warning" />, // Use your icon system
+      label: '2 minutes ago',
     },
     from: 'Stripe',
     to: 'localhost:3000',
     url: '/webhooks/stripe',
-    event: 'payment.created',
-    code: 200,
   };
 
   const payload = {
-    id: 'evt_1N...',
-    type: 'payment.created',
+    created: 1712345678,
     data: {
       object: {
         amount: 2000,
         currency: 'usd',
-        status: 'succeeded',
         customer: 'cus_12345',
+        status: 'succeeded',
       },
     },
-    created: 1712345678,
+    id: 'evt_1N...',
+    type: 'payment.created',
   };
 
   return (
     <div
-      ref={ref}
       className="w-full h-full p-4 flex flex-col items-center justify-center gap-5"
+      ref={ref}
     >
       <div className="pointer-events-none absolute bottom-0 left-0 h-20 w-full bg-gradient-to-t from-background to-transparent z-20" />
       <div className="max-w-md w-full mx-auto bg-background border border-border rounded-xl shadow-lg p-0 overflow-hidden">
@@ -77,11 +77,11 @@ export function FirstBentoAnimation() {
           <AnimatePresence>
             {showEvent && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
                 className="rounded-lg bg-accent/60 border border-border p-3 mt-2"
+                exit={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
               >
                 <div className="grid grid-cols-4 md:grid-cols-6 gap-1 items-center font-mono text-xs">
                   <div
@@ -104,11 +104,11 @@ export function FirstBentoAnimation() {
           <AnimatePresence>
             {showPayload && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
                 className="mt-4 bg-background border border-border rounded-lg p-4 shadow-inner"
+                exit={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 10 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
               >
                 <div className="font-mono text-xs text-muted-foreground mb-2">
                   Inspect webhook payload

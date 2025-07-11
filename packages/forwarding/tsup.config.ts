@@ -1,9 +1,9 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  dts: true,
   clean: true,
+  dts: true,
+  entry: ['src/index.ts'],
   external: ['@unhook/db', '@unhook/logger', 'drizzle-orm', 'isolated-vm'],
+  format: ['esm'],
 });

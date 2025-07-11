@@ -57,71 +57,71 @@ export function WebhookRequestsTable({
             // Generate mock webhook bodies with different event types
             const mockEvents = [
               {
+                data: { email: 'test@example.com', id: 'user_123' },
                 event: 'user.created',
-                data: { id: 'user_123', email: 'test@example.com' },
               },
               {
-                event: 'payment.completed',
                 data: { amount: 1000, currency: 'USD' },
+                event: 'payment.completed',
               },
-              { event: 'order.placed', data: { orderId: 'order_456' } },
+              { data: { orderId: 'order_456' }, event: 'order.placed' },
               {
-                event_type: 'customer.updated',
                 data: { customerId: 'cust_789' },
+                event_type: 'customer.updated',
               },
-              { type: 'invoice.paid', data: { invoiceId: 'inv_012' } },
+              { data: { invoiceId: 'inv_012' }, type: 'invoice.paid' },
               {
-                eventType: 'subscription.cancelled',
                 data: { subscriptionId: 'sub_345' },
+                eventType: 'subscription.cancelled',
               },
             ];
             const mockBody =
               mockEvents[Math.floor(Math.random() * mockEvents.length)];
 
             return {
-              id: `req_${i}_${Date.now()}`,
-              webhookId,
               apiKey: 'pk_test_123',
-              eventId: null,
-              status,
-              timestamp,
-              createdAt: timestamp,
-              userId: 'user_123',
-              orgId: 'org_123',
+              completedAt: status === 'completed' ? new Date() : null,
               connectionId: null,
-              request: {
-                id: `req_${i}_${Date.now()}`,
-                method: ['GET', 'POST', 'PUT', 'DELETE'][
-                  Math.floor(Math.random() * 4)
-                ] as string,
-                sourceUrl: 'https://example.com',
-                headers: {
-                  'content-type': 'application/json',
-                  'user-agent': 'Svix-Webhooks/1.62.0',
-                },
-                body: JSON.stringify(mockBody),
-                size: Math.floor(Math.random() * 1000),
-                contentType: 'application/json',
-                clientIp: '127.0.0.1',
-              },
-              source: '*',
+              createdAt: timestamp,
               destination: {
                 name: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
                   Math.floor(Math.random() * 4)
                 ] as string,
                 url: 'https://example.com',
               },
+              eventId: null,
               failedReason: status === 'failed' ? 'Connection error' : null,
-              completedAt: status === 'completed' ? new Date() : null,
+              id: `req_${i}_${Date.now()}`,
+              orgId: 'org_123',
+              request: {
+                body: JSON.stringify(mockBody),
+                clientIp: '127.0.0.1',
+                contentType: 'application/json',
+                headers: {
+                  'content-type': 'application/json',
+                  'user-agent': 'Svix-Webhooks/1.62.0',
+                },
+                id: `req_${i}_${Date.now()}`,
+                method: ['GET', 'POST', 'PUT', 'DELETE'][
+                  Math.floor(Math.random() * 4)
+                ] as string,
+                size: Math.floor(Math.random() * 1000),
+                sourceUrl: 'https://example.com',
+              },
               response:
                 status === 'completed'
                   ? {
-                      status: responseStatus,
-                      headers: { 'content-type': 'application/json' },
                       body: JSON.stringify({ success: responseStatus < 400 }),
+                      headers: { 'content-type': 'application/json' },
+                      status: responseStatus,
                     }
                   : null,
               responseTimeMs: Math.floor(Math.random() * 1000),
+              source: '*',
+              status,
+              timestamp,
+              userId: 'user_123',
+              webhookId,
             } satisfies RequestType;
           },
         );
@@ -214,22 +214,22 @@ export function WebhookRequestsTable({
                 ))
               ) : requests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell className="h-24 text-center" colSpan={4}>
                     No requests found.
                   </TableCell>
                 </TableRow>
               ) : (
                 requests.map((request, index) => (
                   <TableRow
-                    key={request.id}
                     className={`cursor-pointer hover:bg-muted/50 ${selectedRequestIndex === index ? 'bg-muted' : ''}`}
+                    key={request.id}
                     onClick={() => handleRequestClick(index)}
                   >
                     <TableCell className="font-mono text-xs">
                       {format(request.createdAt, 'HH:mm:ss.SS')}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-mono">
+                      <Badge className="font-mono" variant="outline">
                         {request.request.method}
                       </Badge>
                     </TableCell>
@@ -256,15 +256,15 @@ export function WebhookRequestsTable({
                           <AlertTriangle className="h-4 w-4 text-destructive" />
                         )}
                         <Badge
-                          variant={
-                            request.status === 'failed'
-                              ? 'destructive'
-                              : 'outline'
-                          }
                           className={
                             request.status === 'completed'
                               ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
                               : ''
+                          }
+                          variant={
+                            request.status === 'failed'
+                              ? 'destructive'
+                              : 'outline'
                           }
                         >
                           {request.response?.status ?? 'Pending'}
@@ -279,8 +279,8 @@ export function WebhookRequestsTable({
 
           {showDetails && selectedRequest && (
             <RequestDetails
-              request={selectedRequest}
               onClose={handleCloseDetails}
+              request={selectedRequest}
             />
           )}
         </div>
@@ -288,16 +288,16 @@ export function WebhookRequestsTable({
         {showMetadata && selectedRequest && (
           <div className="hidden border-l border-zinc-800 md:block md:w-[40%]">
             <RequestMetadata
-              request={selectedRequest}
-              onClose={handleCloseMetadata}
-              onNavigate={handleNavigate}
-              hasPrev={
-                selectedRequestIndex !== null && selectedRequestIndex > 0
-              }
               hasNext={
                 selectedRequestIndex !== null &&
                 selectedRequestIndex < requests.length - 1
               }
+              hasPrev={
+                selectedRequestIndex !== null && selectedRequestIndex > 0
+              }
+              onClose={handleCloseMetadata}
+              onNavigate={handleNavigate}
+              request={selectedRequest}
             />
           </div>
         )}

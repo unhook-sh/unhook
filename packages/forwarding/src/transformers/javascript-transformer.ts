@@ -17,8 +17,8 @@ export async function transformWithJavaScript(
 ): Promise<TransformResult> {
   if (!code || code.trim().length === 0) {
     return {
-      success: true,
       data: context.request.body,
+      success: true,
     };
   }
 
@@ -37,16 +37,16 @@ export async function transformWithJavaScript(
     const payload = {
       event: {
         id: context.event.id,
-        webhookId: context.event.webhookId,
         source: context.event.source,
         timestamp: context.event.timestamp?.toISOString(),
+        webhookId: context.event.webhookId,
       },
       request: {
-        method: context.request.method,
-        headers: context.request.headers,
         body: context.request.body ? JSON.parse(context.request.body) : null,
-        sourceUrl: context.request.sourceUrl,
         contentType: context.request.contentType,
+        headers: context.request.headers,
+        method: context.request.method,
+        sourceUrl: context.request.sourceUrl,
       },
     };
 
@@ -101,15 +101,15 @@ export async function transformWithJavaScript(
     const transformedData = JSON.parse(result);
 
     return {
-      success: true,
       data: transformedData,
+      success: true,
     };
   } catch (error) {
     log('Transformation error:', error);
     return {
-      success: false,
       error:
         error instanceof Error ? error.message : 'Unknown transformation error',
+      success: false,
     };
   } finally {
     // Clean up the isolate
@@ -126,39 +126,39 @@ export async function validateTransformation(
 ): Promise<{ valid: boolean; error?: string; output?: unknown }> {
   const mockContext: ForwardingContext = {
     event: {
+      apiKey: null,
+      createdAt: new Date(),
+      failedReason: null,
       id: 'evt_sample',
-      webhookId: 'wh_sample',
-      source: '*',
+      maxRetries: 3,
+      orgId: 'org_sample',
       originRequest: {
+        body: JSON.stringify(sampleInput),
+        clientIp: '127.0.0.1',
+        contentType: 'application/json',
+        headers: { 'content-type': 'application/json' },
         id: 'req_sample',
         method: 'POST',
-        sourceUrl: 'https://example.com/webhook',
-        headers: { 'content-type': 'application/json' },
         size: 100,
-        body: JSON.stringify(sampleInput),
-        contentType: 'application/json',
-        clientIp: '127.0.0.1',
+        sourceUrl: 'https://example.com/webhook',
       },
       retryCount: 0,
-      maxRetries: 3,
+      source: '*',
       status: 'pending',
       timestamp: new Date(),
-      createdAt: new Date(),
       updatedAt: null,
       userId: 'user_sample',
-      orgId: 'org_sample',
-      apiKey: null,
-      failedReason: null,
+      webhookId: 'wh_sample',
     },
     request: {
+      body: JSON.stringify(sampleInput),
+      clientIp: '127.0.0.1',
+      contentType: 'application/json',
+      headers: { 'content-type': 'application/json' },
       id: 'req_sample',
       method: 'POST',
-      sourceUrl: 'https://example.com/webhook',
-      headers: { 'content-type': 'application/json' },
       size: 100,
-      body: JSON.stringify(sampleInput),
-      contentType: 'application/json',
-      clientIp: '127.0.0.1',
+      sourceUrl: 'https://example.com/webhook',
     },
     rule: {} as ForwardingRuleType, // We don't need the full rule for validation
   };
@@ -167,12 +167,12 @@ export async function validateTransformation(
 
   if (result.success) {
     return {
-      valid: true,
       output: result.data,
+      valid: true,
     };
   }
   return {
-    valid: false,
     error: result.error,
+    valid: false,
   };
 }

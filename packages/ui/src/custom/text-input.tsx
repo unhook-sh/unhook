@@ -50,20 +50,20 @@ export const TextInput: React.FC<TextInputProps> = ({
     <div className="w-full">
       <Input
         {...props}
-        type="text"
-        value={value}
         onChange={handleInputChange}
         onFocus={(event) => event.target.select()}
+        type="text"
+        value={value}
       />
       {quickFillValues && quickFillValues.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
           {quickFillValues.map((value) => (
             <Button
               key={`quick-fill-${value.toString()}`}
-              size="sm"
-              variant={variant ?? 'outline'}
               onClick={() => handleQuickFill(value)}
+              size="sm"
               type="button"
+              variant={variant ?? 'outline'}
             >
               {value}
             </Button>

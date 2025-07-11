@@ -116,8 +116,8 @@ export function MembersSection() {
       setIsLoading(true);
       const result = await inviteMemberAction({
         email,
-        role,
         orgId: params.orgId,
+        role,
       });
 
       if (!result) {
@@ -147,9 +147,9 @@ export function MembersSection() {
     try {
       setIsLoading(true);
       const result = await updateMemberRoleAction({
-        userId,
-        role,
         orgId: params.orgId,
+        role,
+        userId,
       });
 
       if (!result) {
@@ -182,8 +182,8 @@ export function MembersSection() {
     try {
       setIsLoading(true);
       const result = await removeMemberAction({
-        userId: selectedMemberId,
         orgId: params.orgId,
+        userId: selectedMemberId,
       });
 
       if (!result) {
@@ -221,9 +221,14 @@ export function MembersSection() {
 
   const columns: ColumnDef<Member>[] = [
     {
-      accessorKey: 'name',
       accessorFn: (row) =>
         `${row.firstName || ''} ${row.lastName || ''}`.trim(),
+      accessorKey: 'name',
+      cell: ({ row }) => (
+        <div className="font-medium">
+          {row.original.firstName} {row.original.lastName}
+        </div>
+      ),
       enableColumnFilter: true,
       filterFn: (row, columnId, filterValue) => {
         const rowValue = row.getValue(columnId);
@@ -234,27 +239,22 @@ export function MembersSection() {
       },
       header: ({ column }) => (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="p-0 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant="ghost"
         >
           Name
           <ArrowUpDown className="ml-2 size-4" />
         </Button>
-      ),
-      cell: ({ row }) => (
-        <div className="font-medium">
-          {row.original.firstName} {row.original.lastName}
-        </div>
       ),
     },
     {
       accessorKey: 'email',
       header: ({ column }) => (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="p-0 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant="ghost"
         >
           Email
           <ArrowUpDown className="ml-2 size-4" />
@@ -265,9 +265,9 @@ export function MembersSection() {
       accessorKey: 'role',
       header: ({ column }) => (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="p-0 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant="ghost"
         >
           Role
           <ArrowUpDown className="ml-2 size-4" />
@@ -276,22 +276,20 @@ export function MembersSection() {
     },
     {
       accessorKey: 'joinedAt',
+      cell: ({ row }) =>
+        format(fromUnixTime(row.original.joinedAt), 'MMM d, yyyy'),
       header: ({ column }) => (
         <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="p-0 hover:bg-transparent"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant="ghost"
         >
           Joined
           <ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
-      cell: ({ row }) =>
-        format(fromUnixTime(row.original.joinedAt), 'MMM d, yyyy'),
     },
     {
-      id: 'actions',
-      enableHiding: false,
       cell: ({ row }) => {
         const member = row.original;
         const isCurrentUser = member.userId === user?.userId;
@@ -299,7 +297,7 @@ export function MembersSection() {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8">
+              <Button className="size-8" size="icon" variant="ghost">
                 <MoreHorizontal className="size-4" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -307,24 +305,24 @@ export function MembersSection() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => handleUpdateRole(member.userId, 'Admin')}
                 disabled={isCurrentUser || member.role === 'Admin'}
+                onClick={() => handleUpdateRole(member.userId, 'Admin')}
               >
                 Make Admin
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleUpdateRole(member.userId, 'Member')}
                 disabled={isCurrentUser || member.role === 'Member'}
+                onClick={() => handleUpdateRole(member.userId, 'Member')}
               >
                 Make Member
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
+                disabled={isCurrentUser}
                 onClick={() => {
                   setSelectedMemberId(member.userId);
                   setIsAlertOpen(true);
                 }}
-                disabled={isCurrentUser}
               >
                 Remove member
               </DropdownMenuItem>
@@ -332,27 +330,29 @@ export function MembersSection() {
           </DropdownMenu>
         );
       },
+      enableHiding: false,
+      id: 'actions',
     },
   ];
 
   const table = useReactTable({
-    data: members,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    data: members,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
     state: {
-      sorting,
       columnFilters,
       columnVisibility,
       pagination: {
         pageIndex: currentPage,
         pageSize,
       },
+      sorting,
     },
   });
 
@@ -363,7 +363,7 @@ export function MembersSection() {
         manage the organization, while Members have limited permissions.
       </p>
 
-      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+      <AlertDialog onOpenChange={setIsAlertOpen} open={isAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Team Member</AlertDialogTitle>
@@ -377,8 +377,8 @@ export function MembersSection() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleRemoveMember}
               className="bg-destructive hover:bg-destructive/90 text-primary"
+              onClick={handleRemoveMember}
             >
               Remove Member
             </AlertDialogAction>
@@ -388,17 +388,17 @@ export function MembersSection() {
 
       <div className="flex justify-between items-center gap-2 py-4">
         <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          className="max-w-sm"
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          placeholder="Filter by name..."
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
         />
         <Button
-          variant="outline"
           className="flex items-center gap-2"
           onClick={() => setIsInviteDialogOpen(true)}
+          variant="outline"
         >
           <Plus className="size-4" />
           Invite Member
@@ -424,17 +424,17 @@ export function MembersSection() {
             ))}
           </TableHeader>
           <TableBody>
-            <AnimatePresence mode="popLayout" initial={false}>
+            <AnimatePresence initial={false} mode="popLayout">
               {table.getRowModel().rows?.length ? (
                 [
                   ...table.getRowModel().rows.map((row) => (
                     <motion.tr
-                      key={row.id}
-                      initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
                       className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                      exit={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -10 }}
+                      key={row.id}
+                      transition={{ duration: 0.2 }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -448,14 +448,14 @@ export function MembersSection() {
                   )),
                   isLoading && (
                     <motion.tr
-                      key="loading"
-                      initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
+                      initial={{ opacity: 0 }}
+                      key="loading"
                     >
                       <TableCell
-                        colSpan={columns.length}
                         className="h-12 text-center border-t"
+                        colSpan={columns.length}
                       >
                         <div className="flex items-center justify-center">
                           <Icons.Spinner className="size-4 animate-spin" />
@@ -466,13 +466,13 @@ export function MembersSection() {
                 ].filter(Boolean)
               ) : (
                 <motion.tr
-                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
                 >
                   <TableCell
-                    colSpan={columns.length}
                     className="h-24 text-center"
+                    colSpan={columns.length}
                   >
                     {isLoading ? (
                       <div className="flex items-center justify-center">
@@ -493,8 +493,8 @@ export function MembersSection() {
         <div className="flex items-center space-x-2">
           <p className="text-sm text-muted-foreground">Rows per page</p>
           <Select
-            value={pageSize.toString()}
             onValueChange={(value) => handlePageSizeChange(Number(value))}
+            value={pageSize.toString()}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pageSize} />
@@ -510,18 +510,18 @@ export function MembersSection() {
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 0}
+            onClick={() => handlePageChange(currentPage - 1)}
+            size="sm"
+            variant="outline"
           >
             Previous
           </Button>
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= Math.ceil(members.length / pageSize) - 1}
+            onClick={() => handlePageChange(currentPage + 1)}
+            size="sm"
+            variant="outline"
           >
             Next
           </Button>
@@ -529,10 +529,10 @@ export function MembersSection() {
       </div>
 
       <InviteMemberDialog
-        open={isInviteDialogOpen}
-        onOpenChange={setIsInviteDialogOpen}
-        onInvite={handleInviteMember}
         isLoading={isLoading}
+        onInvite={handleInviteMember}
+        onOpenChange={setIsInviteDialogOpen}
+        open={isInviteDialogOpen}
       />
     </div>
   );

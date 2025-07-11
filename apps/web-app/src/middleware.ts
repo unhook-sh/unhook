@@ -1,16 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-const isPublicRoute = createRouteMatcher([
-  '/api/webhooks/clerk',
-  '/api/webhooks/stripe',
+// Define routes that require authentication
+const isPrivateRoute = createRouteMatcher([
+  // Dashboard and app routes
+  '/dashboard(.*)',
+  '/settings(.*)',
   '/api/trpc(.*)',
-  '/blog(.*)',
-  // Match webhook paths that start with /wh_ and end there
-  '/wh_([^/]+)',
-  '/',
-  '/privacy-policy',
-  '/terms-of-service',
+  // Add other private routes here as needed
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
@@ -25,7 +22,8 @@ export default clerkMiddleware(async (auth, request) => {
     }
   }
 
-  if (!isPublicRoute(request)) {
+  // Protect private routes - everything else is public by default
+  if (isPrivateRoute(request)) {
     await auth.protect();
   }
 });

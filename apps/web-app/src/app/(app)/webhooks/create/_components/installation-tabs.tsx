@@ -28,33 +28,33 @@ export function InstallationTabs({
   return (
     <div className="space-y-2">
       <Label>Installation</Label>
-      <Tabs defaultValue="cli" className="w-full">
+      <Tabs className="w-full" defaultValue="cli">
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
-          <TabsTrigger value="cli" className="px-2 text-xs sm:text-sm">
+          <TabsTrigger className="px-2 text-xs sm:text-sm" value="cli">
             <Icons.ChevronsLeftRightEllipsis className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             CLI
           </TabsTrigger>
-          <TabsTrigger value="vscode" className="px-2 text-xs sm:text-sm">
+          <TabsTrigger className="px-2 text-xs sm:text-sm" value="vscode">
             <Icons.FunctionSquare className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             VS Code
           </TabsTrigger>
-          <TabsTrigger value="cursor" className="px-2 text-xs sm:text-sm">
+          <TabsTrigger className="px-2 text-xs sm:text-sm" value="cursor">
             <Icons.Sparkles className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             Cursor
           </TabsTrigger>
-          <TabsTrigger value="windsurf" className="px-2 text-xs sm:text-sm">
+          <TabsTrigger className="px-2 text-xs sm:text-sm" value="windsurf">
             <Icons.FlaskConical className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             Windsurf
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="cli" className="space-y-2 mt-4">
+        <TabsContent className="space-y-2 mt-4" value="cli">
           <div className="flex gap-2">
             <Textarea
-              value={cliCommand}
-              readOnly
               className="font-mono text-sm resize-none"
+              readOnly
               rows={1}
+              value={cliCommand}
             />
             <CopyButton text={cliCommand} variant="outline" />
           </div>
@@ -66,7 +66,7 @@ export function InstallationTabs({
           </Alert>
         </TabsContent>
 
-        <TabsContent value="vscode" className="space-y-4 mt-4">
+        <TabsContent className="space-y-4 mt-4" value="vscode">
           <Alert>
             <AlertDescription>
               Install the Unhook VS Code extension to receive webhooks directly
@@ -141,10 +141,10 @@ export function InstallationTabs({
             </p>
             <div className="flex gap-2">
               <Textarea
-                value="code --install-extension unhook.unhook-vscode"
-                readOnly
                 className="font-mono text-sm resize-none"
+                readOnly
                 rows={1}
+                value="code --install-extension unhook.unhook-vscode"
               />
               <CopyButton
                 text="code --install-extension unhook.unhook-vscode"
@@ -159,17 +159,17 @@ export function InstallationTabs({
             </p>
             <div className="flex flex-col gap-2">
               <a
-                href="vscode:extension/unhook.unhook-vscode"
                 className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                href="vscode:extension/unhook.unhook-vscode"
               >
                 <Icons.Download className="h-4 w-4" />
                 Install from VS Code
               </a>
               <a
-                href="https://open-vsx.org/extension/unhook/unhook-vscode"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                href="https://open-vsx.org/extension/unhook/unhook-vscode"
+                rel="noopener noreferrer"
+                target="_blank"
               >
                 <Icons.ExternalLink className="h-4 w-4" />
                 View on Open VSX Registry
@@ -178,7 +178,7 @@ export function InstallationTabs({
           </div>
         </TabsContent>
 
-        <TabsContent value="cursor" className="space-y-4 mt-4">
+        <TabsContent className="space-y-4 mt-4" value="cursor">
           <Alert>
             <AlertDescription>
               Install the Unhook extension in Cursor to receive webhooks
@@ -267,10 +267,10 @@ export function InstallationTabs({
               Direct link
             </p>
             <a
-              href="https://open-vsx.org/extension/unhook/unhook-vscode"
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+              href="https://open-vsx.org/extension/unhook/unhook-vscode"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               <Icons.ExternalLink className="h-4 w-4" />
               View on Open VSX Registry
@@ -278,7 +278,7 @@ export function InstallationTabs({
           </div>
         </TabsContent>
 
-        <TabsContent value="windsurf" className="space-y-4 mt-4">
+        <TabsContent className="space-y-4 mt-4" value="windsurf">
           <Alert>
             <AlertDescription>
               Install the Unhook extension in Windsurf to receive webhooks in
@@ -367,10 +367,10 @@ export function InstallationTabs({
               Direct link
             </p>
             <a
-              href="https://open-vsx.org/extension/unhook/unhook-vscode"
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
+              href="https://open-vsx.org/extension/unhook/unhook-vscode"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               <Icons.ExternalLink className="h-4 w-4" />
               View on Open VSX Registry

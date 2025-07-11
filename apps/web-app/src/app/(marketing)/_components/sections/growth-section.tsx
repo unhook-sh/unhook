@@ -8,8 +8,8 @@ export function GrowthSection() {
 
   return (
     <section
-      id="growth"
       className="flex flex-col items-center justify-center w-full relative px-2 md:px-10"
+      id="growth"
     >
       <div className="border-x mx-2 md:mx-10 relative">
         {/* Decorative borders */}
@@ -30,8 +30,8 @@ export function GrowthSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-x md:divide-y-0">
           {items.map((item) => (
             <div
-              key={item.id}
               className="flex flex-col items-start justify-end gap-2 p-6 min-h-[500px]"
+              key={item.id}
             >
               {item.content}
               <h3 className="text-lg tracking-tighter font-semibold">

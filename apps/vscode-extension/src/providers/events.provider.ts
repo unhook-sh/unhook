@@ -254,7 +254,7 @@ export class EventsProvider
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     const settings = SettingsService.getInstance().getSettings();
     const configFilePath = settings.configFilePath;
-    log('Getting config', { workspaceFolder, configFilePath });
+    log('Getting config', { configFilePath, workspaceFolder });
     if (this.config) return this.config;
     let configPath: string | null = null;
     if (configFilePath && configFilePath.trim() !== '') {
@@ -371,34 +371,34 @@ export class EventsProvider
 
         // Create requests for all destinations
         await createRequestsForEventToAllDestinations({
-          event,
+          api: authStore.api,
           delivery: config.delivery,
           destination: config.destination,
-          api: authStore.api,
+          event,
           isEventRetry: false,
-          pingEnabledFn: (destination) => !!destination.ping,
           onRequestCreated: async (request) => {
             log(`Created request ${request.id} for event ${event.id}`);
 
             // Handle the pending request immediately
             await handlePendingRequest({
-              request,
+              api: authStore.api,
               delivery: config.delivery,
               destination: config.destination,
-              api: authStore.api,
+              request,
               requestFn: async (url, options) => {
                 const response = await fetch(url, options);
                 const responseText = await response.text();
                 return {
                   body: { text: () => Promise.resolve(responseText) },
-                  statusCode: response.status,
                   headers: Object.fromEntries(response.headers.entries()),
+                  statusCode: response.status,
                 };
               },
             });
 
             log(`Delivered request ${request.id} for event ${event.id}`);
           },
+          pingEnabledFn: (destination) => !!destination.ping,
         });
 
         // Update event status
@@ -417,9 +417,9 @@ export class EventsProvider
         if (event.retryCount >= event.maxRetries && this.authStore) {
           await this.authStore.api.events.updateEventStatus.mutate({
             eventId: event.id,
-            status: 'failed',
             failedReason:
               error instanceof Error ? error.message : 'Delivery failed',
+            status: 'failed',
           });
         }
       }

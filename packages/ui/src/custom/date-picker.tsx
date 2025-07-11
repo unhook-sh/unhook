@@ -19,11 +19,11 @@ export const DatePicker = function DatePickerCmp({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={'outline'}
           className={cn(
             'w-full justify-start text-left font-normal',
             !date && 'text-muted-foreground',
           )}
+          variant={'outline'}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? format(date, 'PPP') : <span>Pick a date</span>}
@@ -32,8 +32,8 @@ export const DatePicker = function DatePickerCmp({
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={date}
           onSelect={setDate}
+          selected={date}
           // initialFocus
         />
       </PopoverContent>

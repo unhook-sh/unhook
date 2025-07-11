@@ -13,9 +13,9 @@ import { ConsoleDestination } from '@unhook/logger/destinations/console';
 // Create logger with debug level enabled
 export const logger = new UnhookLogger({
   defaultNamespace: 'test',
+  destinations: [new ConsoleDestination()],
   enabledNamespaces: new Set(['*', 'test', 'test:*', 'clerk:*', 'unhook:*']),
   useColors: true,
-  destinations: [new ConsoleDestination()],
 });
 
 export const testLogger = logger.debug('test');
@@ -25,60 +25,60 @@ export const wait = (ms: number) =>
 
 // Mock user and org data
 export const mockUser = {
-  id: '', // will be set after user creation
+  avatarUrl: null, // will be set after user creation
   clerkId: '', // Will be set after user creation
+  createdAt: new Date(),
   email: 'your_email+clerk_test1@example.com',
   firstName: 'Test',
-  lastName: 'User',
-  avatarUrl: null,
+  id: '',
   lastLoggedInAt: new Date(),
+  lastName: 'User',
   online: true,
-  createdAt: new Date(),
   updatedAt: new Date(),
 } satisfies UserType;
 
 export const orgId = createId({ prefix: 'org' });
 export const mockOrg = {
-  id: orgId,
   clerkOrgId: orgId,
-  name: 'Test Organization',
-  createdByUserId: mockUser.id,
   createdAt: new Date(),
-  updatedAt: new Date(),
+  createdByUserId: mockUser.id,
+  id: orgId,
+  name: 'Test Organization',
   stripeCustomerId: 'cus_1234567890',
   stripeSubscriptionId: 'sub_1234567890',
   stripeSubscriptionStatus: 'active',
+  updatedAt: new Date(),
 } satisfies OrgType;
 
 // Mock webhook data
 export const mockWebhook = {
-  id: createId({ prefix: 'wh' }),
-  name: 'Test Webhook',
-  requestCount: 0,
+  apiKey: createId({ prefix: 'whsk' }),
   config: {
-    storage: {
-      storeHeaders: true,
-      storeRequestBody: true,
-      storeResponseBody: true,
-      maxRequestBodySize: 1024 * 1024, // 1MB
-      maxResponseBodySize: 1024 * 1024, // 1MB
-    },
     headers: {},
     requests: {},
+    storage: {
+      maxRequestBodySize: 1024 * 1024,
+      maxResponseBodySize: 1024 * 1024,
+      storeHeaders: true,
+      storeRequestBody: true, // 1MB
+      storeResponseBody: true, // 1MB
+    },
   },
-  status: 'active' as const,
-  isPrivate: false,
-  apiKey: createId({ prefix: 'whsk' }),
   createdAt: new Date(),
-  updatedAt: new Date(),
+  id: createId({ prefix: 'wh' }),
+  isPrivate: false,
+  name: 'Test Webhook',
   orgId: orgId,
+  requestCount: 0,
+  status: 'active' as const,
+  updatedAt: new Date(),
 } satisfies Omit<WebhookType, 'userId'>;
 
 export async function createTestWebhook(overrides: Partial<WebhookType> = {}) {
   const webhook = {
     ...mockWebhook,
-    id: createId({ prefix: 'wh' }),
     apiKey: createId({ prefix: 'whsk' }),
+    id: createId({ prefix: 'wh' }),
     userId: mockUser.id,
     ...overrides,
   };
@@ -136,13 +136,13 @@ export async function setupTestEnvironment(): Promise<{
 
         createdClerkUser = await clerkClient.users.createUser({
           emailAddress: [mockUser.email],
+          firstName: mockUser.firstName,
+          lastName: mockUser.lastName,
           passwordDigest,
           passwordHasher: 'sha256',
           skipLegalChecks: true,
           skipPasswordChecks: true,
           skipPasswordRequirement: true,
-          firstName: mockUser.firstName,
-          lastName: mockUser.lastName,
         });
         testLogger(
           '[test:clerk] Successfully created Clerk user:',
@@ -198,8 +198,8 @@ export async function setupTestEnvironment(): Promise<{
       supabase.realtime.connect();
       await wait(3000);
       testLogger('[test:clerk] Supabase client config:', {
-        realtimeConnected: supabase.realtime.isConnected(),
         connectionState: supabase.realtime.connectionState(),
+        realtimeConnected: supabase.realtime.isConnected(),
       });
     } catch (error) {
       testLogger('[test:clerk:error] Failed to create session:', error);
@@ -210,8 +210,8 @@ export async function setupTestEnvironment(): Promise<{
     testLogger('[test:setup] Setting up test data...');
     try {
       await db.insert(Users).values(mockUser).onConflictDoUpdate({
-        target: Users.id,
         set: mockUser,
+        target: Users.id,
       });
 
       await db
@@ -221,17 +221,17 @@ export async function setupTestEnvironment(): Promise<{
           createdByUserId: mockUser.id,
         })
         .onConflictDoUpdate({
-          target: Orgs.id,
           set: {
             ...mockOrg,
             createdByUserId: mockUser.id,
           },
+          target: Orgs.id,
         });
 
       await db.insert(Webhooks).values({
         ...mockWebhook,
-        userId: mockUser.id,
         orgId: mockOrg.id,
+        userId: mockUser.id,
       });
 
       testLogger('[test:setup] Test data setup complete');
@@ -244,7 +244,7 @@ export async function setupTestEnvironment(): Promise<{
     await wait(3000);
     testLogger('[test:setup] Setup complete');
 
-    return { supabase, createdClerkUser };
+    return { createdClerkUser, supabase };
   } catch (error) {
     testLogger('[test:error] Error in setupTestEnvironment:', error);
     if (error instanceof Error) {

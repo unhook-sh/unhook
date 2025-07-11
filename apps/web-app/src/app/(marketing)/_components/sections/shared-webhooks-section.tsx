@@ -11,7 +11,7 @@ export function SharedWebhooksSection() {
     <section className="w-full py-20">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <Badge variant="outline" className="px-4 py-2 mb-4">
+          <Badge className="px-4 py-2 mb-4" variant="outline">
             Team Collaboration
           </Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -73,7 +73,7 @@ export function SharedWebhooksSection() {
               </div>
             </div>
 
-            <Button size="lg" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto" size="lg">
               Try Team Webhooks Free
             </Button>
           </div>
@@ -81,13 +81,13 @@ export function SharedWebhooksSection() {
           {/* Right side - Code Example */}
           <div className="relative">
             <motion.div
+              className="relative bg-card border rounded-lg overflow-hidden"
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="relative bg-card border rounded-lg overflow-hidden"
+              whileInView={{ opacity: 1, y: 0 }}
             >
-              <BorderBeam size={250} duration={12} delay={9} />
+              <BorderBeam delay={9} duration={12} size={250} />
 
               {/* Terminal Header */}
               <div className="bg-muted/50 px-4 py-3 border-b flex items-center gap-2">
@@ -150,7 +150,7 @@ export function SharedWebhooksSection() {
 
               {/* Copy Button */}
               <div className="absolute top-4 right-4">
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                <Button className="h-8 w-8 p-0" size="sm" variant="ghost">
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>

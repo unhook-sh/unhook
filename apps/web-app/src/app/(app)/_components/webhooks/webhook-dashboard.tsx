@@ -45,11 +45,11 @@ export function WebhookDashboard() {
           <div className="relative w-[300px]">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              type="search"
-              placeholder="Search webhooks..."
               className="pl-8"
-              value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search webhooks..."
+              type="search"
+              value={searchQuery}
             />
           </div>
           <Button onClick={() => setIsCreateDialogOpen(true)}>
@@ -59,19 +59,19 @@ export function WebhookDashboard() {
         </div>
       </header>
 
-      <Tabs defaultValue="webhooks" className="flex-1 overflow-hidden">
+      <Tabs className="flex-1 overflow-hidden" defaultValue="webhooks">
         <div className="border-b bg-background">
           <div className="flex items-center px-4">
             <TabsList className="h-12">
               <TabsTrigger
-                value="webhooks"
                 className="h-12 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                value="webhooks"
               >
                 Webhooks
               </TabsTrigger>
               <TabsTrigger
-                value="analytics"
                 className="h-12 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                value="analytics"
               >
                 Analytics
               </TabsTrigger>
@@ -80,27 +80,27 @@ export function WebhookDashboard() {
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          <TabsContent value="webhooks" className="mt-0 h-full">
+          <TabsContent className="mt-0 h-full" value="webhooks">
             <div className="rounded-lg border bg-card h-full">
               <WebhookList
-                webhooks={filteredWebhooks}
                 isLoading={isLoading}
+                onDelete={deleteWebhook}
                 onStart={startWebhook}
                 onStop={stopWebhook}
-                onDelete={deleteWebhook}
+                webhooks={filteredWebhooks}
               />
             </div>
           </TabsContent>
-          <TabsContent value="analytics" className="mt-0 h-full">
+          <TabsContent className="mt-0 h-full" value="analytics">
             <WebhookAnalyticsDashboard />
           </TabsContent>
         </div>
       </Tabs>
 
       <CreateWebhookDialog
-        open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
         onSuccess={refresh}
+        open={isCreateDialogOpen}
       />
     </div>
   );

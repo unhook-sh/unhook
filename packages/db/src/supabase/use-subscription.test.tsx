@@ -28,12 +28,12 @@ function TestComponent({
   onError,
 }: TestComponentProps) {
   const { status } = useSubscription({
-    table,
-    onStatusChange,
-    onInsert,
-    onUpdate,
     onDelete,
     onError,
+    onInsert,
+    onStatusChange,
+    onUpdate,
+    table,
   });
 
   return <div data-testid="status">{status}</div>;
@@ -62,9 +62,9 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
     // Create test user
     await supabase.from('user').insert([
       {
-        id: userId,
         clerkId: userId,
         email: `test-${userId}@example.com`,
+        id: userId,
         online: true,
       },
     ]);
@@ -72,52 +72,52 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
     // Create test org
     await supabase.from('orgs').insert([
       {
-        id: orgId,
         clerkOrgId: orgId,
-        name: 'test-org',
         createdByUserId: userId,
+        id: orgId,
+        name: 'test-org',
       },
     ]);
 
     // Create test webhook
     await supabase.from('webhooks').insert([
       {
+        apiKey: 'test-api-key',
         id: webhookId,
         name: 'test-webhook',
-        apiKey: 'test-api-key',
+        orgId,
         status: 'active',
         userId,
-        orgId,
       },
     ]);
 
     // Create a test event
     testEvent = {
+      apiKey: 'test-api-key',
+      createdAt: new Date(),
+      failedReason: null,
       id: createId({ prefix: 'e' }),
-      timestamp: new Date(),
-      status: 'pending',
       maxRetries: 3,
-      retryCount: 0,
+      orgId,
       originRequest: {
-        sourceUrl: 'https://example.com',
-        method: 'POST',
-        id: '123',
+        body: 'test-body',
         clientIp: '123',
         contentType: 'application/json',
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'test-user-agent',
         },
+        id: '123',
+        method: 'POST',
         size: 100,
-        body: 'test-body',
+        sourceUrl: 'https://example.com',
       },
-      apiKey: 'test-api-key',
+      retryCount: 0,
       source: 'test-from',
-      createdAt: new Date(),
-      failedReason: null,
+      status: 'pending',
+      timestamp: new Date(),
       updatedAt: null,
       userId,
-      orgId,
       webhookId,
     };
 
@@ -135,9 +135,9 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
     // Create the test event
     const supabaseEvent: SupabaseEvent = {
       ...testEvent,
-      timestamp: testEvent.timestamp.toISOString(),
       createdAt: testEvent.createdAt.toISOString(),
       originRequest: testEvent.originRequest as unknown as Json,
+      timestamp: testEvent.timestamp.toISOString(),
       updatedAt: testEvent.updatedAt?.toISOString() ?? null,
     };
     const { error } = await supabase.from('events').insert([supabaseEvent]);
@@ -175,7 +175,7 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
 
     render(
       <SubscriptionProvider authToken={supabaseKey} url={supabaseUrl}>
-        <TestComponent table="events" onInsert={onInsert} />
+        <TestComponent onInsert={onInsert} table="events" />
       </SubscriptionProvider>,
     );
 
@@ -184,31 +184,31 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
 
     // Insert a new event
     const newEvent: EventType = {
+      apiKey: 'test-api-key',
+      createdAt: new Date(),
+      failedReason: null,
       id: createId({ prefix: 'e' }),
-      timestamp: new Date(),
-      status: 'pending',
       maxRetries: 3,
-      retryCount: 0,
+      orgId,
       originRequest: {
-        sourceUrl: 'https://example.com/test',
-        method: 'GET',
-        id: '123',
+        body: 'test-body',
         clientIp: '123',
         contentType: 'application/json',
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'test-user-agent',
         },
+        id: '123',
+        method: 'GET',
         size: 100,
-        body: 'test-body',
+        sourceUrl: 'https://example.com/test',
       },
-      apiKey: 'test-api-key',
+      retryCount: 0,
       source: 'test-from',
-      createdAt: new Date(),
-      failedReason: null,
+      status: 'pending',
+      timestamp: new Date(),
       updatedAt: null,
       userId,
-      orgId,
       webhookId,
     };
 
@@ -226,9 +226,9 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
     // Insert the new event
     const supabaseNewEvent: SupabaseEvent = {
       ...newEvent,
-      timestamp: newEvent.timestamp.toISOString(),
       createdAt: newEvent.createdAt.toISOString(),
       originRequest: newEvent.originRequest as unknown as Json,
+      timestamp: newEvent.timestamp.toISOString(),
       updatedAt: newEvent.updatedAt?.toISOString() ?? null,
     };
     const { error } = await supabase.from('events').insert([supabaseNewEvent]);
@@ -255,7 +255,7 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
 
     render(
       <SubscriptionProvider authToken={supabaseKey} url={supabaseUrl}>
-        <TestComponent table="events" onUpdate={onUpdate} />
+        <TestComponent onUpdate={onUpdate} table="events" />
       </SubscriptionProvider>,
     );
 
@@ -286,7 +286,7 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
 
     render(
       <SubscriptionProvider authToken={supabaseKey} url={supabaseUrl}>
-        <TestComponent table="events" onDelete={onDelete} />
+        <TestComponent onDelete={onDelete} table="events" />
       </SubscriptionProvider>,
     );
 

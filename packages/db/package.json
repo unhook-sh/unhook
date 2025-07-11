@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.22.0",
+    "@clerk/nextjs": "6.24.0",
     "@supabase/ssr": "0.6.1",
-    "@supabase/supabase-js": "2.50.0",
+    "@supabase/supabase-js": "2.50.4",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
@@ -11,14 +11,14 @@
     "date-fns": "4.1.0",
     "drizzle-orm": "0.44.2",
     "drizzle-seed": "0.3.1",
-    "drizzle-zod": "0.7.1",
+    "drizzle-zod": "0.8.2",
     "lodash-es": "4.17.21",
-    "next": "15.3.3",
-    "pg": "8.16.2",
+    "next": "15.3.5",
+    "pg": "8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "zod": "3.25.67",
-    "zustand": "5.0.5"
+    "zustand": "5.0.6"
   },
   "devDependencies": {
     "@t3-oss/env-core": "0.13.8",
@@ -29,57 +29,29 @@
     "@types/react-dom": "19.1.6",
     "@unhook/tsconfig": "workspace:*",
     "chokidar": "4.0.3",
-    "drizzle-kit": "0.31.1",
-    "supabase": "2.26.9",
+    "drizzle-kit": "0.31.4",
+    "supabase": "2.30.4",
     "tsx": "4.20.3",
     "typescript": "5.8.3",
-    "zx": "8.5.5"
+    "zx": "8.6.2"
   },
   "exports": {
-    ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    },
-    "./client": {
-      "default": "./src/client.ts",
-      "types": "./dist/client.d.ts"
-    },
-    "./schema": {
-      "default": "./src/schema.ts",
-      "types": "./dist/schema.d.ts"
-    },
-    "./supabase/cli": {
-      "default": "./src/supabase/cli.ts",
-      "types": "./dist/supabase/cli.d.ts"
-    },
-    "./supabase/client": {
-      "default": "./src/supabase/client-exports.ts",
-      "types": "./dist/supabase/client-exports.d.ts"
-    },
-    "./supabase/types": {
-      "default": "./src/supabase/types.generated.ts",
-      "types": "./dist/supabase/types.generated.d.ts"
-    },
-    "./supabase/create-channel": {
-      "default": "./src/supabase/create-channel.ts",
-      "types": "./dist/supabase/create-channel.d.ts"
-    },
-    "./supabase/rcs": {
-      "default": "./src/supabase/server.rcs.ts",
-      "types": "./dist/supabase/server.rcs.d.ts"
-    },
-    "./supabase/server": {
-      "default": "./src/supabase/server-exports.ts",
-      "types": "./dist/supabase/server-exports.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./schema": "./src/schema.ts",
+    "./supabase/cli": "./src/supabase/cli.ts",
+    "./supabase/client": "./src/supabase/client-exports.ts",
+    "./supabase/create-channel": "./src/supabase/create-channel.ts",
+    "./supabase/rcs": "./src/supabase/server.rcs.ts",
+    "./supabase/server": "./src/supabase/server-exports.ts",
+    "./supabase/types": "./src/supabase/types.generated.ts"
   },
   "license": "MIT",
   "name": "@unhook/db",
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "build.todo": "bun gen-supabase-types && tsc",
-    "clean": "rm -rf .turbo node_modules dist",
+    "build.skip": "bun run gen-supabase-types",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "create-supabase-policies": "tsx scripts/create-supabase-policies.ts",
     "dev": "tsx ./scripts/watch.ts",
     "enable-supabase-realtime": "tsx scripts/enable-supabase-realtime.ts",
@@ -90,7 +62,7 @@
     "seed": "tsx src/seed.ts",
     "studio": "drizzle-kit studio",
     "supabase:local": "supabase start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",
   "version": "0.1.0"

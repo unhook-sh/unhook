@@ -63,10 +63,10 @@ export const DatePickerInput: React.FC<DatePickerInputProps> = ({
           {quickFillDates.map((fillDate) => (
             <Button
               key={`quick-fill-${fillDate.toString()}`}
-              size="sm"
-              variant="outline"
               onClick={() => handleQuickFill(fillDate)}
+              size="sm"
               type="button"
+              variant="outline"
             >
               {typeof fillDate === 'string'
                 ? fillDate

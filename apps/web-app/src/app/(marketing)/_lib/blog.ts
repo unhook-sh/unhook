@@ -32,7 +32,7 @@ function parseFrontmatter(fileContent: string) {
     metadata[key?.trim() as keyof Post] = value;
   }
 
-  return { data: metadata as Post, content };
+  return { content, data: metadata as Post };
 }
 
 function getMDXFiles(dir: string) {
@@ -45,12 +45,12 @@ export async function markdownToHTML(markdown: string) {
     .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypePrettyCode, {
+      keepBackground: false,
       // https://rehype-pretty.pages.dev/#usage
       theme: {
-        light: 'min-light',
         dark: 'min-dark',
+        light: 'min-light',
       },
-      keepBackground: false,
     })
     .use(rehypeStringify)
     .process(markdown);
@@ -67,12 +67,12 @@ export async function getPost(slug: string) {
     metadata.title,
   )}`;
   return {
-    source: content,
     metadata: {
       ...metadata,
       image: metadata.image || defaultImage,
     },
     slug,
+    source: content,
   };
 }
 

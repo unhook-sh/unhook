@@ -140,63 +140,10 @@ export type SiIconProps = TwcComponentProps<'svg'> &
   VariantProps<typeof iconVariants> & { withColor?: boolean };
 
 export const Icons = {
-  Clerk: twx(SiClerk).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  Stripe: twx(SiStripe).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  Slack: twx(SiSlack).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  Github: twx(SiGithub).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  LogIn: twx(LogIn).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  Key: twx(Key).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  Rocket: twx(Rocket).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  LayoutGrid: twx(LayoutGrid).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  Clock: twx(Clock).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  ArrowUpDown: twx(ArrowUpDown).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
-  ChevronsLeftRightEllipsis: twx(ChevronsLeftRightEllipsis).transientProps([
-    'size',
-    'variant',
-  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
-  Trash: twx(Trash).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
   AlertCircle: twx(AlertCircle).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   AlertTriangle: twx(AlertTriangle).transientProps([
-    'size',
-    'variant',
-  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
-  ArrowUpFromLine: twx(ArrowUpFromLine).transientProps([
-    'size',
-    'variant',
-  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
-  ArrowDownToLine: twx(ArrowDownToLine).transientProps([
-    'size',
-    'variant',
-  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
-  FunctionSquare: twx(FunctionSquare).transientProps([
-    'size',
-    'variant',
-  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
-  FlaskConical: twx(FlaskConical).transientProps([
     'size',
     'variant',
   ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
@@ -215,6 +162,10 @@ export const Icons = {
   ArrowBigUp: twx(ArrowBigUp).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  ArrowDownToLine: twx(ArrowDownToLine).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
   ArrowLeft: twx(ArrowLeft).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -224,6 +175,13 @@ export const Icons = {
   ArrowUp: twx(ArrowUp).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  ArrowUpDown: twx(ArrowUpDown).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  ArrowUpFromLine: twx(ArrowUpFromLine).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
   BadgeCheck: twx(BadgeCheck).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -267,10 +225,11 @@ export const Icons = {
     'size',
     'variant',
   ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
-  ChevronUp: twx(ChevronUp).transientProps(['size', 'variant'])<IconProps>(
-    ({ size, variant }) => iconVariants({ size, variant }),
-  ),
   ChevronsLeft: twx(ChevronsLeft).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  ChevronsLeftRightEllipsis: twx(ChevronsLeftRightEllipsis).transientProps([
     'size',
     'variant',
   ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
@@ -278,6 +237,9 @@ export const Icons = {
     'size',
     'variant',
   ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  ChevronUp: twx(ChevronUp).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   Circle: twx(Circle).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -288,6 +250,12 @@ export const Icons = {
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   CircleStop: twx(CircleStop).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Clerk: twx(SiClerk).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Clock: twx(Clock).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Command: twx(Command).transientProps(['size', 'variant'])<IconProps>(
@@ -311,10 +279,10 @@ export const Icons = {
       <path d="M21.6 0H2.4A2.41 2.41 0 0 0 0 2.4v19.2A2.41 2.41 0 0 0 2.4 24h19.2a2.41 2.41 0 0 0 2.4-2.4V2.4A2.41 2.41 0 0 0 21.6 0zM7.045 14.465A2.11 2.11 0 0 0 9.84 13.42h1.66a3.69 3.69 0 1 1 0-1.75H9.84a2.11 2.11 0 1 0-2.795 2.795zm11.345.845a3.55 3.55 0 0 1-1.06.63 3.68 3.68 0 0 1-3.39-.38v.38h-1.51V5.37h1.5v4.11a3.74 3.74 0 0 1 1.8-.63H16a3.67 3.67 0 0 1 2.39 6.46zm-.223-2.766a2.104 2.104 0 1 1-4.207 0 2.104 2.104 0 0 1 4.207 0z" />
     </svg>
   ),
-  Discord: twx(SiDiscord).transientProps(['size', 'variant'])<IconProps>(
+  Delete: twx(Delete).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  Delete: twx(Delete).transientProps(['size', 'variant'])<IconProps>(
+  Discord: twx(SiDiscord).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   DollarSign: twx(DollarSign).transientProps(['size', 'variant'])<IconProps>(
@@ -336,10 +304,21 @@ export const Icons = {
   Flame: twx(Flame).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  FlaskConical: twx(FlaskConical).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  FunctionSquare: twx(FunctionSquare).transientProps([
+    'size',
+    'variant',
+  ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
   GalleryVerticalEnd: twx(GalleryVerticalEnd).transientProps([
     'size',
     'variant',
   ])<IconProps>(({ size, variant }) => iconVariants({ size, variant })),
+  Github: twx(SiGithub).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   Google: ({ size, ...props }: IconProps) => (
     <svg
       className={iconVariants({ size })}
@@ -382,6 +361,12 @@ export const Icons = {
   Info: twx(Info).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  Key: twx(Key).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  LayoutGrid: twx(LayoutGrid).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   ListFilter: twx(ListFilter).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -389,6 +374,9 @@ export const Icons = {
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   ListPlus: twx(ListPlus).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  LogIn: twx(LogIn).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Mail: twx(Mail).transientProps(['size', 'variant'])<IconProps>(
@@ -442,6 +430,9 @@ export const Icons = {
   Plus: twx(Plus).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
+  Rocket: twx(Rocket).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
   Search: twx(Search).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
@@ -449,6 +440,9 @@ export const Icons = {
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Share: twx(Share).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Slack: twx(SiSlack).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   SlidersHorizontal: twx(SlidersHorizontal).transientProps([
@@ -468,17 +462,20 @@ export const Icons = {
   Star: twx(Star).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  SunMedium,
-  Text: twx(Text).transientProps(['size', 'variant'])<IconProps>(
+  Stripe: twx(SiStripe).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
-  User: twx(User).transientProps(['size', 'variant'])<IconProps>(
+  SunMedium,
+  Text: twx(Text).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   ThumbsDown: twx(ThumbsDown).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   ThumbsUp: twx(ThumbsUp).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  Trash: twx(Trash).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Triangle: twx(Triangle).transientProps(['size', 'variant'])<IconProps>(
@@ -488,6 +485,9 @@ export const Icons = {
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   Upload: twx(Upload).transientProps(['size', 'variant'])<IconProps>(
+    ({ size, variant }) => iconVariants({ size, variant }),
+  ),
+  User: twx(User).transientProps(['size', 'variant'])<IconProps>(
     ({ size, variant }) => iconVariants({ size, variant }),
   ),
   UsersRound: twx(UsersRound).transientProps(['size', 'variant'])<IconProps>(

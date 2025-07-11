@@ -38,73 +38,16 @@ type TableStore<T extends ScalarDict> = TableState<T> & TableActions<T>;
 // Default state
 const defaultTableState = {
   currentPage: 0,
-  selectedIndex: -1,
-  pageSize: 10,
   data: [],
   gKeyPressed: false,
   numberBuffer: '',
+  pageSize: 10,
+  selectedIndex: -1,
   totalCount: undefined,
 };
 
 const store = createStore<TableStore<ScalarDict>>()((set, get) => ({
   ...defaultTableState,
-
-  setCurrentPage: (page: number) =>
-    set({
-      currentPage: Math.max(
-        0,
-        Math.min(
-          page,
-          Math.ceil((get().totalCount ?? get().data.length) / get().pageSize) -
-            1,
-        ),
-      ),
-    }),
-
-  setSelectedIndex: (index: number) =>
-    set({
-      selectedIndex: Math.max(
-        -1,
-        Math.min(index, (get().totalCount ?? get().data.length) - 1),
-      ),
-    }),
-
-  setPageSize: (size: number) => set({ pageSize: Math.max(1, size) }),
-
-  setData: (data: ScalarDict[]) => set({ data }),
-
-  setGKeyPressed: (pressed: boolean) => set({ gKeyPressed: pressed }),
-
-  setNumberBuffer: (buffer: string) => set({ numberBuffer: buffer }),
-
-  navigateToPage: (page: number, options?: { selectLast?: boolean }) => {
-    const { pageSize, data, totalCount } = get();
-    const total = totalCount ?? data.length;
-    const newPage = Math.max(
-      0,
-      Math.min(page, Math.ceil(total / pageSize) - 1),
-    );
-    const newIndex = options?.selectLast
-      ? Math.min((newPage + 1) * pageSize - 1, total - 1)
-      : newPage * pageSize;
-
-    set({
-      currentPage: newPage,
-      selectedIndex: newIndex,
-    });
-  },
-
-  navigateToIndex: (index: number) => {
-    const { pageSize, data, totalCount } = get();
-    const total = totalCount ?? data.length;
-    const boundedIndex = Math.max(0, Math.min(index, total - 1));
-    const newPage = Math.floor(boundedIndex / pageSize);
-
-    set({
-      selectedIndex: boundedIndex,
-      currentPage: newPage,
-    });
-  },
 
   clearGKeyState: () =>
     set({
@@ -143,6 +86,63 @@ const store = createStore<TableStore<ScalarDict>>()((set, get) => ({
       }));
     }
   },
+
+  navigateToIndex: (index: number) => {
+    const { pageSize, data, totalCount } = get();
+    const total = totalCount ?? data.length;
+    const boundedIndex = Math.max(0, Math.min(index, total - 1));
+    const newPage = Math.floor(boundedIndex / pageSize);
+
+    set({
+      currentPage: newPage,
+      selectedIndex: boundedIndex,
+    });
+  },
+
+  navigateToPage: (page: number, options?: { selectLast?: boolean }) => {
+    const { pageSize, data, totalCount } = get();
+    const total = totalCount ?? data.length;
+    const newPage = Math.max(
+      0,
+      Math.min(page, Math.ceil(total / pageSize) - 1),
+    );
+    const newIndex = options?.selectLast
+      ? Math.min((newPage + 1) * pageSize - 1, total - 1)
+      : newPage * pageSize;
+
+    set({
+      currentPage: newPage,
+      selectedIndex: newIndex,
+    });
+  },
+
+  setCurrentPage: (page: number) =>
+    set({
+      currentPage: Math.max(
+        0,
+        Math.min(
+          page,
+          Math.ceil((get().totalCount ?? get().data.length) / get().pageSize) -
+            1,
+        ),
+      ),
+    }),
+
+  setData: (data: ScalarDict[]) => set({ data }),
+
+  setGKeyPressed: (pressed: boolean) => set({ gKeyPressed: pressed }),
+
+  setNumberBuffer: (buffer: string) => set({ numberBuffer: buffer }),
+
+  setPageSize: (size: number) => set({ pageSize: Math.max(1, size) }),
+
+  setSelectedIndex: (index: number) =>
+    set({
+      selectedIndex: Math.max(
+        -1,
+        Math.min(index, (get().totalCount ?? get().data.length) - 1),
+      ),
+    }),
 }));
 
 export const useTableStore = createSelectors(store);

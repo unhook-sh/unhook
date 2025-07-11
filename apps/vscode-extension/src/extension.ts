@@ -2,21 +2,25 @@ import { debug, defaultLogger } from '@unhook/logger';
 import { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-output';
 import * as vscode from 'vscode';
 import { registerAuthCommands } from './commands/auth.commands';
+import { registerConfigCommands } from './commands/config.commands';
 import {
   isDeliveryEnabled,
   registerDeliveryCommands,
 } from './commands/delivery.commands';
 import { registerEventCommands } from './commands/events.commands';
+import { registerInitCommands } from './commands/init.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
 import { registerWebhookAccessCommands } from './commands/webhook-access.commands';
 import { ConfigManager } from './config.manager';
+import { setupFirstTimeUserHandler } from './handlers/first-time-user.handler';
 import { EventsProvider } from './providers/events.provider';
 import { EventQuickPick } from './quick-pick';
 import { registerUriHandler } from './register-auth-uri-handler';
 import { RequestDetailsWebviewProvider } from './request-details-webview/request-details.webview';
 import { AuthStore } from './services/auth.service';
+import { FirstTimeUserService } from './services/first-time-user.service';
 import { SettingsService } from './services/settings.service';
 import { StatusBarService } from './services/status-bar.service';
 import { WebhookAuthorizationService } from './services/webhook-authorization.service';
@@ -47,6 +51,9 @@ export async function activate(context: vscode.ExtensionContext) {
   const authStore = new AuthStore(context);
   await authStore.initialize();
 
+  // Initialize first-time user service
+  const firstTimeUserService = new FirstTimeUserService(context);
+
   // Register auth commands and provider
   const { authProvider, signInCommand, signOutCommand } = registerAuthCommands(
     context,
@@ -66,22 +73,44 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(statusBarService);
 
   // Add VS Code output destination to default logger
+  // In production, always disable auto-show output regardless of user settings
+  const isProduction = !configManager.isDevelopment();
+  const autoShowSetting = isProduction
+    ? false
+    : settingsService.getSettings().output.autoShow;
+
   const outputDestination = new VSCodeOutputDestination({
+    autoShow: autoShowSetting,
     name: 'Unhook',
     vscode,
-    autoShow: settingsService.getSettings().output.autoShow,
   });
   defaultLogger.addDestination(outputDestination);
 
   // Listen for settings changes
   settingsService.onSettingsChange((settings) => {
-    outputDestination.autoShow = settings.output.autoShow;
+
+    // In production, always keep auto-show disabled
+    outputDestination.autoShow = isProduction
+      ? false
+      : settings.output.autoShow;
+    updateStatusBar(); // Update status bar when delivery settings change
   });
 
   // Set auth store on status bar service
   statusBarService.setAuthStore(authStore);
+  setupFirstTimeUserHandler(authStore, firstTimeUserService);
 
-  // Add auth-related disposables to subscriptions
+  // Listen for delivery setting changes
+  const configChangeListener = vscode.workspace.onDidChangeConfiguration(
+    (e) => {
+      if (e.affectsConfiguration('unhook.delivery.enabled')) {
+        updateStatusBar();
+      }
+    },
+  );
+
+  updateStatusBar();
+
   context.subscriptions.push(
     authStore,
     signInCommand,
@@ -113,6 +142,8 @@ export async function activate(context: vscode.ExtensionContext) {
   registerSettingsCommands(context);
   registerDeliveryCommands(context);
   registerWebhookAccessCommands(context, authStore);
+  registerInitCommands(context);
+  registerConfigCommands(context, firstTimeUserService);
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(
@@ -123,10 +154,12 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(showQuickPickCommand);
 
+
+
   // Register the webhook events provider
   eventsTreeView = vscode.window.createTreeView('unhook.events', {
-    treeDataProvider: eventsProvider,
     showCollapseAll: true,
+    treeDataProvider: eventsProvider,
   });
 
   eventsTreeView.onDidChangeVisibility(() => {

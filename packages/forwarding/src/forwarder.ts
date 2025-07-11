@@ -66,14 +66,14 @@ export async function forwardWebhook(
       );
       if (!transformResult.success) {
         execution = {
-          ruleId: rule.id,
+          error: `Transformation failed: ${transformResult.error}`,
           eventId: event.id,
+          executionTimeMs: Date.now() - startTime,
           originalPayload: event.originRequest.body
             ? JSON.parse(event.originRequest.body)
             : null,
+          ruleId: rule.id,
           success: false,
-          error: `Transformation failed: ${transformResult.error}`,
-          executionTimeMs: Date.now() - startTime,
         };
         executions.push(execution);
         continue;
@@ -86,16 +86,16 @@ export async function forwardWebhook(
       );
 
       execution = {
-        ruleId: rule.id,
+        destinationResponse: destinationResult.response,
+        error: destinationResult.error,
         eventId: event.id,
+        executionTimeMs: Date.now() - startTime,
         originalPayload: event.originRequest.body
           ? JSON.parse(event.originRequest.body)
           : null,
-        transformedPayload: transformResult.data,
-        destinationResponse: destinationResult.response,
+        ruleId: rule.id,
         success: destinationResult.success,
-        error: destinationResult.error,
-        executionTimeMs: Date.now() - startTime,
+        transformedPayload: transformResult.data,
       };
 
       executions.push(execution);
@@ -112,21 +112,21 @@ export async function forwardWebhook(
     } catch (error) {
       log(`Error processing rule ${rule.id}:`, error);
       execution = {
-        ruleId: rule.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
         eventId: event.id,
+        executionTimeMs: Date.now() - startTime,
         originalPayload: event.originRequest.body
           ? JSON.parse(event.originRequest.body)
           : null,
+        ruleId: rule.id,
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        executionTimeMs: Date.now() - startTime,
       };
       executions.push(execution);
     }
   }
 
   return {
-    success: executions.some((e) => e.success === true),
     executions,
+    success: executions.some((e) => e.success === true),
   };
 }

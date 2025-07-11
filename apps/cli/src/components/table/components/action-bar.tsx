@@ -19,7 +19,7 @@ export function ActionBar<T extends ScalarDict>({
   const totalPages = Math.ceil(data.length / pageSize);
 
   return (
-    <Box marginTop={1} flexDirection="column">
+    <Box flexDirection="column" marginTop={1}>
       <Text dimColor>
         {actions.length > 0 &&
           actions

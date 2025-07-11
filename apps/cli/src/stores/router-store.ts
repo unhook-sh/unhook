@@ -88,6 +88,30 @@ function buildPath<T extends string>(
 // Create and export the store instance
 const store = createStore<RouterStore>()((set, get) => ({
   ...defaultRouterState,
+  canGoBack: () => {
+    return get().history.length > 0;
+  },
+  goBack: () => {
+    const { currentPath, history } = get();
+    if (history.length === 0) return;
+
+    capture({
+      event: 'back_button_pressed',
+      properties: {
+        historyLength: history.length,
+        path: currentPath,
+        previousPath: history.at(-1),
+      },
+    });
+
+    const previousPath = history.at(-1);
+    if (!previousPath) return;
+
+    set((state) => ({
+      currentPath: previousPath,
+      history: state.history.slice(0, -1),
+    }));
+  },
   navigate: (<T extends AppRoutePath>(
     pathOrTemplate: T,
     params?: PathParams<T>,
@@ -106,16 +130,16 @@ const store = createStore<RouterStore>()((set, get) => ({
     const route = routes.find((r) => r.path === path);
     log('navigate', {
       fromPath: currentPath,
-      toPath: path,
       history,
+      toPath: path,
     });
 
     capture({
       event: 'navigation',
       properties: {
         fromPath: currentPath,
-        toPath: path,
         historyLength: history.length,
+        toPath: path,
       },
     });
 
@@ -133,36 +157,12 @@ const store = createStore<RouterStore>()((set, get) => ({
           : [...state.history, currentPath],
     }));
   }) as RouterActions['navigate'],
-  goBack: () => {
-    const { currentPath, history } = get();
-    if (history.length === 0) return;
-
-    capture({
-      event: 'back_button_pressed',
-      properties: {
-        path: currentPath,
-        historyLength: history.length,
-        previousPath: history.at(-1),
-      },
-    });
-
-    const previousPath = history.at(-1);
-    if (!previousPath) return;
-
-    set((state) => ({
-      currentPath: previousPath,
-      history: state.history.slice(0, -1),
-    }));
-  },
   setRoutes: (routes) => {
     set((state) => ({
-      routes,
       currentPath:
         state.currentPath || routes[0]?.path || ('/' as AppRoutePath),
+      routes,
     }));
-  },
-  canGoBack: () => {
-    return get().history.length > 0;
   },
 }));
 
@@ -176,7 +176,7 @@ export function matchRoute(
   // First try exact match
   const exactRoute = routes.find((route) => route.path === path);
   if (exactRoute) {
-    return { route: exactRoute, params: {} };
+    return { params: {}, route: exactRoute };
   }
 
   // Then try pattern matching for dynamic routes
@@ -191,10 +191,10 @@ export function matchRoute(
             if (value) params[key] = value;
           }
         }
-        return { route, params };
+        return { params, route };
       }
     }
   }
 
-  return { route: undefined, params: {} };
+  return { params: {}, route: undefined };
 }

@@ -14,11 +14,11 @@ const terminalVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
-    y: 0,
     transition: {
       delay: 0.4,
       duration: 0.8,
     },
+    y: 0,
   },
 };
 
@@ -36,16 +36,16 @@ export function HeroSection() {
   const { hero } = siteConfig;
 
   return (
-    <section id="hero" className="w-full relative">
+    <section className="w-full relative" id="hero">
       <div className="relative flex flex-col items-center w-full px-6">
         <div className="absolute inset-0">
           <div className="absolute inset-0 -z-10 h-[600px] md:h-[800px] w-full [background:radial-gradient(125%_125%_at_50%_10%,var(--background)_40%,var(--secondary)_100%)] rounded-b-xl" />
         </div>
         <motion.div
-          className="relative z-10 pt-24 max-w-3xl mx-auto h-full w-full flex flex-col gap-10 items-center justify-center"
-          variants={staggerContainer}
-          initial="hidden"
           animate="visible"
+          className="relative z-10 pt-24 max-w-3xl mx-auto h-full w-full flex flex-col gap-10 items-center justify-center"
+          initial="hidden"
+          variants={staggerContainer}
         >
           <motion.p
             className="border border-border bg-accent rounded-full text-sm h-8 px-3 flex items-center gap-2"
@@ -76,14 +76,14 @@ export function HeroSection() {
             variants={fadeInUpVariants}
           >
             <Link
-              href={hero.cta.primary.href}
               className="bg-secondary h-9 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-48 px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
+              href={hero.cta.primary.href}
             >
               {hero.cta.primary.text}
             </Link>
             <Link
-              href={hero.cta.secondary.href}
               className="h-10 flex items-center justify-center w-48 px-5 text-sm font-normal tracking-wide text-primary rounded-full transition-all ease-out active:scale-95 bg-white dark:bg-background border border-[#E5E7EB] dark:border-[#27272A] hover:bg-white/80 dark:hover:bg-background/80"
+              href={hero.cta.secondary.href}
             >
               {hero.cta.secondary.text}
             </Link>
@@ -91,10 +91,10 @@ export function HeroSection() {
         </motion.div>
       </div>
       <motion.div
-        className="w-full"
-        variants={terminalVariants}
-        initial="hidden"
         animate="visible"
+        className="w-full"
+        initial="hidden"
+        variants={terminalVariants}
       >
         <HeroTerminalSection />
       </motion.div>

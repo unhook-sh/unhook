@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@unhook/ui/components/chart';
+import { ChartContainer } from '@unhook/ui/components/chart';
 import { useState } from 'react';
 import {
   Bar,
@@ -20,13 +16,13 @@ export function WebhookTopPathsChart() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const data = [
-    { path: '/api/webhook', requests: 423, avgLatency: 127 },
-    { path: '/api/users', requests: 326, avgLatency: 95 },
-    { path: '/api/auth', requests: 512, avgLatency: 112 },
-    { path: '/api/data', requests: 239, avgLatency: 143 },
-    { path: '/api/events', requests: 178, avgLatency: 87 },
-    { path: '/api/products', requests: 392, avgLatency: 105 },
-    { path: '/api/orders', requests: 275, avgLatency: 118 },
+    { avgLatency: 127, path: '/api/webhook', requests: 423 },
+    { avgLatency: 95, path: '/api/users', requests: 326 },
+    { avgLatency: 112, path: '/api/auth', requests: 512 },
+    { avgLatency: 143, path: '/api/data', requests: 239 },
+    { avgLatency: 87, path: '/api/events', requests: 178 },
+    { avgLatency: 105, path: '/api/products', requests: 392 },
+    { avgLatency: 118, path: '/api/orders', requests: 275 },
   ];
 
   const handleMouseEnter = (_: unknown, index: number) => {
@@ -49,68 +45,68 @@ export function WebhookTopPathsChart() {
     <div className="h-[300px] w-full">
       <ChartContainer
         config={{
-          requests: {
-            label: 'Requests',
-            color: 'hsl(var(--chart-1))',
-          },
           avgLatency: {
-            label: 'Avg Latency (ms)',
             color: 'hsl(var(--chart-2))',
+            label: 'Avg Latency (ms)',
+          },
+          requests: {
+            color: 'hsl(var(--chart-1))',
+            label: 'Requests',
           },
         }}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer height="100%" width="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+            margin={{ bottom: 20, left: 0, right: 30, top: 20 }}
             onMouseLeave={handleMouseLeave}
           >
             <CartesianGrid
+              stroke="hsl(var(--border))"
               strokeDasharray="3 3"
               vertical={false}
-              stroke="hsl(var(--border))"
             />
             <XAxis
-              dataKey="path"
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
               axisLine={false}
+              dataKey="path"
+              fontSize={12}
+              stroke="hsl(var(--muted-foreground))"
+              tickLine={false}
             />
             <YAxis
-              yAxisId="left"
+              axisLine={false}
+              fontSize={12}
               orientation="left"
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
               tickFormatter={(value) => `${value}`}
+              tickLine={false}
+              yAxisId="left"
             />
             <YAxis
-              yAxisId="right"
+              axisLine={false}
+              fontSize={12}
               orientation="right"
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
               tickFormatter={(value) => `${value}ms`}
+              tickLine={false}
+              yAxisId="right"
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
             <Bar
-              yAxisId="left"
               dataKey="requests"
-              radius={[4, 4, 0, 0]}
               onMouseEnter={handleMouseEnter}
+              radius={[4, 4, 0, 0]}
+              yAxisId="left"
             >
               {data.map(({ path }, index) => (
-                <Cell key={path} fill={getBarFill(index)} />
+                <Cell fill={getBarFill(index)} key={path} />
               ))}
             </Bar>
             <Bar
-              yAxisId="right"
               dataKey="avgLatency"
-              radius={[4, 4, 0, 0]}
               fill="hsl(var(--chart-2))"
+              radius={[4, 4, 0, 0]}
+              yAxisId="right"
             />
           </BarChart>
         </ResponsiveContainer>

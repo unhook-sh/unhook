@@ -27,13 +27,13 @@ export function FilterSidebar() {
       <SidebarHeader className="border-b p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Filters</h2>
-          <Button variant="ghost" size="sm">
+          <Button size="sm" variant="ghost">
             Reset
           </Button>
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <Collapsible defaultOpen className="group/collapsible">
+        <Collapsible className="group/collapsible" defaultOpen>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
@@ -45,12 +45,12 @@ export function FilterSidebar() {
               <SidebarGroupContent className="p-4 pt-0">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label htmlFor="timeline" className="text-sm">
+                    <label className="text-sm" htmlFor="timeline">
                       Maximum
                     </label>
                     <select
-                      id="timeline"
                       className="rounded-md border border-input bg-background px-2 py-1 text-sm"
+                      id="timeline"
                     >
                       <option value="1day">1 day</option>
                       <option value="3days">3 days</option>
@@ -63,7 +63,7 @@ export function FilterSidebar() {
           </SidebarGroup>
         </Collapsible>
 
-        <Collapsible defaultOpen className="group/collapsible">
+        <Collapsible className="group/collapsible" defaultOpen>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
@@ -77,7 +77,7 @@ export function FilterSidebar() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Checkbox id="warning" />
-                      <label htmlFor="warning" className="text-sm">
+                      <label className="text-sm" htmlFor="warning">
                         Warning
                       </label>
                     </div>
@@ -86,7 +86,7 @@ export function FilterSidebar() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Checkbox id="error" />
-                      <label htmlFor="error" className="text-sm">
+                      <label className="text-sm" htmlFor="error">
                         Error
                       </label>
                     </div>
@@ -116,7 +116,7 @@ export function FilterSidebar() {
           </SidebarGroup>
         </Collapsible>
 
-        <Collapsible defaultOpen className="group/collapsible">
+        <Collapsible className="group/collapsible" defaultOpen>
           <SidebarGroup>
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className="flex w-full items-center justify-between p-4 hover:bg-muted/50">
@@ -130,17 +130,17 @@ export function FilterSidebar() {
                   <div className="relative">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search Route..."
                       className="pl-8"
-                      value={routeSearch}
                       onChange={(e) => setRouteSearch(e.target.value)}
+                      placeholder="Search Route..."
+                      value={routeSearch}
                     />
                   </div>
                   <div className="space-y-2 pt-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Checkbox id="api-webhook" />
-                        <label htmlFor="api-webhook" className="text-sm">
+                        <label className="text-sm" htmlFor="api-webhook">
                           /api/webhook
                         </label>
                       </div>
@@ -149,7 +149,7 @@ export function FilterSidebar() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Checkbox id="null" />
-                        <label htmlFor="null" className="text-sm">
+                        <label className="text-sm" htmlFor="null">
                           null
                         </label>
                       </div>

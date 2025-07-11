@@ -2,10 +2,6 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // compiler: {
-  // removeConsole: true,
-  // },
-  reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
   experimental: {
     scrollRestoration: true,
@@ -30,6 +26,10 @@ const nextConfig = {
     },
   },
   poweredByHeader: false,
+  // compiler: {
+  // removeConsole: true,
+  // },
+  reactStrictMode: true,
   typescript: { ignoreBuildErrors: true },
 };
 

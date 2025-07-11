@@ -6,22 +6,22 @@ import { z } from 'zod';
 import { env } from '~/env';
 
 const clerk = initBaseAuth({
-  authUrl: env.NEXT_PUBLIC_AUTH_URL,
   apiKey: env.clerk_API_KEY,
+  authUrl: env.NEXT_PUBLIC_AUTH_URL,
 });
 
 const action = createSafeActionClient();
 
 // Schema definitions
 const createApiKeySchema = z.object({
-  orgId: z.string(),
+  currentPath: z.string(),
   metadata: z.object({
     envId: z.string(),
     name: z.string(),
     projectId: z.string(),
     userId: z.string(),
   }),
-  currentPath: z.string(),
+  orgId: z.string(),
 });
 
 // Server actions
@@ -31,35 +31,35 @@ export const createApiKey = action
     try {
       const { orgId, metadata } = parsedInput;
       const response = await clerk.createApiKey({
-        orgId,
         metadata,
+        orgId,
         userId: metadata.userId,
       });
 
       await clerk.updateApiKey(response.apiKeyId, {
         metadata: JSON.stringify({
           ...metadata,
-          name: metadata.name,
           last4ApiKeyToken: response.apiKeyToken.slice(-4),
+          name: metadata.name,
         }),
       });
 
       revalidatePath(parsedInput.currentPath);
-      return { success: true, data: response };
+      return { data: response, success: true };
     } catch (error) {
-      return { success: false, error: error };
+      return { error: error, success: false };
     }
   });
 
 export const createOrgAction = action
   .schema(
     z.object({
-      name: z.string().min(2, 'Organization name is required'),
-      enableAutoJoiningByDomain: z.boolean().optional(),
-      domain: z.string().optional(),
-      membersMustHaveMatchingDomain: z.boolean().optional(),
-      userId: z.string().min(1, 'User ID is required'),
       currentPath: z.string().min(1, 'Current path is required'),
+      domain: z.string().optional(),
+      enableAutoJoiningByDomain: z.boolean().optional(),
+      membersMustHaveMatchingDomain: z.boolean().optional(),
+      name: z.string().min(2, 'Organization name is required'),
+      userId: z.string().min(1, 'User ID is required'),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -67,20 +67,20 @@ export const createOrgAction = action
       // createOrg automatically adds the current user to the org
       const response = await clerk.createOrg({
         domain: parsedInput.domain,
-        name: parsedInput.name,
         enableAutoJoiningByDomain:
           parsedInput.enableAutoJoiningByDomain ?? false,
         membersMustHaveMatchingDomain:
           parsedInput.membersMustHaveMatchingDomain ?? false,
+        name: parsedInput.name,
       });
       await clerk.addUserToOrg({
-        userId: parsedInput.userId,
         orgId: response.orgId,
         role: 'Admin',
+        userId: parsedInput.userId,
       });
 
       revalidatePath(parsedInput.currentPath);
-      return { success: true, data: response };
+      return { data: response, success: true };
     } catch (error) {
       // Handle clerk validation errors
       if (error instanceof Error) {
@@ -104,22 +104,22 @@ export const createOrgAction = action
 
             if (errors.length > 0) {
               return {
-                success: false,
                 error: errors,
+                success: false,
               };
             }
           }
         } catch {
           // If parsing fails, return the original error message as a single-item array
           return {
-            success: false,
             error: [error.message],
+            success: false,
           };
         }
       }
       return {
-        success: false,
         error: ['Failed to create organization'],
+        success: false,
       };
     }
   });

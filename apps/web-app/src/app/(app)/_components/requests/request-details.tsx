@@ -39,10 +39,10 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">Request Details</h3>
           <Button
-            variant="ghost"
-            size="sm"
             className="h-6 w-6 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
             onClick={() => setIsExpanded(!isExpanded)}
+            size="sm"
+            variant="ghost"
           >
             {isExpanded ? (
               <ChevronDown className="h-4 w-4" />
@@ -53,42 +53,42 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            size="sm"
             className="h-6 w-6 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
             onClick={() => handleCopy(request)}
+            size="sm"
+            variant="ghost"
           >
             <Copy className="h-4 w-4" />
           </Button>
           <Button
-            variant="ghost"
-            size="sm"
             className="h-6 w-6 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
             onClick={onClose}
+            size="sm"
+            variant="ghost"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="request" className="h-[calc(100%-40px)]">
+      <Tabs className="h-[calc(100%-40px)]" defaultValue="request">
         <div className="border-b border-zinc-800 px-4">
           <TabsList className="h-9 bg-black">
             <TabsTrigger
-              value="request"
               className="h-8 data-[state=active]:bg-zinc-800 data-[state=active]:text-white"
+              value="request"
             >
               Request
             </TabsTrigger>
             <TabsTrigger
-              value="response"
               className="h-8 data-[state=active]:bg-zinc-800 data-[state=active]:text-white"
+              value="response"
             >
               Response
             </TabsTrigger>
             <TabsTrigger
-              value="headers"
               className="h-8 data-[state=active]:bg-zinc-800 data-[state=active]:text-white"
+              value="headers"
             >
               Headers
             </TabsTrigger>
@@ -96,17 +96,17 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
         </div>
 
         <ScrollArea className="h-[calc(100%-40px)]">
-          <TabsContent value="request" className="m-0 p-4">
+          <TabsContent className="m-0 p-4" value="request">
             <pre className="font-mono text-xs text-zinc-300">
               {JSON.stringify(request.request, null, 2)}
             </pre>
           </TabsContent>
-          <TabsContent value="response" className="m-0 p-4">
+          <TabsContent className="m-0 p-4" value="response">
             <pre className="font-mono text-xs text-zinc-300">
               {JSON.stringify(request.response, null, 2)}
             </pre>
           </TabsContent>
-          <TabsContent value="headers" className="m-0 p-4">
+          <TabsContent className="m-0 p-4" value="headers">
             <pre className="font-mono text-xs text-zinc-300">
               {JSON.stringify(request.request.headers, null, 2)}
             </pre>

@@ -17,14 +17,14 @@ mock.module('@t3-oss/env-nextjs', () => ({
 const mockValues = vi.fn().mockResolvedValue(undefined);
 vi.mock('@unhook/db/client', () => ({
   db: {
+    insert: () => ({
+      values: mockValues,
+    }),
     query: {
       Webhooks: {
         findFirst: vi.fn(),
       },
     },
-    insert: () => ({
-      values: mockValues,
-    }),
   },
 }));
 
@@ -44,16 +44,14 @@ describe('Webhook Route Handler', () => {
 
     // Default mock responses
     mockFindFirst.mockResolvedValue({
-      id: 'tun_123',
       apiKey: 'test-api-key',
-      userId: 'user_123',
-      orgId: 'org_123',
-      status: 'active',
+      clientCount: 0,
+      clientId: 'client_123',
       config: {
         headers: {},
         requests: {
-          allowedMethods: ['GET', 'POST'],
           allowedFrom: ['/test/.*'],
+          allowedMethods: ['GET', 'POST'],
           blockedFrom: ['/admin/.*'],
         },
         storage: {
@@ -65,11 +63,13 @@ describe('Webhook Route Handler', () => {
         },
       },
       createdAt: new Date(),
-      updatedAt: new Date(),
+      id: 'tun_123',
+      orgId: 'org_123',
       port: 3000,
-      clientId: 'client_123',
-      clientCount: 0,
       requestCount: 0,
+      status: 'active',
+      updatedAt: new Date(),
+      userId: 'user_123',
     });
 
     vi.doMock('@unhook/id', () => ({
@@ -136,10 +136,10 @@ describe('Webhook Route Handler', () => {
       const req = new NextRequest(
         'http://localhost:3000/api/webhook?endpoint=test/123',
         {
-          method: 'POST',
           headers: {
             'x-api-key': 'test-api-key',
           },
+          method: 'POST',
         },
       );
       const response = await POST(req, {
@@ -156,10 +156,10 @@ describe('Webhook Route Handler', () => {
       const req = new NextRequest(
         'http://localhost:3000/api/webhook?key=wrong-key&endpoint=test/123',
         {
-          method: 'POST',
           headers: {
             'x-api-key': 'test-api-key',
           },
+          method: 'POST',
         },
       );
       const response = await POST(req, {
@@ -176,11 +176,11 @@ describe('Webhook Route Handler', () => {
       const req = new NextRequest(
         'http://localhost:3000/api/webhook?endpoint=query-endpoint',
         {
-          method: 'POST',
           headers: {
             'x-api-key': 'test-api-key',
             'x-endpoint': 'test/header-endpoint',
           },
+          method: 'POST',
         },
       );
       const response = await POST(req, {
@@ -210,11 +210,11 @@ describe('Webhook Route Handler', () => {
 
   it('should return 405 when method is not allowed', async () => {
     const req = new NextRequest('http://localhost:3000/api/webhook', {
-      method: 'DELETE',
       headers: {
         'x-api-key': 'test-api-key',
         'x-endpoint': 'test/123',
       },
+      method: 'DELETE',
     });
     const response = await POST(req, {
       params: Promise.resolve({ webhookId: 'tun_123' }),
@@ -225,11 +225,11 @@ describe('Webhook Route Handler', () => {
 
   it('should return 403 when path is blocked', async () => {
     const req = new NextRequest('http://localhost:3000/api/webhook', {
-      method: 'POST',
       headers: {
         'x-api-key': 'test-api-key',
         'x-endpoint': 'admin/123',
       },
+      method: 'POST',
     });
     const response = await POST(req, {
       params: Promise.resolve({ webhookId: 'tun_123' }),
@@ -240,11 +240,11 @@ describe('Webhook Route Handler', () => {
 
   it('should return 403 when path is not in allowed paths', async () => {
     const req = new NextRequest('http://localhost:3000/api/webhook', {
-      method: 'POST',
       headers: {
         'x-api-key': 'test-api-key',
         'x-endpoint': 'other/123',
       },
+      method: 'POST',
     });
     const response = await POST(req, {
       params: Promise.resolve({ webhookId: 'tun_123' }),
@@ -255,13 +255,13 @@ describe('Webhook Route Handler', () => {
 
   it('should successfully store webhook request', async () => {
     const req = new NextRequest('http://localhost:3000/api/webhook', {
-      method: 'POST',
+      body: JSON.stringify({ test: 'data' }),
       headers: {
+        'content-type': 'application/json',
         'x-api-key': 'test-api-key',
         'x-endpoint': 'test/123',
-        'content-type': 'application/json',
       },
-      body: JSON.stringify({ test: 'data' }),
+      method: 'POST',
     });
 
     const response = await POST(req, {
@@ -272,14 +272,14 @@ describe('Webhook Route Handler', () => {
     expect(mockValues).toHaveBeenCalledWith(
       expect.objectContaining({
         apiKey: 'test-api-key',
-        webhookId: 'tun_123',
-        userId: 'user_123',
         orgId: 'org_123',
         request: expect.objectContaining({
+          contentType: 'application/json',
           method: 'POST',
           url: '/test/123',
-          contentType: 'application/json',
         }),
+        userId: 'user_123',
+        webhookId: 'tun_123',
       }),
     );
   });
@@ -288,11 +288,11 @@ describe('Webhook Route Handler', () => {
     mockValues.mockRejectedValueOnce(new Error('Database error'));
 
     const req = new NextRequest('http://localhost:3000/api/webhook', {
-      method: 'POST',
       headers: {
         'x-api-key': 'test-api-key',
         'x-endpoint': 'test/123',
       },
+      method: 'POST',
     });
 
     const response = await POST(req, {

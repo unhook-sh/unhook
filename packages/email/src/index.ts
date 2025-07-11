@@ -32,10 +32,10 @@ export class EmailClient {
 
     return this.resend.emails.send({
       from: this.config.from,
-      to,
-      subject,
       html,
       replyTo: replyTo || this.config.replyTo,
+      subject,
+      to,
     });
   }
 
@@ -50,10 +50,10 @@ export class EmailClient {
     const batch = await Promise.all(
       emails.map(async (email) => ({
         from: this.config.from,
-        to: email.to,
-        subject: email.subject,
         html: await render(email.template),
         replyTo: email.replyTo || this.config.replyTo,
+        subject: email.subject,
+        to: email.to,
       })),
     );
 

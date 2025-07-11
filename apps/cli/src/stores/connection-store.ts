@@ -42,16 +42,16 @@ type ConnectionStore = ConnectionState & ConnectionActions & ConnectionComputed;
 
 const defaultRuleState: RuleConnectionState = {
   isConnected: false,
-  pid: null,
-  processName: null,
   lastConnectedAt: null,
   lastDisconnectedAt: null,
+  pid: null,
+  processName: null,
 };
 
 const defaultConnectionState: ConnectionState = {
+  connectionId: null,
   isLoading: false,
   ruleStates: {},
-  connectionId: null,
 };
 
 const createConnectionStore = () => {
@@ -62,96 +62,6 @@ const createConnectionStore = () => {
 
   return createStore<ConnectionStore>((set, get) => ({
     ...defaultConnectionState,
-
-    // Computed properties
-    get isAnyConnected() {
-      const ruleStates = get().ruleStates;
-      return Object.values(ruleStates).some((state) => state.isConnected);
-    },
-
-    get isAllConnected() {
-      const ruleStates = get().ruleStates;
-      const states = Object.values(ruleStates);
-      return states.length > 0 && states.every((state) => state.isConnected);
-    },
-
-    setRuleConnectionState: async (
-      ruleId: string,
-      newState: Partial<RuleConnectionState>,
-    ) => {
-      const currentState = get();
-      const now = new Date();
-      const currentRuleState = currentState.ruleStates[ruleId] || {
-        ...defaultRuleState,
-      };
-
-      const updatedRuleState = {
-        ...currentRuleState,
-        ...newState,
-        lastConnectedAt: newState.isConnected
-          ? now
-          : currentRuleState.lastConnectedAt,
-        lastDisconnectedAt:
-          newState.isConnected === false
-            ? now
-            : currentRuleState.lastDisconnectedAt,
-      };
-
-      capture({
-        event: updatedRuleState.isConnected
-          ? 'rule_connection_established'
-          : 'rule_connection_lost',
-        properties: {
-          ruleId,
-          pid: updatedRuleState.pid,
-          processName: updatedRuleState.processName,
-          connectionId: currentState.connectionId,
-          lastConnectedAt: updatedRuleState.lastConnectedAt?.toISOString(),
-          lastDisconnectedAt:
-            updatedRuleState.lastDisconnectedAt?.toISOString(),
-        },
-      });
-
-      // Update local state
-      set({
-        ...currentState,
-        ruleStates: {
-          ...currentState.ruleStates,
-          [ruleId]: updatedRuleState,
-        },
-        isLoading: false,
-      });
-
-      // Update webhook record with connection status
-      const { webhookId } = useConfigStore.getState();
-      if (webhookId) {
-        const _isAnyConnected = Object.values({
-          ...currentState.ruleStates,
-          [ruleId]: updatedRuleState,
-        }).some((state) => state.isConnected);
-
-        // const webhook = await api.webhooks.byId.query({ id: selectedWebhookId });
-        // if (webhook) {
-        //   await api.webhooks.update.mutate({
-        //     id: selectedWebhookId,
-        //     clientId: webhook.clientId,
-        //     port: webhook.port,
-        //     localConnectionStatus: isAnyConnected
-        //       ? 'connected'
-        //       : 'disconnected',
-        //     localConnectionPid: updatedRuleState.pid ?? undefined,
-        //     localConnectionProcessName:
-        //       updatedRuleState.processName ?? undefined,
-        //     lastLocalConnectionAt: updatedRuleState.isConnected
-        //       ? now
-        //       : undefined,
-        //     lastLocalDisconnectionAt: !updatedRuleState.isConnected
-        //       ? now
-        //       : undefined,
-        //   });
-        // }
-      }
-    },
 
     connect: async () => {
       if (isDestroyedRef) return;
@@ -165,8 +75,8 @@ const createConnectionStore = () => {
       capture({
         event: 'connection_attempt',
         properties: {
-          pingEnabled,
           deliverRulesCount: delivery.length,
+          pingEnabled,
         },
       });
 
@@ -342,6 +252,33 @@ const createConnectionStore = () => {
       }
     },
 
+    destroy: async () => {
+      log('Destroying connection store...');
+      isDestroyedRef = true;
+
+      // Clear any pending reconnect timeouts
+      if (reconnectTimeoutRef) {
+        clearTimeout(reconnectTimeoutRef);
+        reconnectTimeoutRef = undefined;
+      }
+
+      // Abort any pending fetch requests
+      if (currentFetchAbortController) {
+        currentFetchAbortController.abort();
+        currentFetchAbortController = null;
+      }
+
+      // Close any open sockets
+      if (socketRef) {
+        socketRef.destroy();
+        socketRef = null;
+      }
+
+      // Reset state
+      set(defaultConnectionState);
+      log('Connection store destroyed');
+    },
+
     disconnect: async () => {
       isDestroyedRef = true;
       currentFetchAbortController?.abort();
@@ -352,9 +289,9 @@ const createConnectionStore = () => {
         event: 'connection_disconnect',
         properties: {
           connectionId: currentState.connectionId,
-          wasAnyConnected: currentState.isAnyConnected,
-          wasAllConnected: currentState.isAllConnected,
           ruleStates: currentState.ruleStates,
+          wasAllConnected: currentState.isAllConnected,
+          wasAnyConnected: currentState.isAnyConnected,
         },
       });
 
@@ -409,36 +346,99 @@ const createConnectionStore = () => {
       });
     },
 
+    get isAllConnected() {
+      const ruleStates = get().ruleStates;
+      const states = Object.values(ruleStates);
+      return states.length > 0 && states.every((state) => state.isConnected);
+    },
+
+    // Computed properties
+    get isAnyConnected() {
+      const ruleStates = get().ruleStates;
+      return Object.values(ruleStates).some((state) => state.isConnected);
+    },
+
     reset: () => {
       // Complete reset of the store to initial state
       set(defaultConnectionState);
     },
 
-    destroy: async () => {
-      log('Destroying connection store...');
-      isDestroyedRef = true;
+    setRuleConnectionState: async (
+      ruleId: string,
+      newState: Partial<RuleConnectionState>,
+    ) => {
+      const currentState = get();
+      const now = new Date();
+      const currentRuleState = currentState.ruleStates[ruleId] || {
+        ...defaultRuleState,
+      };
 
-      // Clear any pending reconnect timeouts
-      if (reconnectTimeoutRef) {
-        clearTimeout(reconnectTimeoutRef);
-        reconnectTimeoutRef = undefined;
+      const updatedRuleState = {
+        ...currentRuleState,
+        ...newState,
+        lastConnectedAt: newState.isConnected
+          ? now
+          : currentRuleState.lastConnectedAt,
+        lastDisconnectedAt:
+          newState.isConnected === false
+            ? now
+            : currentRuleState.lastDisconnectedAt,
+      };
+
+      capture({
+        event: updatedRuleState.isConnected
+          ? 'rule_connection_established'
+          : 'rule_connection_lost',
+        properties: {
+          connectionId: currentState.connectionId,
+          lastConnectedAt: updatedRuleState.lastConnectedAt?.toISOString(),
+          lastDisconnectedAt:
+            updatedRuleState.lastDisconnectedAt?.toISOString(),
+          pid: updatedRuleState.pid,
+          processName: updatedRuleState.processName,
+          ruleId,
+        },
+      });
+
+      // Update local state
+      set({
+        ...currentState,
+        isLoading: false,
+        ruleStates: {
+          ...currentState.ruleStates,
+          [ruleId]: updatedRuleState,
+        },
+      });
+
+      // Update webhook record with connection status
+      const { webhookId } = useConfigStore.getState();
+      if (webhookId) {
+        const _isAnyConnected = Object.values({
+          ...currentState.ruleStates,
+          [ruleId]: updatedRuleState,
+        }).some((state) => state.isConnected);
+
+        // const webhook = await api.webhooks.byId.query({ id: selectedWebhookId });
+        // if (webhook) {
+        //   await api.webhooks.update.mutate({
+        //     id: selectedWebhookId,
+        //     clientId: webhook.clientId,
+        //     port: webhook.port,
+        //     localConnectionStatus: isAnyConnected
+        //       ? 'connected'
+        //       : 'disconnected',
+        //     localConnectionPid: updatedRuleState.pid ?? undefined,
+        //     localConnectionProcessName:
+        //       updatedRuleState.processName ?? undefined,
+        //     lastLocalConnectionAt: updatedRuleState.isConnected
+        //       ? now
+        //       : undefined,
+        //     lastLocalDisconnectionAt: !updatedRuleState.isConnected
+        //       ? now
+        //       : undefined,
+        //   });
+        // }
       }
-
-      // Abort any pending fetch requests
-      if (currentFetchAbortController) {
-        currentFetchAbortController.abort();
-        currentFetchAbortController = null;
-      }
-
-      // Close any open sockets
-      if (socketRef) {
-        socketRef.destroy();
-        socketRef = null;
-      }
-
-      // Reset state
-      set(defaultConnectionState);
-      log('Connection store destroyed');
     },
   }));
 };

@@ -21,11 +21,11 @@ export class DiscordDestination implements Destination {
       const discordMessage = this.formatDiscordMessage(data);
 
       const response = await fetch(config.webhookUrl, {
-        method: 'POST',
+        body: JSON.stringify(discordMessage),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(discordMessage),
+        method: 'POST',
       });
 
       const responseText = await response.text();
@@ -43,18 +43,18 @@ export class DiscordDestination implements Destination {
       });
 
       return {
-        success: true,
         response: {
-          status: response.status,
-          headers,
           body: responseText,
+          headers,
+          status: response.status,
         },
+        success: true,
       };
     } catch (error) {
       log('Failed to send to Discord:', error);
       return {
-        success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
       };
     }
   }
@@ -67,9 +67,9 @@ export class DiscordDestination implements Destination {
 
     // Otherwise, format it as an embed
     const embed: Record<string, unknown> = {
-      title: 'Webhook Event',
+      color: 0x7289da,
       timestamp: new Date().toISOString(),
-      color: 0x7289da, // Discord blurple
+      title: 'Webhook Event', // Discord blurple
     };
 
     if (typeof data === 'object' && data !== null) {
@@ -90,12 +90,12 @@ export class DiscordDestination implements Destination {
       // Add fields for better formatting
       embed.fields = [
         {
+          inline: false,
           name: 'Event Data',
           value: `\`\`\`json\n${JSON.stringify(data, null, 2).substring(
             0,
             1000,
           )}\`\`\``,
-          inline: false,
         },
       ];
 

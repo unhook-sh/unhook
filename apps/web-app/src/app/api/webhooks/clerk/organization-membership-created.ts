@@ -23,8 +23,8 @@ export async function handleOrganizationMembershipCreated(event: WebhookEvent) {
 
   if (!user || !org) {
     console.log('User or org not found for membership creation', {
-      userId: membershipData.public_user_data.user_id,
       orgId: membershipData.organization.id,
+      userId: membershipData.public_user_data.user_id,
     });
     return new Response('', { status: 200 });
   }
@@ -32,9 +32,9 @@ export async function handleOrganizationMembershipCreated(event: WebhookEvent) {
   const [member] = await db
     .insert(OrgMembers)
     .values({
-      userId: user.id,
       orgId: org.id,
       role: membershipData.role === 'admin' ? 'admin' : 'user',
+      userId: user.id,
     })
     .onConflictDoUpdate({
       set: {
@@ -56,9 +56,9 @@ export async function handleOrganizationMembershipCreated(event: WebhookEvent) {
     distinctId: member.id,
     event: 'create_organization_membership',
     properties: {
-      userId: user.id,
       orgId: org.id,
       role: membershipData.role,
+      userId: user.id,
     },
   });
 

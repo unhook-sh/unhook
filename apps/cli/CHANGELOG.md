@@ -1,5 +1,23 @@
 # @unhook/cli
 
+## 0.13.3
+
+### Patch Changes
+
+- [`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832) Thanks [@seawatts](https://github.com/seawatts)! - Fix build issue
+
+- Updated dependencies [[`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832)]:
+  - @unhook/client@0.5.3
+
+## 0.13.2
+
+### Patch Changes
+
+- [`a6bf4e3`](https://github.com/unhook-sh/unhook/commit/a6bf4e30a7d8f51c37c2e0d1843f2eb6e7129f4f) Thanks [@seawatts](https://github.com/seawatts)! - Fix build
+
+- Updated dependencies [[`a6bf4e3`](https://github.com/unhook-sh/unhook/commit/a6bf4e30a7d8f51c37c2e0d1843f2eb6e7129f4f)]:
+  - @unhook/client@0.5.2
+
 ## 0.13.1
 
 ### Patch Changes
@@ -219,7 +237,6 @@
 - [`9caf03d`](https://github.com/unhook-sh/unhook/commit/9caf03d5b8dab9b9118ed8aa0720cad43c54ce80) Thanks [@seawatts](https://github.com/seawatts)! - Initial Beta Release
 
   This release marks the first beta version of Unhook, featuring:
-
   - CLI tool for managing webhooks
   - API endpoints for webhook management
   - Database integration for persistent storage

@@ -63,7 +63,7 @@ describe('FormSelect', () => {
 
   it('should show selected value when complete', () => {
     const { lastFrame } = renderWithProvider(
-      <FormSelect id="test-select" items={mockItems} defaultValue="1" />,
+      <FormSelect defaultValue="1" id="test-select" items={mockItems} />,
     );
 
     expect(lastFrame()).toContain('Option 1');

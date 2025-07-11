@@ -21,7 +21,11 @@ export function registerUriHandler(
       log('Handling URI:', uri.toString());
       // Handle any of our supported editor schemes
       if (uri.authority === env.NEXT_PUBLIC_VSCODE_EXTENSION_ID) {
-        const code = uri.query.split('=')[1];
+        // Decode the query string first to handle URL-encoded parameters
+        const decodedQuery = decodeURIComponent(uri.query);
+        const params = new URLSearchParams(decodedQuery);
+        const code = params.get('code');
+
         if (code && authProvider) {
           try {
             // Complete the auth flow in the provider

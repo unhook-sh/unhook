@@ -35,17 +35,17 @@ interface MockClient {
 // Mock http2
 mock.module('node:http2', () => {
   const mockStream: MockStream = {
+    end: mock(),
     on: mock(),
     write: mock(),
-    end: mock(),
   };
 
   const mockClient: MockClient = {
+    close: mock(),
+    destroy: mock(),
+    destroyed: false,
     on: mock(),
     request: mock(() => mockStream),
-    destroy: mock(),
-    close: mock(),
-    destroyed: false,
   };
 
   return {
@@ -144,22 +144,22 @@ describe('startWebhookClient', () => {
 
     // Mock successful response from local service
     mockFetch.mockResolvedValueOnce({
-      status: 200,
-      headers: new Headers({ 'content-type': 'application/json' }),
       arrayBuffer: () => Promise.resolve(Buffer.from('{"success":true}')),
+      headers: new Headers({ 'content-type': 'application/json' }),
+      status: 200,
     });
 
     // Simulate incoming request
     const mockRequest = {
-      type: 'request',
       data: {
+        body: Buffer.from('{"test":true}').toString('base64'),
+        headers: { 'content-type': 'application/json' },
         id: 'req-123',
         method: 'POST',
-        url: '/api/test',
-        headers: { 'content-type': 'application/json' },
-        body: Buffer.from('{"test":true}').toString('base64'),
         timestamp: Date.now(),
+        url: '/api/test',
       },
+      type: 'request',
     };
 
     dataHandler(Buffer.from(`${JSON.stringify(mockRequest)}\n`));
@@ -169,9 +169,9 @@ describe('startWebhookClient', () => {
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost:3000/api/test',
         expect.objectContaining({
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
           body: expect.any(Buffer),
+          headers: { 'content-type': 'application/json' },
+          method: 'POST',
         }),
       );
     });
@@ -218,14 +218,14 @@ describe('startWebhookClient', () => {
 
     // Simulate incoming request
     const mockRequest = {
-      type: 'request',
       data: {
+        headers: {},
         id: 'req-123',
         method: 'GET',
-        url: '/api/test',
-        headers: {},
         timestamp: Date.now(),
+        url: '/api/test',
       },
+      type: 'request',
     };
 
     dataHandler(Buffer.from(`${JSON.stringify(mockRequest)}\n`));

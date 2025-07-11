@@ -22,11 +22,11 @@ export function Scrollbar() {
         const isThumb = i >= thumbPosition && i < thumbPosition + thumbHeight;
         return (
           <Text
+            color="gray"
             key={`scrollbar-page-${currentPage}-pos-${
               // biome-ignore lint/suspicious/noArrayIndexKey: Array index is stable here since we're mapping over a fixed slice of children
               i
             }`}
-            color="gray"
           >
             {isThumb ? '┃' : '│'}
           </Text>

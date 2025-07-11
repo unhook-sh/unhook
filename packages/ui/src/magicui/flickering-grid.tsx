@@ -37,7 +37,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [canvasSize, setCanvasSize] = useState({ height: 0, width: 0 });
 
   // Convert any CSS color to rgba for optimal canvas performance
   const memoizedColor = useMemo(() => {
@@ -121,7 +121,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         squares[i] = Math.random() * maxOpacity;
       }
 
-      return { cols, rows, squares, dpr };
+      return { cols, dpr, rows, squares };
     },
     [squareSize, gridGap, maxOpacity],
   );
@@ -151,7 +151,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
     const updateCanvasSize = () => {
       const newWidth = width || container.clientWidth;
       const newHeight = height || container.clientHeight;
-      setCanvasSize({ width: newWidth, height: newHeight });
+      setCanvasSize({ height: newHeight, width: newWidth });
       gridParams = setupCanvas(canvas, newWidth, newHeight);
     };
 
@@ -205,16 +205,16 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
 
   return (
     <div
-      ref={containerRef}
       className={cn(`h-full w-full ${className}`)}
+      ref={containerRef}
       {...props}
     >
       <canvas
-        ref={canvasRef}
         className="pointer-events-none"
+        ref={canvasRef}
         style={{
-          width: canvasSize.width,
           height: canvasSize.height,
+          width: canvasSize.width,
         }}
       />
     </div>

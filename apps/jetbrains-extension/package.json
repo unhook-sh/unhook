@@ -1,0 +1,50 @@
+{
+  "name": "unhook-jetbrains",
+  "version": "0.2.4",
+  "description": "Unhook JetBrains Plugin - Webhook Development",
+  "private": true,
+  "main": "build/distributions/unhook-jetbrains-0.2.4.zip",
+  "scripts": {
+    "build": "gradle build",
+    "build:plugin": "gradle buildPlugin",
+    "build:debug": "gradle buildPlugin -PdebugBuild=true",
+    "clean": "gradle clean",
+    "dev": "gradle runIde",
+    "test": "gradle test",
+    "verify": "gradle verifyPlugin",
+    "package": "gradle buildPlugin",
+    "publish": "gradle publishPlugin",
+    "publish:test": "gradle publishPlugin -PpublishToJetBrainsMarketplace=false",
+    "typecheck": "echo 'Kotlin compilation handled by Gradle'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unhook-sh/unhook",
+    "directory": "apps/jetbrains-extension"
+  },
+  "keywords": [
+    "webhook",
+    "development",
+    "jetbrains",
+    "intellij",
+    "plugin",
+    "testing",
+    "debugging"
+  ],
+  "author": "Unhook",
+  "license": "MIT",
+  "homepage": "https://unhook.sh",
+  "bugs": {
+    "url": "https://github.com/unhook-sh/unhook/issues"
+  },
+  "engines": {
+    "node": ">=20.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "peerDependencies": {
+    "@unhook/client": "workspace:*",
+    "@unhook/logger": "workspace:*"
+  }
+}

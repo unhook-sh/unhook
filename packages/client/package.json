@@ -4,7 +4,7 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.50.0",
+    "@supabase/supabase-js": "2.50.4",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
@@ -14,7 +14,7 @@
     "debug": "4.4.1",
     "drizzle-orm": "0.44.2",
     "find-up": "7.0.0",
-    "undici": "7.10.0",
+    "undici": "7.11.0",
     "yaml": "2.8.0",
     "zod": "3.25.67"
   },
@@ -24,26 +24,12 @@
     "typescript": "5.8.3"
   },
   "exports": {
-    ".": {
-      "default": "./src/index.ts",
-      "types": "./dist/index.d.ts"
-    },
-    "./config": {
-      "default": "./src/config.ts",
-      "types": "./dist/config.d.ts"
-    },
-    "./utils/headers": {
-      "default": "./src/utils/headers.ts",
-      "types": "./dist/utils/headers.d.ts"
-    },
-    "./utils/delivery": {
-      "default": "./src/utils/delivery.ts",
-      "types": "./dist/utils/delivery.d.ts"
-    },
-    "./utils/extract-event-name": {
-      "default": "./src/utils/extract-event-name.ts",
-      "types": "./dist/utils/extract-event-name.d.ts"
-    }
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./utils/delivery": "./src/utils/delivery.ts",
+    "./utils/extract-body": "./src/utils/extract-body.ts",
+    "./utils/extract-event-name": "./src/utils/extract-event-name.ts",
+    "./utils/headers": "./src/utils/headers.ts"
   },
   "files": [
     "dist",
@@ -82,11 +68,11 @@
   },
   "scripts": {
     "build": "bun build ./src/bundle.ts --outdir ./dist --target node --format esm",
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "tsc --watch",
     "prepublishOnly": "bun typecheck && bun run build && prepare-publish",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",
-  "version": "0.5.0"
+  "version": "0.5.3"
 }

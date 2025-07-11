@@ -1,10 +1,8 @@
 'use client';
 
 import { api } from '@unhook/api/react';
-import {
-  extractEventName,
-  tryDecodeBase64,
-} from '@unhook/client/utils/extract-event-name';
+import { extractBody } from '@unhook/client/utils/extract-body';
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
@@ -135,14 +133,14 @@ export function RealTimeEventStream({
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {events.map((event) => (
               <div
-                key={event.id}
                 className="p-3 bg-muted/50 rounded-lg border border-border/50 animate-in fade-in-0 slide-in-from-top-1"
+                key={event.id}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant="secondary"
                       className={`${getStatusColor(event.status)} flex items-center gap-1`}
+                      variant="secondary"
                     >
                       {getStatusIcon(event.status)}
                       {event.status}
@@ -195,8 +193,7 @@ export function RealTimeEventStream({
                           {(() => {
                             const body = event.originRequest.body;
                             if (typeof body === 'string') {
-                              const decodedBody = tryDecodeBase64(body);
-                              return decodedBody.slice(0, 50);
+                              return extractBody(body)?.slice(0, 50);
                             }
                             return JSON.stringify(body).slice(0, 50);
                           })()}

@@ -1,57 +1,57 @@
 {
-  "version": "0.2.0",
   "configurations": [
     {
-      "type": "node-terminal",
-      "request": "launch",
-      "name": "Debug Current Test File",
       "command": "infisical run -- bun test ${relativeFile}",
       "cwd": "${workspaceFolder}",
       "env": {
         "INFISICAL_RUN": "true"
-      }
+      },
+      "name": "Debug Current Test File",
+      "request": "launch",
+      "type": "node-terminal"
       // "envFile": "${workspaceFolder}/.env",
       // "smartStep": true,
       // "console": "integratedTerminal"
     },
     {
-      "name": "Next.js",
-      "type": "node-terminal",
-      "request": "launch",
       "command": "bun dev",
       "cwd": "${workspaceFolder}/apps/nextjs/",
-      "skipFiles": ["<node_internals>/**"]
+      "name": "Next.js",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node-terminal"
     },
     {
-      "type": "bun",
-      "request": "launch",
+      "args": ["-p", "3000", "-k", "1234567890"],
       "name": "Bun",
       "program": "${workspaceFolder}/apps/cli/src/cli.ink.tsx",
-      "args": ["-p", "3000", "-k", "1234567890"]
+      "request": "launch",
+      "type": "bun"
     },
     {
-      "name": "Run VSCode Extension",
-      "type": "extensionHost",
-      "request": "launch",
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
       ],
-      "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
       "cwd": "${workspaceFolder}/apps/vscode-extension",
-      "preLaunchTask": "prepare-extension"
+      "name": "Run VSCode Extension",
+      "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
+      "preLaunchTask": "prepare-extension",
+      "request": "launch",
+      "type": "extensionHost"
     },
     {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug cli.js",
-      "program": "${workspaceFolder}/apps/cli/bin/cli.js",
       "console": "integratedTerminal",
-      "stopOnEntry": false,
-      "runtimeArgs": ["--inspect-brk"],
       "env": {
         "NODE_OPTIONS": "--unhandled-rejections=strict"
-      }
+      },
+      "name": "Debug cli.js",
+      "program": "${workspaceFolder}/apps/cli/bin/cli.js",
+      "request": "launch",
+      "runtimeArgs": ["--inspect-brk"],
+      "stopOnEntry": false,
+      "type": "node"
     }
-  ]
+  ],
+  "version": "0.2.0"
 }

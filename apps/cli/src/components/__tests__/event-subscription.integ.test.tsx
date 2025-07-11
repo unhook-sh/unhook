@@ -23,31 +23,31 @@ type ChannelPayload = RealtimePostgresInsertPayload<Tables<'events'>>;
 // Helper functions
 function createTestEvent({ webhookId }: { webhookId: string }): TestEvent {
   return {
+    apiKey: null,
+    createdAt: new Date(),
+    failedReason: null,
     id: createId({ prefix: 'evt' }),
-    webhookId,
+    maxRetries: 3,
+    orgId: mockOrg.id,
     originRequest: {
-      method: 'POST',
-      id: createId({ prefix: 'req' }),
+      body: JSON.stringify({ test: 'data' }),
+      clientIp: '127.0.0.1',
+      contentType: 'application/json',
       headers: {
         'Content-Type': 'application/json',
       },
-      sourceUrl: 'https://example.com',
+      id: createId({ prefix: 'req' }),
+      method: 'POST',
       size: 100,
-      contentType: 'application/json',
-      clientIp: '127.0.0.1',
-      body: JSON.stringify({ test: 'data' }),
+      sourceUrl: 'https://example.com',
     },
+    retryCount: 0,
     source: 'test',
     status: 'pending' as const,
     timestamp: new Date(),
-    userId: mockUser.id,
-    orgId: mockOrg.id,
-    createdAt: new Date(),
     updatedAt: null,
-    apiKey: null,
-    failedReason: null,
-    retryCount: 0,
-    maxRetries: 3,
+    userId: mockUser.id,
+    webhookId,
   };
 }
 
@@ -77,9 +77,9 @@ async function setupChannel({
   }
 
   testLogger('[test:realtime] Connection state:', {
-    isConnected: supabase.realtime.isConnected(),
-    connectionState: supabase.realtime.connectionState(),
     channels: supabase.realtime.channels,
+    connectionState: supabase.realtime.connectionState(),
+    isConnected: supabase.realtime.isConnected(),
   });
 
   const channel = supabase.channel(channelName);
@@ -108,15 +108,15 @@ async function setupChannel({
         testLogger(
           `[test:realtime] Received ${filter ? 'filtered ' : ''}event:`,
           {
+            channelState: channel.state,
+            connectionState: supabase.realtime.connectionState(),
             eventId: payload.new?.id,
             eventType: payload.eventType,
-            table: payload.table,
-            schema: payload.schema,
             filter: filter,
-            channelState: channel.state,
             isConnected: supabase.realtime.isConnected(),
-            connectionState: supabase.realtime.connectionState(),
             payload: JSON.stringify(payload, null, 2),
+            schema: payload.schema,
+            table: payload.table,
           },
         );
         if (payload.new) {
@@ -136,11 +136,11 @@ async function setupChannel({
       testLogger(
         `[test:realtime] ${filter ? 'Filtered ' : ''}Channel status:`,
         {
-          status,
-          error: error?.message,
           channelState: channel.state,
-          isConnected: supabase.realtime.isConnected(),
           connectionState: supabase.realtime.connectionState(),
+          error: error?.message,
+          isConnected: supabase.realtime.isConnected(),
+          status,
         },
       );
 
@@ -153,10 +153,10 @@ async function setupChannel({
         testLogger(
           `[test:realtime] ${filter ? 'Filtered ' : ''}Channel subscription failed:`,
           {
-            error: error?.message || 'unknown error',
             channelState: channel.state,
-            isConnected: supabase.realtime.isConnected(),
             connectionState: supabase.realtime.connectionState(),
+            error: error?.message || 'unknown error',
+            isConnected: supabase.realtime.isConnected(),
           },
         );
         reject(
@@ -171,8 +171,8 @@ async function setupChannel({
   await wait(3000);
   testLogger('[test:realtime] Channel state after subscription:', {
     channelState: channel.state,
-    isConnected: supabase.realtime.isConnected(),
     connectionState: supabase.realtime.connectionState(),
+    isConnected: supabase.realtime.isConnected(),
   });
 
   return { channel, events, payloadPromise };
@@ -265,8 +265,8 @@ describe('EventSubscription Integration', () => {
       const secondWebhook = await createTestWebhook();
 
       const { channel, events, payloadPromise } = await setupChannel({
-        supabase,
         filter: `webhookId=eq.${mockWebhook.id}`,
+        supabase,
       });
 
       const testEvent1 = createTestEvent({ webhookId: mockWebhook.id });
@@ -293,8 +293,8 @@ describe('EventSubscription Integration', () => {
                 '[test:realtime] Timeout waiting for payload. Current state:',
                 {
                   channelState: channel.state,
-                  isConnected: supabase.realtime.isConnected(),
                   connectionState: supabase.realtime.connectionState(),
+                  isConnected: supabase.realtime.isConnected(),
                 },
               );
               reject(new Error('Timeout waiting for payload'));

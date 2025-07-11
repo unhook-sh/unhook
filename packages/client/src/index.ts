@@ -17,9 +17,9 @@ export function startWebhookClient(options: WebhookClientOptions): () => void {
   let isStopped = false;
 
   log.main('Initializing webhook client with options:', {
+    metadata,
     port,
     webhookId,
-    metadata,
   });
 
   // Initialize connection manager and webhook handler
@@ -41,9 +41,9 @@ export function startWebhookClient(options: WebhookClientOptions): () => void {
       'postgres_changes',
       {
         event: 'INSERT',
+        filter: `id=eq.${webhookId}`,
         schema: 'public',
         table: 'requests',
-        filter: `id=eq.${webhookId}`,
       },
       webhookHandler.handleRequest.bind(webhookHandler),
     )
@@ -68,5 +68,8 @@ export function startWebhookClient(options: WebhookClientOptions): () => void {
 export * from './config';
 export * from './connection-manager';
 export * from './types';
+export * from './utils/extract-body';
 export * from './utils/headers';
+export * from './utils/try-decode-base64';
+export * from './utils/try-parse-json';
 export * from './webhook-handler';

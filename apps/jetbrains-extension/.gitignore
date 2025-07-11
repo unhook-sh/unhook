@@ -1,0 +1,26 @@
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Gradle
+build/
+.gradle/
+gradle-app.setting
+
+# Distribution files
+*.zip
+*.tar.gz
+
+# Local configuration files
+local.properties
+gradle.properties.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

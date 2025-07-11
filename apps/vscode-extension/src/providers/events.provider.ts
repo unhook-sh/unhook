@@ -3,9 +3,14 @@ import {
   loadConfig,
   type WebhookConfig,
 } from '@unhook/client/config';
+import {
+  createRequestsForEventToAllDestinations,
+  handlePendingRequest,
+} from '@unhook/client/utils/delivery';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { isDeliveryEnabled } from '../commands/delivery.commands';
 import type { AuthStore } from '../services/auth.service';
 import { SettingsService } from '../services/settings.service';
 import { EventItem } from '../tree-items/event.item';
@@ -28,7 +33,7 @@ export class EventsProvider
   private previousEvents: EventTypeWithRequest[] = [];
   public authStore: AuthStore | null = null;
   private pollInterval: NodeJS.Timeout | null = null;
-  private readonly POLL_INTERVAL_MS = 10000; // 10 seconds
+  private readonly POLL_INTERVAL_MS = 2000; // Changed from 10000 to 2000 for more responsive updates
   private config: WebhookConfig | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
 
@@ -119,6 +124,11 @@ export class EventsProvider
     const settings = SettingsService.getInstance().getSettings();
     if (settings.notifications.showForNewEvents) {
       this.checkForNewEventsAndNotify(events);
+    }
+
+    // Handle automatic delivery for new events
+    if (isDeliveryEnabled() && this.previousEvents.length > 0) {
+      this.handleNewEventsDelivery(events);
     }
 
     // Store previous events for comparison
@@ -217,11 +227,18 @@ export class EventsProvider
     }
 
     if (this.authStore?.isSignedIn) {
+      // Get polling interval from settings
+      const settings = SettingsService.getInstance().getSettings();
+      const pollIntervalMs =
+        settings.events.pollIntervalMs ?? this.POLL_INTERVAL_MS;
+
+      log(`Starting event polling with interval: ${pollIntervalMs}ms`);
+
       // Immediately fetch events, then start polling
       this.fetchAndUpdateEvents();
       this.pollInterval = setInterval(() => {
         this.fetchAndUpdateEvents();
-      }, this.POLL_INTERVAL_MS);
+      }, pollIntervalMs);
     }
   }
 
@@ -229,7 +246,7 @@ export class EventsProvider
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     const settings = SettingsService.getInstance().getSettings();
     const configFilePath = settings.configFilePath;
-    log('Getting config', { workspaceFolder, configFilePath });
+    log('Getting config', { configFilePath, workspaceFolder });
     if (this.config) return this.config;
     let configPath: string | null = null;
     if (configFilePath && configFilePath.trim() !== '') {
@@ -299,5 +316,91 @@ export class EventsProvider
       }
     }
     throw new Error(`Request ${requestId} not found`);
+  }
+
+  private async handleNewEventsDelivery(newEvents: EventTypeWithRequest[]) {
+    const authStore = this.authStore;
+    if (!authStore || !authStore.isSignedIn) return;
+
+    const config = await this.getConfig();
+    if (!config) {
+      log('No config found, skipping automatic delivery');
+      return;
+    }
+
+    const previousEventIds = this.previousEvents.map((e) => e.id);
+    const newPendingEvents = newEvents.filter(
+      (event) =>
+        previousEventIds.indexOf(event.id) === -1 && event.status === 'pending',
+    );
+
+    if (newPendingEvents.length === 0) return;
+
+    log(
+      `Processing ${newPendingEvents.length} new pending events for delivery`,
+    );
+
+    for (const event of newPendingEvents) {
+      try {
+        log(`Delivering event ${event.id}`);
+
+        // Create requests for all destinations
+        await createRequestsForEventToAllDestinations({
+          api: authStore.api,
+          delivery: config.delivery,
+          destination: config.destination,
+          event,
+          isEventRetry: false,
+          onRequestCreated: async (request) => {
+            log(`Created request ${request.id} for event ${event.id}`);
+
+            // Handle the pending request immediately
+            await handlePendingRequest({
+              api: authStore.api,
+              delivery: config.delivery,
+              destination: config.destination,
+              request,
+              requestFn: async (url, options) => {
+                const response = await fetch(url, options);
+                const responseText = await response.text();
+                return {
+                  body: { text: () => Promise.resolve(responseText) },
+                  headers: Object.fromEntries(response.headers.entries()),
+                  statusCode: response.status,
+                };
+              },
+            });
+
+            log(`Delivered request ${request.id} for event ${event.id}`);
+          },
+          pingEnabledFn: (destination) => !!destination.ping,
+        });
+
+        // Update event status
+        if (this.authStore) {
+          await this.authStore.api.events.updateEventStatus.mutate({
+            eventId: event.id,
+            status: 'completed',
+          });
+        }
+
+        log(`Successfully delivered event ${event.id}`);
+      } catch (error) {
+        log(`Failed to deliver event ${event.id}:`, error);
+
+        // Update event status to failed if max retries reached
+        if (event.retryCount >= event.maxRetries && this.authStore) {
+          await this.authStore.api.events.updateEventStatus.mutate({
+            eventId: event.id,
+            failedReason:
+              error instanceof Error ? error.message : 'Delivery failed',
+            status: 'failed',
+          });
+        }
+      }
+    }
+
+    // Refresh events after processing
+    this.fetchAndUpdateEvents();
   }
 }

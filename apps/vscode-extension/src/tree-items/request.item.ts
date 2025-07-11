@@ -1,3 +1,4 @@
+import { extractBody } from '@unhook/client/utils/extract-body';
 import type { RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { formatDistance } from 'date-fns';
@@ -6,19 +7,6 @@ import { getStatusIconPath } from '../utils/status-icon.utils';
 import type { EventItem } from './event.item';
 
 const log = debug('unhook:vscode:request-item');
-
-function decodeBase64AndFormatJson(base64String: string): string {
-  try {
-    // Decode base64
-    const decoded = Buffer.from(base64String, 'base64').toString('utf-8');
-    // Try to parse as JSON and format it
-    const parsed = JSON.parse(decoded);
-    return JSON.stringify(parsed, null, 2);
-  } catch {
-    // If not valid JSON, return the decoded string
-    return Buffer.from(base64String, 'base64').toString('utf-8');
-  }
-}
 
 export function formatRequestDetails(request: RequestType): string {
   const lines: string[] = [];
@@ -45,7 +33,7 @@ export function formatRequestDetails(request: RequestType): string {
   if (request.request.body) {
     lines.push('# Request Body');
     lines.push('```json');
-    lines.push(decodeBase64AndFormatJson(request.request.body));
+    lines.push(extractBody(request.request.body) ?? '');
     lines.push('```');
     lines.push('');
   }
@@ -70,7 +58,7 @@ export function formatRequestDetails(request: RequestType): string {
     if (request.response.body) {
       lines.push('# Response Body');
       lines.push('```json');
-      lines.push(decodeBase64AndFormatJson(request.response.body));
+      lines.push(extractBody(request.response.body) ?? '');
       lines.push('```');
     }
   }
@@ -88,7 +76,7 @@ export class RequestItem extends vscode.TreeItem {
     this.description = formatDistance(request.timestamp, new Date(), {
       addSuffix: true,
     });
-    this.iconPath = getStatusIconPath({ request, context });
+    this.iconPath = getStatusIconPath({ context, request });
     this.contextValue = 'request';
     this.resourceUri = vscode.Uri.parse('unhook://request');
     this.tooltip = new vscode.MarkdownString(
@@ -98,14 +86,14 @@ export class RequestItem extends vscode.TreeItem {
     this.tooltip.supportHtml = true;
 
     const command = {
+      arguments: [this],
       command: 'unhook.viewRequest',
       title: 'View Request Details',
-      arguments: [this],
     };
     log('Setting up command for request', {
-      requestId: request.id,
       hasRequest: !!this.request,
       itemConstructor: this.constructor.name,
+      requestId: request.id,
     });
     this.command = command;
   }

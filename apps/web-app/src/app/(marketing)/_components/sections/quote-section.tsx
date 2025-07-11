@@ -6,8 +6,8 @@ export function QuoteSection() {
 
   return (
     <section
-      id="quote"
       className="flex flex-col items-center justify-center gap-8 w-full p-14 bg-accent z-20"
+      id="quote"
     >
       <blockquote className="max-w-3xl text-left px-4">
         <p className="text-xl md:text-2xl text-primary leading-relaxed tracking-tighter font-medium mb-6">
@@ -17,9 +17,9 @@ export function QuoteSection() {
         <div className="flex gap-4">
           <div className="size-10 rounded-full bg-primary border border-border">
             <Image
-              src={quoteSection.author.image}
               alt={quoteSection.author.name}
               className="size-full rounded-full object-contain"
+              src={quoteSection.author.image}
             />
           </div>
           <div className="text-left">

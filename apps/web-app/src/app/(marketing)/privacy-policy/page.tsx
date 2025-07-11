@@ -188,8 +188,8 @@ export default function Page() {
             online resources at{' '}
             <a
               href="http://www.networkadvertising.org"
-              target="_blank"
               rel="noreferrer"
+              target="_blank"
             >
               http://www.networkadvertising.org
             </a>{' '}

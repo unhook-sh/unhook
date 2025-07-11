@@ -7,10 +7,10 @@ import { RollingFileDestination } from '@unhook/logger/destinations/rolling-file
 const logDir = join(homedir(), '.unhook');
 defaultLogger.addDestination(
   new RollingFileDestination({
-    filepath: join(logDir, 'unhook.log'),
     createDirectory: true,
-    maxSize: 10 * 1024 * 1024, // 10MB
-    maxFiles: 5,
+    filepath: join(logDir, 'unhook.log'),
+    maxFiles: 5, // 10MB
+    maxSize: 10 * 1024 * 1024,
     rotationInterval: 60 * 60 * 1000, // 1 hour
   }),
 );
@@ -51,23 +51,23 @@ async function main() {
     capture({
       event: 'cli_loaded',
       properties: {
-        webhookId: config.webhookId,
         clientId: config.clientId,
-        debug: args.verbose,
-        version: args.version,
         command: args.command,
+        debug: args.verbose,
         selfHosted: !!config.server?.apiUrl,
+        version: args.version,
+        webhookId: config.webhookId,
       },
     });
 
     setupProcessHandlers();
 
     log('Starting CLI', {
-      webhookId: config.webhookId,
+      apiUrl: config.server?.apiUrl,
+      command: args.command,
       debug: args.verbose,
       version: args.version,
-      command: args.command,
-      apiUrl: config.server?.apiUrl,
+      webhookId: config.webhookId,
     });
 
     const renderInstance = render(<Layout />, {

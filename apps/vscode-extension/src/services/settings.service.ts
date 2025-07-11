@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 
 export interface UnhookSettings {
   output: {
@@ -9,6 +10,7 @@ export interface UnhookSettings {
   events: {
     maxHistory: number;
     autoClear: boolean;
+    pollIntervalMs: number;
   };
   notifications: {
     showForNewEvents: boolean;
@@ -50,22 +52,29 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
 
   private loadSettings(): UnhookSettings {
     const config = vscode.workspace.getConfiguration('unhook');
+    const configManager = ConfigManager.getInstance();
+    const isProduction = !configManager.isDevelopment();
+
+    // In production, always disable auto-show output regardless of user settings
+    const autoShowSetting = isProduction ? false : Boolean(config.get('output.autoShow'));
+
     return {
-      output: {
-        autoShow: config.get('output.autoShow') ?? true,
-        maxLines: config.get('output.maxLines') ?? 1000,
+      configFilePath: config.get('configFilePath') ?? '',
+      delivery: {
+        enabled: config.get('delivery.enabled') ?? true,
       },
       events: {
-        maxHistory: config.get('events.maxHistory') ?? 100,
         autoClear: config.get('events.autoClear') ?? false,
+        maxHistory: config.get('events.maxHistory') ?? 100,
+        pollIntervalMs: config.get('events.pollIntervalMs') ?? 2000,
       },
       notifications: {
         showForNewEvents: config.get('notifications.showForNewEvents') ?? true,
       },
-      delivery: {
-        enabled: config.get('delivery.enabled') ?? true,
+      output: {
+        autoShow: autoShowSetting,
+        maxLines: config.get('output.maxLines') ?? 1000,
       },
-      configFilePath: config.get('configFilePath') ?? '',
     };
   }
 

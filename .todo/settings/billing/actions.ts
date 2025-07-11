@@ -30,11 +30,11 @@ export const getStripePortalLink = action
       });
 
       if (!organization) {
-        return { success: false, error: 'Organization not found' };
+        return { error: 'Organization not found', success: false };
       }
 
       if (!organization.org.stripe_customer_id) {
-        return { success: false, error: 'No Stripe customer found' };
+        return { error: 'No Stripe customer found', success: false };
       }
 
       const session = await stripe.billingPortal.sessions.create({
@@ -43,14 +43,14 @@ export const getStripePortalLink = action
       });
 
       return {
-        success: true,
         data: { url: session.url } as StripePortalResponse,
+        success: true,
       };
     } catch (error) {
       return {
-        success: false,
-        message: 'Failed to create portal session',
         error,
+        message: 'Failed to create portal session',
+        success: false,
       };
     }
   });
@@ -71,33 +71,33 @@ async function getPriceByLookupKey(props: { lookupKey: string }): Promise<
     const { lookupKey } = props;
 
     const prices = await stripe.prices.list({
-      lookup_keys: [lookupKey],
       active: true,
       limit: 1,
+      lookup_keys: [lookupKey],
     });
 
     if (!prices.data.length) {
       return {
-        success: false,
         error: `No active price found with lookup key: ${lookupKey}`,
+        success: false,
       };
     }
 
     if (!prices.data[0]) {
       return {
-        success: false,
         error: `No active price found with lookup key: ${lookupKey}`,
+        success: false,
       };
     }
 
     return {
-      success: true,
       data: prices.data[0],
+      success: true,
     };
   } catch (error) {
     return {
-      success: false,
       error,
+      success: false,
     };
   }
 }
@@ -105,11 +105,11 @@ async function getPriceByLookupKey(props: { lookupKey: string }): Promise<
 export const getStripeCheckoutLink = action
   .schema(
     z.object({
-      orgId: z.string(),
-      successUrl: z.string(),
       cancelUrl: z.string(),
-      priceLookupKey: z.string(),
       meteredPriceLookupKey: z.string(),
+      orgId: z.string(),
+      priceLookupKey: z.string(),
+      successUrl: z.string(),
     }),
   )
   .action(async ({ parsedInput }) => {
@@ -127,11 +127,11 @@ export const getStripeCheckoutLink = action
       });
 
       if (!organization) {
-        return { success: false, error: 'Organization not found' };
+        return { error: 'Organization not found', success: false };
       }
 
       if (!organization.org.stripe_customer_id) {
-        return { success: false, error: 'No Stripe customer found' };
+        return { error: 'No Stripe customer found', success: false };
       }
 
       const flatPrice = await getPriceByLookupKey({
@@ -144,8 +144,8 @@ export const getStripeCheckoutLink = action
 
       if (!flatPrice.success || !eventsPrice.success) {
         return {
-          success: false,
           error: 'Failed to retrieve prices',
+          success: false,
         };
       }
 
@@ -167,11 +167,11 @@ export const getStripeCheckoutLink = action
         },
         line_items: [
           {
-            price: flatPrice.data.id,
-            quantity: 1,
             adjustable_quantity: {
               enabled: false,
             },
+            price: flatPrice.data.id,
+            quantity: 1,
           },
           {
             price: eventsPrice.data.id,
@@ -186,22 +186,22 @@ export const getStripeCheckoutLink = action
       });
 
       return {
-        success: true,
         data: { url: checkoutSession.url },
+        success: true,
       };
     } catch (error) {
       return {
-        success: false,
-        message: 'Failed to create checkout session',
         error,
+        message: 'Failed to create checkout session',
+        success: false,
       };
     }
   });
 export const getStripeInvoices = action
   .schema(
     z.object({
-      orgId: z.string(),
       limit: z.number().default(10),
+      orgId: z.string(),
       startingAfter: z.string().optional(),
     }),
   )
@@ -215,11 +215,11 @@ export const getStripeInvoices = action
       });
 
       if (!organization) {
-        return { success: false, error: 'Organization not found' };
+        return { error: 'Organization not found', success: false };
       }
 
       if (!organization.org.stripe_customer_id) {
-        return { success: false, error: 'No Stripe customer found' };
+        return { error: 'No Stripe customer found', success: false };
       }
 
       const invoices = await stripe.invoices
@@ -229,16 +229,16 @@ export const getStripeInvoices = action
         .autoPagingToArray({ limit });
 
       return {
-        success: true,
         data: invoices.filter(
           (invoice) => invoice.status !== 'draft' && invoice.status !== 'void',
         ),
+        success: true,
       };
     } catch (error) {
       return {
-        success: false,
-        message: 'Failed to fetch invoices',
         error,
+        message: 'Failed to fetch invoices',
+        success: false,
       };
     }
   });

@@ -1,3 +1,5 @@
+import 'server-only';
+
 import {
   Body,
   Button,
@@ -42,10 +44,10 @@ export const WebhookAccessResponseEmail = ({
         <Container style={container}>
           <Section style={logoContainer}>
             <Img
+              alt="Unhook"
+              height="36"
               src="https://unhook.sh/logo.png"
               width="120"
-              height="36"
-              alt="Unhook"
             />
           </Section>
 
@@ -91,7 +93,7 @@ export const WebhookAccessResponseEmail = ({
 
               {dashboardUrl && (
                 <Section style={buttonContainer}>
-                  <Button style={primaryButton} href={dashboardUrl}>
+                  <Button href={dashboardUrl} style={primaryButton}>
                     Go to Dashboard
                   </Button>
                 </Section>
@@ -131,11 +133,11 @@ const main = {
 
 const container = {
   backgroundColor: '#ffffff',
-  margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
   borderRadius: '5px',
   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+  margin: '0 auto',
+  marginBottom: '64px',
+  padding: '20px 0 48px',
 };
 
 const logoContainer = {
@@ -147,31 +149,31 @@ const h1 = {
   fontSize: '24px',
   fontWeight: 'bold',
   margin: '0',
-  padding: '0 48px',
   marginBottom: '24px',
+  padding: '0 48px',
 };
 
 const text = {
   color: '#333',
   fontSize: '16px',
   lineHeight: '24px',
-  padding: '0 48px',
   marginBottom: '16px',
+  padding: '0 48px',
 };
 
 const messageLabel = {
   color: '#666',
   fontSize: '14px',
-  padding: '0 48px',
   marginBottom: '8px',
+  padding: '0 48px',
 };
 
 const messageSection = {
   backgroundColor: '#f9fafb',
+  borderLeft: '4px solid #3b82f6',
   borderRadius: '4px',
   margin: '0 48px 24px',
   padding: '16px',
-  borderLeft: '4px solid #3b82f6',
 };
 
 const messageText = {
@@ -183,10 +185,10 @@ const messageText = {
 
 const successSection = {
   backgroundColor: '#f0fdf4',
+  borderLeft: '4px solid #10b981',
   borderRadius: '4px',
   margin: '0 48px 24px',
   padding: '20px',
-  borderLeft: '4px solid #10b981',
 };
 
 const successTitle = {
@@ -204,10 +206,10 @@ const successText = {
 
 const rejectionSection = {
   backgroundColor: '#fef2f2',
+  borderLeft: '4px solid #ef4444',
   borderRadius: '4px',
   margin: '0 48px 24px',
   padding: '20px',
-  borderLeft: '4px solid #ef4444',
 };
 
 const rejectionText = {
@@ -228,30 +230,30 @@ const codeLabel = {
 
 const codeBlock = {
   backgroundColor: '#1e293b',
-  color: '#e2e8f0',
-  padding: '12px 16px',
   borderRadius: '4px',
-  fontSize: '14px',
-  fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+  color: '#e2e8f0',
   display: 'block',
+  fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+  fontSize: '14px',
   overflow: 'auto',
+  padding: '12px 16px',
 };
 
 const buttonContainer = {
-  padding: '0 48px',
   marginBottom: '32px',
+  padding: '0 48px',
 };
 
 const primaryButton = {
   backgroundColor: '#3b82f6',
   borderRadius: '5px',
   color: '#fff',
+  display: 'inline-block',
   fontSize: '16px',
   fontWeight: 'bold',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
   padding: '12px 24px',
+  textAlign: 'center' as const,
+  textDecoration: 'none',
 };
 
 const hr = {
@@ -263,6 +265,6 @@ const footerText = {
   color: '#666',
   fontSize: '14px',
   lineHeight: '20px',
-  padding: '0 48px',
   marginBottom: '8px',
+  padding: '0 48px',
 };

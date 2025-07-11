@@ -21,11 +21,11 @@ export class TeamsDestination implements Destination {
       const teamsMessage = this.formatTeamsMessage(data);
 
       const response = await fetch(config.webhookUrl, {
-        method: 'POST',
+        body: JSON.stringify(teamsMessage),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(teamsMessage),
+        method: 'POST',
       });
 
       const responseText = await response.text();
@@ -43,18 +43,18 @@ export class TeamsDestination implements Destination {
       });
 
       return {
-        success: true,
         response: {
-          status: response.status,
-          headers,
           body: responseText,
+          headers,
+          status: response.status,
         },
+        success: true,
       };
     } catch (error) {
       log('Failed to send to Teams:', error);
       return {
-        success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
       };
     }
   }
@@ -81,8 +81,8 @@ export class TeamsDestination implements Destination {
         eventData.timestamp || eventData.created_at || new Date().toISOString();
 
       sections.push({
-        activityTitle: `Webhook Event: ${eventType}`,
         activitySubtitle: timestamp,
+        activityTitle: `Webhook Event: ${eventType}`,
         facts: Object.entries(data)
           .slice(0, 10)
           .map(([key, value]) => ({
@@ -95,26 +95,26 @@ export class TeamsDestination implements Destination {
       // Add raw data section if needed
       if (Object.keys(data).length > 10) {
         sections.push({
+          markdown: true,
           text: `\`\`\`json\n${JSON.stringify(data, null, 2).substring(
             0,
             1000,
           )}\`\`\``,
-          markdown: true,
         });
       }
     } else {
       sections.push({
-        text: String(data),
         markdown: false,
+        text: String(data),
       });
     }
 
     return {
-      '@type': 'MessageCard',
       '@context': 'https://schema.org/extensions',
+      '@type': 'MessageCard',
+      sections,
       summary: 'Webhook Event',
       themeColor: '0078D7',
-      sections,
     };
   }
 

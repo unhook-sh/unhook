@@ -20,11 +20,11 @@ const defaultApiState: Partial<ApiState> = {
 const store = createStore<ApiStore>()((set) => ({
   ...(defaultApiState as ApiState),
 
-  // Individual setters remain simple
-  setApi: (api) => set((state) => ({ ...state, api })),
-
   // Reset method to restore default state
   reset: () => set(defaultApiState as ApiState),
+
+  // Individual setters remain simple
+  setApi: (api) => set((state) => ({ ...state, api })),
 }));
 
 export const useApiStore: ReturnType<typeof createSelectors<typeof store>> =

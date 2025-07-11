@@ -16,17 +16,17 @@ interface BoxConfig {
 
 const boxConfigs: BoxConfig[] = [
   {
-    title: 'payment.created',
     className: 'bg-secondary text-white',
+    title: 'payment.created',
   },
   {
-    title: 'payment.updated',
     className: 'bg-secondary/40 text-white',
+    title: 'payment.updated',
   },
   {
-    title: 'payment.updated',
     className:
       'bg-secondary/20 border border-secondary border-dashed text-secondary',
+    title: 'payment.updated',
   },
 ];
 
@@ -105,71 +105,71 @@ export function FourthBentoAnimation({
   return (
     <div
       className="w-full h-full flex flex-col relative"
-      onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
     >
       <div className="absolute inset-0 flex -z-10 [mask:linear-gradient(180deg,transparent,black_40%,black_40%,transparent)] ">
         <div className=" w-1/2 h-full flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
         <div className=" w-1/2 h-full flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent "
+              key={index}
             />
           ))}
         </div>
         <div className=" w-1/2 h-full flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
         <div className=" w-1/2 h-full flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
         <div className="w-1/2 h-full border-x border-border/70 border-dashed flex items-start justify-between">
           {[1, 2, 3, 4, 5].map((index) => (
             <div
-              key={index}
               className="w-px h-5 bg-primary first:bg-transparent"
+              key={index}
             />
           ))}
         </div>
@@ -185,33 +185,33 @@ export function FourthBentoAnimation({
       </div>
 
       <motion.div
-        className="absolute top-10 w-[2px] h-[calc(100%-80px)] bg-gradient-to-b from-black dark:from-accent to-transparent z-10"
-        style={{
-          x: smoothX,
-          translateX: '-50%',
-        }}
-        initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
         }}
+        className="absolute top-10 w-[2px] h-[calc(100%-80px)] bg-gradient-to-b from-black dark:from-accent to-transparent z-10"
+        initial={{ opacity: 0 }}
+        style={{
+          translateX: '-50%',
+          x: smoothX,
+        }}
         transition={{
-          opacity: { duration: 0.2 },
-          default: { duration: 0 }, // Makes position update instant
+          default: { duration: 0 },
+          opacity: { duration: 0.2 }, // Makes position update instant
         }}
       />
       <motion.div
-        className="absolute top-14 bg-black dark:bg-accent h-6 z-20 flex items-center justify-center text-xs p-2 rounded-md shadow-[0px_2.2px_6.6px_0px_rgba(18,43,105,0.04),0px_1.1px_2.2px_0px_rgba(18,43,105,0.08),0px_0px_0px_1.1px_rgba(18,43,105,0.08),0px_1.1px_0px_0px_rgba(255,255,255,0.20)_inset,0px_4.4px_6.6px_0px_rgba(255,255,255,0.01)_inset]"
-        style={{
-          x: smoothX,
-          translateX: '-50%',
-        }}
-        initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
         }}
+        className="absolute top-14 bg-black dark:bg-accent h-6 z-20 flex items-center justify-center text-xs p-2 rounded-md shadow-[0px_2.2px_6.6px_0px_rgba(18,43,105,0.04),0px_1.1px_2.2px_0px_rgba(18,43,105,0.08),0px_0px_0px_1.1px_rgba(18,43,105,0.08),0px_1.1px_0px_0px_rgba(255,255,255,0.20)_inset,0px_4.4px_6.6px_0px_rgba(255,255,255,0.01)_inset]"
+        initial={{ opacity: 0 }}
+        style={{
+          translateX: '-50%',
+          x: smoothX,
+        }}
         transition={{
-          opacity: { duration: 0.2 },
-          default: { duration: 0 }, // Makes position update instant
+          default: { duration: 0 },
+          opacity: { duration: 0.2 }, // Makes position update instant
         }}
       >
         <span className="text-white">10:00 AM</span>
@@ -224,14 +224,6 @@ export function FourthBentoAnimation({
         <AnimatePresence>
           {translateXValues.map((translateX, index) => (
             <motion.div
-              key={`box-${translateX}`}
-              initial={{
-                opacity: 0,
-                x:
-                  index % 2 === 0
-                    ? -50
-                    : containerRef.current?.getBoundingClientRect().width || 0,
-              }}
               animate={
                 isInView
                   ? {
@@ -247,15 +239,23 @@ export function FourthBentoAnimation({
                               .width || 0,
                     }
               }
-              exit={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
-              transition={{
-                type: 'spring',
-                stiffness: 220,
-                damping: 18,
-                duration: 0.3,
-                delay: startAnimationDelay + index * 0.2,
-              }}
               className={`flex items-center h-8 justify-center gap-2 rounded-lg w-[250px] p-2 shadow-[0px_9px_5px_0px_#00000005,0px_4px_4px_0px_#00000009,0px_1px_2px_0px_#00000010] ${boxConfigs[index]?.className}`}
+              exit={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
+              initial={{
+                opacity: 0,
+                x:
+                  index % 2 === 0
+                    ? -50
+                    : containerRef.current?.getBoundingClientRect().width || 0,
+              }}
+              key={`box-${translateX}`}
+              transition={{
+                damping: 18,
+                delay: startAnimationDelay + index * 0.2,
+                duration: 0.3,
+                stiffness: 220,
+                type: 'spring',
+              }}
             >
               <p className="font-medium text-sm">{boxConfigs[index]?.title}</p>
             </motion.div>

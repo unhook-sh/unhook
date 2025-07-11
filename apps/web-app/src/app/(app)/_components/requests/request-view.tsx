@@ -72,17 +72,17 @@ export function RequestView() {
           <div className="relative w-[300px]">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              type="search"
-              placeholder="Search requests..."
               className="pl-8"
-              value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search requests..."
+              type="search"
+              value={searchQuery}
             />
           </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => refetch()}>
+                <Button onClick={() => refetch()} size="icon" variant="outline">
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -93,9 +93,9 @@ export function RequestView() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant={showFilters ? 'default' : 'outline'}
-                  size="icon"
                   onClick={toggleFilters}
+                  size="icon"
+                  variant={showFilters ? 'default' : 'outline'}
                 >
                   <Filter className="h-4 w-4" />
                 </Button>
@@ -118,16 +118,16 @@ export function RequestView() {
               className={`flex flex-1 flex-col overflow-hidden ${showMetadata ? 'md:w-[60%]' : 'w-full'}`}
             >
               <RequestList
-                requests={filteredRequests}
                 isLoading={isLoading}
                 onSelectRequest={handleRequestSelect}
+                requests={filteredRequests}
                 selectedRequestId={selectedRequest?.id}
               />
 
               {showDetails && selectedRequest && (
                 <RequestDetails
-                  request={selectedRequest}
                   onClose={handleCloseDetails}
+                  request={selectedRequest}
                 />
               )}
             </div>
@@ -135,8 +135,8 @@ export function RequestView() {
             {showMetadata && selectedRequest && (
               <div className="hidden border-l md:block md:w-[40%]">
                 <RequestMetadata
-                  request={selectedRequest}
                   onClose={handleCloseMetadata}
+                  request={selectedRequest}
                 />
               </div>
             )}

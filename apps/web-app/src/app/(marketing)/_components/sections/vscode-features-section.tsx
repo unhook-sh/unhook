@@ -7,28 +7,28 @@ import { motion } from 'motion/react';
 
 const features = [
   {
-    icon: <Code className="w-6 h-6" />,
-    title: 'Native Integration',
     description: 'Seamlessly integrates with VS Code sidebar',
+    icon: <Code className="w-6 h-6" />,
     time: '2s ago',
+    title: 'Native Integration',
   },
   {
-    icon: <Play className="w-6 h-6" />,
-    title: 'One-Click Replay',
     description: 'Replay webhook events instantly',
+    icon: <Play className="w-6 h-6" />,
     time: '5s ago',
+    title: 'One-Click Replay',
   },
   {
-    icon: <Users className="w-6 h-6" />,
-    title: 'Team Collaboration',
     description: 'Share and debug with your team',
+    icon: <Users className="w-6 h-6" />,
     time: '8s ago',
+    title: 'Team Collaboration',
   },
   {
-    icon: <Zap className="w-6 h-6" />,
-    title: 'Real-time Monitoring',
     description: 'Live webhook event tracking',
+    icon: <Zap className="w-6 h-6" />,
     time: '12s ago',
+    title: 'Real-time Monitoring',
   },
 ];
 
@@ -61,9 +61,9 @@ export function VSCodeFeaturesSection() {
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             Powerful Features for VS Code
@@ -79,9 +79,9 @@ export function VSCodeFeaturesSection() {
           <motion.div
             className="relative flex items-center justify-center h-96"
             initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
+            whileInView={{ opacity: 1, scale: 1 }}
           >
             <div className="relative flex h-80 w-80 items-center justify-center">
               {/* Central VS Code icon */}
@@ -92,8 +92,8 @@ export function VSCodeFeaturesSection() {
               {/* Orbiting feature icons */}
               <OrbitingCircles
                 className="size-6 border-none bg-transparent"
-                duration={20}
                 delay={0}
+                duration={20}
                 radius={80}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white">
@@ -103,8 +103,8 @@ export function VSCodeFeaturesSection() {
 
               <OrbitingCircles
                 className="size-6 border-none bg-transparent"
-                duration={20}
                 delay={5}
+                duration={20}
                 radius={80}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500 text-white">
@@ -114,8 +114,8 @@ export function VSCodeFeaturesSection() {
 
               <OrbitingCircles
                 className="size-6 border-none bg-transparent"
-                duration={20}
                 delay={10}
+                duration={20}
                 radius={80}
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-500 text-white">
@@ -126,8 +126,8 @@ export function VSCodeFeaturesSection() {
               {/* Outer orbit */}
               <OrbitingCircles
                 className="size-6 border-none bg-transparent"
-                radius={140}
                 duration={30}
+                radius={140}
                 reverse
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white">
@@ -141,9 +141,9 @@ export function VSCodeFeaturesSection() {
           <motion.div
             className="space-y-4"
             initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
             viewport={{ once: true }}
+            whileInView={{ opacity: 1, x: 0 }}
           >
             <AnimatedList>
               {features.map((feature) => (
@@ -157,9 +157,9 @@ export function VSCodeFeaturesSection() {
         <motion.div
           className="grid md:grid-cols-3 gap-6 mt-20"
           initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
           viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
         >
           <div className="text-center p-6 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20">
             <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">

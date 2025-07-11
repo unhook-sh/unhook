@@ -106,17 +106,17 @@ export function LineChart({
 
   return (
     <svg
-      ref={svgRef}
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
       fill="none"
+      height={height}
+      ref={svgRef}
+      viewBox={`0 0 ${width} ${height}`}
+      width={width}
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>Webhook Line Chart</title>
       {/* Gradient Definition */}
       <defs>
-        <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="lineGradient" x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={getColorWithOpacity(0.3)} />
           <stop offset="100%" stopColor={getColorWithOpacity(0)} />
         </linearGradient>
@@ -124,47 +124,47 @@ export function LineChart({
 
       {/* Animated Area Fill */}
       <motion.path
-        initial={{ opacity: 0, scale: 0.95 }}
         animate={{
           opacity: shouldAnimate ? 1 : 0,
           scale: shouldAnimate ? 1 : 0.95,
         }}
-        transition={{
-          duration: 0.8,
-          ease: 'easeOut',
-          delay: startAnimationDelay,
-        }}
         d={`${smoothPath} L ${width},${height} L 0,${height} Z`}
         fill="url(#lineGradient)"
+        initial={{ opacity: 0, scale: 0.95 }}
+        transition={{
+          delay: startAnimationDelay,
+          duration: 0.8,
+          ease: 'easeOut',
+        }}
       />
 
       {/* Animated Line */}
       <motion.path
-        initial={{ pathLength: 0 }}
         animate={{ pathLength: shouldAnimate ? 1 : 0 }}
+        d={smoothPath}
+        fill="none"
+        initial={{ pathLength: 0 }}
+        stroke={color}
+        strokeLinecap="round"
+        strokeWidth="2"
         transition={{
+          delay: startAnimationDelay,
           duration: 1.5,
           ease: 'easeInOut',
-          delay: startAnimationDelay,
         }}
-        d={smoothPath}
-        stroke={color}
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
       />
 
       {/* Center dot with scale animation */}
       <motion.circle
+        animate={{
+          opacity: shouldAnimate ? 1 : 0,
+          scale: shouldAnimate ? 1 : 0,
+        }}
         cx={middlePoint?.x ?? 0}
         cy={middlePoint?.y ?? 0}
-        r="4"
         fill={color}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{
-          scale: shouldAnimate ? 1 : 0,
-          opacity: shouldAnimate ? 1 : 0,
-        }}
+        initial={{ opacity: 0, scale: 0 }}
+        r="4"
         transition={{
           delay: startAnimationDelay ? startAnimationDelay + 0.3 : 0.3,
           duration: 0.4,
@@ -176,25 +176,25 @@ export function LineChart({
       {showPulse &&
         [0, 1, 2].map((index) => (
           <motion.circle
-            key={index}
+            animate={{
+              opacity: [0.8, 0],
+              scale: [0.5, 2],
+            }}
             cx={middlePoint?.x ?? 0}
             cy={middlePoint?.y ?? 0}
+            fill="none"
+            initial={{ opacity: 0, scale: 0.5 }}
+            key={index}
             r="10"
             stroke={color}
             strokeWidth="2"
-            fill="none"
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{
-              scale: [0.5, 2],
-              opacity: [0.8, 0],
-            }}
             transition={{
-              duration: 2,
-              repeat: Number.POSITIVE_INFINITY,
               delay: index * 0.67,
+              duration: 2,
               ease: 'easeOut',
-              times: [0, 1],
+              repeat: Number.POSITIVE_INFINITY,
               repeatDelay: 0,
+              times: [0, 1],
             }}
           />
         ))}
@@ -250,16 +250,16 @@ export function NumberFlowCounter({
       } transition-opacity duration-300 ease-in-out absolute top-32 left-[42%] -translate-x-1/2 text-sm bg-[#1A1B25] border border-white/[0.07] text-white px-4 py-1 rounded-full h-8 flex items-center justify-center font-mono shadow-[0px_1.1px_0px_0px_rgba(255,255,255,0.20)_inset,0px_4.4px_6.6px_0px_rgba(255,255,255,0.01)_inset,0px_2.2px_6.6px_0px_rgba(18,43,105,0.04),0px_1.1px_2.2px_0px_rgba(18,43,105,0.08),0px_0px_0px_1.1px_rgba(18,43,105,0.08)]`}
     >
       <NumberFlow
-        value={currentValue ?? 0}
         className="font-mono"
+        format={{
+          minimumIntegerDigits: 1,
+          useGrouping: true,
+        }}
         transformTiming={{
           duration: 700,
           easing: 'ease-out',
         }}
-        format={{
-          useGrouping: true,
-          minimumIntegerDigits: 1,
-        }}
+        value={currentValue ?? 0}
       />
     </div>
   );
@@ -297,8 +297,8 @@ export function ThirdBentoAnimation({
 
   return (
     <div
-      ref={ref}
       className="relative flex size-full items-center justify-center h-[300px] pt-10 overflow-hidden"
+      ref={ref}
       style={
         {
           '--color': computedColor,
@@ -306,27 +306,27 @@ export function ThirdBentoAnimation({
       }
     >
       <motion.div
-        initial={{ opacity: 0 }}
         animate={{ opacity: shouldAnimate ? 1 : 0 }}
+        className="absolute top-[60%] left-1/2 -translate-x-1/2 w-[2px] h-32 bg-gradient-to-b from-[var(--color)] to-[var(--color-transparent)]"
+        initial={{ opacity: 0 }}
         transition={{
-          duration: 0.5,
           delay: startAnimationDelay ? startAnimationDelay + 0.3 : 0.3,
+          duration: 0.5,
           ease: 'easeOut',
         }}
-        className="absolute top-[60%] left-1/2 -translate-x-1/2 w-[2px] h-32 bg-gradient-to-b from-[var(--color)] to-[var(--color-transparent)]"
       />
       <NumberFlowCounter
-        toolTipValues={toolTipValues}
         shouldAnimate={shouldAnimate}
         startAnimationDelay={startAnimationDelay}
+        toolTipValues={toolTipValues}
       />
       <LineChart
+        color={computedColor}
         data={data}
         height={200}
-        width={600}
-        color={computedColor}
         shouldAnimate={shouldAnimate}
         startAnimationDelay={startAnimationDelay}
+        width={600}
       />
     </div>
   );

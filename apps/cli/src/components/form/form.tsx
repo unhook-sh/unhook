@@ -149,7 +149,7 @@ export function FormProvider<T extends ZodSchema>({
           }
         }
         setErrors(newErrors);
-        return { success: false, error };
+        return { error, success: false };
       }
       throw error;
     }
@@ -214,24 +214,24 @@ export function FormProvider<T extends ZodSchema>({
   return (
     <FormContext.Provider
       value={{
-        registerInput,
-        unregisterInput,
-        setInputAvailable,
-        getNextInput,
-        setValue,
-        getValue,
-        onSubmit,
-        getAllValues,
-        validate,
-        validateInput,
         activeInput,
-        setActiveInput,
+        getAllValues,
+        getError,
+        getNextInput,
+        getValue,
         isInputActive,
+        isInputAvailable,
         isInputComplete,
         markInputComplete,
-        getError,
+        onSubmit,
+        registerInput,
+        setActiveInput,
         setError,
-        isInputAvailable,
+        setInputAvailable,
+        setValue,
+        unregisterInput,
+        validate,
+        validateInput,
       }}
     >
       <Box flexDirection="column">{children}</Box>

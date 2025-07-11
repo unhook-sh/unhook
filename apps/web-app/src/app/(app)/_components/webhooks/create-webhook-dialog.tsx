@@ -47,7 +47,7 @@ export function CreateWebhookDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Webhook</DialogTitle>
@@ -61,23 +61,23 @@ export function CreateWebhookDialog({
               <Label htmlFor="local-port">Local Port</Label>
               <Input
                 id="local-port"
-                type="number"
-                placeholder="e.g. 3000"
-                value={localPort}
                 onChange={(e) => setLocalPort(e.target.value)}
+                placeholder="e.g. 3000"
                 required
+                type="number"
+                value={localPort}
               />
             </div>
           </div>
           <DialogFooter>
             <Button
+              onClick={() => onOpenChange(false)}
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button disabled={isSubmitting} type="submit">
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}

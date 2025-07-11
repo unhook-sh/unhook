@@ -11,16 +11,11 @@ import { formatRelativeTime } from '~/utils/format-relative-time';
 
 export const columns: ColumnDef<RequestType>[] = [
   {
-    id: 'status',
-    header: '',
-    minWidth: 3,
-    maxWidth: 3,
-    priority: 1,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
       if (row.status === 'pending') {
-        return <Spinner dimColor={!isSelected} bold={isSelected} />;
+        return <Spinner bold={isSelected} dimColor={!isSelected} />;
       }
       const lastResponse = row.response;
 
@@ -31,7 +26,7 @@ export const columns: ColumnDef<RequestType>[] = [
         lastResponse.status < 300
       ) {
         return (
-          <Text color="green" dimColor={!isSelected} bold={isSelected}>
+          <Text bold={isSelected} color="green" dimColor={!isSelected}>
             {figureSet.circleFilled}
           </Text>
         );
@@ -43,7 +38,7 @@ export const columns: ColumnDef<RequestType>[] = [
         lastResponse.status < 500
       ) {
         return (
-          <Text color="yellow" dimColor={!isSelected} bold={isSelected}>
+          <Text bold={isSelected} color="yellow" dimColor={!isSelected}>
             {figureSet.circle}
           </Text>
         );
@@ -56,59 +51,59 @@ export const columns: ColumnDef<RequestType>[] = [
           (lastResponse.status < 200 || lastResponse.status >= 300))
       ) {
         return (
-          <Text color="red" dimColor={!isSelected} bold={isSelected}>
+          <Text bold={isSelected} color="red" dimColor={!isSelected}>
             {figureSet.circle}
           </Text>
         );
       }
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(row.status, width)}
         </Text>
       );
     },
+    header: '',
+    id: 'status',
+    maxWidth: 3,
+    minWidth: 3,
+    priority: 1,
   },
   {
-    id: 'time',
-    header: 'Delivered',
-    minWidth: 10,
-    maxWidth: 25,
-    priority: 2,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       const timeText = formatRelativeTime(row.createdAt);
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(timeText, width)}
         </Text>
       );
     },
+    header: 'Delivered',
+    id: 'time',
+    maxWidth: 25,
+    minWidth: 10,
+    priority: 2,
   },
   {
-    id: 'destination',
-    header: 'Destination',
-    minWidth: 10,
-    maxWidth: 30,
-    priority: 3,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(row.destination?.name, width)}
         </Text>
       );
     },
+    header: 'Destination',
+    id: 'destination',
+    maxWidth: 30,
+    minWidth: 10,
+    priority: 3,
   },
 
   {
-    id: 'responseCode',
-    header: 'Code',
-    minWidth: 4,
-    maxWidth: 6,
-    priority: 4,
     cell: ({ row, isSelected, width }) => {
       let color = 'green';
       const responseCode = row.response?.status;
@@ -124,20 +119,20 @@ export const columns: ColumnDef<RequestType>[] = [
       }
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(String(responseCode || '-'), width)}
         </Text>
       );
     },
+    header: 'Code',
+    id: 'responseCode',
+    maxWidth: 6,
+    minWidth: 4,
+    priority: 4,
   },
   {
-    id: 'elapsedMs',
-    header: 'Elapsed (ms)',
-    minWidth: 8,
-    maxWidth: 15,
-    priority: 5,
     cell: ({ row, isSelected, width }) => {
-      let color = getSelectedColor({ isSelected, defaultColor: 'green' });
+      let color = getSelectedColor({ defaultColor: 'green', isSelected });
       const responseTimeMs = row.responseTimeMs ?? 0;
 
       if (responseTimeMs < 1000) {
@@ -153,20 +148,21 @@ export const columns: ColumnDef<RequestType>[] = [
       }
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {responseTimeMs === 0 || responseTimeMs === undefined
             ? '-'
             : truncateText(responseTimeMs.toString(), width)}
         </Text>
       );
     },
+    header: 'Elapsed (ms)',
+    id: 'elapsedMs',
+    maxWidth: 15,
+    minWidth: 8,
+    priority: 5,
   },
 
   {
-    id: 'url',
-    header: 'URL',
-    minWidth: 20,
-    priority: 6,
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
@@ -176,10 +172,14 @@ export const columns: ColumnDef<RequestType>[] = [
       }
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(url, width)}
         </Text>
       );
     },
+    header: 'URL',
+    id: 'url',
+    minWidth: 20,
+    priority: 6,
   },
 ];

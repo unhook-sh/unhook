@@ -75,7 +75,7 @@ export function AppSidebar({
   };
 
   return (
-    <Sidebar collapsible="icon" variant={variant} className={cn(className)}>
+    <Sidebar className={cn(className)} collapsible="icon" variant={variant}>
       <SidebarHeader className="flex-row items-gap-1 items-center">
         <SidebarTrigger />
         {showBackButton ? (
@@ -85,16 +85,16 @@ export function AppSidebar({
                 <SidebarMenuButton asChild>
                   {backButtonHref ? (
                     <Link
-                      href={backButtonHref}
                       className="flex items-center gap-2"
+                      href={backButtonHref}
                     >
                       <ArrowLeft className="size-4" />
                       <span>{backButtonLabel}</span>
                     </Link>
                   ) : (
                     <button
-                      onClick={() => router.back()}
                       className="flex items-center gap-2 w-full"
+                      onClick={() => router.back()}
                       type="button"
                     >
                       <ArrowLeft className="size-4" />
@@ -117,23 +117,23 @@ export function AppSidebar({
       {showEnvironmentSelector && projectId && (
         <div className="px-4 py-2">
           <ToggleGroup
+            className="w-full bg-muted/50 group-data-[collapsible=icon]:hidden"
+            onValueChange={handleEnvironmentChange}
+            size="sm"
             type="single"
             value={envName}
-            onValueChange={handleEnvironmentChange}
             variant="outline"
-            size="sm"
-            className="w-full bg-muted/50 group-data-[collapsible=icon]:hidden"
           >
             <ToggleGroupItem
-              value="dev"
               className="flex items-center justify-center gap-1.5 data-[state=on]:!bg-sidebar-primary data-[state=on]:!text-sidebar-primary-foreground"
+              value="dev"
             >
               <TestTube2 className="size-3.5" />
               <span>Dev</span>
             </ToggleGroupItem>
             <ToggleGroupItem
-              value="prod"
               className="flex items-center justify-center gap-1.5 data-[state=on]:!bg-sidebar-primary data-[state=on]:!text-sidebar-primary-foreground"
+              value="prod"
             >
               <ShieldCheck className="size-3.5" />
               <span>Prod</span>
@@ -192,10 +192,10 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a
-                  href="https://docs.unhook.com"
-                  target="_blank"
                   className="flex items-center justify-between"
+                  href="https://docs.unhook.com"
                   rel="noreferrer"
+                  target="_blank"
                 >
                   <span className="flex items-center gap-2">
                     <BookOpen className="size-4" />
@@ -208,10 +208,10 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a
-                  href="https://docs.unhook.com/ref/overview"
-                  target="_blank"
                   className="flex items-center justify-between"
+                  href="https://docs.unhook.com/ref/overview"
                   rel="noreferrer"
+                  target="_blank"
                 >
                   <span className="flex items-center gap-2">
                     <Code className="size-4 shrink-0" />
@@ -224,10 +224,10 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a
-                  href="https://discord.gg/BTNBeXGuaS"
-                  target="_blank"
                   className="flex items-center justify-between"
+                  href="https://discord.gg/BTNBeXGuaS"
                   rel="noreferrer"
+                  target="_blank"
                 >
                   <span className="flex items-center gap-2">
                     <Icons.Discord className="size-4" />
@@ -240,10 +240,10 @@ export function AppSidebar({
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a
-                  href="https://github.com/unhook/baml/blob/canary/CHANGELOG.md"
-                  target="_blank"
                   className="flex items-center justify-between"
+                  href="https://github.com/unhook/baml/blob/canary/CHANGELOG.md"
                   rel="noreferrer"
+                  target="_blank"
                 >
                   <span className="flex items-center gap-2">
                     <Icons.Rocket className="size-4" />

@@ -9,19 +9,15 @@ import { useEffect, useMemo, useRef } from 'react';
 const MOVEMENT_DAMPING = 1400;
 
 const GLOBE_CONFIG: COBEOptions = {
-  width: 800,
-  height: 800,
-  onRender: () => {},
-  devicePixelRatio: 2,
-  phi: 0,
-  theta: 0.3,
-  dark: 0,
-  diffuse: 0.4,
-  mapSamples: 16000,
-  mapBrightness: 1.2,
   baseColor: [1, 1, 1],
-  markerColor: [251 / 255, 100 / 255, 21 / 255],
+  dark: 0,
+  devicePixelRatio: 2,
+  diffuse: 0.4,
   glowColor: [1, 1, 1],
+  height: 800,
+  mapBrightness: 1.2,
+  mapSamples: 16000,
+  markerColor: [251 / 255, 100 / 255, 21 / 255],
   markers: [
     { location: [14.5995, 120.9842], size: 0.12 },
     { location: [19.076, 72.8777], size: 0.4 },
@@ -34,18 +30,22 @@ const GLOBE_CONFIG: COBEOptions = {
     { location: [34.6937, 135.5022], size: 0.2 },
     { location: [41.0082, 28.9784], size: 0.24 },
   ],
+  onRender: () => {},
+  phi: 0,
+  theta: 0.3,
+  width: 800,
 };
 
 // Define color configurations for light and dark modes
 const COLORS = {
-  light: {
-    base: [1, 1, 1] as [number, number, number],
-    glow: [1, 1, 1] as [number, number, number],
-    marker: [87 / 255, 179 / 255, 148 / 255] as [number, number, number],
-  },
   dark: {
     base: [0.4, 0.4, 0.4] as [number, number, number],
     glow: [0.24, 0.24, 0.27] as [number, number, number],
+    marker: [87 / 255, 179 / 255, 148 / 255] as [number, number, number],
+  },
+  light: {
+    base: [1, 1, 1] as [number, number, number],
+    glow: [1, 1, 1] as [number, number, number],
     marker: [87 / 255, 179 / 255, 148 / 255] as [number, number, number],
   },
 };
@@ -68,8 +68,8 @@ export function Globe({
 
   const r = useMotionValue(0);
   const rs = useSpring(r, {
-    mass: 1,
     damping: 30,
+    mass: 1,
     stiffness: 100,
   });
 
@@ -77,11 +77,11 @@ export function Globe({
     () => ({
       ...config,
       baseColor: isDarkMode ? COLORS.dark.base : COLORS.light.base,
-      glowColor: isDarkMode ? COLORS.dark.glow : COLORS.light.glow,
-      markerColor: isDarkMode ? COLORS.dark.marker : COLORS.light.marker,
       dark: isDarkMode ? 1 : 0,
       diffuse: isDarkMode ? 0.5 : 0.4,
+      glowColor: isDarkMode ? COLORS.dark.glow : COLORS.light.glow,
       mapBrightness: isDarkMode ? 1.4 : 1.2,
+      markerColor: isDarkMode ? COLORS.dark.marker : COLORS.light.marker,
     }),
     [config, isDarkMode],
   );
@@ -116,7 +116,6 @@ export function Globe({
     if (canvasRef.current) {
       globe = createGlobe(canvasRef.current, {
         ...finalConfig,
-        width: widthRef.current * 2,
         height: widthRef.current * 2,
         onRender: (state) => {
           if (!pointerInteracting.current) phiRef.current += 0.005;
@@ -124,6 +123,7 @@ export function Globe({
           state.width = widthRef.current * 2;
           state.height = widthRef.current * 2;
         },
+        width: widthRef.current * 2,
       });
 
       setTimeout(() => {
@@ -151,17 +151,17 @@ export function Globe({
         className={cn(
           'size-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]',
         )}
-        ref={canvasRef}
+        onMouseMove={(e) => updateMovement(e.clientX)}
         onPointerDown={(e) => {
           pointerInteracting.current = e.clientX;
           updatePointerInteraction(e.clientX);
         }}
-        onPointerUp={() => updatePointerInteraction(null)}
         onPointerOut={() => updatePointerInteraction(null)}
-        onMouseMove={(e) => updateMovement(e.clientX)}
+        onPointerUp={() => updatePointerInteraction(null)}
         onTouchMove={(e) =>
           e.touches[0] && updateMovement(e.touches[0].clientX)
         }
+        ref={canvasRef}
       />
     </div>
   );

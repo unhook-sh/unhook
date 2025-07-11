@@ -1,5 +1,23 @@
 # @unhook/client
 
+## 0.5.3
+
+### Patch Changes
+
+- [`fc2c1cd`](https://github.com/unhook-sh/unhook/commit/fc2c1cdd9354974bb1e2c70df70bf1f11bd15832) Thanks [@seawatts](https://github.com/seawatts)! - Fix build issue
+
+## 0.5.2
+
+### Patch Changes
+
+- [`a6bf4e3`](https://github.com/unhook-sh/unhook/commit/a6bf4e30a7d8f51c37c2e0d1843f2eb6e7129f4f) Thanks [@seawatts](https://github.com/seawatts)! - Fix build
+
+## 0.5.1
+
+### Patch Changes
+
+- [`9d4b4f7`](https://github.com/unhook-sh/unhook/commit/9d4b4f7036c36be5f18df9fa749d597480909f00) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with request body
+
 ## 0.5.0
 
 ### Minor Changes

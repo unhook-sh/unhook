@@ -36,8 +36,6 @@ export function ForwardingRulesList({
   // TODO: Replace with actual data fetching
   const rules = [
     {
-      id: 'rule_1',
-      name: 'Send payment events to Slack',
       description:
         'Forward successful payment events to the #payments Slack channel',
       destination: {
@@ -45,9 +43,16 @@ export function ForwardingRulesList({
         name: 'Payments Slack Channel',
         type: 'slack' as const,
       },
+      errorCount: 2,
+      executionCount: 156,
       filters: {
         eventNames: ['payment.succeeded', 'payment.failed'],
       },
+      id: 'rule_1',
+      isActive: true,
+      lastExecutedAt: new Date('2024-01-15T10:30:00'),
+      name: 'Send payment events to Slack',
+      priority: 0,
       transformation: `
 function transform({ body }) {
   return {
@@ -62,28 +67,23 @@ function transform({ body }) {
   };
 }
       `.trim(),
-      priority: 0,
-      isActive: true,
-      executionCount: 156,
-      lastExecutedAt: new Date('2024-01-15T10:30:00'),
-      errorCount: 2,
     },
     {
-      id: 'rule_2',
-      name: 'Log all events to webhook',
       description: 'Forward all events to our logging service',
       destination: {
         id: 'dest_2',
         name: 'Logging Service',
         type: 'webhook' as const,
       },
-      filters: {},
-      transformation: null,
-      priority: 10,
-      isActive: true,
-      executionCount: 1420,
-      lastExecutedAt: new Date('2024-01-15T12:45:00'),
       errorCount: 0,
+      executionCount: 1420,
+      filters: {},
+      id: 'rule_2',
+      isActive: true,
+      lastExecutedAt: new Date('2024-01-15T12:45:00'),
+      name: 'Log all events to webhook',
+      priority: 10,
+      transformation: null,
     },
   ];
 
@@ -118,24 +118,24 @@ function transform({ body }) {
                 />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
+                    <Button size="sm" variant="ghost">
                       <Icons.MoreVertical size="sm" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => setEditingRule(rule.id)}>
-                      <Edit size="sm" className="mr-2" />
+                      <Edit className="mr-2" size="sm" />
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setTestingRule(rule.id)}>
-                      <PlayCircle size="sm" className="mr-2" />
+                      <PlayCircle className="mr-2" size="sm" />
                       Test
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleDeleteRule(rule.id)}
                       className="text-destructive"
+                      onClick={() => handleDeleteRule(rule.id)}
                     >
-                      <Icons.Trash size="sm" className="mr-2" />
+                      <Icons.Trash className="mr-2" size="sm" />
                       Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -146,20 +146,20 @@ function transform({ body }) {
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <Badge variant="secondary">
-                <Icons.ArrowRight size="xs" className="mr-1" />
+                <Icons.ArrowRight className="mr-1" size="xs" />
                 {rule.destination.name}
               </Badge>
               {rule.filters.eventNames &&
                 rule.filters.eventNames.length > 0 && (
                   <Badge variant="outline">
-                    <Filter size="xs" className="mr-1" />
+                    <Filter className="mr-1" size="xs" />
                     {rule.filters.eventNames.length} event filter
                     {rule.filters.eventNames.length > 1 ? 's' : ''}
                   </Badge>
                 )}
               {rule.transformation && (
                 <Badge variant="outline">
-                  <Code2 size="xs" className="mr-1" />
+                  <Code2 className="mr-1" size="xs" />
                   JavaScript transform
                 </Badge>
               )}
@@ -206,17 +206,17 @@ function transform({ body }) {
 
       {editingRule && (
         <EditForwardingRuleDialog
-          ruleId={editingRule}
-          open={!!editingRule}
           onOpenChange={(open) => !open && setEditingRule(null)}
+          open={!!editingRule}
+          ruleId={editingRule}
         />
       )}
 
       {testingRule && (
         <TestForwardingRuleDialog
-          ruleId={testingRule}
-          open={!!testingRule}
           onOpenChange={(open) => !open && setTestingRule(null)}
+          open={!!testingRule}
+          ruleId={testingRule}
         />
       )}
     </div>

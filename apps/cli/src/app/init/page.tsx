@@ -21,10 +21,10 @@ import { useWebhookStore } from '~/stores/webhook-store';
 const log = debug('unhook:cli:init');
 
 const initFormSchema = z.object({
-  webhookId: z.string().optional(),
-  webhookName: z.string().optional(),
   destination: z.string().url('Please enter a valid URL'),
   source: z.string().optional(),
+  webhookId: z.string().optional(),
+  webhookName: z.string().optional(),
 });
 
 type InitFormValues = z.infer<typeof initFormSchema>;
@@ -108,16 +108,16 @@ export const InitPage: FC<RouteProps> = () => {
     capture({
       event: 'init_config_created',
       properties: {
-        source: values.source,
         destination: values.destination,
+        source: values.source,
         webhookId: usedWebhookId,
       },
     });
 
     const config = {
-      webhookId: usedWebhookId,
+      delivery: [{ destination: 'default', source: values.source ?? '*' }],
       destination: [{ name: 'default', url: values.destination }],
-      delivery: [{ source: values.source ?? '*', destination: 'default' }],
+      webhookId: usedWebhookId,
     } satisfies WebhookConfig;
 
     const { path } = await writeConfig(config);
@@ -130,78 +130,78 @@ export const InitPage: FC<RouteProps> = () => {
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Ascii
+          color="gray"
+          font="ANSI Shadow"
           text="Unhook"
           width={dimensions.width}
-          font="ANSI Shadow"
-          color="gray"
         />
       </Box>
       <FormProvider
-        schema={initFormSchema}
-        onSubmit={handleSubmit}
         initialValues={{
-          webhookId: webhookId ?? '',
-          webhookName: webhookName,
           destination: destination ?? '',
           source: source ?? '',
+          webhookId: webhookId ?? '',
+          webhookName: webhookName,
         }}
+        onSubmit={handleSubmit}
+        schema={initFormSchema}
       >
         {isLoading && <Text>Loading webhooks...</Text>}
         {!isLoading && (
           <>
             {webhooks.length === 0 ? (
-              <Box marginBottom={1} flexDirection="column">
+              <Box flexDirection="column" marginBottom={1}>
                 <FormLabel id="webhookName">Enter a webhook name:</FormLabel>
                 <FormInput
+                  defaultValue={webhookName}
                   id="webhookName"
                   placeholder="Default"
-                  defaultValue={webhookName}
                 />
               </Box>
             ) : (
               <>
-                <Box marginBottom={1} flexDirection="column">
+                <Box flexDirection="column" marginBottom={1}>
                   <FormLabel id="webhookId">Select a webhook:</FormLabel>
                   <FormSelect
-                    id="webhookId"
-                    items={webhookOptionsWithNew}
                     defaultValue={
                       selectedWebhookId ?? webhookOptionsWithNew[0]?.value
                     }
-                    showHotkeys={!isLoading}
+                    id="webhookId"
+                    items={webhookOptionsWithNew}
                     onSelect={(item) => {
                       setSelectedWebhookId(item.value);
                       setShowNewWebhookInput(item.value === NEW_WEBHOOK_VALUE);
                     }}
+                    showHotkeys={!isLoading}
                   />
                 </Box>
                 {showNewWebhookInput && (
-                  <Box marginBottom={1} flexDirection="column">
+                  <Box flexDirection="column" marginBottom={1}>
                     <FormLabel id="webhookName">
                       Enter a webhook name:
                     </FormLabel>
                     <FormInput
+                      defaultValue={webhookName}
                       id="webhookName"
                       placeholder="Default"
-                      defaultValue={webhookName}
                     />
                   </Box>
                 )}
               </>
             )}
-            <Box marginBottom={1} flexDirection="column">
+            <Box flexDirection="column" marginBottom={1}>
               <FormLabel id="source">Enter your source service:</FormLabel>
               <FormDescription id="source">
                 The service that will send webhooks to Unhook (e.g., Stripe,
                 GitHub)
               </FormDescription>
               <FormInput
+                defaultValue={source}
                 id="source"
                 placeholder="Stripe"
-                defaultValue={source}
               />
             </Box>
-            <Box marginBottom={1} flexDirection="column">
+            <Box flexDirection="column" marginBottom={1}>
               <FormLabel id="destination">
                 Enter your destination URL:
               </FormLabel>
@@ -209,16 +209,16 @@ export const InitPage: FC<RouteProps> = () => {
                 The URL where Unhook will deliver the webhooks to
               </FormDescription>
               <FormInput
+                defaultValue={destination ?? 'http://localhost:3000'}
                 id="destination"
                 placeholder="http://localhost:3000"
-                defaultValue={destination ?? 'http://localhost:3000'}
               />
             </Box>
           </>
         )}
       </FormProvider>
       {submitted && (
-        <Box marginBottom={1} flexDirection="column">
+        <Box flexDirection="column" marginBottom={1}>
           <Text>Success!</Text>
           <Text>
             Your webhook config has been saved at{' '}

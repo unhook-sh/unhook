@@ -47,9 +47,9 @@ export function CliLoginButton() {
       }
 
       posthog?.capture('cli_login_success', {
+        hasCsrfToken: !!currentUrl.searchParams.get('csrf'),
         isVSCode: !!redirectUri,
         port: currentUrl.searchParams.get('port'),
-        hasCsrfToken: !!currentUrl.searchParams.get('csrf'),
       });
     } catch (error) {
       console.error('Failed to generate token:', error);
@@ -61,16 +61,16 @@ export function CliLoginButton() {
   return (
     <div className="flex flex-col gap-2">
       {!error && (
-        <Button onClick={onLogin} disabled={isPending} autoFocus>
+        <Button autoFocus disabled={isPending} onClick={onLogin}>
           {isPending ? (
             <>
-              <Icons.Spinner size="sm" variant="muted" className="mr-2" />
+              <Icons.Spinner className="mr-2" size="sm" variant="muted" />
               Authenticating...
             </>
           ) : (
             <>
-              <Icons.LogIn size="sm" className="mr-2" />
-              Login to CLI
+              <Icons.LogIn className="mr-2" size="sm" />
+              Grant Access
             </>
           )}
         </Button>
@@ -80,8 +80,8 @@ export function CliLoginButton() {
       </span>
       {error && (
         <div className="flex flex-col gap-2">
-          <Button onClick={onLogin} variant="destructive" className="w-full">
-            <Icons.ArrowRight size="sm" className="mr-2" />
+          <Button className="w-full" onClick={onLogin} variant="destructive">
+            <Icons.ArrowRight className="mr-2" size="sm" />
             Try Again
           </Button>
           <span className="text-sm text-destructive">{error}</span>

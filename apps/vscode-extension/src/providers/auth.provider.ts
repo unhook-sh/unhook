@@ -32,7 +32,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
   ) {
     // Listen for auth store changes and emit session changes
     this.authStore.onDidChangeAuth(() => {
-      this._onDidChangeSessions.fire({ added: [], removed: [], changed: [] });
+      this._onDidChangeSessions.fire({ added: [], changed: [], removed: [] });
     });
   }
 
@@ -61,7 +61,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
         supportsMultipleAccounts: false,
       },
     );
-    return { provider, disposable };
+    return { disposable, provider };
   }
 
   async getSessions(scopes: string[]): Promise<vscode.AuthenticationSession[]> {
@@ -77,12 +77,12 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     }
 
     return {
-      id: this.authStore.sessionId ?? '',
       accessToken: this.authStore.authToken ?? '',
       account: {
         id: this.authStore.user?.id ?? '',
         label: this.authStore.user?.email ?? '',
       },
+      id: this.authStore.sessionId ?? '',
       scopes: UnhookAuthProvider.SCOPES,
     };
   }
@@ -105,7 +105,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
       // Create a promise that will be resolved by the URI handler
       const authPromise = new Promise<vscode.AuthenticationSession>(
         (resolve, reject) => {
-          this._pendingAuth = { resolve, reject };
+          this._pendingAuth = { reject, resolve };
 
           // Set a timeout in case the auth flow fails
           setTimeout(() => {
@@ -125,8 +125,8 @@ export class UnhookAuthProvider implements AuthenticationProvider {
 
       this._onDidChangeSessions.fire({
         added: [session],
-        removed: [],
         changed: [],
+        removed: [],
       });
 
       return session;
@@ -151,12 +151,12 @@ export class UnhookAuthProvider implements AuthenticationProvider {
         await this.authStore.exchangeAuthCode({ code });
 
       const session: vscode.AuthenticationSession = {
-        id: sessionId,
         accessToken: authToken,
         account: {
           id: user.id,
           label: user.email ?? '',
         },
+        id: sessionId,
         scopes: UnhookAuthProvider.SCOPES,
       };
 
@@ -178,15 +178,15 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     if (session) {
       this._onDidChangeSessions.fire({
         added: [],
-        removed: [session],
         changed: [],
+        removed: [session],
       });
     }
   }
 
   private async startAuthServer(port: number, csrfToken: string) {
     const server = new AuthServer();
-    await server.start({ port, csrfToken });
+    await server.start({ csrfToken, port });
     return server;
   }
 }

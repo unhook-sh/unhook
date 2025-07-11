@@ -56,16 +56,16 @@ export function Table<T extends ScalarDict>({
   itemsPerPage,
   totalCount,
   keyMapping = {
-    up: ['k', 'up'],
-    down: ['j', 'down', ' '],
-    top: ['gg'],
     bottom: ['G'],
-    pageUp: ['ctrl+b', 'b'],
-    pageDown: ['ctrl+f', 'f'],
-    halfPageUp: ['ctrl+u', 'u'],
+    down: ['j', 'down', ' '],
     halfPageDown: ['ctrl+d', 'd'],
+    halfPageUp: ['ctrl+u', 'u'],
     nextPage: ['l', 'right'],
+    pageDown: ['ctrl+f', 'f'],
+    pageUp: ['ctrl+b', 'b'],
     prevPage: ['h', 'left'],
+    top: ['gg'],
+    up: ['k', 'up'],
   },
 }: TableProps<T>) {
   const dimensions = useDimensions();
@@ -129,7 +129,7 @@ export function Table<T extends ScalarDict>({
   }, [selectedIndex, onSelectionChange]);
 
   // Setup keyboard navigation
-  useKeyboardNavigation({ data, actions, keyMapping });
+  useKeyboardNavigation({ actions, data, keyMapping });
 
   // Get current page's data
   const currentPageData = React.useMemo(() => {
@@ -141,8 +141,8 @@ export function Table<T extends ScalarDict>({
   const visibleColumns = React.useMemo(
     () =>
       getVisibleColumns({
-        columns,
         availableWidth,
+        columns,
         padding,
       }),
     [columns, availableWidth, padding],
@@ -151,10 +151,10 @@ export function Table<T extends ScalarDict>({
   const columnWidths = React.useMemo(
     () =>
       calculateColumnWidths({
-        data,
         columns: visibleColumns,
-        padding,
+        data,
         maxWidth: availableWidth,
+        padding,
       }),
     [data, visibleColumns, padding, availableWidth],
   );
@@ -177,11 +177,11 @@ export function Table<T extends ScalarDict>({
           typeof column.header === 'string'
             ? column.header
             : column.header({
+                children: '',
                 column: column.id,
-                row,
                 isHeader: true,
                 isSelected: true,
-                children: '',
+                row,
                 width: contentWidth,
               });
       } else {
@@ -193,12 +193,12 @@ export function Table<T extends ScalarDict>({
 
         if (column.cell) {
           const cellProps: CellProps<T> = {
+            children: value as React.ReactNode,
             column: column.id,
-            row,
             isHeader: false,
             isSelected: rowIndex === selectedIndex,
+            row,
             rowId: `row-${rowIndex}`,
-            children: value as React.ReactNode,
             width: contentWidth,
           };
           content = column.cell(cellProps);
@@ -211,18 +211,18 @@ export function Table<T extends ScalarDict>({
         typeof content === 'string'
           ? padContent({
               content,
-              width,
               padding,
+              width,
             })
           : content;
 
       const cellProps: CellProps<T> = {
+        children: paddedContent,
         column: column.id,
-        row,
         isHeader,
         isSelected: !isHeader && rowIndex === selectedIndex,
+        row,
         rowId: !isHeader ? `row-${rowIndex}` : undefined,
-        children: paddedContent,
         width: contentWidth,
       };
 
@@ -254,10 +254,10 @@ export function Table<T extends ScalarDict>({
         {visibleColumns.map((column, colIndex) => (
           <React.Fragment key={`${column.id}-${rowIndex}`}>
             {renderCell({
-              column,
-              row,
-              isHeader,
               colIndex,
+              column,
+              isHeader,
+              row,
               rowIndex,
             })}
           </React.Fragment>
@@ -289,16 +289,16 @@ export function Table<T extends ScalarDict>({
   return (
     <Box flexDirection="column">
       <Box
-        ref={tableRef}
         borderColor="blue"
         borderStyle="round"
         flexDirection="row"
         flexGrow={1}
         height={'100%'}
+        ref={tableRef}
         // height={availableHeight}
       >
         <Box flexDirection="column" width="100%">
-          {renderRow({ row: {} as T, isHeader: true })}
+          {renderRow({ isHeader: true, row: {} as T })}
           <Box>{renderBorder()}</Box>
 
           <Box flexDirection="row">
@@ -311,8 +311,8 @@ export function Table<T extends ScalarDict>({
                 return (
                   <Box key={`${rowKey}-${selectedIndex}`}>
                     {renderRow({
-                      row: row as T,
                       isHeader: false,
+                      row: row as T,
                       rowIndex: index + currentPage * pageSize,
                     })}
                   </Box>

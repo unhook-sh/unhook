@@ -1,6 +1,7 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { type ApiClient, type AuthUser, createApiClient } from '../api';
+import { ConfigManager } from '../config.manager';
 
 const TOKEN_KEY = 'unhook.auth.token';
 const SESSION_ID_KEY = 'unhook.auth.sessionId';
@@ -20,6 +21,10 @@ export class AuthStore implements vscode.Disposable {
   private _api: ApiClient;
 
   constructor(private readonly context: vscode.ExtensionContext) {
+    // Set the API URL environment variable based on ConfigManager
+    const configManager = ConfigManager.getInstance();
+    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
+
     this._api = createApiClient();
   }
 
@@ -66,6 +71,9 @@ export class AuthStore implements vscode.Disposable {
 
     this._authToken = token;
     this._isSignedIn = !!token;
+    // Update API URL before creating client
+    const configManager = ConfigManager.getInstance();
+    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
     this._api = createApiClient({ authToken: token ?? undefined });
     this._onDidChangeAuth.fire();
     log('Auth token updated', { isSignedIn: this._isSignedIn });
@@ -107,8 +115,8 @@ export class AuthStore implements vscode.Disposable {
   async validateSession(): Promise<boolean> {
     if (!this._authToken || !this._sessionId) {
       log('Cannot validate session - missing token or session ID', {
-        hasToken: !!this._authToken,
         hasSessionId: !!this._sessionId,
+        hasToken: !!this._authToken,
       });
       return false;
     }
@@ -141,8 +149,8 @@ export class AuthStore implements vscode.Disposable {
     ]);
 
     log('Retrieved stored credentials', {
-      hasToken: !!token,
       hasSessionId: !!sessionId,
+      hasToken: !!token,
     });
 
     if (token) {

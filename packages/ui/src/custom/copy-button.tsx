@@ -17,16 +17,16 @@ const copyButtonVariants = cva('relative', {
   },
   variants: {
     size: {
-      sm: 'h-7 w-7',
       default: 'h-9 w-9',
       lg: 'h-10 w-10',
+      sm: 'h-7 w-7',
     },
     variant: {
+      default: 'bg-primary text-primary-foreground hover:bg-primary/90',
       ghost: 'hover:bg-accent hover:text-accent-foreground',
       outline:
         'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
       secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-      default: 'bg-primary text-primary-foreground hover:bg-primary/90',
     },
   },
 });
@@ -75,17 +75,17 @@ export function CopyButton({
 
   return (
     <Button
-      type="button"
+      aria-label={copyState === 'copied' ? 'Copied' : 'Copy to clipboard'}
       className={cn(copyButtonVariants({ size, variant }), className)}
       onClick={copyToClipboard}
-      aria-label={copyState === 'copied' ? 'Copied' : 'Copy to clipboard'}
+      type="button"
       {...props}
     >
       {copyState === 'copying' ? (
         <Icons.Spinner
+          className="animate-spin"
           size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
           variant="muted"
-          className="animate-spin"
         />
       ) : copyState === 'copied' ? (
         <Icons.Check

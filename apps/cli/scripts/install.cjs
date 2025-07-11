@@ -35,13 +35,13 @@ if (process.env.UNHOOK_CLI_VERSION) {
 
 const repo = 'unhook-sh/unhook';
 const cliName = 'unhook';
-const platformMap = { win32: 'win32', darwin: 'darwin', linux: 'linux' };
+const platformMap = { darwin: 'darwin', linux: 'linux', win32: 'win32' };
 const archMap = {
-  x64: 'x64',
   arm64: 'arm64',
+  'arm64-musl': 'arm64-musl',
+  x64: 'x64',
   // Add musl variants for Linux
   'x64-musl': 'x64-musl',
-  'arm64-musl': 'arm64-musl',
 };
 
 const platform = platformMap[os.platform()];
@@ -94,7 +94,7 @@ function clearOldVersions() {
 
       const oldVersionPath = path.join(installDir, oldVersion);
       console.debug(`🧹 Clearing old version: ${oldVersion}`);
-      fs.rmSync(oldVersionPath, { recursive: true, force: true });
+      fs.rmSync(oldVersionPath, { force: true, recursive: true });
     }
   } catch (err) {
     console.debug(`⚠️  Warning: Could not clear old versions: ${err.message}`);
@@ -286,8 +286,8 @@ function runBinary() {
 
     const env = { ...process.env, UNHOOK_CLI_LAUNCHED: '1' };
     const result = spawnSync(binPath, process.argv.slice(2), {
-      stdio: 'inherit',
       env,
+      stdio: 'inherit',
     });
 
     if (result.error) {

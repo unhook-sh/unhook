@@ -9,7 +9,7 @@ export function Loading({ message = 'Loading...' }: LoadingProps) {
   return (
     <Box>
       <Box marginRight={1}>
-        <Spinner type="dots" color="gray" />
+        <Spinner color="gray" type="dots" />
       </Box>
       <Text>{message}</Text>
     </Box>

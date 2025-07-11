@@ -20,8 +20,8 @@ export async function evaluateFilters(
       const eventName = extractEventName(context);
       if (!filters.eventNames.includes(eventName)) {
         return {
-          shouldForward: false,
           reason: `Event name "${eventName}" not in allowed list`,
+          shouldForward: false,
         };
       }
     }
@@ -32,8 +32,8 @@ export async function evaluateFilters(
       const allowedMethods = filters.methods.map((m) => m.toUpperCase());
       if (!allowedMethods.includes(method)) {
         return {
-          shouldForward: false,
           reason: `HTTP method "${method}" not in allowed list`,
+          shouldForward: false,
         };
       }
     }
@@ -53,8 +53,8 @@ export async function evaluateFilters(
 
       if (!matchesPattern) {
         return {
-          shouldForward: false,
           reason: `Path "${path}" does not match any allowed patterns`,
+          shouldForward: false,
         };
       }
     }
@@ -68,8 +68,8 @@ export async function evaluateFilters(
 
         if (!actualValue) {
           return {
-            shouldForward: false,
             reason: `Required header "${headerName}" not found`,
+            shouldForward: false,
           };
         }
 
@@ -78,8 +78,8 @@ export async function evaluateFilters(
           : [expectedValue];
         if (!expectedValues.includes(actualValue)) {
           return {
-            shouldForward: false,
             reason: `Header "${headerName}" value "${actualValue}" not in allowed list`,
+            shouldForward: false,
           };
         }
       }
@@ -99,16 +99,16 @@ export async function evaluateFilters(
       if (!result.success) {
         log('Custom filter evaluation failed:', result.error);
         return {
-          shouldForward: false,
           reason: `Custom filter error: ${result.error}`,
+          shouldForward: false,
         };
       }
 
       const filterResult = result.data as { shouldForward?: boolean };
       if (!filterResult.shouldForward) {
         return {
-          shouldForward: false,
           reason: 'Custom filter returned false',
+          shouldForward: false,
         };
       }
     }
@@ -118,8 +118,8 @@ export async function evaluateFilters(
   } catch (error) {
     log('Filter evaluation error:', error);
     return {
-      shouldForward: false,
       reason: error instanceof Error ? error.message : 'Unknown filter error',
+      shouldForward: false,
     };
   }
 }

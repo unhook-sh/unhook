@@ -120,6 +120,12 @@
         "command": "unhook.signOut",
         "icon": "$(sign-out)",
         "title": "Sign out of Unhook"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.createConfig",
+        "icon": "$(new-file)",
+        "title": "Create unhook.yml Configuration"
       }
     ],
     "configuration": {
@@ -144,9 +150,19 @@
           "description": "Maximum number of events to keep in history",
           "type": "number"
         },
-        "unhook.output.autoShow": {
+        "unhook.events.pollIntervalMs": {
+          "default": 2000,
+          "description": "How often to check for new events (in milliseconds). Lower values provide more real-time updates but may increase resource usage.",
+          "type": "number"
+        },
+        "unhook.notifications.showForNewEvents": {
           "default": true,
-          "description": "Automatically show the output panel when new events are received",
+          "description": "Show notifications when new webhook events are received",
+          "type": "boolean"
+        },
+        "unhook.output.autoShow": {
+          "default": false,
+          "description": "Automatically show the output panel when new events are received (disabled in production mode)",
           "type": "boolean"
         },
         "unhook.output.maxLines": {
@@ -226,7 +242,7 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "icon": "logo.svg",
+          "icon": "activity-logo.svg",
           "id": "unhook",
           "title": "Unhook"
         }
@@ -234,46 +250,43 @@
     }
   },
   "dependencies": {
-    "@unhook/client": "0.5.0",
+    "@unhook/client": "0.5.3",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "3.3.1",
-    "ws": "8.18.2"
+    "ws": "8.18.3"
   },
   "description": "Webhook Development",
   "devDependencies": {
-    "@tailwindcss/postcss": "4.1.10",
-    "@types/bun": "1.2.17",
-    "@types/glob": "8.1.0",
-    "@types/node": "24.0.3",
+    "@tailwindcss/postcss": "4.1.11",
+    "@types/bun": "1.2.18",
+    "@types/glob": "9.0.0",
+    "@types/node": "24.0.12",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@types/vscode": "1.96.0",
-    "@vitejs/plugin-react": "4.5.2",
+    "@vitejs/plugin-react": "4.6.0",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
-    "@vscode/vsce": "3.5.0",
+    "@vscode/vsce": "3.6.0",
     "concurrently": "9.2.0",
     "glob": "11.0.3",
-    "globals": "16.2.0",
-    "mocha": "11.7.0",
-    "ovsx": "0.10.4",
-    "postcss": "8.4.49",
-    "tailwindcss": "4.1.10",
+    "globals": "16.3.0",
+    "mocha": "11.7.1",
+    "ovsx": "0.10.5",
+    "postcss": "8.5.6",
+    "tailwindcss": "4.1.11",
     "tsup": "8.5.0",
     "typescript": "5.8.3",
-    "vite": "6.3.5"
+    "vite": "7.0.3"
   },
   "displayName": "Unhook - Webhook Development",
   "engines": {
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
-  "sponsor": {
-    "url": "https://github.com/sponsors/seawatts"
-  },
   "icon": "logo.png",
   "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
@@ -290,7 +303,7 @@
     "build:base": "tsup",
     "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup",
     "build:webview": "vite build",
-    "clean": "rm -rf .turbo node_modules dist *.vsix",
+    "clean": "git clean -xdf .turbo node_modules dist *.vsix",
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
     "dev:extension": "NODE_ENV=development tsup --watch",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
@@ -306,8 +319,11 @@
     "test:vsce": "infisical run --env prod -- bunx vsce verify-pat",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "sponsor": {
+    "url": "https://github.com/sponsors/seawatts"
+  },
   "type": "commonjs",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "vsce": {
     "dependencies": false,
     "yarn": false

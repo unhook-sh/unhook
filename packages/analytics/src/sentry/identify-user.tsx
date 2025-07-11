@@ -10,8 +10,8 @@ export function SentryIdentifyUser() {
   useEffect(() => {
     if (user.user) {
       Sentry.setUser({
-        id: user.user.id,
         email: user.user.primaryEmailAddress?.emailAddress,
+        id: user.user.id,
       });
     } else {
       Sentry.setUser(null);

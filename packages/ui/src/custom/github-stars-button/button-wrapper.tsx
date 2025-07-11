@@ -16,7 +16,7 @@ export function GitHubStarsButtonWrapper({
         <div className="h-9 w-[120px] animate-pulse rounded-full bg-muted" />
       }
     >
-      <GitHubStarsButton repo={repo} className={className} />
+      <GitHubStarsButton className={className} repo={repo} />
     </Suspense>
   );
 }

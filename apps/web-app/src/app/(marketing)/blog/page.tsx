@@ -19,43 +19,43 @@ export function constructMetadata({
   [key: string]: Metadata[keyof Metadata];
 }): Metadata {
   return {
-    title: {
-      template: `${siteConfig.name} | %s`,
-      default: siteConfig.name,
-    },
-    description: description || siteConfig.description,
-    keywords: siteConfig.keywords,
-    openGraph: {
-      title,
-      description,
-      url: siteConfig.url,
-      siteName: siteConfig.name,
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
-      type: 'website',
-      locale: 'en_US',
-    },
-    icons: '/favicon.ico',
-    metadataBase: new URL(siteConfig.url),
     authors: [
       {
         name: siteConfig.name,
         url: siteConfig.url,
       },
     ],
+    description: description || siteConfig.description,
+    icons: '/favicon.ico',
+    keywords: siteConfig.keywords,
+    metadataBase: new URL(siteConfig.url),
+    openGraph: {
+      description,
+      images: [
+        {
+          alt: title,
+          height: 630,
+          url: image,
+          width: 1200,
+        },
+      ],
+      locale: 'en_US',
+      siteName: siteConfig.name,
+      title,
+      type: 'website',
+      url: siteConfig.url,
+    },
+    title: {
+      default: siteConfig.name,
+      template: `${siteConfig.name} | %s`,
+    },
     ...props,
   };
 }
 
 export const metadata = constructMetadata({
-  title: 'Blog',
   description: `Latest news and updates from ${siteConfig.name}.`,
+  title: 'Blog',
 });
 
 export default async function Blog() {
@@ -80,7 +80,7 @@ export default async function Blog() {
       <div className="min-h-[50vh] bg-white/50 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur-lg">
         <div className="mx-auto grid w-full max-w-screen-xl grid-cols-1 gap-8 px-2.5 py-10 lg:px-20 lg:grid-cols-3">
           {articles.map((data, idx) => (
-            <BlogCard key={data.slug} data={data} priority={idx <= 1} />
+            <BlogCard data={data} key={data.slug} priority={idx <= 1} />
           ))}
         </div>
       </div>

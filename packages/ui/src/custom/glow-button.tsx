@@ -7,25 +7,25 @@ import type * as React from 'react';
 const glowButtonVariants = cva(
   'relative inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {
+    defaultVariants: {
+      showArrow: false,
+      size: 'default',
+      variant: 'default',
+    },
     variants: {
+      showArrow: {
+        false: '',
+        true: 'pr-12',
+      },
+      size: {
+        default: 'h-12 px-6 py-2',
+        lg: 'h-14 px-8 text-base',
+        sm: 'h-9 rounded-md px-3 text-xs',
+      },
       variant: {
         default: 'text-white',
         outline: 'text-white',
       },
-      size: {
-        default: 'h-12 px-6 py-2',
-        sm: 'h-9 rounded-md px-3 text-xs',
-        lg: 'h-14 px-8 text-base',
-      },
-      showArrow: {
-        true: 'pr-12',
-        false: '',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-      showArrow: false,
     },
   },
 );
@@ -46,11 +46,11 @@ function GlowButton({
 
   return (
     <Comp
-      data-slot="glow-button"
       className={cn(
         'group relative',
-        glowButtonVariants({ variant, size, showArrow, className }),
+        glowButtonVariants({ className, showArrow, size, variant }),
       )}
+      data-slot="glow-button"
       {...props}
     >
       {/* Glow effect container */}

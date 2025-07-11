@@ -1,20 +1,83 @@
 import type { WebhookConfig } from '@unhook/client/config';
 import { findUpConfig, loadConfig } from '@unhook/client/config';
 import * as vscode from 'vscode';
+import { env } from './env';
 
 export class ConfigManager {
   private static instance: ConfigManager;
   private config: WebhookConfig | null = null;
   private apiUrl = 'https://unhook.sh';
   private dashboardUrl = 'https://unhook.sh';
+  private context: vscode.ExtensionContext | undefined;
 
-  private constructor() {}
+  private constructor() {
+    // Set default URLs based on development mode and environment variables
+    if (this.isDevelopment()) {
+      this.apiUrl = 'http://localhost:3000';
+      this.dashboardUrl = 'http://localhost:3000';
+    } else {
+      // Use environment variable if available, otherwise default to production
+      this.apiUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+      this.dashboardUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+    }
+  }
 
-  static getInstance(): ConfigManager {
+  static getInstance(context?: vscode.ExtensionContext): ConfigManager {
     if (!ConfigManager.instance) {
       ConfigManager.instance = new ConfigManager();
     }
+    // Store context if provided
+    if (context) {
+      ConfigManager.instance.context = context;
+      // Re-check development mode with the context
+      if (ConfigManager.instance.isDevelopment()) {
+        ConfigManager.instance.apiUrl = 'http://localhost:3000';
+        ConfigManager.instance.dashboardUrl = 'http://localhost:3000';
+      } else {
+        // Use environment variable if available, otherwise default to production
+        ConfigManager.instance.apiUrl =
+          env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+        ConfigManager.instance.dashboardUrl =
+          env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+      }
+    }
     return ConfigManager.instance;
+  }
+
+  public isDevelopment(): boolean {
+    // Check ExtensionMode from context if available
+    if (
+      this.context &&
+      this.context.extensionMode === vscode.ExtensionMode.Development
+    ) {
+      return true;
+    }
+
+    // Check if running in Extension Development Host (most reliable for VS Code extensions)
+    if (vscode.env.appName.includes('Extension Development Host')) {
+      return true;
+    }
+
+    // Check environment variables
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.VSCODE_DEV === 'true'
+    ) {
+      return true;
+    }
+
+    // Check if the extension is not installed from marketplace (development scenario)
+    const extension = vscode.extensions.getExtension(
+      env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+    );
+    if (
+      extension &&
+      extension.extensionPath.includes('.vscode/extensions') === false
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   async loadConfiguration(workspacePath?: string): Promise<void> {
@@ -38,17 +101,26 @@ export class ConfigManager {
       if (configPath) {
         this.config = await loadConfig(configPath);
 
-        // Update URLs from config
-        if (this.config.server?.apiUrl) {
+        // Update URLs from config (but don't override environment variable in production)
+        if (this.config.server?.apiUrl && this.isDevelopment()) {
           this.apiUrl = this.config.server.apiUrl;
         }
-        if (this.config.server?.dashboardUrl) {
+        if (this.config.server?.dashboardUrl && this.isDevelopment()) {
           this.dashboardUrl = this.config.server.dashboardUrl;
-        } else if (this.config.server?.apiUrl) {
+        } else if (this.config.server?.apiUrl && this.isDevelopment()) {
           // Default dashboard URL to API URL if not specified
           this.dashboardUrl = this.config.server.apiUrl;
         }
       }
+
+      // Log current configuration
+      console.log('Unhook Config Manager:', {
+        apiUrl: this.apiUrl,
+        configFound: !!configPath,
+        dashboardUrl: this.dashboardUrl,
+        envApiUrl: env.NEXT_PUBLIC_API_URL,
+        isDevelopment: this.isDevelopment(),
+      });
     } catch (error) {
       console.error('Failed to load Unhook configuration:', error);
     }

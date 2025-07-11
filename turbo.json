@@ -1,70 +1,46 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": [
-    "DATABASE_URL",
-    "PORT",
-    "CLERK_SECRET_KEY",
-    "POSTGRES_URL",
-    "POSTGRES_PRISMA_URL",
-    "POSTGRES_URL_NON_POOLING",
-    "POSTGRES_USER",
-    "POSTGRES_HOST",
-    "POSTGRES_PASSWORD",
-    "POSTGRES_DATABASE",
-    "SUPABASE_ANON_KEY",
-    "SUPABASE_URL",
-    "SUPABASE_SERVICE_ROLE_KEY",
-    "SUPABASE_JWT_SECRET",
-    "CLERK_WEBHOOK_SECRET",
-    "CLERK_ISSUER_URL",
-    "OPENAI_API_KEY",
-    "POSTHOG_KEY",
-    "POSTHOG_HOST",
-    "KV_URL",
-    "KV_REST_API_READ_ONLY_TOKEN",
-    "REDIS_URL",
-    "KV_REST_API_TOKEN",
-    "KV_REST_API_URL",
-    "NEXT_PUBLIC_API_URL",
-    "STRIPE_SECRET_KEY",
-    "STRIPE_PUBLISHABLE_KEY",
-    "STRIPE_WEBHOOK_SECRET",
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "SUPABASE_PROJECT_ID",
-    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-    "NEXT_PUBLIC_POSTHOG_KEY",
-    "NEXT_PUBLIC_POSTHOG_HOST",
-    "NEXT_PUBLIC_APP_ENV",
-    "SENTRY_ORG",
-    "SENTRY_PROJECT",
-    "SENTRY_AUTH_TOKEN",
-    "COMMITTER_TOKEN",
-    "APPLE_TEAM_ID",
-    "APPLE_ID",
-    "APPLE_PASSWORD",
-    "MACOS_CERTIFICATE",
-    "MACOS_CERTIFICATE_PWD",
-    "MACOS_IDENTITY",
-    "POSTHOG_PERSONAL_API_KEY",
-    "NPM_TOKEN",
-    "TURBO_TOKEN",
-    "TURBO_TEAM"
-  ],
+  "globalEnv": ["NODE_ENV"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",
     "VERCEL",
     "VERCEL_ENV",
     "VERCEL_URL",
-    "npm_lifecycle_event"
+    "npm_lifecycle_event",
+    "TURBO_TOKEN",
+    "TURBO_TEAM",
+    "NPM_TOKEN",
+    "VERCEL_TOKEN"
   ],
   "tasks": {
+    "@unhook/web-app#build": {
+      "env": [
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ]
+    },
     "//#clean": {
       "cache": false
     },
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -72,7 +48,8 @@
         ".expo/**",
         ".output/**",
         ".vercel/output/**",
-        "dist/**"
+        "dist/**",
+        "build/**"
       ]
     },
     "clean": {
@@ -80,36 +57,53 @@
     },
     "dev": {
       "cache": false,
+      "env": [
+        "PORT",
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ],
       "persistent": true
     },
     "format": {
-      "dependsOn": ["^topo", "^build"]
+      "dependsOn": ["^build"]
+    },
+    "format:ci": {
+      "cache": false,
+      "dependsOn": ["^build"]
     },
     "gen-migration": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "interactive": true
     },
     "migrate": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "interactive": true
     },
     "push": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "interactive": true
     },
     "seed": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*", "SUPABASE_*"],
       "interactive": true
     },
     "studio": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "persistent": true
     },
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
     "typecheck": {
-      "dependsOn": ["^topo", "^build"],
+      "dependsOn": ["^build"],
       "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "ui-add": {
@@ -131,6 +125,22 @@
       "cache": false,
       "persistent": true,
       "dependsOn": ["^build"]
+    },
+    "unhook-jetbrains#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/distributions/**", "build/libs/**", "build/reports/**"]
+    },
+    "unhook-jetbrains#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "unhook-jetbrains#package": {
+      "dependsOn": ["build"],
+      "outputs": ["build/distributions/**"]
+    },
+    "unhook-jetbrains#verify": {
+      "dependsOn": ["build"],
+      "outputs": ["build/reports/**"]
     }
   },
   "ui": "tui"

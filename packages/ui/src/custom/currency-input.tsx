@@ -65,11 +65,11 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
       <div className="relative">
         <Input
           {...props}
-          type="text"
-          value={value}
+          className="pl-8"
           onChange={handleInputChange}
           onFocus={(event) => event.target.select()}
-          className="pl-8" // Add left padding for the currency icon
+          type="text"
+          value={value} // Add left padding for the currency icon
         />
         <span className="-translate-y-1/2 absolute top-1/2 left-3 text-gray-500">
           {currency === 'USD' ? '$' : currency}
@@ -80,10 +80,10 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
           {quickFillValues.map((value) => (
             <Button
               key={`quick-fill-${value.toString()}`}
-              size="sm"
-              variant="outline"
               onClick={() => handleQuickFill(value)}
+              size="sm"
               type="button"
+              variant="outline"
             >
               {formatCurrency({
                 amount: value,

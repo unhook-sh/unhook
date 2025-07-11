@@ -42,17 +42,17 @@ export function InvoiceTable({ invoices, isError }: InvoiceTableProps) {
           {invoices.map((invoice) => {
             const date = new Date(invoice.created * 1000);
             const amount = new Intl.NumberFormat('en-US', {
-              style: 'currency',
               currency: invoice.currency,
+              style: 'currency',
             }).format(invoice.amount_paid / 100);
 
             return (
               <TableRow key={invoice.id}>
                 <TableCell>
                   {date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
                     day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
                   })}
                 </TableCell>
                 <TableCell>{amount}</TableCell>
@@ -68,11 +68,11 @@ export function InvoiceTable({ invoices, isError }: InvoiceTableProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   {invoice.hosted_invoice_url && (
-                    <Button variant="ghost" size="sm" asChild>
+                    <Button asChild size="sm" variant="ghost">
                       <a
                         href={invoice.hosted_invoice_url}
-                        target="_blank"
                         rel="noopener noreferrer"
+                        target="_blank"
                       >
                         View Invoice
                       </a>

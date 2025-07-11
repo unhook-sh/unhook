@@ -5,32 +5,32 @@ import { useEffect, useState } from 'react';
 
 const events = [
   {
+    color: 'text-green-400',
     id: 1,
-    type: 'stripe.payment',
     status: 200,
     time: '2s ago',
-    color: 'text-green-400',
+    type: 'stripe.payment',
   },
   {
+    color: 'text-blue-400',
     id: 2,
-    type: 'github.push',
     status: 200,
     time: '5s ago',
-    color: 'text-blue-400',
+    type: 'github.push',
   },
   {
+    color: 'text-purple-400',
     id: 3,
-    type: 'clerk.user',
     status: 500,
     time: '12s ago',
-    color: 'text-purple-400',
+    type: 'clerk.user',
   },
   {
+    color: 'text-indigo-400',
     id: 4,
-    type: 'discord.message',
     status: 200,
     time: '18s ago',
-    color: 'text-indigo-400',
+    type: 'discord.message',
   },
 ];
 
@@ -81,16 +81,16 @@ export function VSCodeBentoAnimation() {
           <div className="space-y-1">
             {events.map((event, index) => (
               <motion.div
-                key={event.id}
+                animate={{
+                  backgroundColor:
+                    index === currentEvent ? '#37373d' : '#2d2d30',
+                }}
                 className={`p-1.5 rounded text-xs cursor-pointer transition-colors ${
                   index === currentEvent
                     ? 'bg-[#37373d] text-white'
                     : 'bg-[#2d2d30] text-gray-300 hover:bg-[#37373d]'
                 }`}
-                animate={{
-                  backgroundColor:
-                    index === currentEvent ? '#37373d' : '#2d2d30',
-                }}
+                key={event.id}
                 transition={{ duration: 0.3 }}
               >
                 <div className="flex justify-between items-center">
@@ -116,10 +116,10 @@ export function VSCodeBentoAnimation() {
           <div className="mb-2">
             <div className="text-xs text-gray-400 mb-1">Event Details</div>
             <motion.div
-              key={animationKey}
+              animate={{ opacity: 1, y: 0 }}
               className="bg-[#2d2d30] rounded p-2 font-mono text-xs"
               initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              key={animationKey}
               transition={{ duration: 0.5 }}
             >
               <div className={selectedEvent?.color}>
@@ -135,19 +135,19 @@ export function VSCodeBentoAnimation() {
 
           <div className="flex space-x-1">
             <motion.button
-              key={`replay-${animationKey}`}
+              animate={{ opacity: 1, scale: 1 }}
               className="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              key={`replay-${animationKey}`}
               transition={{ delay: 0.3, duration: 0.3 }}
             >
               Replay
             </motion.button>
             <motion.button
-              key={`copy-${animationKey}`}
+              animate={{ opacity: 1, scale: 1 }}
               className="px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 transition-colors"
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              key={`copy-${animationKey}`}
               transition={{ delay: 0.4, duration: 0.3 }}
             >
               Copy
@@ -158,14 +158,14 @@ export function VSCodeBentoAnimation() {
 
       {/* Activity Indicator */}
       <motion.div
-        className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full"
         animate={{
           opacity: [1, 0.3, 1],
         }}
+        className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full"
         transition={{
           duration: 2,
-          repeat: Number.POSITIVE_INFINITY,
           ease: 'easeInOut',
+          repeat: Number.POSITIVE_INFINITY,
         }}
       />
     </div>

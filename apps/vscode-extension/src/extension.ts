@@ -61,16 +61,25 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(settingsService);
 
   // Add VS Code output destination to default logger
+  // In production, always disable auto-show output regardless of user settings
+  const isProduction = !configManager.isDevelopment();
+  const autoShowSetting = isProduction
+    ? false
+    : settingsService.getSettings().output.autoShow;
+
   const outputDestination = new VSCodeOutputDestination({
+    autoShow: autoShowSetting,
     name: 'Unhook',
     vscode,
-    autoShow: settingsService.getSettings().output.autoShow,
   });
   defaultLogger.addDestination(outputDestination);
 
   // Listen for settings changes
   settingsService.onSettingsChange((settings) => {
-    outputDestination.autoShow = settings.output.autoShow;
+    // In production, always keep auto-show disabled
+    outputDestination.autoShow = isProduction
+      ? false
+      : settings.output.autoShow;
     updateStatusBar(); // Update status bar when delivery settings change
   });
 
@@ -162,8 +171,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register the webhook events provider
   eventsTreeView = vscode.window.createTreeView('unhook.events', {
-    treeDataProvider: eventsProvider,
     showCollapseAll: true,
+    treeDataProvider: eventsProvider,
   });
 
   eventsTreeView.onDidChangeVisibility(() => {

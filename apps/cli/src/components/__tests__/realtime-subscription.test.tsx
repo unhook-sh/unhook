@@ -47,13 +47,13 @@ describe.skip('RealtimeSubscription', () => {
           console.log('[test:clerk] Creating new Clerk user...');
           createdClerkUser = await clerkClient.users.createUser({
             emailAddress: [email],
+            firstName: 'Test',
+            lastName: 'User',
             passwordDigest,
             passwordHasher: 'sha256',
             skipLegalChecks: true,
             skipPasswordChecks: true,
             skipPasswordRequirement: true,
-            firstName: 'Test',
-            lastName: 'User',
           });
           console.log(
             '[test:clerk] Created new Clerk user:',
@@ -124,22 +124,22 @@ describe.skip('RealtimeSubscription', () => {
       await db
         .insert(Users)
         .values({
-          id: createdClerkUser.id,
+          avatarUrl: createdClerkUser.imageUrl,
           clerkId: createdClerkUser.id,
+          createdAt: new Date(),
           email: createdClerkUser.emailAddresses[0]?.emailAddress ?? '',
           firstName: createdClerkUser.firstName,
-          lastName: createdClerkUser.lastName,
-          avatarUrl: createdClerkUser.imageUrl,
+          id: createdClerkUser.id,
           lastLoggedInAt: new Date(),
+          lastName: createdClerkUser.lastName,
           online: true,
-          createdAt: new Date(),
           updatedAt: new Date(),
         })
         .onConflictDoUpdate({
-          target: Users.id,
           set: {
             updatedAt: new Date(),
           },
+          target: Users.id,
         });
       console.log('[test] User upserted successfully');
 
@@ -148,18 +148,18 @@ describe.skip('RealtimeSubscription', () => {
       await db
         .insert(Orgs)
         .values({
-          id: orgId,
           clerkOrgId: orgId,
-          name: 'Test Organization',
-          createdByUserId: createdClerkUser.id,
           createdAt: new Date(),
+          createdByUserId: createdClerkUser.id,
+          id: orgId,
+          name: 'Test Organization',
           updatedAt: new Date(),
         })
         .onConflictDoUpdate({
-          target: Orgs.id,
           set: {
             updatedAt: new Date(),
           },
+          target: Orgs.id,
         });
       console.log('[test] Organization upserted successfully');
 
@@ -168,64 +168,64 @@ describe.skip('RealtimeSubscription', () => {
       await db
         .insert(Webhooks)
         .values({
-          id: webhookId,
-          name: 'Test Webhook',
-          requestCount: 0,
+          apiKey: createId({ prefix: 'whsk' }),
           config: {
+            headers: {},
+            requests: {},
             storage: {
+              maxRequestBodySize: 1024 * 1024,
+              maxResponseBodySize: 1024 * 1024,
               storeHeaders: true,
               storeRequestBody: true,
               storeResponseBody: true,
-              maxRequestBodySize: 1024 * 1024,
-              maxResponseBodySize: 1024 * 1024,
             },
-            headers: {},
-            requests: {},
           },
-          status: 'active',
-          isPrivate: false,
-          apiKey: createId({ prefix: 'whsk' }),
           createdAt: new Date(),
-          updatedAt: new Date(),
+          id: webhookId,
+          isPrivate: false,
+          name: 'Test Webhook',
           orgId,
+          requestCount: 0,
+          status: 'active',
+          updatedAt: new Date(),
           userId: createdClerkUser.id,
         })
         .onConflictDoUpdate({
-          target: Webhooks.id,
           set: {
             updatedAt: new Date(),
           },
+          target: Webhooks.id,
         });
       console.log('[test] Webhook upserted successfully');
 
       // Create test event
       console.log('[test] Creating test event...');
       const testEvent: EventType = {
+        apiKey: null,
+        createdAt: new Date(),
+        failedReason: null,
         id: createId({ prefix: 'evt' }),
-        webhookId,
+        maxRetries: 3,
+        orgId,
         originRequest: {
-          method: 'POST',
-          id: createId({ prefix: 'req' }),
+          body: JSON.stringify({ test: 'data' }),
+          clientIp: '127.0.0.1',
+          contentType: 'application/json',
           headers: {
             'Content-Type': 'application/json',
           },
-          sourceUrl: 'https://example.com',
+          id: createId({ prefix: 'req' }),
+          method: 'POST',
           size: 100,
-          contentType: 'application/json',
-          clientIp: '127.0.0.1',
-          body: JSON.stringify({ test: 'data' }),
+          sourceUrl: 'https://example.com',
         },
+        retryCount: 0,
         source: 'test',
         status: 'pending',
         timestamp: new Date(),
-        userId: createdClerkUser.id,
-        orgId,
-        createdAt: new Date(),
         updatedAt: null,
-        apiKey: null,
-        failedReason: null,
-        retryCount: 0,
-        maxRetries: 3,
+        userId: createdClerkUser.id,
+        webhookId,
       };
       console.log('[test] Test event created with ID:', testEvent.id);
 
@@ -308,11 +308,11 @@ describe.skip('RealtimeSubscription', () => {
       expect(payload.eventType).toBe('INSERT');
       expect(payload.new).toMatchObject({
         id: testEvent.id,
-        webhookId: testEvent.webhookId,
+        orgId: testEvent.orgId,
         source: testEvent.source,
         status: testEvent.status,
         userId: testEvent.userId,
-        orgId: testEvent.orgId,
+        webhookId: testEvent.webhookId,
       });
       console.log('[test] Payload verification successful');
 

@@ -25,10 +25,10 @@ function ThemeToggle({ mode = 'dropdown', className }: ThemeToggleProps) {
   if (mode === 'toggle') {
     return (
       <Button
-        variant="outline"
-        size="icon"
-        onClick={toggleTheme}
         className={className}
+        onClick={toggleTheme}
+        size="icon"
+        variant="outline"
       >
         <SunIcon className="dark:-rotate-90 size-5 rotate-0 scale-100 transition-all dark:scale-0" />
         <MoonIcon className="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -40,7 +40,7 @@ function ThemeToggle({ mode = 'dropdown', className }: ThemeToggleProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className={className}>
+        <Button className={className} size="icon" variant="outline">
           <SunIcon className="dark:-rotate-90 size-5 rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>

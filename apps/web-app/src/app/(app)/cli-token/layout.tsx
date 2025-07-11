@@ -10,12 +10,12 @@ export default async function Layout({
       <div className="flex w-full max-w-md flex-col items-center gap-8">
         <div className="flex items-center flex-col">
           <Image
-            src="/logo.svg"
             alt="Unhook Logo"
-            width={120}
+            className="h-32 w-auto"
             height={40}
             priority
-            className="h-32 w-auto"
+            src="/logo.svg"
+            width={120}
           />
           <div className="text-2xl font-bold">Unhook</div>
         </div>

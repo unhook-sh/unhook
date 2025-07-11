@@ -1,11 +1,11 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { type JSX, useEffect } from 'react';
+import { useEffect } from 'react';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-export function ReactScan(): JSX.Element {
+export function ReactScan(): null {
   const pathParams = useSearchParams();
   const enabled = pathParams.get('react-scan') === 'true';
 
@@ -19,5 +19,5 @@ export function ReactScan(): JSX.Element {
     }
   }, [enabled]);
 
-  return <></>;
+  return null;
 }

@@ -47,32 +47,48 @@ type EventStore = EventState & EventsActions;
 
 const defaultEventState: EventState = {
   events: [],
-  selectedEventId: null,
   isLoading: true,
+  selectedEventId: null,
   totalCount: 0,
 };
 const store = createStore<EventStore>()((set, get) => ({
   ...defaultEventState,
-  setEvents: (events) => {
-    log(`Setting events, count: ${events.length}`);
-    set({ events });
-  },
-  setSelectedEventId: (id) => {
-    set({ selectedEventId: id });
-  },
-  setIsLoading: (isLoading) => {
-    log(`Setting loading state: ${isLoading}`);
-    set({ isLoading });
-  },
-  initializeSelection: () => {
-    const { selectedEventId, events } = get();
-    log(
-      `Initializing selection, current selected ID: ${selectedEventId}, events count: ${events.length}`,
-    );
-    if (!selectedEventId && events.length > 0) {
-      log(`Auto-selecting first event: ${events[0]?.id}`);
-      set({ selectedEventId: events[0]?.id ?? null });
+  deliverEvent: async (event: EventType) => {
+    const { user, orgId } = useAuthStore.getState();
+    const { connectionId } = useConnectionStore.getState();
+    const { api } = useApiStore.getState();
+    const { delivery, destination } = useConfigStore.getState();
+    if (!user?.id || !orgId) {
+      throw new Error('User or org not authenticated');
     }
+    const normalizedEvent = {
+      ...event,
+      createdAt:
+        typeof event.createdAt === 'string'
+          ? new Date(event.createdAt)
+          : event.createdAt,
+      originRequest: event.originRequest as unknown as RequestPayload,
+      timestamp:
+        typeof event.timestamp === 'string'
+          ? new Date(event.timestamp)
+          : event.timestamp,
+      updatedAt:
+        event.updatedAt && typeof event.updatedAt === 'string'
+          ? new Date(event.updatedAt)
+          : event.updatedAt,
+    } as EventType;
+    await createRequestsForEventToAllDestinations({
+      api,
+      capture,
+      connectionId,
+      delivery,
+      destination,
+      event: normalizedEvent,
+      isEventRetry: false,
+      onRequestCreated: async (request) => {
+        await store.getState().handlePendingRequest(request);
+      },
+    });
   },
   fetchEvents: async ({
     limit = 25,
@@ -98,11 +114,11 @@ const store = createStore<EventStore>()((set, get) => ({
       // Batch all state updates together
       set({
         events,
+        isLoading: false,
         selectedEventId:
           !currentState.selectedEventId && events.length > 0
             ? (events[0]?.id ?? null)
             : currentState.selectedEventId,
-        isLoading: false,
         totalCount: Number(totalEventCount),
       });
 
@@ -117,11 +133,11 @@ const store = createStore<EventStore>()((set, get) => ({
     const { delivery, destination } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     await handlePendingRequest({
-      request,
-      delivery,
-      destination,
       api,
       capture,
+      delivery,
+      destination,
+      request,
 
       requestFn: async (url, options) => {
         const { body, statusCode, headers } = await undiciRequest(url, options);
@@ -129,9 +145,19 @@ const store = createStore<EventStore>()((set, get) => ({
         const filteredHeaders = Object.fromEntries(
           Object.entries(headers).filter(([, v]) => v !== undefined),
         ) as Record<string, string | string[]>;
-        return { body, statusCode, headers: filteredHeaders };
+        return { body, headers: filteredHeaders, statusCode };
       },
     });
+  },
+  initializeSelection: () => {
+    const { selectedEventId, events } = get();
+    log(
+      `Initializing selection, current selected ID: ${selectedEventId}, events count: ${events.length}`,
+    );
+    if (!selectedEventId && events.length > 0) {
+      log(`Auto-selecting first event: ${events[0]?.id}`);
+      set({ selectedEventId: events[0]?.id ?? null });
+    }
   },
   replayEvent: async (event: EventType) => {
     const { user, orgId } = useAuthStore.getState();
@@ -151,59 +177,22 @@ const store = createStore<EventStore>()((set, get) => ({
     if (event.retryCount && typeof event.id === 'string') {
       await api.events.updateEventStatus.mutate({
         eventId: event.id,
-        status: 'processing',
         retryCount: event.retryCount + 1,
+        status: 'processing',
       });
     }
     await createRequestsForEventToAllDestinations({
-      event: normalizedEvent,
+      api,
+      capture,
+      connectionId,
       delivery,
       destination,
-      api,
-      connectionId,
+      event: normalizedEvent,
       isEventRetry: true,
+      onRequestCreated: async (request) => {
+        await store.getState().handlePendingRequest(request);
+      },
       pingEnabledFn: (destination) => !!destination.ping,
-      capture,
-      onRequestCreated: async (request) => {
-        await store.getState().handlePendingRequest(request);
-      },
-    });
-  },
-  deliverEvent: async (event: EventType) => {
-    const { user, orgId } = useAuthStore.getState();
-    const { connectionId } = useConnectionStore.getState();
-    const { api } = useApiStore.getState();
-    const { delivery, destination } = useConfigStore.getState();
-    if (!user?.id || !orgId) {
-      throw new Error('User or org not authenticated');
-    }
-    const normalizedEvent = {
-      ...event,
-      timestamp:
-        typeof event.timestamp === 'string'
-          ? new Date(event.timestamp)
-          : event.timestamp,
-      createdAt:
-        typeof event.createdAt === 'string'
-          ? new Date(event.createdAt)
-          : event.createdAt,
-      updatedAt:
-        event.updatedAt && typeof event.updatedAt === 'string'
-          ? new Date(event.updatedAt)
-          : event.updatedAt,
-      originRequest: event.originRequest as unknown as RequestPayload,
-    } as EventType;
-    await createRequestsForEventToAllDestinations({
-      event: normalizedEvent,
-      delivery,
-      destination,
-      api,
-      connectionId,
-      isEventRetry: false,
-      capture,
-      onRequestCreated: async (request) => {
-        await store.getState().handlePendingRequest(request);
-      },
     });
   },
   replayRequest: async (request: RequestType) => {
@@ -215,13 +204,13 @@ const store = createStore<EventStore>()((set, get) => ({
     capture({
       event: 'webhook_request_replay',
       properties: {
-        originalEventId: request.eventId,
-        webhookId: request.webhookId,
+        connectionId,
         eventId: request.eventId,
         method: request.request.method,
-        connectionId,
+        originalEventId: request.eventId,
         pingEnabled: !!destination.find((t) => t.ping),
         source: request.source,
+        webhookId: request.webhookId,
       },
     });
 
@@ -262,6 +251,17 @@ const store = createStore<EventStore>()((set, get) => ({
   reset: () => {
     log('Resetting event store');
     set({ events: [] });
+  },
+  setEvents: (events) => {
+    log(`Setting events, count: ${events.length}`);
+    set({ events });
+  },
+  setIsLoading: (isLoading) => {
+    log(`Setting loading state: ${isLoading}`);
+    set({ isLoading });
+  },
+  setSelectedEventId: (id) => {
+    set({ selectedEventId: id });
   },
 }));
 

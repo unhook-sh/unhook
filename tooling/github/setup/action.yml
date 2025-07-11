@@ -14,7 +14,4 @@ runs:
     - uses: oven-sh/setup-bun@v2
 
     - shell: bash
-      run: bun add -g turbo
-
-    - shell: bash
       run: bun install

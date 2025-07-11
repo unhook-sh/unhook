@@ -41,11 +41,11 @@ export async function createCheckoutSessionAction(orgId: string) {
 
     const customer = await getOrCreateCustomer({
       email: user.sessionClaims?.email as string,
-      name: org.name,
       metadata: {
-        orgId: org.id,
         clerkOrgId: org.clerkOrgId,
+        orgId: org.id,
       },
+      name: org.name,
     });
 
     if (!customer) {
@@ -65,10 +65,10 @@ export async function createCheckoutSessionAction(orgId: string) {
 
   // Create checkout session
   const session = await createCheckoutSession({
-    orgId,
-    customerId,
-    successUrl: `${origin}/${org.clerkOrgId}/billing?success=true`,
     cancelUrl: `${origin}/${org.clerkOrgId}/billing?canceled=true`,
+    customerId,
+    orgId,
+    successUrl: `${origin}/${org.clerkOrgId}/billing?success=true`,
   });
 
   // Redirect to Stripe Checkout

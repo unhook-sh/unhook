@@ -19,7 +19,7 @@ export function EditForwardingRuleDialog({
   onOpenChange,
 }: EditForwardingRuleDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Forwarding Rule</DialogTitle>

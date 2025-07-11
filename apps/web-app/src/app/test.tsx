@@ -25,12 +25,12 @@ const MainBox = ({ icon, title, initialAnimation }: MainBoxProps) => {
 
   return (
     <motion.div
+      animate={{ opacity: 1, scale: 1, y: 0 }}
       className="relative"
       initial={{ opacity: 0, ...(initialAnimation || { scale: 0.9 }) }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5 }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      transition={{ duration: 0.5 }}
     >
       <div
         className={`${glowClasses} ${isHovering ? 'scale-110 opacity-30' : ''}`}
@@ -51,8 +51,8 @@ interface ActionButtonProps {
 const ActionButton = ({ label, delay = 0.3 }: ActionButtonProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      initial={{ opacity: 0 }}
       transition={{ delay, duration: 0.5 }}
     >
       <div className="relative">
@@ -62,28 +62,28 @@ const ActionButton = ({ label, delay = 0.3 }: ActionButtonProps) => {
         </div>
       </div>
       <motion.div
-        className="flex justify-center mt-2"
         animate={{ y: [0, 3, 0] }}
+        className="flex justify-center mt-2"
         transition={{
-          repeat: Number.POSITIVE_INFINITY,
           duration: 2,
           ease: 'easeInOut',
+          repeat: Number.POSITIVE_INFINITY,
         }}
       >
         <svg
-          width="20"
+          aria-hidden="true"
+          fill="none"
           height="20"
           viewBox="0 0 24 24"
-          fill="none"
+          width="20"
           xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
         >
           <path
             d="M12 5V19M12 19L5 12M12 19L19 12"
             stroke="#6ee7b7"
-            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            strokeWidth="2"
           />
         </svg>
       </motion.div>
@@ -96,8 +96,8 @@ const ModernFlowDiagram = () => {
 
   return (
     <div
-      ref={containerRef}
       className="relative w-full h-full bg-gradient-to-br from-[#064e3b] via-[#065f46] to-[#064e3b] rounded-xl overflow-hidden"
+      ref={containerRef}
     >
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -111,22 +111,22 @@ const ModernFlowDiagram = () => {
       <div className="relative z-10 flex flex-col items-center gap-4 py-16">
         <MainBox
           icon={<Cloud />}
-          title="Webhook Provider"
           id="webhook"
           initialAnimation={{ y: -20 }}
+          title="Webhook Provider"
         />
-        <ActionButton label="POST" delay={0.3} />
-        <MainBox icon={<Server />} title="Unhook API" id="api" />
-        <ActionButton label="Store" delay={0.4} />
-        <MainBox icon={<Database />} title="Database" id="database" />
-        <ActionButton label="Websocket" delay={0.5} />
-        <MainBox icon={<Terminal />} title="CLI Client" id="client" />
-        <ActionButton label="Forward" delay={0.6} />
+        <ActionButton delay={0.3} label="POST" />
+        <MainBox icon={<Server />} id="api" title="Unhook API" />
+        <ActionButton delay={0.4} label="Store" />
+        <MainBox icon={<Database />} id="database" title="Database" />
+        <ActionButton delay={0.5} label="Websocket" />
+        <MainBox icon={<Terminal />} id="client" title="CLI Client" />
+        <ActionButton delay={0.6} label="Forward" />
         <MainBox
           icon={<Server />}
-          title="Local Server"
           id="server"
           initialAnimation={{ y: 20 }}
+          title="Local Server"
         />
       </div>
     </div>

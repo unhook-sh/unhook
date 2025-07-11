@@ -24,13 +24,13 @@ export default function ForwardingPage({ params }: ForwardingPageProps) {
         </P>
       </div>
 
-      <Tabs defaultValue="rules" className="w-full">
+      <Tabs className="w-full" defaultValue="rules">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="rules">Forwarding Rules</TabsTrigger>
           <TabsTrigger value="destinations">Destinations</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="rules" className="space-y-4">
+        <TabsContent className="space-y-4" value="rules">
           <div className="flex justify-between items-center">
             <P className="text-muted-foreground">
               Create rules to filter and transform webhooks before forwarding
@@ -41,7 +41,7 @@ export default function ForwardingPage({ params }: ForwardingPageProps) {
           <ForwardingRulesList webhookId={webhookId} />
         </TabsContent>
 
-        <TabsContent value="destinations" className="space-y-4">
+        <TabsContent className="space-y-4" value="destinations">
           <div className="flex justify-between items-center">
             <P className="text-muted-foreground">
               Manage destinations where webhooks can be forwarded.

@@ -24,8 +24,8 @@ export class AuthServer {
 
   private parseCallbackParams(url: URL): AuthCallbackParams {
     return {
-      csrfToken: url.searchParams.get('csrf'),
       code: url.searchParams.get('code'),
+      csrfToken: url.searchParams.get('csrf'),
       error: url.searchParams.get('error'),
     };
   }
@@ -77,8 +77,8 @@ export class AuthServer {
 
     log('Parsed URL parameters:', {
       csrfToken: params.csrfToken,
-      hasCode: !!params.code,
       error: params.error,
+      hasCode: !!params.code,
     });
 
     this.setCorsHeaders(res);
@@ -100,9 +100,9 @@ export class AuthServer {
       this.handleInvalidRequest(
         res,
         new InvalidAuthResponseError({
-          hasCsrfToken: !!params.csrfToken,
-          hasCode: !!params.code,
           csrfTokenMatches: params.csrfToken === csrfToken,
+          hasCode: !!params.code,
+          hasCsrfToken: !!params.csrfToken,
         }),
       );
       return;
@@ -124,8 +124,8 @@ export class AuthServer {
       this.handleInvalidRequest(
         res,
         new InvalidAuthResponseError({
-          reason: 'missing_required_params',
           hasCode: !!params.code,
+          reason: 'missing_required_params',
         }),
       );
       return;
@@ -159,8 +159,8 @@ export class AuthServer {
         this.server.on('error', (err) => {
           log('Server error:', err.message);
           const error = new InvalidAuthResponseError({
-            reason: 'server_error',
             error: err.message,
+            reason: 'server_error',
           });
           this.rejectAuth?.(error);
           this.stop();

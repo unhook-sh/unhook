@@ -100,8 +100,8 @@ export const Feature = ({
   const carouselRef = useRef<HTMLUListElement>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, {
-    once: true,
     amount: 0.5,
+    once: true,
   });
 
   useEffect(() => {
@@ -128,8 +128,8 @@ export const Feature = ({
           (carouselRect.width - cardRect.width) / 2;
 
         carouselRef.current.scrollTo({
-          left: carouselRef.current.scrollLeft + offset,
           behavior: 'smooth',
+          left: carouselRef.current.scrollLeft + offset,
         });
       }
     }
@@ -212,29 +212,29 @@ export const Feature = ({
           {/* Main Image */}
           {/** biome-ignore lint/performance/noImgElement: we need to use img element for animation */}
           <motion.img
-            key={currentIndex}
-            src={currentItem.image}
             alt={currentItem.title}
+            animate={{
+              filter: imageLoaded ? 'blur(0px)' : 'blur(5px)',
+              opacity: imageLoaded ? 1 : 0,
+            }}
             className={cn(
               'aspect-auto h-full w-full rounded-xl border border-neutral-300/50 object-cover p-1',
               'transition-all duration-300',
               imageLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-xl',
             )}
             initial={{
-              opacity: 0,
               filter: 'blur(5px)',
+              opacity: 0,
             }}
-            animate={{
-              opacity: imageLoaded ? 1 : 0,
-              filter: imageLoaded ? 'blur(0px)' : 'blur(5px)',
-            }}
+            key={currentIndex}
+            loading="eager"
+            onLoad={() => setImageLoaded(true)}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            src={currentItem.image}
             transition={{
               duration: 0.3,
               ease: [0.4, 0, 0.2, 1],
             }}
-            onLoad={() => setImageLoaded(true)}
-            loading="eager"
-            sizes="(max-width: 768px) 100vw, 50vw"
           />
         </div>
       );
@@ -243,13 +243,13 @@ export const Feature = ({
     if (currentItem.video) {
       return (
         <video
-          preload="auto"
-          src={currentItem.video}
-          className="aspect-auto h-full w-full rounded-lg object-cover"
           autoPlay
+          className="aspect-auto h-full w-full rounded-lg object-cover"
           loop
           muted
-          playsInline // Better mobile support
+          playsInline
+          preload="auto"
+          src={currentItem.video} // Better mobile support
         />
       );
     }
@@ -260,7 +260,7 @@ export const Feature = ({
   };
 
   return (
-    <div ref={ref} className="w-full">
+    <div className="w-full" ref={ref}>
       <div className="flex w-full flex-col items-center justify-center max-w-7xl mx-auto">
         <div className="grid h-full grid-cols-5 gap-x-10 px-10 md:px-20 items-center w-full">
           <div
@@ -270,21 +270,21 @@ export const Feature = ({
           >
             <Accordion.Root
               className="w-full h-full flex flex-col gap-8"
-              type="single"
               defaultValue={`item-${currentIndex}`}
-              value={`item-${currentIndex}`}
               onValueChange={(value) =>
                 setCurrentIndex(Number(value.split('-')[1]))
               }
+              type="single"
+              value={`item-${currentIndex}`}
             >
               {featureItems.map((item, index) => (
                 <AccordionItem
-                  key={item.id}
                   className={cn(
                     'relative data-[state=open]:bg-white dark:data-[state=open]:bg-[#27272A] rounded-lg data-[state=closed]:rounded-none data-[state=closed]:border-0',
                     'dark:data-[state=open]:shadow-[0px_0px_0px_1px_rgba(249,250,251,0.06),0px_0px_0px_1px_var(--color-zinc-800,#27272A),0px_1px_2px_-0.5px_rgba(0,0,0,0.24),0px_2px_4px_-1px_rgba(0,0,0,0.24)]',
                     'data-[state=open]:shadow-[0px_0px_1px_0px_rgba(0,0,0,0.16),0px_1px_2px_-0.5px_rgba(0,0,0,0.16)]',
                   )}
+                  key={item.id}
                   value={`item-${index}`}
                 >
                   <div
@@ -297,10 +297,10 @@ export const Feature = ({
                           linePosition === 'left',
                         'bottom-0 top-0 h-full w-0.5 right-0':
                           linePosition === 'right',
-                        'left-0 right-0 top-0 h-0.5 w-full':
-                          linePosition === 'top',
                         'left-0 right-0 bottom-0 h-0.5 w-full':
                           linePosition === 'bottom',
+                        'left-0 right-0 top-0 h-0.5 w-full':
+                          linePosition === 'top',
                       },
                     )}
                     data-state={currentIndex === index ? 'open' : 'closed'}
@@ -310,10 +310,10 @@ export const Feature = ({
                         'absolute transition-all ease-linear',
                         lineColor,
                         {
-                          'left-0 top-0 w-full': ['left', 'right'].includes(
+                          'left-0 top-0 h-full': ['top', 'bottom'].includes(
                             linePosition,
                           ),
-                          'left-0 top-0 h-full': ['top', 'bottom'].includes(
+                          'left-0 top-0 w-full': ['left', 'right'].includes(
                             linePosition,
                           ),
                         },
@@ -350,21 +350,21 @@ export const Feature = ({
           </div>
 
           <ul
-            ref={carouselRef}
             className="col-span-5 flex snap-x flex-nowrap overflow-x-auto [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_10%,white_90%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_10%,white_90%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden snap-mandatory"
+            ref={carouselRef}
             style={{
               padding: '50px calc(50%)',
             }}
           >
             {featureItems.map((item, index) => (
               <button
-                key={item.id}
-                type="button"
                 className="card relative grid h-full max-w-64 shrink-0 items-start justify-center p-3 bg-background border-l last:border-r border-t border-b first:rounded-tl-xl last:rounded-tr-xl"
+                key={item.id}
                 onClick={() => setCurrentIndex(index)}
                 style={{
                   scrollSnapAlign: 'center',
                 }}
+                type="button"
               >
                 <div
                   className={cn(
@@ -376,10 +376,10 @@ export const Feature = ({
                         linePosition === 'left',
                       'bottom-0 top-0 h-full w-0.5 right-0':
                         linePosition === 'right',
-                      'left-0 right-0 top-0 h-0.5 w-full':
-                        linePosition === 'top',
                       'left-0 right-0 bottom-0 h-0.5 w-full':
                         linePosition === 'bottom',
+                      'left-0 right-0 top-0 h-0.5 w-full':
+                        linePosition === 'top',
                     },
                   )}
                   data-state={currentIndex === index ? 'open' : 'closed'}
@@ -389,10 +389,10 @@ export const Feature = ({
                       'absolute transition-all ease-linear',
                       lineColor,
                       {
-                        'left-0 top-0 w-full': ['left', 'right'].includes(
+                        'left-0 top-0 h-full': ['top', 'bottom'].includes(
                           linePosition,
                         ),
-                        'left-0 top-0 h-full': ['top', 'bottom'].includes(
+                        'left-0 top-0 w-full': ['left', 'right'].includes(
                           linePosition,
                         ),
                       },

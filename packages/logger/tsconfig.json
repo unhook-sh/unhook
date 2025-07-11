@@ -1,10 +1,10 @@
 {
-  "extends": "@unhook/tsconfig/react-library.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "baseUrl": ".",
     "outDir": "dist",
-    "baseUrl": "."
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["."],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "extends": "@unhook/tsconfig/react-library.json",
+  "include": ["."]
 }

@@ -15,20 +15,19 @@ export function useWebhook(id: string) {
 
       // Mock webhook data
       const mockWebhook: Webhook = {
-        id: id,
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
         deliveredAddress: `http://webhook-${id.substring(0, 6)}.example.com`,
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2 days ago
+        id: id, // 2 days ago
         lastActivity: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-        status: 'active',
         localPort: 3000,
         metrics: {
-          invocations: 13,
-          errorRate: 20,
-          requestsHandled: 156,
           avgResponseTime: 873,
-          memoryUsage: 151,
-          cpuUsage: 13.5,
           bandwidthUsed: 42.7,
+          cpuUsage: 13.5,
+          errorRate: 20,
+          invocations: 13,
+          memoryUsage: 151,
+          requestsHandled: 156,
           statusCodes: {
             '200': 65,
             '201': 10,
@@ -39,13 +38,14 @@ export function useWebhook(id: string) {
             '500': 3,
           },
           topPaths: [
-            { path: '/api/webhook', count: 423, avgLatency: 127 },
-            { path: '/api/users', count: 326, avgLatency: 95 },
-            { path: '/api/auth', count: 512, avgLatency: 112 },
-            { path: '/api/data', count: 239, avgLatency: 143 },
-            { path: '/api/events', count: 178, avgLatency: 87 },
+            { avgLatency: 127, count: 423, path: '/api/webhook' },
+            { avgLatency: 95, count: 326, path: '/api/users' },
+            { avgLatency: 112, count: 512, path: '/api/auth' },
+            { avgLatency: 143, count: 239, path: '/api/data' },
+            { avgLatency: 87, count: 178, path: '/api/events' },
           ],
         },
+        status: 'active',
       };
 
       setWebhook(mockWebhook);
@@ -100,10 +100,10 @@ export function useWebhook(id: string) {
   }, []);
 
   return {
-    webhook,
+    deleteWebhook,
     isLoading,
     startWebhook,
     stopWebhook,
-    deleteWebhook,
+    webhook,
   };
 }

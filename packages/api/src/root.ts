@@ -9,12 +9,12 @@ import { createTRPCRouter } from './trpc';
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
-  user: userRouter,
-  webhooks: webhooksRouter,
-  webhookAccessRequests: webhookAccessRequestsRouter,
-  requests: requestsRouter,
   connections: connectionsRouter,
   events: eventsRouter,
+  requests: requestsRouter,
+  user: userRouter,
+  webhookAccessRequests: webhookAccessRequestsRouter,
+  webhooks: webhooksRouter,
 });
 
 // export type definition of API

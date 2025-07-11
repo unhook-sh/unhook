@@ -22,6 +22,9 @@ export function StripeCheckoutButton({ orgId }: StripeCheckoutButtonProps) {
   const cancelUrl = `${baseUrl}?checkout=cancelled`;
 
   const { execute } = useAction(getStripeCheckoutLink, {
+    onError: () => {
+      setIsLoading(false);
+    },
     onExecute: () => {
       setIsLoading(true);
     },
@@ -31,23 +34,20 @@ export function StripeCheckoutButton({ orgId }: StripeCheckoutButtonProps) {
       }
       setIsLoading(false);
     },
-    onError: () => {
-      setIsLoading(false);
-    },
   });
 
   const handleUpgrade = () => {
     execute({
-      orgId,
-      successUrl,
       cancelUrl,
-      priceLookupKey: 'pro_monthly',
       meteredPriceLookupKey: 'pro_metered_events',
+      orgId,
+      priceLookupKey: 'pro_monthly',
+      successUrl,
     });
   };
 
   return (
-    <Button onClick={handleUpgrade} disabled={isLoading}>
+    <Button disabled={isLoading} onClick={handleUpgrade}>
       {isLoading ? 'Loading...' : 'Upgrade Now'}
     </Button>
   );

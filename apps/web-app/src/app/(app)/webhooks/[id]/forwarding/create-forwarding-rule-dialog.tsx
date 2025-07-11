@@ -67,19 +67,19 @@ export function CreateForwardingRuleDialog({
     try {
       // TODO: Implement API call to create rule
       const ruleData = {
-        name,
         description,
-        webhookId,
         destinationId,
-        priority: Number.parseInt(priority, 10),
-        isActive,
         filters: {
+          customFilter: customFilter.trim() || undefined,
           eventNames: eventNames.length > 0 ? eventNames : undefined,
           methods: methods.length > 0 ? methods : undefined,
           pathPatterns: pathPatterns.length > 0 ? pathPatterns : undefined,
-          customFilter: customFilter.trim() || undefined,
         },
+        isActive,
+        name,
+        priority: Number.parseInt(priority, 10),
         transformation: transformation.trim() || undefined,
+        webhookId,
       };
       console.log('Create rule:', ruleData);
       setOpen(false);
@@ -132,10 +132,10 @@ export function CreateForwardingRuleDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button>
-          <Icons.Plus size="sm" className="mr-2" />
+          <Icons.Plus className="mr-2" size="sm" />
           Create Rule
         </Button>
       </DialogTrigger>
@@ -155,9 +155,9 @@ export function CreateForwardingRuleDialog({
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
-                value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Send payment events to Slack"
+                value={name}
               />
             </div>
 
@@ -165,16 +165,16 @@ export function CreateForwardingRuleDialog({
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
-                value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe what this rule does..."
                 rows={2}
+                value={description}
               />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="destination">Destination</Label>
-              <Select value={destinationId} onValueChange={setDestinationId}>
+              <Select onValueChange={setDestinationId} value={destinationId}>
                 <SelectTrigger id="destination">
                   <SelectValue placeholder="Select a destination" />
                 </SelectTrigger>
@@ -184,7 +184,7 @@ export function CreateForwardingRuleDialog({
                       <div className="flex items-center gap-2">
                         <Icons.ArrowRight size="xs" />
                         {dest.name}
-                        <Badge variant="outline" className="ml-2">
+                        <Badge className="ml-2" variant="outline">
                           {dest.type}
                         </Badge>
                       </div>
@@ -199,11 +199,11 @@ export function CreateForwardingRuleDialog({
                 <Label htmlFor="priority">Priority</Label>
                 <Input
                   id="priority"
-                  type="number"
-                  value={priority}
+                  min="0"
                   onChange={(e) => setPriority(e.target.value)}
                   placeholder="0"
-                  min="0"
+                  type="number"
+                  value={priority}
                 />
                 <p className="text-xs text-muted-foreground">
                   Lower numbers execute first
@@ -214,11 +214,11 @@ export function CreateForwardingRuleDialog({
                 <Label htmlFor="active">Active</Label>
                 <div className="flex items-center space-x-2 pt-2">
                   <Switch
-                    id="active"
                     checked={isActive}
+                    id="active"
                     onCheckedChange={setIsActive}
                   />
-                  <Label htmlFor="active" className="font-normal">
+                  <Label className="font-normal" htmlFor="active">
                     Enable rule immediately
                   </Label>
                 </div>
@@ -227,32 +227,32 @@ export function CreateForwardingRuleDialog({
           </div>
 
           {/* Filters and Transformation */}
-          <Tabs defaultValue="filters" className="w-full">
+          <Tabs className="w-full" defaultValue="filters">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="filters">Filters</TabsTrigger>
               <TabsTrigger value="transformation">Transformation</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="filters" className="space-y-4">
+            <TabsContent className="space-y-4" value="filters">
               {/* Event Names */}
               <div className="grid gap-2">
                 <Label>Event Names</Label>
                 <div className="flex gap-2">
                   <Input
-                    value={eventNameInput}
                     onChange={(e) => setEventNameInput(e.target.value)}
-                    placeholder="e.g., payment.succeeded"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
                         addEventName();
                       }
                     }}
+                    placeholder="e.g., payment.succeeded"
+                    value={eventNameInput}
                   />
                   <Button
+                    onClick={addEventName}
                     type="button"
                     variant="secondary"
-                    onClick={addEventName}
                   >
                     Add
                   </Button>
@@ -263,9 +263,9 @@ export function CreateForwardingRuleDialog({
                       <Badge key={name} variant="secondary">
                         {name}
                         <button
-                          type="button"
-                          onClick={() => removeEventName(name)}
                           className="ml-1"
+                          onClick={() => removeEventName(name)}
+                          type="button"
                         >
                           <Icons.X size="xs" />
                         </button>
@@ -282,9 +282,6 @@ export function CreateForwardingRuleDialog({
                   {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((method) => (
                     <Button
                       key={method}
-                      type="button"
-                      variant={methods.includes(method) ? 'default' : 'outline'}
-                      size="sm"
                       onClick={() => {
                         if (methods.includes(method)) {
                           setMethods(methods.filter((m) => m !== method));
@@ -292,6 +289,9 @@ export function CreateForwardingRuleDialog({
                           setMethods([...methods, method]);
                         }
                       }}
+                      size="sm"
+                      type="button"
+                      variant={methods.includes(method) ? 'default' : 'outline'}
                     >
                       {method}
                     </Button>
@@ -304,20 +304,20 @@ export function CreateForwardingRuleDialog({
                 <Label>Path Patterns (Regex)</Label>
                 <div className="flex gap-2">
                   <Input
-                    value={pathPatternInput}
                     onChange={(e) => setPathPatternInput(e.target.value)}
-                    placeholder="e.g., ^/api/webhooks/stripe"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
                         addPathPattern();
                       }
                     }}
+                    placeholder="e.g., ^/api/webhooks/stripe"
+                    value={pathPatternInput}
                   />
                   <Button
+                    onClick={addPathPattern}
                     type="button"
                     variant="secondary"
-                    onClick={addPathPattern}
                   >
                     Add
                   </Button>
@@ -328,9 +328,9 @@ export function CreateForwardingRuleDialog({
                       <Badge key={pattern} variant="secondary">
                         <code>{pattern}</code>
                         <button
-                          type="button"
-                          onClick={() => removePathPattern(pattern)}
                           className="ml-1"
+                          onClick={() => removePathPattern(pattern)}
+                          type="button"
                         >
                           <Icons.X size="xs" />
                         </button>
@@ -344,21 +344,21 @@ export function CreateForwardingRuleDialog({
               <div className="grid gap-2">
                 <Label>Custom JavaScript Filter</Label>
                 <CodeEditor
-                  value={customFilter}
+                  height="120px"
                   onChange={setCustomFilter}
                   placeholder="// Return true to forward, false to skip
 // Available: event, request, body, headers
 body.amount > 1000 && body.currency === 'USD'"
-                  height="120px"
+                  value={customFilter}
                 />
               </div>
             </TabsContent>
 
-            <TabsContent value="transformation" className="space-y-4">
+            <TabsContent className="space-y-4" value="transformation">
               <div className="grid gap-2">
                 <Label>JavaScript Transformation</Label>
                 <CodeEditor
-                  value={transformation}
+                  height="300px"
                   onChange={setTransformation}
                   placeholder={`// Transform the webhook data before forwarding
 // Define a transform function that returns the new payload
@@ -368,7 +368,7 @@ function transform({ event, request, body, headers }) {
     timestamp: new Date().toISOString()
   };
 }`}
-                  height="300px"
+                  value={transformation}
                 />
                 <p className="text-xs text-muted-foreground">
                   The transform function receives the webhook data and should
@@ -381,18 +381,18 @@ function transform({ event, request, body, headers }) {
 
         <DialogFooter>
           <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
             disabled={loading}
+            onClick={() => setOpen(false)}
+            variant="outline"
           >
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
             disabled={loading || !name || !destinationId}
+            onClick={handleSubmit}
           >
             {loading && (
-              <Icons.Spinner size="sm" className="mr-2 animate-spin" />
+              <Icons.Spinner className="mr-2 animate-spin" size="sm" />
             )}
             Create Rule
           </Button>

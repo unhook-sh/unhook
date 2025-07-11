@@ -46,5 +46,5 @@ export function Presence(props: { id: string }) {
       void supabase.removeChannel(readingChannel);
     };
   }, [user, props.id, setOnlineUsers, supabase]);
-  return <></>;
+  return null;
 }

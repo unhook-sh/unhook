@@ -54,7 +54,7 @@ export function WebhookAnalyticsDashboard({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1">
+              <Button className="h-8 gap-1" size="sm" variant="outline">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>{timeRange}</span>
               </Button>
@@ -78,40 +78,40 @@ export function WebhookAnalyticsDashboard({
             </DropdownMenuContent>
           </DropdownMenu>
           <Button
-            variant="outline"
-            size="sm"
             className="h-8 gap-1"
             onClick={handleExportData}
+            size="sm"
+            variant="outline"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Export</span>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 gap-1">
+          <Button className="h-8 gap-1" size="sm" variant="outline">
             <Filter className="h-3.5 w-3.5" />
             <span>Filter</span>
           </Button>
           <div className="flex items-center gap-1 rounded-md border bg-background p-1">
             <Button
-              variant="ghost"
-              size="sm"
               className={`h-6 px-2 text-xs ${activeTab === 'overview' ? 'bg-muted' : ''}`}
               onClick={() => setActiveTab('overview')}
+              size="sm"
+              variant="ghost"
             >
               Overview
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
               className={`h-6 px-2 text-xs ${activeTab === 'performance' ? 'bg-muted' : ''}`}
               onClick={() => setActiveTab('performance')}
+              size="sm"
+              variant="ghost"
             >
               Performance
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
               className={`h-6 px-2 text-xs ${activeTab === 'usage' ? 'bg-muted' : ''}`}
               onClick={() => setActiveTab('usage')}
+              size="sm"
+              variant="ghost"
             >
               Usage
             </Button>
@@ -120,11 +120,11 @@ export function WebhookAnalyticsDashboard({
       </div>
 
       <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
         className="space-y-4"
+        onValueChange={setActiveTab}
+        value={activeTab}
       >
-        <TabsContent value="overview" className="space-y-4">
+        <TabsContent className="space-y-4" value="overview">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -132,14 +132,14 @@ export function WebhookAnalyticsDashboard({
                   Total Requests
                 </CardTitle>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
+                  className="h-4 w-4 text-muted-foreground"
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <title>Total Requests</title>
                   <path d="M12 2v20M2 12h20" />
@@ -172,14 +172,14 @@ export function WebhookAnalyticsDashboard({
                   Error Rate
                 </CardTitle>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
+                  className="h-4 w-4 text-muted-foreground"
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <title>Error Rate</title>
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
@@ -198,14 +198,14 @@ export function WebhookAnalyticsDashboard({
                   Active Webhooks
                 </CardTitle>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
+                  className="h-4 w-4 text-muted-foreground"
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <title>Active Webhooks</title>
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -285,7 +285,7 @@ export function WebhookAnalyticsDashboard({
           </Card>
         </TabsContent>
 
-        <TabsContent value="performance" className="space-y-4">
+        <TabsContent className="space-y-4" value="performance">
           <Card className="col-span-4">
             <CardHeader>
               <CardTitle>Latency Over Time</CardTitle>
@@ -294,12 +294,12 @@ export function WebhookAnalyticsDashboard({
               </CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
-              <WebhookLatencyChart timeRange={timeRange} detailed />
+              <WebhookLatencyChart detailed timeRange={timeRange} />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="usage" className="space-y-4">
+        <TabsContent className="space-y-4" value="usage">
           <Card className="col-span-4">
             <CardHeader>
               <CardTitle>Request Distribution</CardTitle>

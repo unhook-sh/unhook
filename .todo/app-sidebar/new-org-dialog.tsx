@@ -38,6 +38,11 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
   const router = useRouter();
 
   const { execute, status } = useAction(createOrgAction, {
+    onError: (err: unknown) => {
+      setErrors([
+        err instanceof Error ? err.message : 'Failed to create organization',
+      ]);
+    },
     onSuccess: async (result) => {
       if (result.data?.success && result.data?.data?.orgId) {
         try {
@@ -69,11 +74,6 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
         }
       }
     },
-    onError: (err: unknown) => {
-      setErrors([
-        err instanceof Error ? err.message : 'Failed to create organization',
-      ]);
-    },
   });
 
   const isLoading = status === 'executing';
@@ -86,39 +86,39 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
       return;
     }
     execute({
-      userId: user.userId,
+      currentPath: window.location.pathname,
       domain: user.email.split('@')[1],
-      name,
       enableAutoJoiningByDomain,
       membersMustHaveMatchingDomain,
-      currentPath: window.location.pathname,
+      name,
+      userId: user.userId,
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New Organization</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4">
+        <form className="grid gap-4" onSubmit={handleSubmit}>
           <div>
-            <Label htmlFor="org-name" className="block mb-2">
+            <Label className="block mb-2" htmlFor="org-name">
               Organization Name
             </Label>
             <Input
+              autoFocus
               id="org-name"
-              value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Acme Inc"
               required
-              autoFocus
+              value={name}
             />
           </div>
           <div className="flex gap-2 items-center">
             <Checkbox
-              id="auto-join"
               checked={enableAutoJoiningByDomain}
+              id="auto-join"
               onCheckedChange={(checked) =>
                 setEnableAutoJoiningByDomain(!!checked)
               }
@@ -132,8 +132,8 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
           </div>
           <div className="flex gap-2 items-center">
             <Checkbox
-              id="restrict-domain"
               checked={membersMustHaveMatchingDomain}
+              id="restrict-domain"
               onCheckedChange={(checked) =>
                 setMembersMustHaveMatchingDomain(!!checked)
               }
@@ -160,7 +160,7 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading || !name}>
+            <Button disabled={isLoading || !name} type="submit">
               {isLoading && <Icons.Spinner size="sm" variant="secondary" />}
               Create
             </Button>

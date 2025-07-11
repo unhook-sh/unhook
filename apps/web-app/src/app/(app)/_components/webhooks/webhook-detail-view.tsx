@@ -85,7 +85,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
       <div className="flex h-screen w-full flex-col bg-background text-foreground">
         <header className="flex h-14 items-center justify-between border-b px-4">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleBack}>
+            <Button onClick={handleBack} size="icon" variant="ghost">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <Skeleton className="h-6 w-40" />
@@ -127,17 +127,17 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
     <div className="flex h-screen w-full flex-col bg-background text-foreground">
       <header className="flex h-14 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={handleBack}>
+          <Button onClick={handleBack} size="icon" variant="ghost">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-lg font-semibold">{webhook.id}</h1>
           <Badge
-            variant={webhook.status === 'active' ? 'default' : 'secondary'}
             className={
               webhook.status === 'active'
                 ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
                 : ''
             }
+            variant={webhook.status === 'active' ? 'default' : 'secondary'}
           >
             {webhook.status === 'active' ? 'Active' : 'Inactive'}
           </Badge>
@@ -145,45 +145,45 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 rounded-md border bg-background p-1">
             <Button
-              variant="ghost"
-              size="sm"
               className="h-7 gap-1 text-xs"
-              onClick={() => setTimeRange('1h')}
               data-active={timeRange === '1h'}
+              onClick={() => setTimeRange('1h')}
+              size="sm"
+              variant="ghost"
             >
               1h
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
               className="h-7 gap-1 text-xs"
-              onClick={() => setTimeRange('12h')}
               data-active={timeRange === '12h'}
+              onClick={() => setTimeRange('12h')}
+              size="sm"
+              variant="ghost"
             >
               12h
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
               className="h-7 gap-1 text-xs"
-              onClick={() => setTimeRange('24h')}
               data-active={timeRange === '24h'}
+              onClick={() => setTimeRange('24h')}
+              size="sm"
+              variant="ghost"
             >
               24h
             </Button>
             <Button
-              variant="ghost"
-              size="sm"
               className="h-7 gap-1 text-xs"
-              onClick={() => setTimeRange('7d')}
               data-active={timeRange === '7d'}
+              onClick={() => setTimeRange('7d')}
+              size="sm"
+              variant="ghost"
             >
               7d
             </Button>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button size="icon" variant="outline">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -219,34 +219,34 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
       </header>
 
       <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
         className="flex-1 overflow-hidden"
+        onValueChange={setActiveTab}
+        value={activeTab}
       >
         <div className="border-b bg-background">
           <div className="flex items-center px-4">
             <TabsList className="h-12">
               <TabsTrigger
-                value="overview"
                 className="h-12 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                value="overview"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger
-                value="analytics"
                 className="h-12 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                value="analytics"
               >
                 Analytics
               </TabsTrigger>
               <TabsTrigger
-                value="requests"
                 className="h-12 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                value="requests"
               >
                 Requests
               </TabsTrigger>
               <TabsTrigger
-                value="settings"
                 className="h-12 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                value="settings"
               >
                 Settings
               </TabsTrigger>
@@ -255,7 +255,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
         </div>
 
         <div className="flex-1 overflow-auto p-4">
-          <TabsContent value="overview" className="m-0 space-y-4">
+          <TabsContent className="m-0 space-y-4" value="overview">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader className="pb-2">
@@ -308,10 +308,10 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-6 w-6"
                               onClick={() => handleCopyUrl(webhook.id)}
+                              size="icon"
+                              variant="ghost"
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
@@ -341,12 +341,12 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-6 w-6"
                               onClick={() =>
                                 handleCopyUrl(webhook.deliveredAddress)
                               }
+                              size="icon"
+                              variant="ghost"
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
@@ -358,12 +358,12 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-6 w-6"
                               onClick={() =>
                                 window.open(webhook.deliveredAddress, '_blank')
                               }
+                              size="icon"
+                              variant="ghost"
                             >
                               <ExternalLink className="h-3 w-3" />
                             </Button>
@@ -389,8 +389,6 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-6 w-6"
                               onClick={() =>
                                 handleCopyUrl(
@@ -400,6 +398,8 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                                   ),
                                 )
                               }
+                              size="icon"
+                              variant="ghost"
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
@@ -411,8 +411,6 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-6 w-6"
                               onClick={() =>
                                 window.open(
@@ -423,6 +421,8 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                                   '_blank',
                                 )
                               }
+                              size="icon"
+                              variant="ghost"
                             >
                               <ExternalLink className="h-3 w-3" />
                             </Button>
@@ -491,32 +491,32 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                   Recent Requests
                 </CardTitle>
                 <Button
-                  variant="outline"
-                  size="sm"
                   onClick={() => setActiveTab('requests')}
+                  size="sm"
+                  variant="outline"
                 >
                   View All
                 </Button>
               </CardHeader>
               <CardContent>
-                <WebhookRequestsTable webhookId={id} limit={5} />
+                <WebhookRequestsTable limit={5} webhookId={id} />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="analytics" className="m-0">
+          <TabsContent className="m-0" value="analytics">
             <WebhookAnalyticsDashboard webhookId={id} />
           </TabsContent>
 
-          <TabsContent value="requests" className="m-0 space-y-4">
+          <TabsContent className="m-0 space-y-4" value="requests">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Request Logs</h2>
               <div className="relative w-[300px]">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  type="search"
-                  placeholder="Search requests..."
                   className="pl-8"
+                  placeholder="Search requests..."
+                  type="search"
                 />
               </div>
             </div>
@@ -527,7 +527,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings" className="m-0 space-y-4">
+          <TabsContent className="m-0 space-y-4" value="settings">
             <h2 className="text-lg font-semibold">Webhook Settings</h2>
             <Card>
               <CardHeader>
@@ -541,9 +541,9 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                   <h3 className="text-sm font-medium">Local Port</h3>
                   <div className="flex items-center gap-2">
                     <Input
+                      className="max-w-[200px]"
                       type="number"
                       value={webhook.localPort}
-                      className="max-w-[200px]"
                     />
                     <Button>Update</Button>
                   </div>
@@ -571,8 +571,8 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                     </p>
                   </div>
                   <Button
-                    variant="destructive"
                     onClick={() => setShowDeleteDialog(true)}
+                    variant="destructive"
                   >
                     Delete
                   </Button>
@@ -584,10 +584,10 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
       </Tabs>
 
       <DeleteWebhookDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        webhook={webhook}
         onConfirm={handleDelete}
+        onOpenChange={setShowDeleteDialog}
+        open={showDeleteDialog}
+        webhook={webhook}
       />
     </div>
   );

@@ -1,17 +1,17 @@
 {
-  "extends": "@unhook/tsconfig/react-library.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "module": "ESNext",
     "noEmit": false,
     "outDir": "dist",
     "rootDir": "src",
-    "module": "ESNext",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "types": ["node", "vscode", "bun", "vitest/globals"]
     // "baseUrl": ".",
     // "paths": {
     //   "~/*": ["src/*"]
     // }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "extends": "@unhook/tsconfig/react-library.json",
+  "include": ["src"]
 }

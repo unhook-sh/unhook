@@ -14,8 +14,8 @@ export function createClient(props: { authToken: string; url?: string }) {
   const supabaseUrl = url ?? env.NEXT_PUBLIC_SUPABASE_URL;
 
   log('Creating Supabase realtime client with config:', {
-    url: supabaseUrl,
     hasToken: !!authToken,
+    url: supabaseUrl,
   });
 
   const client = createSupabaseClient<Database>(

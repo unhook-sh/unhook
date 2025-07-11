@@ -80,13 +80,13 @@ export function WebhooksList() {
       <AnimatePresence mode="popLayout">
         {webhooks.map((webhook) => (
           <motion.div
-            key={webhook.id}
-            layout
-            variants={cardVariants}
-            initial="hidden"
             animate="visible"
             exit="exit"
+            initial="hidden"
+            key={webhook.id}
+            layout
             layoutId={webhook.id}
+            variants={cardVariants}
           >
             <div className="flex flex-col gap-4 rounded-lg border p-6 transition-all hover:border-primary/50 hover:shadow-md">
               <div className="space-y-2">
@@ -131,19 +131,17 @@ export function WebhooksList() {
 
               <div className="flex flex-wrap gap-2">
                 <Badge variant="outline">
-                  <Icons.BarChart2 size="xs" className="mr-1" />
+                  <Icons.BarChart2 className="mr-1" size="xs" />
                   {formatNumber(webhook.requestCount)} Request
                   {webhook.requestCount !== 1 ? 's' : ''}
                 </Badge>
               </div>
 
               <div className="flex items-center justify-end gap-2">
-                <Button variant="ghost" size="sm">
+                <Button size="sm" variant="ghost">
                   <Icons.Settings size="sm" variant="muted" />
                 </Button>
                 <Button
-                  variant="ghost"
-                  size="sm"
                   onClick={async () => {
                     try {
                       await deleteWebhook({ id: webhook.id });
@@ -160,6 +158,8 @@ export function WebhooksList() {
                       });
                     }
                   }}
+                  size="sm"
+                  variant="ghost"
                 >
                   <Icons.Trash size="sm" variant="destructive" />
                 </Button>

@@ -47,7 +47,7 @@ export function DeleteWebhookDialog({
   if (!webhook) return null;
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog onOpenChange={onOpenChange} open={open}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -60,9 +60,9 @@ export function DeleteWebhookDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
-            variant="destructive"
-            onClick={handleDelete}
             disabled={isDeleting}
+            onClick={handleDelete}
+            variant="destructive"
           >
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Delete

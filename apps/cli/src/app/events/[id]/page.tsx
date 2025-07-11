@@ -55,8 +55,8 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
       capture({
         event: 'hotkey_pressed_event_details_page',
         properties: {
-          hotkey: 'h',
           hokeyName: 'Toggle Split View',
+          hotkey: 'h',
         },
       });
       setShowSplitView((prev) => !prev);
@@ -83,8 +83,8 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
       {/* Left: Table */}
       <Box
         flexDirection="column"
-        width={showSplitView ? '60%' : '100%'}
         minWidth={showSplitView ? TABLE_MIN_WIDTH : undefined}
+        width={showSplitView ? '60%' : '100%'}
       >
         <Box borderStyle="round" flexDirection="column">
           <Box gap={1}>
@@ -99,18 +99,6 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
           </Box>
         </Box>
         <Table<RequestType>
-          key={showSplitView ? 'split' : 'full'}
-          totalCount={totalCount}
-          data={event.requests}
-          columns={columns}
-          initialIndex={0}
-          onSelectionChange={(index) => {
-            setSelectedIndex(index);
-            const request = event.requests?.[index];
-            if (request) {
-              setSelectedRequestId(request.id);
-            }
-          }}
           actions={[
             {
               key: 'return',
@@ -120,9 +108,9 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
                 capture({
                   event: 'hotkey_pressed_event_details_page',
                   properties: {
-                    hotkey: 'return',
-                    hokeyName: 'View Details',
                     eventId: event?.id,
+                    hokeyName: 'View Details',
+                    hotkey: 'return',
                     requestId: request?.id,
                   },
                 });
@@ -142,9 +130,9 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
                 capture({
                   event: 'hotkey_pressed_event_details_page',
                   properties: {
-                    hotkey: 'r',
-                    hokeyName: 'Replay',
                     eventId: event?.id,
+                    hokeyName: 'Replay',
+                    hotkey: 'r',
                     requestId: request?.id,
                   },
                 });
@@ -154,15 +142,27 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
               },
             },
           ]}
+          columns={columns}
+          data={event.requests}
+          initialIndex={0}
+          key={showSplitView ? 'split' : 'full'}
+          onSelectionChange={(index) => {
+            setSelectedIndex(index);
+            const request = event.requests?.[index];
+            if (request) {
+              setSelectedRequestId(request.id);
+            }
+          }}
+          totalCount={totalCount}
         />
       </Box>
       {/* Right: Selected response body */}
       {showSplitView && (
         <Box
           flexDirection="column"
-          width="40%"
           minWidth={BODY_MIN_WIDTH}
           paddingLeft={2}
+          width="40%"
         >
           <Box marginTop={1}>
             {formattedResponseBody ? (

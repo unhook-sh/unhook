@@ -1,9 +1,9 @@
 {
-  "name": "@unhook/tsconfig",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
   "files": [
     "*.json"
-  ]
+  ],
+  "name": "@unhook/tsconfig",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0"
 }

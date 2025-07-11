@@ -1,0 +1,131 @@
+<idea-plugin>
+    <id>sh.unhook.jetbrains</id>
+    <name>Unhook - Webhook Development</name>
+    <version>0.2.4</version>
+    <vendor email="support@unhook.sh" url="https://unhook.sh">Unhook</vendor>
+    
+    <description><![CDATA[
+    <p>Unhook is a webhook development tool that simplifies testing webhooks locally.</p>
+    
+    <p>Key features:</p>
+    <ul>
+        <li>Real-time webhook event monitoring</li>
+        <li>Webhook request inspection and replay</li>
+        <li>Team collaboration with shared webhook URLs</li>
+        <li>Support for major webhook providers (Stripe, GitHub, Clerk, etc.)</li>
+        <li>Secure webhook forwarding to local endpoints</li>
+        <li>Configuration via unhook.yaml files</li>
+    </ul>
+    
+    <p>Perfect for developers building webhook-driven applications who need to test locally without exposing their development environment.</p>
+    ]]></description>
+    
+    <change-notes><![CDATA[
+    <h3>0.2.4</h3>
+    <ul>
+        <li>Initial release of Unhook JetBrains plugin</li>
+        <li>Webhook event monitoring and inspection</li>
+        <li>Real-time webhook forwarding to local endpoints</li>
+        <li>Team collaboration features</li>
+        <li>Authentication with Unhook service</li>
+    </ul>
+    ]]></change-notes>
+    
+    <!-- Plugin compatibility -->
+    <idea-version since-build="242" until-build="243.*"/>
+    
+    <!-- Plugin dependencies -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    
+    <!-- Plugin extensions -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Tool window -->
+        <toolWindow id="Unhook" 
+                   factoryClass="sh.unhook.jetbrains.toolwindow.UnhookToolWindowFactory" 
+                   anchor="bottom" 
+                   icon="/icons/unhook_13x13.svg"/>
+        
+        <!-- Status bar widget -->
+        <statusBarWidgetFactory implementation="sh.unhook.jetbrains.statusbar.UnhookStatusBarWidgetFactory"/>
+        
+        <!-- Configuration files -->
+        <fileType name="Unhook YAML" 
+                  implementationClass="sh.unhook.jetbrains.files.UnhookYamlFileType"
+                  fieldName="INSTANCE" 
+                  language="yaml" 
+                  extensions="unhook.yaml;unhook.yml"/>
+        
+        <!-- Application service -->
+        <applicationService serviceImplementation="sh.unhook.jetbrains.services.UnhookApplicationService"/>
+        
+        <!-- Project service -->
+        <projectService serviceImplementation="sh.unhook.jetbrains.services.UnhookProjectService"/>
+        
+        <!-- Settings -->
+        <applicationConfigurable instance="sh.unhook.jetbrains.settings.UnhookSettingsConfigurable"/>
+        
+        <!-- Notification group -->
+        <notificationGroup id="Unhook.Notifications" displayType="BALLOON" key="unhook.notifications"/>
+    </extensions>
+    
+    <!-- Plugin actions -->
+    <actions>
+        <group id="Unhook.MainMenu" text="Unhook" description="Unhook webhook development tools">
+            <add-to-group group-id="MainMenu" anchor="after" relative-to-action="ToolsMenu"/>
+            
+            <action id="Unhook.ShowEvents" 
+                    class="sh.unhook.jetbrains.actions.ShowEventsAction"
+                    text="Show Events" 
+                    description="Show webhook events"/>
+            
+            <action id="Unhook.ToggleDelivery" 
+                    class="sh.unhook.jetbrains.actions.ToggleDeliveryAction"
+                    text="Toggle Event Forwarding" 
+                    description="Enable or disable webhook event forwarding"/>
+            
+            <action id="Unhook.SignIn" 
+                    class="sh.unhook.jetbrains.actions.SignInAction"
+                    text="Sign In" 
+                    description="Sign in to Unhook"/>
+            
+            <action id="Unhook.SignOut" 
+                    class="sh.unhook.jetbrains.actions.SignOutAction"
+                    text="Sign Out" 
+                    description="Sign out of Unhook"/>
+            
+            <action id="Unhook.ClearEvents" 
+                    class="sh.unhook.jetbrains.actions.ClearEventsAction"
+                    text="Clear Events" 
+                    description="Clear all webhook events"/>
+            
+            <action id="Unhook.RefreshEvents" 
+                    class="sh.unhook.jetbrains.actions.RefreshEventsAction"
+                    text="Refresh Events" 
+                    description="Refresh webhook events"/>
+        </group>
+        
+        <!-- Tool window actions -->
+        <group id="Unhook.ToolWindowActions">
+            <reference id="Unhook.RefreshEvents"/>
+            <reference id="Unhook.ClearEvents"/>
+            <reference id="Unhook.ToggleDelivery"/>
+            <separator/>
+            <reference id="Unhook.SignIn"/>
+            <reference id="Unhook.SignOut"/>
+        </group>
+    </actions>
+    
+    <!-- Application listeners -->
+    <applicationListeners>
+        <listener class="sh.unhook.jetbrains.listeners.UnhookApplicationListener" 
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+    </applicationListeners>
+    
+    <!-- Project listeners -->
+    <projectListeners>
+        <listener class="sh.unhook.jetbrains.listeners.UnhookProjectListener" 
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
+</idea-plugin>

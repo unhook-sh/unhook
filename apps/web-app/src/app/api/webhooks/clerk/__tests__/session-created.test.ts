@@ -8,29 +8,29 @@ describe('handleSessionCreated', () => {
   it('should update lastLoggedInAt for the user', async () => {
     const userId = 'user_29w83sxmDNGwOuEthce5gg56FcC';
     await db.insert(Users).values({
-      id: userId,
+      avatarUrl: 'https://img.clerk.com/xxxxxx',
       clerkId: userId,
       email: 'example@example.org',
       firstName: 'Example',
+      id: userId,
       lastName: 'Example',
-      avatarUrl: 'https://img.clerk.com/xxxxxx',
     });
 
     const event = {
       data: {
-        id: 'sess_123',
         abandon_at: 0,
-        created_at: 0,
-        expire_at: 0,
-        last_active_at: 0,
-        updated_at: 0,
-        user_id: userId,
-        object: 'session',
-        client_id: 'client_123',
-        status: 'active',
         actor: {
           id: userId,
         },
+        client_id: 'client_123',
+        created_at: 0,
+        expire_at: 0,
+        id: 'sess_123',
+        last_active_at: 0,
+        object: 'session',
+        status: 'active',
+        updated_at: 0,
+        user_id: userId,
       },
       object: 'event',
       type: 'session.created',

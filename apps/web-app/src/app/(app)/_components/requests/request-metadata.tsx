@@ -51,50 +51,50 @@ export function RequestMetadata({
       <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
         <div className="flex items-center gap-3">
           <Badge
-            variant="outline"
             className="bg-black text-white border-zinc-700 font-mono"
+            variant="outline"
           >
             {request.request.method}
           </Badge>
           <span className="font-mono">{request.destination.name}</span>
           <Badge
-            variant={
-              (request.response?.status ?? 0) >= 400 ? 'destructive' : 'outline'
-            }
             className={cn(
               'font-mono',
               (request.response?.status ?? 0) < 400 &&
                 'bg-green-950 text-green-500 border-green-800',
             )}
+            variant={
+              (request.response?.status ?? 0) >= 400 ? 'destructive' : 'outline'
+            }
           >
             {(request.response?.status ?? 0).toString()}
           </Badge>
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            size="icon"
             className="h-8 w-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
-            onClick={() => onNavigate?.('prev')}
             disabled={!hasPrev}
+            onClick={() => onNavigate?.('prev')}
+            size="icon"
+            variant="ghost"
           >
             <ArrowUp className="h-5 w-5" />
           </Button>
           <Button
-            variant="ghost"
-            size="icon"
             className="h-8 w-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
-            onClick={() => onNavigate?.('next')}
             disabled={!hasNext}
+            onClick={() => onNavigate?.('next')}
+            size="icon"
+            variant="ghost"
           >
             <ArrowDown className="h-5 w-5" />
           </Button>
           <div className="h-6 w-px bg-zinc-800 mx-1" />
           <Button
-            variant="ghost"
-            size="icon"
             className="h-8 w-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
             onClick={onClose}
+            size="icon"
+            variant="ghost"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -123,10 +123,10 @@ export function RequestMetadata({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="ghost"
-                          size="icon"
                           className="h-6 w-6 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
                           onClick={() => handleCopy(request.id)}
+                          size="icon"
+                          variant="ghost"
                         >
                           <Copy className="h-3.5 w-3.5" />
                         </Button>
@@ -168,14 +168,14 @@ export function RequestMetadata({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="ghost"
-                            size="icon"
                             className="h-6 w-6 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
                             onClick={() =>
                               handleCopy(
                                 JSON.stringify(request.request.headers),
                               )
                             }
+                            size="icon"
+                            variant="ghost"
                           >
                             <Copy className="h-3.5 w-3.5" />
                           </Button>
@@ -191,16 +191,16 @@ export function RequestMetadata({
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(request.request.headers).map(
                       ([key, value]) => (
-                        <div key={key} className="flex">
+                        <div className="flex" key={key}>
                           <Badge
-                            variant="outline"
                             className="rounded-r-none bg-black text-white border-zinc-700 font-mono"
+                            variant="outline"
                           >
                             {key}
                           </Badge>
                           <Badge
-                            variant="outline"
                             className="rounded-l-none bg-zinc-800 text-white border-zinc-700 border-l-0 font-mono"
+                            variant="outline"
                           >
                             {value}
                           </Badge>
@@ -226,8 +226,8 @@ export function RequestMetadata({
                 </div>
                 <span>Firewall</span>
                 <Badge
-                  variant="outline"
                   className="ml-auto bg-black text-white border-zinc-700"
+                  variant="outline"
                 >
                   Allowed
                 </Badge>
@@ -239,19 +239,19 @@ export function RequestMetadata({
                 <div className="z-10 flex h-10 w-10 items-center justify-center rounded-md border border-zinc-700 bg-black">
                   <svg
                     className="h-5 w-5 text-zinc-400"
-                    viewBox="0 0 24 24"
                     fill="none"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <title>Middleware</title>
                     <rect
-                      x="3"
-                      y="3"
-                      width="18"
                       height="18"
                       rx="2"
                       stroke="currentColor"
                       strokeWidth="2"
+                      width="18"
+                      x="3"
+                      y="3"
                     />
                     <path d="M7 12H17" stroke="currentColor" strokeWidth="2" />
                     <path
@@ -263,8 +263,8 @@ export function RequestMetadata({
                 </div>
                 <span>Middleware</span>
                 <Badge
-                  variant="outline"
                   className="ml-auto bg-green-950 text-green-500 border-green-800 font-mono"
+                  variant="outline"
                 >
                   200
                 </Badge>
@@ -283,53 +283,53 @@ export function RequestMetadata({
                 <div className="z-10 flex h-10 w-10 items-center justify-center rounded-md border border-zinc-700 bg-black">
                   <svg
                     className="h-5 w-5 text-zinc-400"
-                    viewBox="0 0 24 24"
                     fill="none"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <title>Webhook</title>
                     <path
                       d="M12 4L4 8L12 12L20 8L12 4Z"
                       stroke="currentColor"
-                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth="2"
                     />
                     <path
                       d="M4 16L12 20L20 16"
                       stroke="currentColor"
-                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth="2"
                     />
                     <path
                       d="M4 12L12 16L20 12"
                       stroke="currentColor"
-                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth="2"
                     />
                   </svg>
                 </div>
                 <span>Webhook</span>
                 <div className="ml-auto flex items-center gap-2">
                   <Badge
-                    variant="outline"
                     className="bg-black text-white border-zinc-700"
+                    variant="outline"
                   >
                     Delivered to localhost:
                     {request.request.headers.port || '3000'}
                   </Badge>
                   <Badge
-                    variant={
-                      (request.response?.status ?? 0) >= 400
-                        ? 'destructive'
-                        : 'outline'
-                    }
                     className={
                       (request.response?.status ?? 0) < 400
                         ? 'bg-green-950 text-green-500 border-green-800 font-mono'
                         : 'font-mono'
+                    }
+                    variant={
+                      (request.response?.status ?? 0) >= 400
+                        ? 'destructive'
+                        : 'outline'
                     }
                   >
                     {(request.response?.status ?? 0).toString()}
@@ -343,36 +343,36 @@ export function RequestMetadata({
                 <div className="z-10 flex h-10 w-10 items-center justify-center rounded-md border border-zinc-700 bg-black">
                   <svg
                     className="h-5 w-5 text-zinc-400"
-                    viewBox="0 0 24 24"
                     fill="none"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <title>Client</title>
                     <rect
-                      x="2"
-                      y="3"
-                      width="20"
                       height="18"
                       rx="2"
                       stroke="currentColor"
                       strokeWidth="2"
+                      width="20"
+                      x="2"
+                      y="3"
                     />
                     <path d="M2 9H22" stroke="currentColor" strokeWidth="2" />
-                    <circle cx="6" cy="6" r="1" fill="currentColor" />
-                    <circle cx="10" cy="6" r="1" fill="currentColor" />
+                    <circle cx="6" cy="6" fill="currentColor" r="1" />
+                    <circle cx="10" cy="6" fill="currentColor" r="1" />
                   </svg>
                 </div>
                 <span>Client</span>
                 <Badge
-                  variant={
-                    (request.response?.status ?? 0) >= 400
-                      ? 'destructive'
-                      : 'outline'
-                  }
                   className={
                     (request.response?.status ?? 0) < 400
                       ? 'bg-green-950 text-green-500 border-green-800 font-mono'
                       : 'font-mono'
+                  }
+                  variant={
+                    (request.response?.status ?? 0) >= 400
+                      ? 'destructive'
+                      : 'outline'
                   }
                 >
                   {request.status}

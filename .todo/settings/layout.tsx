@@ -14,12 +14,12 @@ export default async function Layout({ children }: SettingsLayoutProps) {
     <div className="h-full">
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar
-          sectionKeys={['orgSettings']}
-          showEnvironmentSelector={false}
-          showProjectSelector={false}
-          showBackButton
           backButtonHref="/"
           backButtonLabel="Back to Dashboard"
+          sectionKeys={['orgSettings']}
+          showBackButton
+          showEnvironmentSelector={false}
+          showProjectSelector={false}
           variant="inset"
         />
         <SidebarInset className="max-w-[calc(100vw-var(--sidebar-width))] peer-data-[collapsible=offcanvas]:peer-data-[state=collapsed]:max-w-[100vw] peer-data-[state=collapsed]:max-w-[calc(100vw-var(--sidebar-width-icon))]">

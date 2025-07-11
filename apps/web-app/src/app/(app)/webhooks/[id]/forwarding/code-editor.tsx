@@ -19,12 +19,12 @@ export function CodeEditor({
 }: CodeEditorProps) {
   return (
     <Textarea
-      value={value}
+      className="font-mono text-sm"
+      disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      disabled={disabled}
-      className="font-mono text-sm"
       style={{ height, minHeight: height }}
+      value={value}
     />
   );
 }

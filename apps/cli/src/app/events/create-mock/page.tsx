@@ -17,20 +17,20 @@ async function sendWebhook(params: {
   const { webhookId, fixture } = params;
   const baseUrl = env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/webhook`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-unhook-webhook-id': webhookId,
-      'x-unhook-endpoint': `api/mock-consumer?status=${params.status ?? 200}`,
-      'User-Agent': `UnhookMock/${fixture.provider}`,
-    },
     body: JSON.stringify({
       ...fixture.body,
-      timestamp: new Date().toISOString(),
       headers: {
         'User-Agent': `UnhookMock/${fixture.provider}`,
       },
+      timestamp: new Date().toISOString(),
     }),
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': `UnhookMock/${fixture.provider}`,
+      'x-unhook-endpoint': `api/mock-consumer?status=${params.status ?? 200}`,
+      'x-unhook-webhook-id': webhookId,
+    },
+    method: 'POST',
   });
 
   if (!response.ok) {
@@ -52,9 +52,9 @@ export const CreateEventPage: FC<RouteProps> = () => {
   const navigate = useRouterStore.use.navigate();
 
   const menuItems = fixtures.map((fixture) => ({
+    description: fixture.description,
     label: `${fixture.provider} - ${fixture.body.eventType}`,
     value: `${fixture.provider}:${fixture.body.eventType}`,
-    description: fixture.description,
   }));
 
   const handleSelect = (value: string) => {
@@ -67,10 +67,10 @@ export const CreateEventPage: FC<RouteProps> = () => {
     capture({
       event: 'event_fixture_selected',
       properties: {
-        provider,
         eventType,
-        webhookId,
         fixtureFound: !!fixture,
+        provider,
+        webhookId,
       },
     });
   };
@@ -83,8 +83,8 @@ export const CreateEventPage: FC<RouteProps> = () => {
         event: 'event_creation_error',
         properties: {
           error: errorMessage,
-          webhookId,
           hasSelectedFixture: !!selectedFixture,
+          webhookId,
         },
       });
       return;
@@ -95,23 +95,23 @@ export const CreateEventPage: FC<RouteProps> = () => {
       capture({
         event: 'event_creation_started',
         properties: {
-          provider: selectedFixture.provider,
           eventType: selectedFixture.body.eventType,
+          provider: selectedFixture.provider,
           webhookId,
         },
       });
 
       await sendWebhook({
-        webhookId,
         fixture: selectedFixture,
+        webhookId,
       });
 
       setStatus('done');
       capture({
         event: 'event_creation_success',
         properties: {
-          provider: selectedFixture.provider,
           eventType: selectedFixture.body.eventType,
+          provider: selectedFixture.provider,
           webhookId,
         },
       });
@@ -128,8 +128,8 @@ export const CreateEventPage: FC<RouteProps> = () => {
         event: 'event_creation_error',
         properties: {
           error: errorMessage,
-          provider: selectedFixture.provider,
           eventType: selectedFixture.body.eventType,
+          provider: selectedFixture.provider,
           webhookId,
         },
       });

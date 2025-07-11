@@ -64,8 +64,8 @@ export function ProjectDropdownMenu() {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
               align="start"
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
               side={isMobile ? 'bottom' : 'right'}
               sideOffset={4}
             >
@@ -74,9 +74,9 @@ export function ProjectDropdownMenu() {
               </div>
               {projects.data?.projects.map((project) => (
                 <DropdownMenuItem
+                  className="gap-2 p-2 max-w-full"
                   key={project.project_id}
                   onClick={() => handleProjectChange(project.project_id)}
-                  className="gap-2 p-2 max-w-full"
                 >
                   <div className="flex size-6 items-center justify-center rounded-sm border">
                     <FolderKanban className="size-4 shrink-0" />
@@ -88,8 +88,8 @@ export function ProjectDropdownMenu() {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem
-                onClick={() => setNewProjectDialogOpen(true)}
                 className="gap-2 p-2"
+                onClick={() => setNewProjectDialogOpen(true)}
               >
                 <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                   <Icons.Plus className="size-4" />
@@ -103,8 +103,8 @@ export function ProjectDropdownMenu() {
         </SidebarMenuItem>
       </SidebarMenu>
       <NewProjectDialog
-        open={newProjectDialogOpen}
         onOpenChange={setNewProjectDialogOpen}
+        open={newProjectDialogOpen}
         orgId={user?.getActiveOrg()?.orgId ?? ''}
       />
     </>

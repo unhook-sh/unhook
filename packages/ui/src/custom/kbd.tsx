@@ -6,14 +6,14 @@ import { cn } from '../lib/utils';
 const kbdVariants = cva(
   'select-none rounded border px-1.5 py-px font-mono font-normal text-[0.7rem] shadow-sm disabled:opacity-50',
   {
+    defaultVariants: {
+      variant: 'default',
+    },
     variants: {
       variant: {
         default: 'bg-accent text-accent-foreground',
         outline: 'bg-background text-foreground',
       },
-    },
-    defaultVariants: {
-      variant: 'default',
     },
   },
 );
@@ -38,9 +38,9 @@ const Kbd = ({
   ...props
 }: KbdProps) => {
   return (
-    <kbd className={cn(kbdVariants({ variant, className }))} {...props}>
+    <kbd className={cn(kbdVariants({ className, variant }))} {...props}>
       {abbrTitle ? (
-        <abbr title={abbrTitle} className="no-underline">
+        <abbr className="no-underline" title={abbrTitle}>
           {children}
         </abbr>
       ) : (

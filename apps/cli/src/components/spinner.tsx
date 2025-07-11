@@ -33,7 +33,7 @@ export function Spinner({
   }, [spinner]);
 
   return (
-    <Text color={color} dimColor={dimColor} bold={bold}>
+    <Text bold={bold} color={color} dimColor={dimColor}>
       {spinner.frames[frame]}
     </Text>
   );

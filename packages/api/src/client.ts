@@ -7,9 +7,9 @@ export type ApiClient = ReturnType<typeof createClient>;
 export const createClient = (config?: ClientConfig) => {
   return createTRPCClient<AppRouter>({
     links: createDefaultLinks({
-      sourceHeader: config?.sourceHeader,
       authToken: config?.authToken,
       sessionCookie: config?.sessionCookie,
+      sourceHeader: config?.sourceHeader,
     }),
   });
 };

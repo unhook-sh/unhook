@@ -1,74 +1,46 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": [
-    "APPLE_ID",
-    "APPLE_PASSWORD",
-    "APPLE_TEAM_ID",
-    "CLERK_ISSUER_URL",
-    "CLERK_SECRET_KEY",
-    "CLERK_WEBHOOK_SECRET",
-    "COMMITTER_TOKEN",
-    "DATABASE_URL",
-    "MACOS_CERTIFICATE",
-    "MACOS_CERTIFICATE_PWD",
-    "MACOS_IDENTITY",
-    "NEXT_PUBLIC_API_URL",
-    "NEXT_PUBLIC_APP_ENV",
-    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-    "NEXT_PUBLIC_POSTHOG_HOST",
-    "NEXT_PUBLIC_POSTHOG_KEY",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "NODE_ENV",
-    "NPM_TOKEN",
-    "OPENAI_API_KEY",
-    "OVSX_PAT",
-    "PORT",
-    "POSTGRES_DATABASE",
-    "POSTGRES_HOST",
-    "POSTGRES_PASSWORD",
-    "POSTGRES_PRISMA_URL",
-    "POSTGRES_URL",
-    "POSTGRES_URL_NON_POOLING",
-    "POSTGRES_USER",
-    "POSTHOG_HOST",
-    "POSTHOG_KEY",
-    "POSTHOG_PERSONAL_API_KEY",
-    "REDIS_URL",
-    "RESEND_API_KEY",
-    "SENTRY_AUTH_TOKEN",
-    "SENTRY_ORG",
-    "SENTRY_PROJECT",
-    "STRIPE_METER_EVENT_NAME",
-    "STRIPE_PRICE_METER_LOOKUP_KEY",
-    "STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY",
-    "STRIPE_PUBLISHABLE_KEY",
-    "STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET",
-    "STRIPE_",
-    "SUPABASE_ANON_KEY",
-    "SUPABASE_JWT_SECRET",
-    "SUPABASE_PROJECT_ID",
-    "SUPABASE_SERVICE_ROLE_KEY",
-    "SUPABASE_URL",
-    "TURBO_TEAM",
-    "TURBO_TOKEN",
-    "VSCE_PAT"
-  ],
+  "globalEnv": ["NODE_ENV"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "CI",
     "VERCEL",
     "VERCEL_ENV",
     "VERCEL_URL",
-    "npm_lifecycle_event"
+    "npm_lifecycle_event",
+    "TURBO_TOKEN",
+    "TURBO_TEAM",
+    "NPM_TOKEN",
+    "VERCEL_TOKEN"
   ],
   "tasks": {
+    "@unhook/web-app#build": {
+      "env": [
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ]
+    },
     "//#clean": {
       "cache": false
     },
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
@@ -76,7 +48,8 @@
         ".expo/**",
         ".output/**",
         ".vercel/output/**",
-        "dist/**"
+        "dist/**",
+        "build/**"
       ]
     },
     "clean": {
@@ -84,29 +57,49 @@
     },
     "dev": {
       "cache": false,
+      "env": [
+        "PORT",
+        "NEXT_PUBLIC_*",
+        "CLERK_*",
+        "SUPABASE_*",
+        "POSTGRES_*",
+        "POSTHOG_*",
+        "OPENAI_API_KEY",
+        "STRIPE_*",
+        "RESEND_*"
+      ],
       "persistent": true
     },
     "format": {
       "dependsOn": ["^build"]
     },
+    "format:ci": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
     "gen-migration": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "interactive": true
     },
     "migrate": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "interactive": true
     },
     "push": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "interactive": true
     },
     "seed": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*", "SUPABASE_*"],
       "interactive": true
     },
     "studio": {
       "cache": false,
+      "env": ["DATABASE_*", "POSTGRES_*"],
       "persistent": true
     },
     "typecheck": {
@@ -116,6 +109,22 @@
     "ui-add": {
       "cache": false,
       "interactive": true
+    },
+    "unhook-jetbrains#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/distributions/**", "build/libs/**", "build/reports/**"]
+    },
+    "unhook-jetbrains#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "unhook-jetbrains#package": {
+      "dependsOn": ["build"],
+      "outputs": ["build/distributions/**"]
+    },
+    "unhook-jetbrains#verify": {
+      "dependsOn": ["build"],
+      "outputs": ["build/reports/**"]
     }
   },
   "ui": "tui"

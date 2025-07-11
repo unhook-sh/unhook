@@ -8,20 +8,20 @@ interface HotkeyInfo {
 }
 
 const GLOBAL_HOTKEYS: HotkeyInfo[] = [
-  { key: '?', description: 'Show this hotkeys help' },
-  { key: 'h', description: 'Show help page' },
-  { key: 'ESC', description: 'Go back to previous page' },
+  { description: 'Show this hotkeys help', key: '?' },
+  { description: 'Show help page', key: 'h' },
+  { description: 'Go back to previous page', key: 'ESC' },
 ];
 
 const NAVIGATION_HOTKEYS: HotkeyInfo[] = [
-  { key: 'j/down', description: 'Move down' },
-  { key: 'k/up', description: 'Move up' },
-  { key: 'space', description: 'Scroll down' },
-  { key: 'gg', description: 'Go to top' },
-  { key: 'G', description: 'Go to bottom' },
-  { key: 'g<number>g', description: 'Go to line' },
-  { key: 'Ctrl+b/f', description: 'Page up/down' },
-  { key: 'Ctrl+u/d', description: 'Half page up/down' },
+  { description: 'Move down', key: 'j/down' },
+  { description: 'Move up', key: 'k/up' },
+  { description: 'Scroll down', key: 'space' },
+  { description: 'Go to top', key: 'gg' },
+  { description: 'Go to bottom', key: 'G' },
+  { description: 'Go to line', key: 'g<number>g' },
+  { description: 'Page up/down', key: 'Ctrl+b/f' },
+  { description: 'Half page up/down', key: 'Ctrl+u/d' },
 ];
 
 export function HotkeysPage() {
@@ -31,8 +31,8 @@ export function HotkeysPage() {
       Boolean(route.hotkey && route.showInMenu !== false),
     )
     .map((route) => ({
-      key: route.hotkey,
       description: route.label,
+      key: route.hotkey,
     }));
 
   const renderHotkeySection = (title: string, hotkeys: HotkeyInfo[]) => (

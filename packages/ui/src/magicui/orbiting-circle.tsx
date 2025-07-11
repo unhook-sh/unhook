@@ -57,23 +57,23 @@ export function OrbitingCircles({
         <motion.div ref={ref}>
           {shouldAnimate && (
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                duration: 0.8,
-                ease: [0.23, 1, 0.32, 1],
-                delay: index * 0.2 + startAnimationDelay,
-                type: 'spring',
-                stiffness: 120,
-                damping: 18,
-                mass: 1,
-              }}
+              animate={{ opacity: 1, scale: 1 }}
               className="pointer-events-none absolute inset-0"
+              initial={{ opacity: 0, scale: 0 }}
               style={{
-                width: radius * 2,
                 height: radius * 2,
                 left: `calc(50% - ${radius}px)`,
                 top: `calc(50% - ${radius}px)`,
+                width: radius * 2,
+              }}
+              transition={{
+                damping: 18,
+                delay: index * 0.2 + startAnimationDelay,
+                duration: 0.8,
+                ease: [0.23, 1, 0.32, 1],
+                mass: 1,
+                stiffness: 120,
+                type: 'spring',
               }}
             >
               <div
@@ -94,34 +94,34 @@ export function OrbitingCircles({
           const angle = (360 / React.Children.count(children)) * index;
           return (
             <div
-              style={
-                {
-                  '--duration': calculatedDuration,
-                  '--radius': radius * 0.98,
-                  '--angle': angle,
-                  '--icon-size': `${iconSize}px`,
-                } as React.CSSProperties
-              }
               className={cn(
                 'absolute flex size-[var(--icon-size)] z-20 p-1 transform-gpu animate-orbit items-center justify-center rounded-full',
                 { '[animation-direction:reverse]': reverse },
               )}
+              style={
+                {
+                  '--angle': angle,
+                  '--duration': calculatedDuration,
+                  '--icon-size': `${iconSize}px`,
+                  '--radius': radius * 0.98,
+                } as React.CSSProperties
+              }
             >
               <motion.div
+                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0 }}
                 key={`orbit-child-${
                   // biome-ignore lint/suspicious/noArrayIndexKey: Array index is stable here since we're mapping over a fixed slice of children
                   index
                 }`}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
                 transition={{
-                  duration: 0.5,
-                  delay: 0.6 + index * 0.2 + startAnimationDelay,
-                  ease: cubicBezier(0, 0, 0.58, 1),
-                  type: 'spring',
-                  stiffness: 120,
                   damping: 18,
+                  delay: 0.6 + index * 0.2 + startAnimationDelay,
+                  duration: 0.5,
+                  ease: cubicBezier(0, 0, 0.58, 1),
                   mass: 1,
+                  stiffness: 120,
+                  type: 'spring',
                 }}
                 {...props}
               >

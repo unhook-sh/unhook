@@ -35,7 +35,7 @@ export function useTableSelection<T extends ScalarDict>({
   );
 
   return {
-    selectedIndex,
     handleNavigate,
+    selectedIndex,
   };
 }

@@ -66,12 +66,12 @@ class MockRealtimeClient extends EventEmitter {
     if (callbacks) {
       // Format payload to match Supabase's realtime event structure
       const formattedPayload = {
-        schema: 'public',
-        table,
         commit_timestamp: new Date().toISOString(),
         eventType: event,
         new: payload,
         old: null,
+        schema: 'public',
+        table,
       };
       for (const cb of callbacks) {
         cb(formattedPayload);

@@ -93,7 +93,7 @@ export function WebhookList({
             ))
           ) : webhooks.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell className="h-24 text-center" colSpan={5}>
                 No webhooks found. Create your first webhook to get started.
               </TableCell>
             </TableRow>
@@ -113,13 +113,13 @@ export function WebhookList({
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={
-                      webhook.status === 'active' ? 'default' : 'secondary'
-                    }
                     className={
                       webhook.status === 'active'
                         ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
                         : ''
+                    }
+                    variant={
+                      webhook.status === 'active' ? 'default' : 'secondary'
                     }
                   >
                     {webhook.status === 'active' ? 'Active' : 'Inactive'}
@@ -128,7 +128,7 @@ export function WebhookList({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button size="icon" variant="ghost">
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">Open menu</span>
                       </Button>
@@ -163,10 +163,10 @@ export function WebhookList({
       </Table>
 
       <DeleteWebhookDialog
-        open={!!webhookToDelete}
-        onOpenChange={(open) => !open && setWebhookToDelete(null)}
-        webhook={webhookToDelete}
         onConfirm={confirmDelete}
+        onOpenChange={(open) => !open && setWebhookToDelete(null)}
+        open={!!webhookToDelete}
+        webhook={webhookToDelete}
       />
     </>
   );

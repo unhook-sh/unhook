@@ -13,11 +13,11 @@ const Circle = forwardRef<
 >(({ className, children }, ref) => {
   return (
     <div
-      ref={ref}
       className={cn(
         'z-10 flex size-12 items-center justify-center rounded-full border-2 border-border bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]',
         className,
       )}
+      ref={ref}
     >
       {children}
     </div>
@@ -63,14 +63,14 @@ export function ThirdBentoAnimation({ className }: { className?: string }) {
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
-          <Circle ref={div6Ref} className="size-16">
+          <Circle className="size-16" ref={div6Ref}>
             <MarketingIcons.logo className="size-7 md:size-10" />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
           <div
-            ref={div7Ref}
             className="text-xs bg-white rounded-full p-2 text-black font-mono border border-border"
+            ref={div7Ref}
           >
             localhost:3000
           </div>
@@ -104,9 +104,9 @@ export function ThirdBentoAnimation({ className }: { className?: string }) {
       />
       <AnimatedBeam
         containerRef={containerRef}
+        endXOffset={-62}
         fromRef={div6Ref}
         toRef={div7Ref}
-        endXOffset={-62}
       />
     </div>
   );

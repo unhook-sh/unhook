@@ -7,10 +7,13 @@ export const getBaseUrl = () => {
     return globalThis.location.origin;
   // Prefer runtime environment variable if available (helps VSCode extension and other
   // non-browser runtimes where we can set process.env at start-up)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const runtimeEnv = (globalThis as any).process?.env as
-    | Record<string, string>
-    | undefined;
+  const runtimeEnv: Record<string, string> | undefined =
+    // Narrow globalThis.process in non-Node environments safely
+    typeof globalThis !== 'undefined' &&
+    'process' in globalThis &&
+    // @ts-expect-error – `process` is only available in Node environments. We
+    // guard for its existence above so the cast is safe.
+    (globalThis as { process: { env: Record<string, string> } }).process?.env;
   if (runtimeEnv?.NEXT_PUBLIC_API_URL) return runtimeEnv.NEXT_PUBLIC_API_URL;
   if (env.NEXT_PUBLIC_API_URL) return env.NEXT_PUBLIC_API_URL;
   if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;

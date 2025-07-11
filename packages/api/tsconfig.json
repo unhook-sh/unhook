@@ -2,6 +2,8 @@
   "compilerOptions": {
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "outDir": "dist",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },

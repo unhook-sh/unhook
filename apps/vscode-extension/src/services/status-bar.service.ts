@@ -10,47 +10,61 @@ export class StatusBarService implements vscode.Disposable {
   private statusBarItem: vscode.StatusBarItem;
   private authStore: AuthStore | null = null;
   private authorizationService: WebhookAuthorizationService;
-  
+  private _disposables: vscode.Disposable[] = [];
+  private _authStoreDisposable: vscode.Disposable | null = null;
+
   constructor() {
     log('Initializing StatusBarService');
-    
+
     this.statusBarItem = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Left,
       100,
     );
-    
+
     this.authorizationService = WebhookAuthorizationService.getInstance();
-    
+
     // Listen for authorization state changes
-    this.authorizationService.onDidChangeAuthorizationState(() => this.update());
-    
+    this._disposables.push(
+      this.authorizationService.onDidChangeAuthorizationState(() =>
+        this.update(),
+      ),
+    );
+
     // Listen for delivery setting changes
-    vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('unhook.delivery.enabled')) {
-        this.update();
-      }
-    });
+    this._disposables.push(
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration('unhook.delivery.enabled')) {
+          this.update();
+        }
+      }),
+    );
   }
-  
+
   setAuthStore(authStore: AuthStore) {
     this.authStore = authStore;
-    
+
+    // Dispose of any existing auth store listener
+    if (this._authStoreDisposable) {
+      this._authStoreDisposable.dispose();
+      this._authStoreDisposable = null;
+    }
+
     // Listen for auth state changes
-    authStore.onDidChangeAuth(() => this.update());
-    
+    this._authStoreDisposable = authStore.onDidChangeAuth(() => this.update());
+
     this.update();
   }
-  
+
   update() {
     if (!this.authStore) {
       return;
     }
-    
+
     const deliveryEnabled = isDeliveryEnabled();
     const deliveryIcon = deliveryEnabled ? '$(play)' : '$(debug-pause)';
     const deliveryStatus = deliveryEnabled ? 'enabled' : 'paused';
     const authState = this.authorizationService.getState();
-    
+
     if (this.authStore.isValidatingSession) {
       this.statusBarItem.text = '$(sync~spin) Validating Unhook Session...';
       this.statusBarItem.tooltip = 'Validating your Unhook session...';
@@ -60,11 +74,13 @@ export class StatusBarService implements vscode.Disposable {
       if (authState.isUnauthorized) {
         if (authState.hasPendingRequest) {
           this.statusBarItem.text = '$(clock) Unhook: Access pending';
-          this.statusBarItem.tooltip = 'Your webhook access request is pending approval';
+          this.statusBarItem.tooltip =
+            'Your webhook access request is pending approval';
           this.statusBarItem.command = undefined;
         } else {
           this.statusBarItem.text = '$(error) Unhook: No webhook access';
-          this.statusBarItem.tooltip = 'You do not have access to this webhook\nClick to request access';
+          this.statusBarItem.tooltip =
+            'You do not have access to this webhook\nClick to request access';
           this.statusBarItem.command = 'unhook.requestWebhookAccess';
         }
       } else {
@@ -77,12 +93,24 @@ export class StatusBarService implements vscode.Disposable {
       this.statusBarItem.tooltip = 'Click to sign in to Unhook';
       this.statusBarItem.command = 'unhook.signIn';
     }
-    
+
     this.statusBarItem.show();
   }
-  
+
   dispose() {
     log('Disposing StatusBarService');
+
+    // Dispose of all collected disposables
+    for (const disposable of this._disposables) {
+      disposable.dispose();
+    }
+
+    // Dispose of the auth store listener if it exists
+    if (this._authStoreDisposable) {
+      this._authStoreDisposable.dispose();
+    }
+
+    // Dispose of the status bar item
     this.statusBarItem.dispose();
   }
 }

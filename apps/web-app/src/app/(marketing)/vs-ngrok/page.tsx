@@ -305,17 +305,82 @@ export default function UnhookVsNgrokPage() {
                 better collaboration and productivity.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              {ngrokComparison.reasons.map((reason) => (
-                <div
-                  className="bg-card border rounded-lg p-6"
-                  key={reason.title}
-                >
-                  <div className="text-4xl mb-4">{reason.icon}</div>
-                  <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>
-                  <p className="text-muted-foreground">{reason.description}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    👥
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">👥</div>
+                    <h3 className="text-2xl font-bold mb-4 text-blue-900 dark:text-blue-100">
+                      Built for Teams
+                    </h3>
+                    <p className="text-blue-800 dark:text-blue-200 text-lg leading-relaxed">
+                      Unlike ngrok's individual-focused approach, Unhook
+                      provides one shared webhook URL for your entire team with
+                      a config file that lives in your repo. No more hunting for
+                      the right URL.
+                    </p>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    💻
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">💻</div>
+                    <h3 className="text-2xl font-bold mb-4 text-purple-900 dark:text-purple-100">
+                      VS Code Native
+                    </h3>
+                    <p className="text-purple-800 dark:text-purple-200 text-lg leading-relaxed">
+                      Debug webhooks without leaving your editor. Our VS Code
+                      extension brings webhook monitoring directly into your
+                      development environment.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    💰
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">💰</div>
+                    <h3 className="text-2xl font-bold mb-4 text-green-900 dark:text-green-100">
+                      Better Pricing
+                    </h3>
+                    <p className="text-green-800 dark:text-green-200 text-lg leading-relaxed">
+                      No per-domain fees, no bandwidth caps, and team-friendly
+                      pricing. Get more value without the nickel-and-diming.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    🤖
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">🤖</div>
+                    <h3 className="text-2xl font-bold mb-4 text-orange-900 dark:text-orange-100">
+                      AI-First
+                    </h3>
+                    <p className="text-orange-800 dark:text-orange-200 text-lg leading-relaxed">
+                      Full support for testing AI workflows and MCP server
+                      integrations. Perfect for modern AI-driven development.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

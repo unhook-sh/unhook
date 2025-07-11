@@ -76,6 +76,7 @@
   "exports": {
     "./*": "./src/components/*.tsx",
     "./custom/*": "./src/custom/*.tsx",
+    "./magicui/*": "./src/magicui/*.tsx",
     "./globals.css": "./src/styles/globals.css",
     "./hooks/*": "./src/hooks/*.tsx",
     "./lib/*": "./src/lib/*.tsx",

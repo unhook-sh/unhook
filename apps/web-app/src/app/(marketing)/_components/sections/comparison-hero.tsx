@@ -2,6 +2,9 @@
 
 import { Badge } from '@unhook/ui/components/badge';
 import { Button } from '@unhook/ui/components/button';
+import { AnimatedShinyText } from '@unhook/ui/magicui/animated-shiny-text';
+import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
+import { WordFadeIn } from '@unhook/ui/magicui/word-fade-in';
 import { motion } from 'motion/react';
 import { BLUR_FADE_DELAY } from '../../_lib/config';
 
@@ -19,7 +22,10 @@ export function ComparisonHero({
   competitorLogo,
 }: ComparisonHeroProps) {
   return (
-    <section className="w-full py-20 lg:py-32" id="hero">
+    <section
+      className="w-full py-20 lg:py-32 relative overflow-hidden"
+      id="hero"
+    >
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center space-y-8">
           <motion.div
@@ -54,33 +60,52 @@ export function ComparisonHero({
 
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
             transition={{ delay: BLUR_FADE_DELAY * 2, duration: 0.5 }}
           >
-            <Badge className="px-4 py-2" variant="outline">
-              Comparison Guide
+            <Badge
+              className="px-4 py-2 border-primary/20 bg-primary/5"
+              variant="outline"
+            >
+              <AnimatedShinyText className="text-primary">
+                Comparison Guide
+              </AnimatedShinyText>
             </Badge>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              {title}
-            </h1>
-            <p className="text-xl md:text-2xl text-primary font-semibold">
+
+            <WordFadeIn
+              words={title}
+              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
+            />
+
+            <motion.p
+              className="text-xl md:text-2xl text-primary font-semibold"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: BLUR_FADE_DELAY * 3, duration: 0.5 }}
+            >
               {subtitle}
-            </p>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            </motion.p>
+
+            <motion.p
+              className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: BLUR_FADE_DELAY * 4, duration: 0.5 }}
+            >
               {description}
-            </p>
+            </motion.p>
           </motion.div>
 
           <motion.div
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col sm:flex-row gap-4"
             initial={{ opacity: 0, y: 20 }}
-            transition={{ delay: BLUR_FADE_DELAY * 3, duration: 0.5 }}
+            transition={{ delay: BLUR_FADE_DELAY * 5, duration: 0.5 }}
           >
-            <Button className="px-8" size="lg">
+            <ShimmerButton className="px-8 py-3 text-lg font-semibold">
               Try Unhook Free
-            </Button>
+            </ShimmerButton>
             <Button className="px-8" size="lg" variant="outline">
               View Full Comparison
             </Button>

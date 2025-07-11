@@ -280,17 +280,81 @@ export default function UnhookVsHookdeckPage() {
                 for where you spend 90% of your time: development and testing.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              {hookdeckComparison.reasons.map((reason) => (
-                <div
-                  className="bg-card border rounded-lg p-6"
-                  key={reason.title}
-                >
-                  <div className="text-4xl mb-4">{reason.icon}</div>
-                  <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>
-                  <p className="text-muted-foreground">{reason.description}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/20 dark:to-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    🛠️
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">🛠️</div>
+                    <h3 className="text-2xl font-bold mb-4 text-amber-900 dark:text-amber-100">
+                      Built for Development
+                    </h3>
+                    <p className="text-amber-800 dark:text-amber-200 text-lg leading-relaxed">
+                      While Hookdeck focuses on production event infrastructure,
+                      Unhook is optimized for the development and testing phase
+                      where you spend most of your time.
+                    </p>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    👥
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">👥</div>
+                    <h3 className="text-2xl font-bold mb-4 text-blue-900 dark:text-blue-100">
+                      Team Collaboration
+                    </h3>
+                    <p className="text-blue-800 dark:text-blue-200 text-lg leading-relaxed">
+                      One shared webhook URL for your entire team with a config
+                      file that lives in your repo. No more hunting for the
+                      right endpoint.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    💻
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">💻</div>
+                    <h3 className="text-2xl font-bold mb-4 text-purple-900 dark:text-purple-100">
+                      VS Code Native
+                    </h3>
+                    <p className="text-purple-800 dark:text-purple-200 text-lg leading-relaxed">
+                      Debug webhooks without leaving your editor. See events in
+                      real-time and replay with one click.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    💰
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">💰</div>
+                    <h3 className="text-2xl font-bold mb-4 text-green-900 dark:text-green-100">
+                      Simple Pricing
+                    </h3>
+                    <p className="text-green-800 dark:text-green-200 text-lg leading-relaxed">
+                      Straightforward pricing focused on teams, not request
+                      volume. Perfect for development workflows.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

@@ -18,11 +18,11 @@ export default function Author({
   if (imageOnly) {
     return (
       <Image
-        src={image}
         alt={name}
-        width={36}
-        height={36}
         className="rounded-full transition-all group-hover:brightness-90"
+        height={36}
+        src={image}
+        width={36}
       />
     );
   }
@@ -31,17 +31,17 @@ export default function Author({
     return (
       <div className="flex items-center space-x-3">
         <Image
-          src={image}
           alt={name}
-          width={36}
-          height={36}
           className="rounded-full"
+          height={36}
+          src={image}
+          width={36}
         />
         <div className="flex flex-col">
           <p className="text-sm text-gray-500">Written by {name}</p>
           <time
-            dateTime={updatedAt}
             className="text-sm font-light text-gray-400"
+            dateTime={updatedAt}
           >
             Last updated {formatDate(updatedAt)}
           </time>
@@ -52,17 +52,17 @@ export default function Author({
 
   return (
     <Link
-      href={`https://twitter.com/${twitterUsername}`}
       className="group flex items-center space-x-3"
-      target="_blank"
+      href={`https://twitter.com/${twitterUsername}`}
       rel="noopener noreferrer"
+      target="_blank"
     >
       <Image
-        src={image}
         alt={name}
-        width={40}
-        height={40}
         className="rounded-full transition-all group-hover:brightness-90"
+        height={40}
+        src={image}
+        width={40}
       />
       <div className="flex flex-col">
         <p className="font-semibold text-gray-700">{name}</p>

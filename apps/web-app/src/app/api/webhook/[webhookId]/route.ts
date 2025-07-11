@@ -18,8 +18,8 @@ export async function POST(
 
   if (!webhookId) {
     posthog.capture({
-      event: 'webhook_error',
       distinctId: 'anonymous',
+      event: 'webhook_error',
       properties: {
         error: 'missing_webhook_id',
         webhookId: null,
@@ -27,9 +27,9 @@ export async function POST(
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Webhook ID required',
         help: 'Please provide a valid webhook ID in the URL path',
-        docs: 'https://docs.unhook.sh',
       },
       { status: 400 },
     );
@@ -54,8 +54,8 @@ export async function POST(
 
   if (!webhook) {
     posthog.capture({
-      event: 'webhook_error',
       distinctId: 'anonymous',
+      event: 'webhook_error',
       properties: {
         error: 'webhook_not_found',
         webhookId,
@@ -63,10 +63,10 @@ export async function POST(
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Webhook not found',
         help: 'The webhook ID provided does not exist or has been deleted',
         webhookId,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 404 },
     );
@@ -77,8 +77,8 @@ export async function POST(
   if (webhook.isPrivate) {
     if (!apiKey) {
       posthog.capture({
-        event: 'webhook_error',
         distinctId: userId,
+        event: 'webhook_error',
         properties: {
           error: 'missing_api_key',
           webhookId,
@@ -86,9 +86,9 @@ export async function POST(
       });
       return NextResponse.json(
         {
+          docs: 'https://docs.unhook.sh',
           error: 'Invalid API key',
           help: 'Please provide a valid API key in the x-unhook-api-key header or apiKey query parameter',
-          docs: 'https://docs.unhook.sh',
         },
         { status: 401 },
       );
@@ -96,8 +96,8 @@ export async function POST(
 
     if (apiKey !== webhook.apiKey) {
       posthog.capture({
-        event: 'webhook_error',
         distinctId: userId,
+        event: 'webhook_error',
         properties: {
           error: 'invalid_api_key',
           webhookId,
@@ -105,9 +105,9 @@ export async function POST(
       });
       return NextResponse.json(
         {
+          docs: 'https://docs.unhook.sh',
           error: 'Invalid API key',
           help: 'The provided API key does not match the webhook configuration',
-          docs: 'https://docs.unhook.sh',
         },
         { status: 401 },
       );
@@ -116,8 +116,8 @@ export async function POST(
 
   if (webhook.status === 'inactive') {
     posthog.capture({
-      event: 'webhook_error',
       distinctId: userId,
+      event: 'webhook_error',
       properties: {
         error: 'webhook_inactive',
         webhookId,
@@ -125,10 +125,10 @@ export async function POST(
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Webhook is inactive',
         help: 'This webhook has been deactivated. Please reactivate it in the dashboard to continue receiving events',
         webhookId,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 403 },
     );
@@ -136,20 +136,20 @@ export async function POST(
 
   // Ensure config exists with defaults
   const config = {
+    headers: webhook.config.headers ?? {},
     requests: {
       ...webhook.config.requests,
       allowedMethods: webhook.config.requests?.allowedMethods ?? [],
-      blockedSource: webhook.config.requests?.blockedSource ?? [],
       allowedSource: webhook.config.requests?.allowedSource ?? [],
+      blockedSource: webhook.config.requests?.blockedSource ?? [],
     },
     storage: {
       ...webhook.config.storage,
-      storeRequestBody: webhook.config.storage?.storeRequestBody ?? false,
       maxRequestBodySize:
-        webhook.config.storage?.maxRequestBodySize ?? 1024 * 1024 * 10, // 10MB default
-      storeHeaders: webhook.config.storage?.storeHeaders ?? true,
+        webhook.config.storage?.maxRequestBodySize ?? 1024 * 1024 * 10,
+      storeHeaders: webhook.config.storage?.storeHeaders ?? true, // 10MB default
+      storeRequestBody: webhook.config.storage?.storeRequestBody ?? false,
     },
-    headers: webhook.config.headers ?? {},
   };
 
   // Check request method restrictions
@@ -158,21 +158,21 @@ export async function POST(
     !config.requests.allowedMethods.includes(req.method)
   ) {
     posthog.capture({
-      event: 'webhook_error',
       distinctId: userId,
+      event: 'webhook_error',
       properties: {
-        error: 'method_not_allowed',
-        webhookId,
-        method: req.method,
         allowedMethods: config.requests.allowedMethods,
+        error: 'method_not_allowed',
+        method: req.method,
+        webhookId,
       },
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Method not allowed',
         help: 'This webhook does not accept requests with this method',
         method: req.method,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 405 },
     );
@@ -181,21 +181,21 @@ export async function POST(
   // Sanitize and check path restrictions
   if (config.requests.blockedSource?.some((p) => source?.match(p))) {
     posthog.capture({
-      event: 'webhook_error',
       distinctId: userId,
+      event: 'webhook_error',
       properties: {
-        error: 'source_blocked',
-        webhookId,
-        source,
         blockedSource: config.requests.blockedSource,
+        error: 'source_blocked',
+        source,
+        webhookId,
       },
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Source not allowed',
         help: 'The source of this request is blocked by the webhook configuration',
         source,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 403 },
     );
@@ -205,21 +205,21 @@ export async function POST(
     !config.requests.allowedSource.some((p) => source?.match(p))
   ) {
     posthog.capture({
-      event: 'webhook_error',
       distinctId: userId,
+      event: 'webhook_error',
       properties: {
-        error: 'source_not_allowed',
-        webhookId,
-        source,
         allowedSource: config.requests.allowedSource,
+        error: 'source_not_allowed',
+        source,
+        webhookId,
       },
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Source not allowed',
         help: 'The source of this request is not in the allowed list',
         source,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 403 },
     );
@@ -254,60 +254,60 @@ export async function POST(
     const sourceUrl = origin || referer || `https://${host}` || requestUrl;
 
     const request: RequestPayload = {
+      body: bodyBase64,
+      clientIp: req.headers.get('x-forwarded-for') ?? 'unknown',
+      contentType: req.headers.get('content-type') ?? 'text/plain',
+      headers,
       id: createId({ prefix: 'req' }),
       method: req.method,
-      headers,
-      sourceUrl,
       size: body?.length ?? 0,
-      body: bodyBase64,
-      contentType: req.headers.get('content-type') ?? 'text/plain',
-      clientIp: req.headers.get('x-forwarded-for') ?? 'unknown',
+      sourceUrl,
     };
 
     // Create an event for this webhook
     const [event] = await db
       .insert(Events)
       .values({
-        webhookId: webhook.id,
-        userId: webhook.userId,
+        maxRetries: config.requests.maxRetries ?? 3,
         orgId: webhook.orgId,
         originRequest: request,
+        retryCount: 0,
         source,
         status: 'pending',
-        retryCount: 0,
-        maxRetries: config.requests.maxRetries ?? 3,
         timestamp: new Date(),
+        userId: webhook.userId,
+        webhookId: webhook.id,
       })
       .returning();
 
     if (!event) {
       posthog.capture({
-        event: 'webhook_error',
         distinctId: userId,
+        event: 'webhook_error',
         properties: {
           error: 'failed_to_create_event',
-          webhookId,
           source,
+          webhookId,
         },
       });
       return NextResponse.json(
         {
+          docs: 'https://docs.unhook.sh',
           error: 'Failed to create event',
           help: 'There was an error processing your webhook request. Please try again later',
           webhookId,
-          docs: 'https://docs.unhook.sh',
         },
         { status: 500 },
       );
     }
 
     posthog.capture({
-      event: 'webhook_received',
       distinctId: userId,
+      event: 'webhook_received',
       properties: {
-        webhookId,
-        source,
         apiKey,
+        source,
+        webhookId,
       },
     });
 
@@ -322,8 +322,8 @@ export async function POST(
         // Record the webhook event usage to Stripe
         await recordUsage({
           customerId: org.stripeCustomerId,
-          quantity: 1,
-          idempotencyKey: event.id, // Use event ID for idempotency
+          idempotencyKey: event.id,
+          quantity: 1, // Use event ID for idempotency
         });
       }
     } catch (error) {
@@ -331,19 +331,19 @@ export async function POST(
       console.error('Failed to record usage:', error);
       posthog.captureException(error, userId, {
         properties: {
-          webhookId,
-          orgId: webhook.orgId,
           eventId: event.id,
+          orgId: webhook.orgId,
+          webhookId,
         },
       });
     }
 
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
+        eventId: event.id,
         message: 'Webhook received',
         webhookId,
-        eventId: event.id,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 202 },
     );
@@ -351,17 +351,17 @@ export async function POST(
     console.error('Error storing webhook request:', error);
     posthog.captureException(error, userId, {
       properties: {
-        webhookId,
-        source,
         apiKey,
+        source,
+        webhookId,
       },
     });
     return NextResponse.json(
       {
+        docs: 'https://docs.unhook.sh',
         error: 'Internal server error',
         help: 'An unexpected error occurred while processing your webhook request. Please try again later',
         webhookId,
-        docs: 'https://docs.unhook.sh',
       },
       { status: 500 },
     );

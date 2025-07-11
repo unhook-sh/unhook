@@ -12,37 +12,37 @@ import Image from 'next/image';
 
 const vaults = [
   {
-    name: 'Bitcoin',
-    symbol: 'BTC',
-    price: '$13,643.21',
-    daily: '+$213.8',
-    balance: '$13,954.04',
     apy: '8.56%',
-    state: 'Fixed',
-    startDate: '05.10.2023',
+    balance: '$13,954.04',
+    daily: '+$213.8',
     liquidity: 'high',
-  },
-  {
-    name: 'USDT',
-    symbol: 'USDT',
-    price: '$1.00',
-    daily: '+$45.1',
-    balance: '$3,954.04',
-    apy: '5.44%',
+    name: 'Bitcoin',
+    price: '$13,643.21',
+    startDate: '05.10.2023',
     state: 'Fixed',
-    startDate: '12.03.2023',
-    liquidity: 'medium',
+    symbol: 'BTC',
   },
   {
-    name: 'Ethereum',
-    symbol: 'ETH',
-    price: '$2,123.87',
-    daily: '+$13.5',
+    apy: '5.44%',
     balance: '$3,954.04',
+    daily: '+$45.1',
+    liquidity: 'medium',
+    name: 'USDT',
+    price: '$1.00',
+    startDate: '12.03.2023',
+    state: 'Fixed',
+    symbol: 'USDT',
+  },
+  {
     apy: '4.12%',
-    state: 'Flexible',
-    startDate: '21.01.2023',
+    balance: '$3,954.04',
+    daily: '+$13.5',
     liquidity: 'low',
+    name: 'Ethereum',
+    price: '$2,123.87',
+    startDate: '21.01.2023',
+    state: 'Flexible',
+    symbol: 'ETH',
   },
 ];
 
@@ -70,10 +70,10 @@ export function VaultTable() {
               <div className="flex items-center gap-2">
                 <Avatar className="h-6 w-6">
                   <Image
-                    src={'/placeholder.svg?height=24&width=24'}
                     alt={vault.name}
-                    width={24}
                     height={24}
+                    src={'/placeholder.svg?height=24&width=24'}
+                    width={24}
                   />
                 </Avatar>
                 <div>
@@ -103,7 +103,6 @@ export function VaultTable() {
               <div className="flex gap-1">
                 {['high', 'medium', 'low'].map((liquidity) => (
                   <div
-                    key={liquidity}
                     className={`h-1.5 w-3 rounded-full ${
                       liquidity === 'high'
                         ? 'bg-primary'
@@ -111,6 +110,7 @@ export function VaultTable() {
                           ? 'bg-yellow-500'
                           : 'bg-red-500'
                     }`}
+                    key={liquidity}
                   />
                 ))}
               </div>

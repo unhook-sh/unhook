@@ -3,7 +3,7 @@ import { Button } from '@unhook/ui/components/button';
 
 export function CloseWindowButton() {
   return (
-    <Button onClick={() => window.close()} autoFocus>
+    <Button autoFocus onClick={() => window.close()}>
       Close
     </Button>
   );

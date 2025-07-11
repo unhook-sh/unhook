@@ -17,15 +17,15 @@ interface PolicyConfig {
 
 // Common policy conditions
 const policyConditions = {
-  userOwnership: '(SELECT auth.jwt()->>\'sub\') = ("userId")::text',
-  userOwnershipById: '(SELECT auth.jwt()->>\'sub\') = ("id")::text',
-  orgOwnership: '(SELECT auth.jwt()->>\'org_id\') = ("orgId")::text',
-  orgOwnershipById: '(SELECT auth.jwt()->>\'org_id\') = ("id")::text',
   eventOwnership: `EXISTS (
     SELECT 1 FROM events
     WHERE events.id = requests."eventId"
     AND events."userId" = (SELECT auth.jwt()->>'sub')
   )`,
+  orgOwnership: '(SELECT auth.jwt()->>\'org_id\') = ("orgId")::text',
+  orgOwnershipById: '(SELECT auth.jwt()->>\'org_id\') = ("id")::text',
+  userOwnership: '(SELECT auth.jwt()->>\'sub\') = ("userId")::text',
+  userOwnershipById: '(SELECT auth.jwt()->>\'sub\') = ("id")::text',
 } as const;
 
 // Helper to create a policy for user ownership
@@ -100,49 +100,50 @@ const enableRLS = async (tableName: string) => {
 };
 
 const policyConfigs: Record<string, PolicyConfig> = {
-  user: {
-    tableName: 'user',
+  authCodes: {
     policies: [
-      createUserOwnershipPolicy('SELECT', true),
-      createUserOwnershipPolicy('UPDATE', true),
+      createUserOwnershipPolicy('SELECT'),
+      createUserOwnershipPolicy('INSERT'),
+      createUserOwnershipPolicy('UPDATE'),
+      createOrgOwnershipPolicy('ALL'),
     ],
+    tableName: 'authCodes',
+  },
+  connections: {
+    policies: [
+      createUserOwnershipPolicy('SELECT'),
+      createUserOwnershipPolicy('INSERT'),
+      createUserOwnershipPolicy('UPDATE'),
+      createOrgOwnershipPolicy('ALL'),
+    ],
+    tableName: 'connections',
+  },
+  events: {
+    policies: [
+      createUserOwnershipPolicy('SELECT'),
+      createUserOwnershipPolicy('INSERT'),
+      createOrgOwnershipPolicy('ALL'),
+    ],
+    tableName: 'events',
+  },
+  orgMembers: {
+    policies: [
+      createUserOwnershipPolicy('SELECT'),
+      createUserOwnershipPolicy('INSERT'),
+      createUserOwnershipPolicy('UPDATE'),
+      createOrgOwnershipPolicy('ALL'),
+    ],
+    tableName: 'orgMembers',
   },
   orgs: {
-    tableName: 'orgs',
     policies: [
       createOrgOwnershipByIdPolicy('SELECT'),
       createOrgOwnershipByIdPolicy('INSERT'),
       createOrgOwnershipByIdPolicy('UPDATE'),
     ],
-  },
-  orgMembers: {
-    tableName: 'orgMembers',
-    policies: [
-      createUserOwnershipPolicy('SELECT'),
-      createUserOwnershipPolicy('INSERT'),
-      createUserOwnershipPolicy('UPDATE'),
-      createOrgOwnershipPolicy('ALL'),
-    ],
-  },
-  webhooks: {
-    tableName: 'webhooks',
-    policies: [
-      createUserOwnershipPolicy('SELECT'),
-      createUserOwnershipPolicy('INSERT'),
-      createUserOwnershipPolicy('UPDATE'),
-      createOrgOwnershipPolicy('ALL'),
-    ],
-  },
-  events: {
-    tableName: 'events',
-    policies: [
-      createUserOwnershipPolicy('SELECT'),
-      createUserOwnershipPolicy('INSERT'),
-      createOrgOwnershipPolicy('ALL'),
-    ],
+    tableName: 'orgs',
   },
   requests: {
-    tableName: 'requests',
     policies: [
       createUserOwnershipPolicy('SELECT'),
       createUserOwnershipPolicy('INSERT'),
@@ -153,24 +154,23 @@ const policyConfigs: Record<string, PolicyConfig> = {
         using: policyConditions.eventOwnership,
       },
     ],
+    tableName: 'requests',
   },
-  connections: {
-    tableName: 'connections',
+  user: {
+    policies: [
+      createUserOwnershipPolicy('SELECT', true),
+      createUserOwnershipPolicy('UPDATE', true),
+    ],
+    tableName: 'user',
+  },
+  webhooks: {
     policies: [
       createUserOwnershipPolicy('SELECT'),
       createUserOwnershipPolicy('INSERT'),
       createUserOwnershipPolicy('UPDATE'),
       createOrgOwnershipPolicy('ALL'),
     ],
-  },
-  authCodes: {
-    tableName: 'authCodes',
-    policies: [
-      createUserOwnershipPolicy('SELECT'),
-      createUserOwnershipPolicy('INSERT'),
-      createUserOwnershipPolicy('UPDATE'),
-      createOrgOwnershipPolicy('ALL'),
-    ],
+    tableName: 'webhooks',
   },
 };
 

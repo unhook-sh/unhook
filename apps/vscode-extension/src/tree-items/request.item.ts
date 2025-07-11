@@ -76,7 +76,7 @@ export class RequestItem extends vscode.TreeItem {
     this.description = formatDistance(request.timestamp, new Date(), {
       addSuffix: true,
     });
-    this.iconPath = getStatusIconPath({ request, context });
+    this.iconPath = getStatusIconPath({ context, request });
     this.contextValue = 'request';
     this.resourceUri = vscode.Uri.parse('unhook://request');
     this.tooltip = new vscode.MarkdownString(
@@ -86,14 +86,14 @@ export class RequestItem extends vscode.TreeItem {
     this.tooltip.supportHtml = true;
 
     const command = {
+      arguments: [this],
       command: 'unhook.viewRequest',
       title: 'View Request Details',
-      arguments: [this],
     };
     log('Setting up command for request', {
-      requestId: request.id,
       hasRequest: !!this.request,
       itemConstructor: this.constructor.name,
+      requestId: request.id,
     });
     this.command = command;
   }

@@ -8,8 +8,8 @@ export async function applyTransformation(
   if (!transformation || transformation.trim().length === 0) {
     // No transformation, return the original data
     return {
-      success: true,
       data: context.request.body ? JSON.parse(context.request.body) : null,
+      success: true,
     };
   }
 

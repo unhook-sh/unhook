@@ -108,8 +108,8 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
 
       // Smooth scroll to exact position
       window.scrollTo({
-        top: offsetPosition,
         behavior: 'smooth',
+        top: offsetPosition,
       });
 
       // Reset manual scroll flag after animation completes
@@ -133,10 +133,10 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
 
           return (
             <li
-              key={item.name}
               className={`z-10 cursor-pointer h-full flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                 isActive ? 'text-primary' : 'text-primary/60 hover:text-primary'
               } tracking-tight`}
+              key={item.name}
             >
               {isAnchor ? (
                 <a href={item.href} onClick={(e) => handleClick(e, item)}>
@@ -151,8 +151,8 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
         {isReady && (
           <motion.li
             animate={{ left, width }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             className="absolute inset-0 my-1.5 rounded-full bg-accent/60 border border-border"
+            transition={{ damping: 30, stiffness: 400, type: 'spring' }}
           />
         )}
       </ul>

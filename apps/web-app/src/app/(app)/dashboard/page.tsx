@@ -25,35 +25,35 @@ export default function Page() {
             <span className="font-bold">Vaultify</span>
           </div>
           <div className="px-4 py-4">
-            <Input placeholder="Search" className="bg-background/50" />
+            <Input className="bg-background/50" placeholder="Search" />
           </div>
           <nav className="space-y-2 px-2">
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <BarChart3 className="h-4 w-4" />
               Statistics & Income
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <Globe className="h-4 w-4" />
               Market
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <Home className="h-4 w-4" />
               Funding
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <Wallet className="h-4 w-4" />
               Yield Vaults
               <ChevronDown className="ml-auto h-4 w-4" />
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <LifeBuoy className="h-4 w-4" />
               Support
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button className="w-full justify-start gap-2" variant="ghost">
               <Settings className="h-4 w-4" />
               Settings
             </Button>
@@ -67,38 +67,38 @@ export default function Page() {
                 Aug 13, 2023 - Aug 18, 2023
               </div>
             </div>
-            <Button variant="outline" className="gap-2">
+            <Button className="gap-2" variant="outline">
               Ethereum Network
               <ChevronDown className="h-4 w-4" />
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             <MetricsCard
+              change={{
+                isPositive: false,
+                percentage: '-2.1%',
+                value: '$1,340',
+              }}
               title="Your Balance"
               value="$74,892"
-              change={{
-                value: '$1,340',
-                percentage: '-2.1%',
-                isPositive: false,
-              }}
             />
             <MetricsCard
+              change={{
+                isPositive: true,
+                percentage: '+13.2%',
+                value: '$1,340',
+              }}
               title="Your Deposits"
               value="$54,892"
-              change={{
-                value: '$1,340',
-                percentage: '+13.2%',
-                isPositive: true,
-              }}
             />
             <MetricsCard
+              change={{
+                isPositive: true,
+                percentage: '+1.2%',
+                value: '$1,340',
+              }}
               title="Accrued Yield"
               value="$20,892"
-              change={{
-                value: '$1,340',
-                percentage: '+1.2%',
-                isPositive: true,
-              }}
             />
           </div>
           <Card className="mt-6 p-6">

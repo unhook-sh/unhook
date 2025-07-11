@@ -54,9 +54,9 @@ export class WebhookDestination implements Destination {
       }
 
       const response = await fetch(config.url, {
-        method: 'POST',
-        headers,
         body: JSON.stringify(data),
+        headers,
+        method: 'POST',
       });
 
       const responseText = await response.text();
@@ -79,18 +79,18 @@ export class WebhookDestination implements Destination {
       });
 
       return {
-        success: true,
         response: {
-          status: response.status,
-          headers: responseHeaders,
           body: responseBody,
+          headers: responseHeaders,
+          status: response.status,
         },
+        success: true,
       };
     } catch (error) {
       log('Failed to send webhook:', error);
       return {
-        success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
       };
     }
   }

@@ -14,11 +14,11 @@ const log = debug('unhook:cli:config-store');
 
 // Default state matching WebhookConfig shape
 const defaultConfigState: WebhookConfig = {
-  webhookId: '',
-  destination: [],
-  delivery: [],
   debug: false,
+  delivery: [],
+  destination: [],
   telemetry: true,
+  webhookId: '',
 };
 
 interface ConfigActions {
@@ -33,8 +33,6 @@ type ConfigStore = WebhookConfig & ConfigActions;
 
 const store = createStore<ConfigStore>()((set, get) => ({
   ...defaultConfigState,
-
-  setConfig: (config) => set((state) => ({ ...state, ...config })),
   getConfig: () => get(),
   loadConfig: async () => {
     try {
@@ -53,6 +51,8 @@ const store = createStore<ConfigStore>()((set, get) => ({
       return defaultConfigState;
     }
   },
+
+  setConfig: (config) => set((state) => ({ ...state, ...config })),
 
   watchConfig: async () => {
     // Initial load
@@ -150,9 +150,9 @@ export default config;
     } else {
       // Use YAML format if not TypeScript
       const yamlConfig = {
-        webhookId: config.webhookId,
-        destination: config.destination,
         delivery: config.delivery,
+        destination: config.destination,
+        webhookId: config.webhookId,
       };
       content = `# Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration

@@ -11,10 +11,14 @@ export class ConfigManager {
   private context: vscode.ExtensionContext | undefined;
 
   private constructor() {
-    // Set default URLs based on development mode
+    // Set default URLs based on development mode and environment variables
     if (this.isDevelopment()) {
       this.apiUrl = 'http://localhost:3000';
       this.dashboardUrl = 'http://localhost:3000';
+    } else {
+      // Use environment variable if available, otherwise default to production
+      this.apiUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+      this.dashboardUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
     }
   }
 
@@ -29,12 +33,18 @@ export class ConfigManager {
       if (ConfigManager.instance.isDevelopment()) {
         ConfigManager.instance.apiUrl = 'http://localhost:3000';
         ConfigManager.instance.dashboardUrl = 'http://localhost:3000';
+      } else {
+        // Use environment variable if available, otherwise default to production
+        ConfigManager.instance.apiUrl =
+          env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+        ConfigManager.instance.dashboardUrl =
+          env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
       }
     }
     return ConfigManager.instance;
   }
 
-  private isDevelopment(): boolean {
+  public isDevelopment(): boolean {
     // Check ExtensionMode from context if available
     if (
       this.context &&
@@ -91,13 +101,13 @@ export class ConfigManager {
       if (configPath) {
         this.config = await loadConfig(configPath);
 
-        // Update URLs from config
-        if (this.config.server?.apiUrl) {
+        // Update URLs from config (but don't override environment variable in production)
+        if (this.config.server?.apiUrl && this.isDevelopment()) {
           this.apiUrl = this.config.server.apiUrl;
         }
-        if (this.config.server?.dashboardUrl) {
+        if (this.config.server?.dashboardUrl && this.isDevelopment()) {
           this.dashboardUrl = this.config.server.dashboardUrl;
-        } else if (this.config.server?.apiUrl) {
+        } else if (this.config.server?.apiUrl && this.isDevelopment()) {
           // Default dashboard URL to API URL if not specified
           this.dashboardUrl = this.config.server.apiUrl;
         }
@@ -105,10 +115,11 @@ export class ConfigManager {
 
       // Log current configuration
       console.log('Unhook Config Manager:', {
-        isDevelopment: this.isDevelopment(),
         apiUrl: this.apiUrl,
-        dashboardUrl: this.dashboardUrl,
         configFound: !!configPath,
+        dashboardUrl: this.dashboardUrl,
+        envApiUrl: env.NEXT_PUBLIC_API_URL,
+        isDevelopment: this.isDevelopment(),
       });
     } catch (error) {
       console.error('Failed to load Unhook configuration:', error);

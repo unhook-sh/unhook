@@ -32,14 +32,14 @@ export class ConnectionManager {
 
       // Create connection record
       await db.insert(Connections).values({
-        webhookId: webhook.id,
-        ipAddress: this.metadata?.clientIp ?? '0.0.0.0', // Required field
-        clientId: this.metadata?.clientId ?? 'unknown',
-        clientVersion: this.metadata?.clientVersion,
-        clientOs: this.metadata?.clientOs,
         clientHostname: this.metadata?.clientHostname,
-        userId: webhook.userId,
+        clientId: this.metadata?.clientId ?? 'unknown', // Required field
+        clientOs: this.metadata?.clientOs,
+        clientVersion: this.metadata?.clientVersion,
+        ipAddress: this.metadata?.clientIp ?? '0.0.0.0',
         orgId: webhook.orgId,
+        userId: webhook.userId,
+        webhookId: webhook.id,
       });
 
       // Update webhook status

@@ -35,8 +35,8 @@ export function TRPCReactProvider(
   const [trpcClient] = useState(() =>
     api.createClient({
       links: createDefaultLinks({
-        sourceHeader: props.sourceHeader ?? 'nextjs-react',
         authToken: props.authToken,
+        sourceHeader: props.sourceHeader ?? 'nextjs-react',
       }),
     }),
   );

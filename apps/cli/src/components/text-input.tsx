@@ -210,5 +210,5 @@ export function UncontrolledTextInput({
 }: UncontrolledProps) {
   const [value, setValue] = useState(initialValue);
 
-  return <TextInput {...props} value={value} onChange={setValue} />;
+  return <TextInput {...props} onChange={setValue} value={value} />;
 }

@@ -1,23 +1,21 @@
 {
   "commitlint": {
-    "extends": [
-      "@unhook/commitlint-config"
-    ]
+    "extends": ["@unhook/commitlint-config"]
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.4",
+    "@biomejs/biome": "2.1.1",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.29.5",
     "@commitlint/cli": "19.8.1",
     "@testing-library/react": "16.3.0",
     "@turbo/gen": "2.5.4",
-    "@types/bun": "1.2.17",
+    "@types/bun": "1.2.18",
     "@unhook/commitlint-config": "workspace:*",
-    "bun": "1.2.17",
-    "checkly": "6.0.0",
-    "knip": "5.61.2",
-    "lefthook": "1.11.14",
-    "mintlify": "4.0.592",
+    "bun": "1.2.18",
+    "checkly": "6.1.0",
+    "knip": "5.61.3",
+    "lefthook": "1.12.1",
+    "mintlify": "4.2.11",
     "turbo": "2.5.4",
     "typescript": "5.8.3",
     "vitest": "3.2.4"
@@ -25,8 +23,11 @@
   "engines": {
     "node": ">=20.12.0"
   },
-  "packageManager": "bun@1.2.27",
   "name": "@unhook/root",
+  "overrides": {
+    "@types/vscode": "1.96.0"
+  },
+  "packageManager": "bun@1.2.18",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -49,16 +50,14 @@
     "postinstall": "bun lint:ws",
     "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... --filter=./apps/vscode-extension... && changeset publish",
     "test": "bun test",
+    "test:integ": "turbo run test --filter=@unhook/integ-test",
+    "test:integ:watch": "turbo run test:watch --filter=@unhook/integ-test",
+    "test:integ:ci": "turbo run test:ci --filter=@unhook/integ-test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
-    "with-env": "infisical run --",
-    "version": "changeset version && bun biome check --write"
+    "version": "changeset version && bun biome check --write",
+    "with-env": "infisical run --"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*",
-    "tooling/*"
-  ],
   "trustedDependencies": [
     "@biomejs/biome",
     "@clerk/shared",
@@ -78,5 +77,10 @@
     "sharp",
     "supabase",
     "yarn"
+  ],
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tooling/*"
   ]
 }

@@ -26,30 +26,27 @@ interface CliActions {
 type CliStore = CliState & CliActions;
 
 const defaultCliState: Partial<CliState> = {
-  verbose: false,
-  version: '',
   code: undefined,
   command: undefined,
-  webhookId: undefined,
-  source: undefined,
-  destination: undefined,
   configPath: undefined,
+  destination: undefined,
+  source: undefined,
+  verbose: false,
+  version: '',
+  webhookId: undefined,
 };
 
 const store = createStore<CliStore>()((set, get) => ({
   ...(defaultCliState as CliState),
-
-  // Individual setters remain simple
-  setVerbose: (verbose) => set((state) => ({ ...state, verbose })),
+  getCommand: () => get().command,
 
   // Getters for WebhookConfig fields
   getVerbose: () => get().verbose ?? false,
   getVersion: () => get().version,
-  getCommand: () => get().command,
+  getWebhookId: () => get().webhookId,
 
   // Reset method to restore default state
   reset: () => set(defaultCliState as CliState),
-  getWebhookId: () => get().webhookId,
 
   // setCliArgs needs to carefully merge while respecting the union type.
   // Since input `args` comes from validated sources (yargs/loadConfig),
@@ -59,6 +56,9 @@ const store = createStore<CliStore>()((set, get) => ({
       const newState = { ...state, ...args };
       return newState as CliState;
     }),
+
+  // Individual setters remain simple
+  setVerbose: (verbose) => set((state) => ({ ...state, verbose })),
 }));
 
 export const useCliStore = createSelectors(store);

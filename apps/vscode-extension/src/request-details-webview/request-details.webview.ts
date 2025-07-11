@@ -55,8 +55,8 @@ export class RequestDetailsWebviewProvider {
       log('Revealing existing panel');
       this._panel.reveal(vscode.ViewColumn.One);
       this._panel.webview.postMessage({
-        type: 'requestData',
         data: this._currentRequestData,
+        type: 'requestData',
       });
       return;
     }
@@ -69,7 +69,6 @@ export class RequestDetailsWebviewProvider {
       vscode.ViewColumn.One,
       {
         enableScripts: true,
-        retainContextWhenHidden: true,
         localResourceRoots: [
           this._extensionUri,
           vscode.Uri.joinPath(
@@ -78,6 +77,7 @@ export class RequestDetailsWebviewProvider {
             'request-details-webview',
           ),
         ],
+        retainContextWhenHidden: true,
       },
     );
 
@@ -93,8 +93,8 @@ export class RequestDetailsWebviewProvider {
             // If we have request data, send it to the webview
             if (this._currentRequestData) {
               this._panel?.webview.postMessage({
-                type: 'requestData',
                 data: this._currentRequestData,
+                type: 'requestData',
               });
             }
             break;

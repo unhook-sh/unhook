@@ -10,25 +10,25 @@ interface WebhookFlowGraphicProps {
 }
 
 const providerConfig = {
-  stripe: {
-    icon: Icons.Stripe,
-    name: 'Stripe',
-    color: '#635BFF',
-  },
-  github: {
-    icon: Icons.Github,
-    name: 'GitHub',
-    color: '#ffffff',
-  },
   clerk: {
+    color: '#6C47FF',
     icon: Icons.Clerk,
     name: 'Clerk',
-    color: '#6C47FF',
+  },
+  github: {
+    color: '#ffffff',
+    icon: Icons.Github,
+    name: 'GitHub',
   },
   slack: {
+    color: '#4A154B',
     icon: Icons.Slack,
     name: 'Slack',
-    color: '#4A154B',
+  },
+  stripe: {
+    color: '#635BFF',
+    icon: Icons.Stripe,
+    name: 'Stripe',
   },
 } as const;
 

@@ -14,13 +14,13 @@ export function SignInDifferentAccountButton() {
 
   return (
     <Button
-      variant="link"
+      className="w-fit"
       onClick={() =>
         signOut({
           redirectUrl,
         })
       }
-      className="w-fit"
+      variant="link"
     >
       Sign in with different account
     </Button>

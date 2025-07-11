@@ -8,8 +8,8 @@ export function BentoSection() {
 
   return (
     <section
-      id="bento"
       className="flex flex-col items-center justify-center w-full relative px-2 md:px-10"
+      id="bento"
     >
       <div className="border-x mx-2 md:mx-10 relative">
         <div className="absolute top-0 -left-4 md:-left-14 h-full w-4 md:w-14 text-primary/5 bg-[size:10px_10px] [background-image:repeating-linear-gradient(315deg,currentColor_0_1px,#0000_0_50%)]" />
@@ -27,8 +27,8 @@ export function BentoSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden">
           {items.map((item) => (
             <div
-              key={item.id}
               className="flex flex-col items-start justify-end min-h-[600px] md:min-h-[500px] p-0.5 relative before:absolute before:-left-0.5 before:top-0 before:z-10 before:h-screen before:w-px before:bg-border before:content-[''] after:absolute after:-top-0.5 after:left-0 after:z-10 after:h-px after:w-screen after:bg-border after:content-[''] group cursor-pointer max-h-[400px] group"
+              key={item.id}
             >
               <div className="relative flex size-full items-center justify-center h-full overflow-hidden">
                 {item.content}

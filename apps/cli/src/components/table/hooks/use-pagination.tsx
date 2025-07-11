@@ -73,9 +73,9 @@ export function usePagination<T extends ScalarDict>({
 
   return {
     currentPage,
-    pageSize,
-    totalPages,
     currentPageData,
     navigateToPage,
+    pageSize,
+    totalPages,
   };
 }

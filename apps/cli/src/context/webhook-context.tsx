@@ -33,9 +33,9 @@ export function WebhookProvider({
   useEffect(() => {
     log('WebhookProvider mounted', {
       initialWebhookId,
-      isSignedIn,
       isAuthorizedForWebhook,
       isCheckingWebhook,
+      isSignedIn,
       webhookId,
     });
     isMounted.current = true;
@@ -64,8 +64,8 @@ export function WebhookProvider({
 
     if (webhookId !== initialWebhookId) {
       log('Webhook ID changed, resetting auth check', {
-        oldWebhookId: initialWebhookId,
         newWebhookId: webhookId,
+        oldWebhookId: initialWebhookId,
       });
       hasCheckedAuth.current = false;
     }
@@ -76,11 +76,11 @@ export function WebhookProvider({
     if (!isMounted.current) return;
 
     log('Checking webhook authorization', {
-      isSignedIn,
+      hasCheckedAuth: hasCheckedAuth.current,
       isAuthorizedForWebhook,
       isCheckingWebhook,
+      isSignedIn,
       webhookId,
-      hasCheckedAuth: hasCheckedAuth.current,
     });
 
     if (
@@ -118,11 +118,11 @@ export function WebhookProvider({
     if (!isMounted.current) return;
 
     log('WebhookProvider state changed', {
-      isSignedIn,
+      hasCheckedAuth: hasCheckedAuth.current,
       isAuthorizedForWebhook,
       isCheckingWebhook,
+      isSignedIn,
       webhookId,
-      hasCheckedAuth: hasCheckedAuth.current,
     });
   }, [isSignedIn, isAuthorizedForWebhook, isCheckingWebhook, webhookId]);
 

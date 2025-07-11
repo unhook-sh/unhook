@@ -20,10 +20,10 @@ export function calculateColumnWidths<T extends ScalarDict>({
 
   const initialWidths = calculateInitialWidths({ columns, padding });
   const contentWidths = calculateContentWidths({
-    data,
     columns,
-    padding,
+    data,
     initialWidths,
+    padding,
   });
   const constrainedWidths = applyConstraints({
     columns,
@@ -31,9 +31,9 @@ export function calculateColumnWidths<T extends ScalarDict>({
   });
 
   return adjustWidthsToFit({
-    widths: constrainedWidths,
     availableWidth,
     columns,
+    widths: constrainedWidths,
   });
 }
 

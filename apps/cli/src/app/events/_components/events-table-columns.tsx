@@ -13,40 +13,35 @@ import { formatRelativeTime } from '~/utils/format-relative-time';
 
 // Service configuration for webhook verification windows
 const serviceConfig = {
-  stripe: {
-    verificationWindowMs: 300 * 1000, // 300 seconds
-    userAgentPattern: /^Stripe\//i,
-  },
   clerk: {
-    verificationWindowMs: 300 * 1000, // 300 seconds
-    userAgentPattern: /^Clerk\//i,
-  },
-  svix: {
-    verificationWindowMs: 300 * 1000, // 300 seconds
-    userAgentPattern: /^Svix-Webhooks\//i,
+    userAgentPattern: /^Clerk\//i, // 300 seconds
+    verificationWindowMs: 300 * 1000,
   },
   slack: {
-    verificationWindowMs: 600 * 1000, // 600 seconds
-    userAgentPattern: /^Slack\//i,
+    userAgentPattern: /^Slack\//i, // 600 seconds
+    verificationWindowMs: 600 * 1000,
+  },
+  stripe: {
+    userAgentPattern: /^Stripe\//i, // 300 seconds
+    verificationWindowMs: 300 * 1000,
+  },
+  svix: {
+    userAgentPattern: /^Svix-Webhooks\//i, // 300 seconds
+    verificationWindowMs: 300 * 1000,
   },
   unhook: {
-    verificationWindowMs: 300 * 1000, // 300 seconds
-    userAgentPattern: /^Unhook.*/i,
+    userAgentPattern: /^Unhook.*/i, // 300 seconds
+    verificationWindowMs: 300 * 1000,
   },
 };
 
 export const columns: ColumnDef<EventTypeWithRequest>[] = [
   {
-    id: 'status',
-    header: '',
-    minWidth: 3,
-    maxWidth: 3, // Status icon doesn't need to grow
-    priority: 1, // Always show status
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
 
       if (row.status === 'pending') {
-        return <Spinner dimColor={!isSelected} bold={isSelected} />;
+        return <Spinner bold={isSelected} dimColor={!isSelected} />;
       }
       const lastResponse = row.requests?.[0]?.response;
 
@@ -57,7 +52,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
         lastResponse.status < 300
       ) {
         return (
-          <Text color="green" dimColor={!isSelected} bold={isSelected}>
+          <Text bold={isSelected} color="green" dimColor={!isSelected}>
             {figureSet.circleFilled}
           </Text>
         );
@@ -69,7 +64,7 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
         lastResponse.status < 500
       ) {
         return (
-          <Text color="yellow" dimColor={!isSelected} bold={isSelected}>
+          <Text bold={isSelected} color="yellow" dimColor={!isSelected}>
             {figureSet.circle}
           </Text>
         );
@@ -82,42 +77,42 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
           (lastResponse.status < 200 || lastResponse.status >= 300))
       ) {
         return (
-          <Text color="red" dimColor={!isSelected} bold={isSelected}>
+          <Text bold={isSelected} color="red" dimColor={!isSelected}>
             {figureSet.circle}
           </Text>
         );
       }
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(row.status, width)}
         </Text>
       );
     },
+    header: '',
+    id: 'status',
+    maxWidth: 3, // Status icon doesn't need to grow
+    minWidth: 3, // Always show status
+    priority: 1,
   },
   {
-    id: 'time',
-    header: 'Created',
-    minWidth: 10,
-    maxWidth: 25, // Reasonable max for time display
-    priority: 2, // Show early
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       const timeText = formatRelativeTime(row.createdAt);
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(timeText, width)}
         </Text>
       );
     },
+    header: 'Created',
+    id: 'time',
+    maxWidth: 25, // Reasonable max for time display
+    minWidth: 10, // Show early
+    priority: 2,
   },
   {
-    id: 'expired',
-    header: 'Expires',
-    minWidth: 10,
-    maxWidth: 25, // Reasonable max for time display
-    priority: 5, // Less important, hide on smaller screens
     cell: ({ row, isSelected, width }) => {
       let color = getSelectedColor({ isSelected });
       let expiredText = '-';
@@ -154,73 +149,78 @@ export const columns: ColumnDef<EventTypeWithRequest>[] = [
       }
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(expiredText, width)}
         </Text>
       );
     },
+    header: 'Expires',
+    id: 'expired',
+    maxWidth: 25, // Reasonable max for time display
+    minWidth: 10, // Less important, hide on smaller screens
+    priority: 5,
   },
   {
-    id: 'method',
-    header: 'Method',
-    minWidth: 4,
-    maxWidth: 10, // HTTP methods are short
-    priority: 6, // Can be hidden on very small screens
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(row.originRequest?.method ?? '', width)}
         </Text>
       );
     },
+    header: 'Method',
+    id: 'method',
+    maxWidth: 10, // HTTP methods are short
+    minWidth: 4, // Can be hidden on very small screens
+    priority: 6,
   },
   {
-    id: 'source',
-    header: 'Source',
-    minWidth: 10,
-    maxWidth: 40, // Allow source to grow but not too much
-    priority: 4, // Important but can be hidden if needed
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(row.source, width)}
         </Text>
       );
     },
+    header: 'Source',
+    id: 'source',
+    maxWidth: 40, // Allow source to grow but not too much
+    minWidth: 10, // Important but can be hidden if needed
+    priority: 4,
   },
   {
-    id: 'delivered',
-    header: 'Delivered',
-    minWidth: 8,
-    maxWidth: 12, // Numbers don't need much space
-    priority: 7, // Can be hidden on smaller screens
     cell: ({ row, isSelected }) => {
       const color = getSelectedColor({ isSelected });
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {row.requests?.length ?? 0}
         </Text>
       );
     },
+    header: 'Delivered',
+    id: 'delivered',
+    maxWidth: 12, // Numbers don't need much space
+    minWidth: 8, // Can be hidden on smaller screens
+    priority: 7,
   },
   {
-    id: 'event',
-    header: 'Event',
-    minWidth: 15,
-    priority: 3, // Important to show event name
     cell: ({ row, isSelected, width }) => {
       const color = getSelectedColor({ isSelected });
       const originRequest = row.originRequest;
       const eventName = extractEventName(originRequest?.body);
 
       return (
-        <Text color={color} dimColor={!isSelected} bold={isSelected}>
+        <Text bold={isSelected} color={color} dimColor={!isSelected}>
           {truncateText(eventName ?? '', width)}
         </Text>
       );
     },
+    header: 'Event',
+    id: 'event',
+    minWidth: 15, // Important to show event name
+    priority: 3,
   },
 ];

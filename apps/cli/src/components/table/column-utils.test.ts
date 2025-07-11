@@ -17,22 +17,22 @@ interface TestData {
 
 describe('calculateColumnWidths', () => {
   const columns: ColumnDef<TestData>[] = [
-    { id: 'name', header: 'Name', minWidth: 5 },
-    { id: 'age', header: 'Age', minWidth: 3 },
-    { id: 'email', header: 'Email', minWidth: 5 },
+    { header: 'Name', id: 'name', minWidth: 5 },
+    { header: 'Age', id: 'age', minWidth: 3 },
+    { header: 'Email', id: 'email', minWidth: 5 },
   ];
 
   const data: TestData[] = [
-    { name: 'Alice', age: 30, email: 'alice@example.com' },
-    { name: 'Bob', age: 25, email: 'bob@example.com' },
+    { age: 30, email: 'alice@example.com', name: 'Alice' },
+    { age: 25, email: 'bob@example.com', name: 'Bob' },
   ];
 
   it('should calculate widths and expand to use available space', () => {
     const widths = calculateColumnWidths({
-      data,
       columns,
-      padding: 1,
+      data,
       maxWidth: 80,
+      padding: 1,
     });
     // With expansion, columns should use most of the available 80 width
     // Account for borders (4) and padding (6) = 70 available
@@ -43,10 +43,10 @@ describe('calculateColumnWidths', () => {
 
   it('should proportionally reduce widths when total exceeds maxWidth', () => {
     const widths = calculateColumnWidths({
-      data,
       columns,
-      padding: 1,
+      data,
       maxWidth: 10,
+      padding: 1,
     });
     expect(widths.name).toBeGreaterThanOrEqual(5); // Respects minWidth
     expect(widths.age).toBeGreaterThanOrEqual(3);
@@ -55,10 +55,10 @@ describe('calculateColumnWidths', () => {
 
   it('should respect minWidth constraints', () => {
     const widths = calculateColumnWidths({
-      data,
       columns,
-      padding: 1,
+      data,
       maxWidth: 5,
+      padding: 1,
     });
     expect(widths.name).toBeGreaterThanOrEqual(5);
     expect(widths.age).toBeGreaterThanOrEqual(3);
@@ -68,7 +68,7 @@ describe('calculateColumnWidths', () => {
 
 describe('padContent', () => {
   it('should pad content correctly', () => {
-    const padded = padContent({ content: 'test', width: 10, padding: 1 });
+    const padded = padContent({ content: 'test', padding: 1, width: 10 });
     // With centered padding: 3 spaces + 'test' + 3 spaces = 10 total
     expect(padded).toBe('   test   ');
   });
@@ -77,8 +77,8 @@ describe('padContent', () => {
 describe('inferColumns', () => {
   it('should infer columns from data', () => {
     const data = [
-      { name: 'Alice', age: 30 },
-      { name: 'Bob', age: 25 },
+      { age: 30, name: 'Alice' },
+      { age: 25, name: 'Bob' },
     ];
     const columns = inferColumns(data);
     expect(columns).toEqual(['name', 'age']);
@@ -88,30 +88,30 @@ describe('inferColumns', () => {
 describe('calculateInitialWidths', () => {
   it('should calculate initial widths based on headers', () => {
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name' },
-      { id: 'age', header: 'Age' },
+      { header: 'Name', id: 'name' },
+      { header: 'Age', id: 'age' },
     ];
     const widths = calculateInitialWidths({ columns, padding: 1 });
-    expect(widths).toEqual({ name: 6, age: 5 });
+    expect(widths).toEqual({ age: 5, name: 6 });
   });
 });
 
 describe('calculateContentWidths', () => {
   it('should calculate content widths based on data', () => {
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name' },
-      { id: 'age', header: 'Age' },
+      { header: 'Name', id: 'name' },
+      { header: 'Age', id: 'age' },
     ];
     const data: TestData[] = [
-      { name: 'Alice', age: 30 },
-      { name: 'Bob', age: 25 },
+      { age: 30, name: 'Alice' },
+      { age: 25, name: 'Bob' },
     ];
     const initialWidths = calculateInitialWidths({ columns, padding: 1 });
     const widths = calculateContentWidths({
-      data,
       columns,
-      padding: 1,
+      data,
       initialWidths,
+      padding: 1,
     });
     // Name width should be at least 6 (header) or 7 (content 'Alice' + padding)
     expect(widths.name).toBeGreaterThanOrEqual(6);
@@ -122,10 +122,10 @@ describe('calculateContentWidths', () => {
 describe('applyConstraints', () => {
   it('should apply min and max width constraints', () => {
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name', minWidth: 5, maxWidth: 10 },
-      { id: 'age', header: 'Age', minWidth: 3, maxWidth: 5 },
+      { header: 'Name', id: 'name', maxWidth: 10, minWidth: 5 },
+      { header: 'Age', id: 'age', maxWidth: 5, minWidth: 3 },
     ];
-    const initialWidths = { name: 12, age: 2 };
+    const initialWidths = { age: 2, name: 12 };
     const widths = applyConstraints({
       columns,
       widths: initialWidths,
@@ -137,20 +137,20 @@ describe('applyConstraints', () => {
 
 describe('adjustWidthsToFit', () => {
   it('should adjust widths to fit within available width', () => {
-    const widths = { name: 10, age: 5 };
+    const widths = { age: 5, name: 10 };
     const adjustedWidths = adjustWidthsToFit({
-      widths,
       availableWidth: 12,
+      widths,
     });
     expect(adjustedWidths.name).toBeLessThanOrEqual(10);
     expect(adjustedWidths.age).toBeLessThanOrEqual(5);
   });
 
   it('should expand widths when extra space is available', () => {
-    const widths = { name: 10, age: 5 };
+    const widths = { age: 5, name: 10 };
     const adjustedWidths = adjustWidthsToFit({
-      widths,
       availableWidth: 30,
+      widths,
     });
     // Total should use all available space
     const totalWidth = (adjustedWidths.name ?? 0) + (adjustedWidths.age ?? 0);
@@ -161,15 +161,15 @@ describe('adjustWidthsToFit', () => {
   });
 
   it('should respect maxWidth constraints when expanding', () => {
-    const widths = { name: 10, age: 5 };
+    const widths = { age: 5, name: 10 };
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name', maxWidth: 15 },
-      { id: 'age', header: 'Age' },
+      { header: 'Name', id: 'name', maxWidth: 15 },
+      { header: 'Age', id: 'age' },
     ];
     const adjustedWidths = adjustWidthsToFit({
-      widths,
       availableWidth: 30,
       columns,
+      widths,
     });
     // Name should not exceed maxWidth
     expect(adjustedWidths.name).toBeLessThanOrEqual(15);
@@ -178,16 +178,16 @@ describe('adjustWidthsToFit', () => {
   });
 
   it('should not shrink columns below their minWidth', () => {
-    const widths = { name: 20, age: 20 };
+    const widths = { age: 20, name: 20 };
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name', minWidth: 5 },
-      { id: 'age', header: 'Age', minWidth: 10 },
+      { header: 'Name', id: 'name', minWidth: 5 },
+      { header: 'Age', id: 'age', minWidth: 10 },
     ];
     // availableWidth is much less than total widths, so both should shrink, but not below minWidth
     const adjustedWidths = adjustWidthsToFit({
+      availableWidth: 20,
+      columns, // less than sum of minWidths (15), so will hit minWidth
       widths: { ...widths },
-      availableWidth: 20, // less than sum of minWidths (15), so will hit minWidth
-      columns,
     });
     expect(adjustedWidths.name ?? 0).toBeGreaterThanOrEqual(5);
     expect(adjustedWidths.age ?? 0).toBeGreaterThanOrEqual(10);
@@ -201,13 +201,13 @@ describe('adjustWidthsToFit', () => {
 describe('getVisibleColumns', () => {
   it('should show all columns when there is enough width', () => {
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name', minWidth: 10, priority: 1 },
-      { id: 'age', header: 'Age', minWidth: 5, priority: 2 },
-      { id: 'email', header: 'Email', minWidth: 15, priority: 3 },
+      { header: 'Name', id: 'name', minWidth: 10, priority: 1 },
+      { header: 'Age', id: 'age', minWidth: 5, priority: 2 },
+      { header: 'Email', id: 'email', minWidth: 15, priority: 3 },
     ];
     const visibleCols = getVisibleColumns({
-      columns,
       availableWidth: 100,
+      columns,
       padding: 1,
     });
     expect(visibleCols).toHaveLength(3);
@@ -215,13 +215,13 @@ describe('getVisibleColumns', () => {
 
   it('should hide lower priority columns when width is limited', () => {
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name', minWidth: 20, priority: 1 },
-      { id: 'age', header: 'Age', minWidth: 10, priority: 3 },
-      { id: 'email', header: 'Email', minWidth: 20, priority: 2 },
+      { header: 'Name', id: 'name', minWidth: 20, priority: 1 },
+      { header: 'Age', id: 'age', minWidth: 10, priority: 3 },
+      { header: 'Email', id: 'email', minWidth: 20, priority: 2 },
     ];
     const visibleCols = getVisibleColumns({
-      columns,
       availableWidth: 50,
+      columns,
       padding: 1,
     });
     expect(visibleCols).toHaveLength(2);
@@ -231,12 +231,12 @@ describe('getVisibleColumns', () => {
 
   it('should show at least one column even if width is very small', () => {
     const columns: ColumnDef<TestData>[] = [
-      { id: 'name', header: 'Name', minWidth: 50, priority: 1 },
-      { id: 'age', header: 'Age', minWidth: 50, priority: 2 },
+      { header: 'Name', id: 'name', minWidth: 50, priority: 1 },
+      { header: 'Age', id: 'age', minWidth: 50, priority: 2 },
     ];
     const visibleCols = getVisibleColumns({
-      columns,
       availableWidth: 10,
+      columns,
       padding: 1,
     });
     expect(visibleCols).toHaveLength(1);
@@ -249,20 +249,20 @@ describe('getVisibleColumns', () => {
     // Each column: minWidth (10) + padding*2 (2) = 12
     // Total for 2 columns: 24 + 3 (borders) = 27
     const columns: ColumnDef<TestData>[] = [
-      { id: 'a', header: 'A', minWidth: 10, priority: 1 },
-      { id: 'b', header: 'B', minWidth: 10, priority: 2 },
+      { header: 'A', id: 'a', minWidth: 10, priority: 1 },
+      { header: 'B', id: 'b', minWidth: 10, priority: 2 },
     ];
     // If availableWidth is exactly 27, both columns should fit
     let visibleCols = getVisibleColumns({
-      columns,
       availableWidth: 27,
+      columns,
       padding: 1,
     });
     expect(visibleCols).toHaveLength(2);
     // If availableWidth is 26, only one column should fit
     visibleCols = getVisibleColumns({
-      columns,
       availableWidth: 26,
+      columns,
       padding: 1,
     });
     expect(visibleCols).toHaveLength(1);

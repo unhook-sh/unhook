@@ -27,12 +27,12 @@ export const RequestWebhookAccess: FC<RequestWebhookAccessProps> = ({
     });
 
   const createRequest = api.webhookAccessRequests.create.useMutation({
+    onError: (error) => {
+      log('Error creating access request:', error);
+    },
     onSuccess: () => {
       log('Access request created successfully');
       onSuccess?.();
-    },
-    onError: (error) => {
-      log('Error creating access request:', error);
     },
   });
 
@@ -76,8 +76,8 @@ export const RequestWebhookAccess: FC<RequestWebhookAccessProps> = ({
 
   const handleSubmitRequest = () => {
     createRequest.mutate({
-      webhookId,
       requesterMessage: message || undefined,
+      webhookId,
     });
   };
 
@@ -163,10 +163,10 @@ export const RequestWebhookAccess: FC<RequestWebhookAccessProps> = ({
         </Text>
         <Box marginTop={1}>
           <TextInput
-            value={message}
             onChange={setMessage}
             onSubmit={handleSubmitRequest}
             placeholder="e.g., I'm working on the payment integration feature..."
+            value={message}
           />
         </Box>
         <Box marginTop={1}>

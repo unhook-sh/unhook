@@ -7,7 +7,6 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title: 'Unhook vs Beeceptor: Better Webhook Testing for Teams | Unhook',
   description:
     'Compare Unhook and Beeceptor for webhook testing. See why teams choose Unhook for better collaboration, VS Code integration, and team-focused features.',
   keywords: [
@@ -17,50 +16,37 @@ export const metadata = {
     'API mocking',
     'team collaboration',
   ],
+  title: 'Unhook vs Beeceptor: Better Webhook Testing for Teams | Unhook',
 };
 
 const beeceptorComparison = {
   competitor: 'Beeceptor',
-  hero: {
-    title: 'Unhook vs Beeceptor',
-    subtitle: 'Focused Webhook Testing vs General API Tools',
-    description:
-      'While Beeceptor offers general API mocking and testing, Unhook is laser-focused on webhook development with team collaboration and VS Code integration.',
-    competitorLogo: (
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-          <span className="text-white font-bold text-sm">B</span>
-        </div>
-        <span className="font-bold text-lg">Beeceptor</span>
-      </div>
-    ),
-  },
   features: [
     {
       category: 'Webhook-Specific Features',
       items: [
         {
+          competitor: 'Basic HTTP endpoints',
           feature: 'Webhook routing',
           unhook: 'Intelligent team routing',
-          competitor: 'Basic HTTP endpoints',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Manual request replay',
           feature: 'Event replay',
           unhook: 'One-click webhook replay',
-          competitor: 'Manual request replay',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Generic HTTP handling',
           feature: 'Provider integrations',
           unhook: 'Stripe, GitHub, Clerk ready',
-          competitor: 'Generic HTTP handling',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Manual validation',
           feature: 'Webhook validation',
           unhook: 'Built-in signature validation',
-          competitor: 'Manual validation',
           unhookAdvantage: true,
         },
       ],
@@ -69,27 +55,27 @@ const beeceptorComparison = {
       category: 'Team Collaboration',
       items: [
         {
+          competitor: 'Individual endpoints',
           feature: 'Team webhook sharing',
           unhook: 'One URL for entire team + config file',
-          competitor: 'Individual endpoints',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Individual debugging',
           feature: 'Collaborative debugging',
           unhook: 'Share events & insights',
-          competitor: 'Individual debugging',
           unhookAdvantage: true,
         },
         {
+          competitor: 'No team features',
           feature: 'Team management',
           unhook: 'Role-based access',
-          competitor: 'No team features',
           unhookAdvantage: true,
         },
         {
+          competitor: 'No team visibility',
           feature: 'Activity visibility',
           unhook: 'See active team members',
-          competitor: 'No team visibility',
           unhookAdvantage: true,
         },
       ],
@@ -98,27 +84,27 @@ const beeceptorComparison = {
       category: 'Developer Experience',
       items: [
         {
+          competitor: 'Web dashboard only',
           feature: 'VS Code integration',
           unhook: 'Native extension',
-          competitor: 'Web dashboard only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Tunnel setup required',
           feature: 'Local development',
           unhook: 'Seamless local routing',
-          competitor: 'Tunnel setup required',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Web interface only',
           feature: 'Real-time monitoring',
           unhook: 'Built into editor',
-          competitor: 'Web interface only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'General API tool',
           feature: 'Webhook-first design',
           unhook: 'Purpose-built for webhooks',
-          competitor: 'General API tool',
           unhookAdvantage: true,
         },
       ],
@@ -127,49 +113,84 @@ const beeceptorComparison = {
       category: 'Pricing & Value',
       items: [
         {
+          competitor: 'Limited free tier',
           feature: 'Free tier',
           unhook: 'Generous free tier',
-          competitor: 'Limited free tier',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Per-user pricing',
           feature: 'Team pricing',
           unhook: 'Per-team pricing',
-          competitor: 'Per-user pricing',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Additional cost',
           feature: 'Custom domains',
           unhook: 'Included in team plan',
-          competitor: 'Additional cost',
           unhookAdvantage: true,
         },
         {
+          competitor: 'General support',
           feature: 'Support quality',
           unhook: 'Webhook-expert support',
-          competitor: 'General support',
           unhookAdvantage: true,
         },
       ],
     },
   ],
+  hero: {
+    competitorLogo: (
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+          <span className="text-white font-bold text-sm">B</span>
+        </div>
+        <span className="font-bold text-lg">Beeceptor</span>
+      </div>
+    ),
+    description:
+      'While Beeceptor offers general API mocking and testing, Unhook is laser-focused on webhook development with team collaboration and VS Code integration.',
+    subtitle: 'Focused Webhook Testing vs General API Tools',
+    title: 'Unhook vs Beeceptor',
+  },
   pricing: {
+    competitor: [
+      {
+        features: [
+          'Limited requests',
+          'Basic HTTP mocking',
+          'Simple endpoints',
+          'Community support',
+        ],
+        name: 'Free',
+        period: 'month',
+        price: '$0',
+      },
+      {
+        features: [
+          'Unlimited requests',
+          'Advanced mocking',
+          'Custom domains',
+          'Priority support',
+        ],
+        name: 'Professional',
+        period: 'month',
+        price: '$49',
+      },
+    ],
     unhook: [
       {
-        name: 'Free',
-        price: '$0',
-        period: 'forever',
         features: [
           'Unlimited local testing',
           'Basic webhook monitoring',
           'Single developer',
           'Community support',
         ],
+        name: 'Free',
+        period: 'forever',
+        price: '$0',
       },
       {
-        name: 'Team',
-        price: '$29',
-        period: 'month',
         features: [
           'Everything in Free',
           'Team webhook sharing',
@@ -178,12 +199,12 @@ const beeceptorComparison = {
           'Advanced monitoring',
           'Priority support',
         ],
+        name: 'Team',
+        period: 'month',
         popular: true,
+        price: '$29',
       },
       {
-        name: 'Enterprise',
-        price: 'Custom',
-        period: 'month',
         features: [
           'Everything in Team',
           'Enterprise security',
@@ -191,57 +212,36 @@ const beeceptorComparison = {
           'Dedicated account manager',
           'Custom integrations',
         ],
-      },
-    ],
-    competitor: [
-      {
-        name: 'Free',
-        price: '$0',
+        name: 'Enterprise',
         period: 'month',
-        features: [
-          'Limited requests',
-          'Basic HTTP mocking',
-          'Simple endpoints',
-          'Community support',
-        ],
-      },
-      {
-        name: 'Professional',
-        price: '$49',
-        period: 'month',
-        features: [
-          'Unlimited requests',
-          'Advanced mocking',
-          'Custom domains',
-          'Priority support',
-        ],
+        price: 'Custom',
       },
     ],
   },
   reasons: [
     {
-      title: 'Webhook-Focused',
       description:
         "Unlike Beeceptor's general API approach, Unhook is specifically designed for webhook development with purpose-built features.",
       icon: '🎯',
+      title: 'Webhook-Focused',
     },
     {
-      title: 'Team Collaboration',
       description:
         'One shared webhook URL for your entire team with a config file that lives in your repo. No more manual URL sharing or setup for new team members.',
       icon: '👥',
+      title: 'Team Collaboration',
     },
     {
-      title: 'Editor Integration',
       description:
         'Debug webhooks directly in VS Code without switching to a web interface. Stay in your development flow.',
       icon: '💻',
+      title: 'Editor Integration',
     },
     {
-      title: 'Better Value',
       description:
         "More webhook-specific features at a better price point. Our team plan costs less than Beeceptor's professional plan.",
       icon: '💰',
+      title: 'Better Value',
     },
   ],
 };
@@ -255,13 +255,13 @@ export default function UnhookVsBeeceptorPage() {
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...beeceptorComparison.hero} />
         <ComparisonFeatures
-          features={beeceptorComparison.features}
           competitor="Beeceptor"
+          features={beeceptorComparison.features}
         />
         <ComparisonPricing
-          unhookPricing={beeceptorComparison.pricing.unhook}
-          competitorPricing={beeceptorComparison.pricing.competitor}
           competitor="Beeceptor"
+          competitorPricing={beeceptorComparison.pricing.competitor}
+          unhookPricing={beeceptorComparison.pricing.unhook}
         />
         <section className="w-full py-20">
           <div className="container mx-auto px-6">
@@ -277,8 +277,8 @@ export default function UnhookVsBeeceptorPage() {
             <div className="grid md:grid-cols-2 gap-8">
               {beeceptorComparison.reasons.map((reason) => (
                 <div
-                  key={reason.title}
                   className="bg-card border rounded-lg p-6"
+                  key={reason.title}
                 >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>

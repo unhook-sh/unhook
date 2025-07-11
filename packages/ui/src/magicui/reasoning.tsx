@@ -127,11 +127,11 @@ function ReasoningContent({
 
   return (
     <div
-      ref={contentRef}
       className={cn(
         'overflow-hidden transition-[max-height] duration-300 ease-out',
         className,
       )}
+      ref={contentRef}
       style={{
         maxHeight: isOpen ? contentRef.current?.scrollHeight : '0px',
       }}
@@ -165,13 +165,13 @@ function ReasoningResponse({
 }: ReasoningResponseProps) {
   const { isOpen } = useReasoningContext();
   const { displayedText } = useTextStream({
-    textStream: text,
-    speed,
+    characterChunkSize,
+    fadeDuration,
     mode,
     onComplete,
-    fadeDuration,
     segmentDelay,
-    characterChunkSize,
+    speed,
+    textStream: text,
   });
 
   return (

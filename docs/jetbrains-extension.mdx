@@ -1,0 +1,357 @@
+---
+title: "JetBrains Extension"
+description: "The complete guide to using Unhook's JetBrains plugin for webhook development"
+---
+
+# Unhook JetBrains Plugin
+
+<div align="center">
+  <img src="/images/jetbrains-extension-hero.png" alt="Unhook JetBrains Plugin" width="600" />
+</div>
+
+The Unhook JetBrains plugin brings powerful webhook development capabilities directly into your JetBrains IDE. Test, debug, and collaborate on webhooks without leaving your development environment.
+
+## Features Overview
+
+### 🎯 **Webhook Event Tool Window**
+- Dedicated tool window for viewing all webhook events
+- Real-time updates as events are received
+- Hierarchical table view with sortable columns
+- Event filtering and search capabilities
+
+### 🔄 **Request Replay & Debugging**
+- Instantly replay webhook events with a single click
+- Detailed request/response inspection panel
+- Copy event data to clipboard for analysis
+- Support for debugging failed webhook deliveries
+
+### 👥 **Team Collaboration**
+- See active team members and their webhook sessions
+- Share webhook URLs while maintaining individual environments
+- Real-time collaboration features
+
+### 🔐 **Secure Authentication**
+- OAuth-based authentication with Unhook
+- Secure session management and token handling
+- Automatic session validation and refresh
+
+### ⚙️ **Smart Configuration**
+- Automatic detection of Unhook config files in workspace
+- Configurable settings through IDE preferences
+- Integration with JetBrains settings system
+
+### 📊 **Real-Time Monitoring**
+- Live webhook event monitoring in the tool window
+- Status bar integration showing connection status
+- Configurable notifications for new events
+
+## Installation
+
+### From JetBrains Marketplace
+
+1. Open your JetBrains IDE (IntelliJ IDEA, WebStorm, PhpStorm, etc.)
+2. Go to **File → Settings → Plugins** (or **IntelliJ IDEA → Preferences → Plugins** on macOS)
+3. Click the **Marketplace** tab
+4. Search for "Unhook - Webhook Development"
+5. Click **Install**
+6. Restart your IDE when prompted
+
+### From ZIP File
+
+If you have a plugin ZIP file:
+
+1. Go to **File → Settings → Plugins** (or **IntelliJ IDEA → Preferences → Plugins** on macOS)
+2. Click the gear icon ⚙️ and select **Install Plugin from Disk...**
+3. Select the downloaded ZIP file
+4. Restart your IDE
+
+## Supported IDEs
+
+The Unhook plugin is compatible with all JetBrains IDEs:
+
+- **IntelliJ IDEA** (Community & Ultimate)
+- **WebStorm**
+- **PhpStorm** 
+- **PyCharm** (Community & Professional)
+- **RubyMine**
+- **CLion**
+- **GoLand**
+- **DataGrip**
+- **Android Studio**
+- **Rider**
+
+**Requirements**: JetBrains IDE 2024.2 or later
+
+## Getting Started
+
+### 1. Authentication
+
+After installation, you'll need to authenticate with Unhook:
+
+1. **Open the Unhook tool window** - Go to **View → Tool Windows → Unhook**
+2. **Sign in** - Click "Sign in to Unhook" in the status bar or use **Tools → Unhook → Sign In**
+3. **Complete OAuth flow** - Your browser will open to complete authentication
+4. **Return to IDE** - The plugin will automatically detect the successful authentication
+
+<Note>
+If you don't have an Unhook account, you can create one for free at [unhook.sh](https://unhook.sh)
+</Note>
+
+### 2. Configure Your Project
+
+The plugin will automatically look for Unhook configuration files in your project:
+
+- `unhook.yaml` or `unhook.yml` in the project root
+- Custom path via the plugin settings
+
+Example `unhook.yaml`:
+```yaml
+version: 1
+apiKey: your-api-key-here
+delivery:
+  destinations:
+    - name: local
+      url: http://localhost:3000/webhook
+      ping: true
+```
+
+### 3. Start Receiving Webhooks
+
+Once authenticated and configured:
+
+1. **Create a webhook URL** at [unhook.sh/app](https://unhook.sh/app)
+2. **Configure your webhook provider** (Stripe, GitHub, etc.) to use the Unhook URL
+3. **View events in your IDE** - Events will appear in the Unhook tool window as they're received
+
+## Core Features
+
+### Tool Window Interface
+
+The main interface for webhook management:
+
+- **Events Table**: Displays events with columns for time, provider, event type, method, status, and response time
+- **Event Details Panel**: Shows detailed information when an event is selected
+- **Toolbar Actions**: Quick access to refresh, clear, and settings
+- **Status Display**: Connection status and active session information
+
+#### Event Actions
+
+Each event supports these actions:
+
+- **View Event** - Select event to see details in the lower panel
+- **Replay Event** - Right-click and select "Replay Event" to resend
+- **Copy Event** - Right-click and select "Copy Event" to copy JSON to clipboard
+
+### Event Details Panel
+
+Comprehensive view for inspecting webhook data:
+
+- **Event Information**: ID, timestamp, provider, and event type
+- **Request Details**: Method, URL, headers, and body
+- **Response Data**: Status code and response timing
+- **Headers View**: Expandable view of all request headers
+- **Body Formatting**: Syntax-highlighted JSON and other formats
+
+### Status Bar Integration
+
+The status bar shows your current Unhook connection status:
+
+- **Unhook: Sign In Required** - Not authenticated (click to sign in)
+- **Unhook: Disconnected** - Not connected to service
+- **Unhook: Active** - Connected and forwarding events
+- **Unhook: Paused** - Connected but event forwarding is disabled
+
+### Menu Integration
+
+Access Unhook features from the main menu:
+
+**Tools → Unhook**
+- **Show Events** - Open the tool window
+- **Toggle Event Forwarding** - Enable/disable webhook forwarding  
+- **Sign In** - Authenticate with Unhook
+- **Sign Out** - Sign out of Unhook
+- **Clear Events** - Clear event history
+- **Refresh Events** - Refresh the event list
+
+## Configuration
+
+### Plugin Settings
+
+Configure the plugin through IDE settings:
+
+1. Go to **File → Settings → Tools → Unhook** (or **IntelliJ IDEA → Preferences → Tools → Unhook** on macOS)
+
+#### Available Settings
+
+**General Settings**
+- **Enable webhook event forwarding** - Control whether events are forwarded to local endpoints
+- **Show notifications for new events** - Display IDE notifications when events arrive
+- **Automatically show output panel** - Auto-open output when events are received
+
+**Event Management**
+- **Max event history** - Maximum number of events to keep (default: 100)
+- **Poll interval (ms)** - How often to check for new events (default: 2000ms)
+
+**Advanced Settings**  
+- **API URL** - Custom API URL for self-hosted instances
+
+### Project Configuration
+
+The plugin integrates with your existing Unhook configuration:
+
+```yaml
+# unhook.yaml
+version: 1
+apiKey: your-api-key
+
+delivery:
+  destinations:
+    - name: local-dev
+      url: http://localhost:3000/webhooks
+      ping: true
+      headers:
+        Authorization: Bearer dev-token
+    
+    - name: staging
+      url: https://staging.example.com/webhooks
+      ping: false
+
+destination:
+  port: 3001
+  path: /webhook
+```
+
+## Advanced Usage
+
+### Team Collaboration
+
+When working with a team:
+
+1. **Shared Configuration** - Use a shared `unhook.yaml` in your repository
+2. **Individual API Keys** - Each team member uses their own API key
+3. **Environment-Specific Destinations** - Configure different endpoints per developer
+
+### Provider Integration
+
+The plugin works with all supported webhook providers:
+
+- **Stripe** - Payment and subscription webhooks
+- **GitHub** - Repository and organization events  
+- **Clerk** - Authentication and user management events
+- **Discord** - Bot and server events
+- **Custom Providers** - Any webhook-enabled service
+
+### Debugging Workflows
+
+Common debugging patterns:
+
+1. **Event Inspection** - Use the details panel to examine request/response data
+2. **Selective Replay** - Replay specific events for testing
+3. **Local Testing** - Route webhooks to different local endpoints
+4. **Response Analysis** - Check response codes and timing information
+
+### Keyboard Shortcuts
+
+While there are no default keyboard shortcuts, you can set custom ones:
+
+1. Go to **File → Settings → Keymap** (or **IntelliJ IDEA → Preferences → Keymap** on macOS)
+2. Search for "Unhook"
+3. Assign shortcuts to frequently used actions
+
+Recommended shortcuts:
+- **Show Events**: `Ctrl+Shift+U` / `Cmd+Shift+U`
+- **Refresh Events**: `Ctrl+Shift+R` / `Cmd+Shift+R`
+- **Toggle Delivery**: `Ctrl+Shift+D` / `Cmd+Shift+D`
+
+## Troubleshooting
+
+### Common Issues
+
+#### Authentication Problems
+
+**Issue**: "Failed to authenticate with Unhook"
+- **Solution**: Sign out and sign in again using **Tools → Unhook → Sign Out**, then **Sign In**
+- **Check**: Ensure you have a valid Unhook account at [unhook.sh](https://unhook.sh)
+
+#### No Events Appearing
+
+**Issue**: Events not showing in the tool window
+- **Check**: Verify your `unhook.yaml` configuration is correct
+- **Check**: Ensure the webhook URL is properly configured with your provider
+- **Solution**: Use the refresh button in the tool window toolbar
+
+#### Configuration Not Found
+
+**Issue**: "No config loaded" error
+- **Check**: Ensure `unhook.yaml` exists in your project root
+- **Alternative**: Set custom path via plugin settings
+- **Verify**: Check YAML syntax is valid
+
+#### Replay Failures
+
+**Issue**: Event replay not working
+- **Check**: Ensure delivery is not paused (use **Tools → Unhook → Toggle Event Forwarding**)
+- **Check**: Verify destination URLs are accessible
+- **Debug**: Check IDE logs for error messages
+
+#### Tool Window Not Visible
+
+**Issue**: Can't find the Unhook tool window
+- **Solution**: Go to **View → Tool Windows → Unhook**
+- **Alternative**: Right-click on the tool window bar and select **Unhook**
+
+### Debug Information
+
+Access debug information through:
+
+1. **IDE Logs**: **Help → Show Log in Files** (or **Help → Show Log in Finder** on macOS)
+2. **Plugin Status**: Check status bar for connection information
+3. **Event Details**: Use the details panel to inspect individual events
+
+### Getting Help
+
+- **Documentation**: [unhook.sh/docs](https://unhook.sh/docs)
+- **GitHub Issues**: [github.com/unhook-sh/unhook/issues](https://github.com/unhook-sh/unhook/issues)
+- **Discord Community**: [discord.gg/qRZzTCK6MZ](https://discord.gg/qRZzTCK6MZ)
+- **Email Support**: [chris.watts.t@gmail.com](mailto:chris.watts.t@gmail.com)
+
+## Development & Contributing
+
+### Building from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/unhook-sh/unhook.git
+cd unhook/apps/jetbrains-extension
+
+# Build the plugin
+./gradlew build
+
+# Run IDE with plugin for testing
+./gradlew runIde
+
+# Build distribution
+./gradlew buildPlugin
+```
+
+### Development Mode
+
+```bash
+# Start development with auto-reload
+./gradlew runIde
+
+# Build and verify plugin
+./gradlew verifyPlugin
+```
+
+### Contributing
+
+We welcome contributions! See our [Contributing Guide](https://github.com/unhook-sh/unhook/blob/main/CONTRIBUTING.md) for details.
+
+## Changelog
+
+See the [full changelog](https://github.com/unhook-sh/unhook/blob/main/apps/jetbrains-extension/CHANGELOG.md) for all updates and improvements.
+
+## License
+
+The Unhook JetBrains Plugin is open source software licensed under the MIT License.

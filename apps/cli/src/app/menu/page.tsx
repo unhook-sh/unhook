@@ -18,10 +18,10 @@ export const MenuPage: FC<RouteProps> = () => {
 
   const menuItems = routes
     .map((route) => ({
-      label: route.label,
-      value: route.path,
       hotkey: route.hotkey,
+      label: route.label,
       showInMenu: route.showInMenu ?? true,
+      value: route.path,
     }))
     .filter((item) => item.showInMenu && !item.value.includes(':')) as Array<{
     label: string;
@@ -51,9 +51,9 @@ export const MenuPage: FC<RouteProps> = () => {
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Ascii text="Unhook" font="ANSI Shadow" color="gray" />
+        <Ascii color="gray" font="ANSI Shadow" text="Unhook" />
       </Box>
-      <Box marginBottom={1} flexDirection="column">
+      <Box flexDirection="column" marginBottom={1}>
         <Text bold>{webhookUrl}</Text>
         {!copiedToClipboard && (
           <Text dimColor>Press 'c' to copy to clipboard</Text>
@@ -61,7 +61,7 @@ export const MenuPage: FC<RouteProps> = () => {
         {copiedToClipboard && <Text dimColor>Copied!</Text>}
       </Box>
       {debug && (
-        <Box marginBottom={1} flexDirection="column">
+        <Box flexDirection="column" marginBottom={1}>
           <Text dimColor>Version: {version}</Text>
           <Text dimColor>Client: {clientId}</Text>
           <Text dimColor>Webhook: {webhookId}</Text>

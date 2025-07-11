@@ -38,24 +38,24 @@ export const createWebhook = action
     const [dbUser] = await db
       .insert(Users)
       .values({
-        id: user.userId,
+        avatarUrl: clerkUser.imageUrl ?? null,
         clerkId: user.userId,
         email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
         firstName: clerkUser.firstName ?? null,
-        lastName: clerkUser.lastName ?? null,
-        avatarUrl: clerkUser.imageUrl ?? null,
+        id: user.userId,
         lastLoggedInAt: new Date(),
+        lastName: clerkUser.lastName ?? null,
       })
       .onConflictDoUpdate({
-        target: Users.clerkId,
         set: {
+          avatarUrl: clerkUser.imageUrl ?? null,
           email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
           firstName: clerkUser.firstName ?? null,
-          lastName: clerkUser.lastName ?? null,
-          avatarUrl: clerkUser.imageUrl ?? null,
           lastLoggedInAt: new Date(),
+          lastName: clerkUser.lastName ?? null,
           updatedAt: new Date(),
         },
+        target: Users.clerkId,
       })
       .returning();
 
@@ -68,16 +68,16 @@ export const createWebhook = action
       .insert(Orgs)
       .values({
         clerkOrgId: user.orgId,
-        name: orgName,
         createdByUserId: user.userId,
         id: user.orgId,
+        name: orgName,
       })
       .onConflictDoUpdate({
-        target: Orgs.clerkOrgId,
         set: {
           name: orgName,
           updatedAt: new Date(),
         },
+        target: Orgs.clerkOrgId,
       })
       .returning();
 
@@ -89,16 +89,16 @@ export const createWebhook = action
     const [orgMember] = await db
       .insert(OrgMembers)
       .values({
-        userId: user.userId,
         orgId: org.id,
         role: 'admin',
+        userId: user.userId,
       })
       .onConflictDoUpdate({
-        target: [OrgMembers.userId, OrgMembers.orgId],
         set: {
           role: 'admin',
           updatedAt: new Date(),
         },
+        target: [OrgMembers.userId, OrgMembers.orgId],
       })
       .returning();
 
@@ -126,10 +126,10 @@ export const createWebhook = action
     const [webhook] = await db
       .insert(Webhooks)
       .values({
+        isPrivate,
         name: 'Default',
         orgId: org.id,
         userId: user.userId,
-        isPrivate,
       })
       .returning();
 

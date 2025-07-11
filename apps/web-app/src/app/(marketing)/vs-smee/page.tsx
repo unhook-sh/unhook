@@ -7,8 +7,6 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title:
-    'Unhook vs Smee.io: Professional Webhook Testing vs Basic Proxy | Unhook',
   description:
     'Compare Unhook and Smee.io for webhook testing. While Smee.io offers basic webhook proxying, Unhook provides team collaboration, VS Code integration, and enterprise features.',
   keywords: [
@@ -18,45 +16,38 @@ export const metadata = {
     'GitHub webhook proxy',
     'team collaboration',
   ],
+  title:
+    'Unhook vs Smee.io: Professional Webhook Testing vs Basic Proxy | Unhook',
 };
 
 const smeeComparison = {
   competitor: 'Smee.io',
-  hero: {
-    title: 'Unhook vs Smee.io',
-    subtitle: 'From Basic Proxy to Professional Webhook Testing',
-    description:
-      'Smee.io is great for quick GitHub webhook testing, but teams need more. Unhook provides enterprise-grade webhook testing with team collaboration, VS Code integration, and advanced monitoring.',
-    competitorLogo: (
-      <div className="text-2xl font-bold text-primary">Smee.io</div>
-    ),
-  },
   features: [
     {
       category: 'Core Features',
       items: [
         {
+          competitor: 'Individual use only',
           feature: 'Team collaboration',
           unhook: 'Full team features',
-          competitor: 'Individual use only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not available',
           feature: 'VS Code integration',
           unhook: 'Native extension',
-          competitor: 'Not available',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Manual copy/paste',
           feature: 'Event replay',
           unhook: 'Built-in replay',
-          competitor: 'Manual copy/paste',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not available',
           feature: 'Custom domains',
           unhook: 'Full support',
-          competitor: 'Not available',
           unhookAdvantage: true,
         },
       ],
@@ -65,27 +56,27 @@ const smeeComparison = {
       category: 'Webhook Capabilities',
       items: [
         {
+          competitor: 'Basic viewing',
           feature: 'Webhook inspection',
           unhook: 'Advanced monitoring',
-          competitor: 'Basic viewing',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Temporary only',
           feature: 'Request history',
           unhook: 'Persistent storage',
-          competitor: 'Temporary only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Not available',
           feature: 'Response configuration',
           unhook: 'Full control',
-          competitor: 'Not available',
           unhookAdvantage: true,
         },
         {
+          competitor: 'None',
           feature: 'Authentication',
           unhook: 'Multiple methods',
-          competitor: 'None',
           unhookAdvantage: true,
         },
       ],
@@ -94,49 +85,69 @@ const smeeComparison = {
       category: 'Reliability & Support',
       items: [
         {
+          competitor: 'Best effort',
           feature: 'Uptime guarantee',
           unhook: '99.9% SLA',
-          competitor: 'Best effort',
           unhookAdvantage: true,
         },
         {
+          competitor: 'GitHub issues only',
           feature: 'Support',
           unhook: 'Priority support',
-          competitor: 'GitHub issues only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'Session only',
           feature: 'Data retention',
           unhook: 'Configurable',
-          competitor: 'Session only',
           unhookAdvantage: true,
         },
         {
+          competitor: 'None',
           feature: 'Enterprise features',
           unhook: 'Full suite',
-          competitor: 'None',
           unhookAdvantage: true,
         },
       ],
     },
   ],
+  hero: {
+    competitorLogo: (
+      <div className="text-2xl font-bold text-primary">Smee.io</div>
+    ),
+    description:
+      'Smee.io is great for quick GitHub webhook testing, but teams need more. Unhook provides enterprise-grade webhook testing with team collaboration, VS Code integration, and advanced monitoring.',
+    subtitle: 'From Basic Proxy to Professional Webhook Testing',
+    title: 'Unhook vs Smee.io',
+  },
   pricing: {
+    competitor: [
+      {
+        features: [
+          'Basic webhook proxying',
+          'GitHub integration',
+          'Temporary URLs',
+          'No authentication',
+          'No support',
+        ],
+        name: 'Free',
+        period: 'forever',
+        price: '$0',
+      },
+    ],
     unhook: [
       {
-        name: 'Free',
-        price: '$0',
-        period: 'forever',
         features: [
           'Unlimited local testing',
           'Basic webhook monitoring',
           'Single developer',
           'Community support',
         ],
+        name: 'Free',
+        period: 'forever',
+        price: '$0',
       },
       {
-        name: 'Team',
-        price: '$29',
-        period: 'month',
         features: [
           'Everything in Free',
           'Team webhook sharing',
@@ -145,12 +156,12 @@ const smeeComparison = {
           'Custom domains',
           'Priority support',
         ],
+        name: 'Team',
+        period: 'month',
         popular: true,
+        price: '$29',
       },
       {
-        name: 'Enterprise',
-        price: 'Custom',
-        period: 'month',
         features: [
           'Everything in Team',
           'Self-hosting option',
@@ -158,47 +169,36 @@ const smeeComparison = {
           'SLA support',
           'Dedicated account manager',
         ],
-      },
-    ],
-    competitor: [
-      {
-        name: 'Free',
-        price: '$0',
-        period: 'forever',
-        features: [
-          'Basic webhook proxying',
-          'GitHub integration',
-          'Temporary URLs',
-          'No authentication',
-          'No support',
-        ],
+        name: 'Enterprise',
+        period: 'month',
+        price: 'Custom',
       },
     ],
   },
   reasons: [
     {
-      title: 'Professional Features',
       description:
         'While Smee.io offers basic proxying, Unhook provides professional webhook testing with team collaboration, authentication, and enterprise-grade reliability.',
       icon: '🚀',
+      title: 'Professional Features',
     },
     {
-      title: 'Team Collaboration',
       description:
         'Share webhook URLs across your team with a config file in your repo. No more individual testing silos.',
       icon: '👥',
+      title: 'Team Collaboration',
     },
     {
-      title: 'VS Code Integration',
       description:
         'Test and debug webhooks without leaving your editor. See events in real-time and replay with one click.',
       icon: '💻',
+      title: 'VS Code Integration',
     },
     {
-      title: 'Reliable Infrastructure',
       description:
         'Get 99.9% uptime SLA, priority support, and enterprise features when you need them.',
       icon: '🛡️',
+      title: 'Reliable Infrastructure',
     },
   ],
 };
@@ -212,13 +212,13 @@ export default function UnhookVsSmeePage() {
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <ComparisonHero {...smeeComparison.hero} />
         <ComparisonFeatures
-          features={smeeComparison.features}
           competitor="Smee.io"
+          features={smeeComparison.features}
         />
         <ComparisonPricing
-          unhookPricing={smeeComparison.pricing.unhook}
-          competitorPricing={smeeComparison.pricing.competitor}
           competitor="Smee.io"
+          competitorPricing={smeeComparison.pricing.competitor}
+          unhookPricing={smeeComparison.pricing.unhook}
         />
         <section className="w-full py-20">
           <div className="container mx-auto px-6">
@@ -234,8 +234,8 @@ export default function UnhookVsSmeePage() {
             <div className="grid md:grid-cols-2 gap-8">
               {smeeComparison.reasons.map((reason) => (
                 <div
-                  key={reason.title}
                   className="bg-card border rounded-lg p-6"
+                  key={reason.title}
                 >
                   <div className="text-4xl mb-4">{reason.icon}</div>
                   <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>

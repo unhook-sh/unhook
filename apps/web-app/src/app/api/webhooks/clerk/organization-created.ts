@@ -26,15 +26,15 @@ export async function handleOrganizationCreated(event: WebhookEvent) {
   const [org] = await db
     .insert(Orgs)
     .values({
-      id: orgData.id,
       clerkOrgId: orgData.id,
-      name: orgData.name,
       createdByUserId: createdByUser.id,
+      id: orgData.id,
+      name: orgData.name,
     })
     .onConflictDoUpdate({
       set: {
-        name: orgData.name,
         createdByUserId: createdByUser.id,
+        name: orgData.name,
       },
       target: Orgs.clerkOrgId,
     })

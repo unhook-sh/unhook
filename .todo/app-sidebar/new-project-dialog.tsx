@@ -61,6 +61,10 @@ export function NewProjectDialog({
   const { execute: executeCreateKey, status: createKeyStatus } = useAction(
     createApiKey,
     {
+      onError: (error) => {
+        console.error(error);
+        toast.error('Failed to create API key');
+      },
       onSuccess: async (result) => {
         if (result.data?.success && result.data.data) {
           const apiKeyToken = result.data.data.apiKeyToken;
@@ -81,10 +85,6 @@ export function NewProjectDialog({
         setKeyName('');
         setKeyError('');
       },
-      onError: (error) => {
-        console.error(error);
-        toast.error('Failed to create API key');
-      },
     },
   );
 
@@ -92,9 +92,9 @@ export function NewProjectDialog({
     e.preventDefault();
     setErrors([]);
     await createProject.mutateAsync({
+      environments: ['dev', 'prod'],
       org_id: orgId,
       project_slug: name.toLowerCase().replace(/ /g, '_'),
-      environments: ['dev', 'prod'],
     });
   };
 
@@ -120,14 +120,14 @@ export function NewProjectDialog({
     }
 
     executeCreateKey({
-      orgId,
-      metadata: {
-        name: keyName,
-        userId: user.user.userId,
-        envId: createProject.data?.project.environments[0],
-        projectId: createProject.data?.project.project_id,
-      },
       currentPath: window.location.pathname,
+      metadata: {
+        envId: createProject.data?.project.environments[0],
+        name: keyName,
+        projectId: createProject.data?.project.project_id,
+        userId: user.user.userId,
+      },
+      orgId,
     });
   };
 
@@ -154,25 +154,25 @@ export function NewProjectDialog({
     createProject.status === 'pending' || createKeyStatus === 'executing';
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         {step === 'project' ? (
           <>
             <DialogHeader>
               <DialogTitle>New Project</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleProjectSubmit} className="grid gap-4">
+            <form className="grid gap-4" onSubmit={handleProjectSubmit}>
               <div>
-                <Label htmlFor="project-name" className="block mb-2">
+                <Label className="block mb-2" htmlFor="project-name">
                   Project Name
                 </Label>
                 <Input
+                  autoFocus
                   id="project-name"
-                  value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="My Project"
                   required
-                  autoFocus
+                  value={name}
                 />
               </div>
               {errors.length > 0 && (
@@ -190,7 +190,7 @@ export function NewProjectDialog({
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit" disabled={isLoading || !name}>
+                <Button disabled={isLoading || !name} type="submit">
                   {isLoading && <Icons.Spinner size="sm" />}
                   Next
                 </Button>
@@ -221,9 +221,9 @@ export function NewProjectDialog({
                   </code>
                   <div className="absolute right-2 top-2">
                     <CopyButton
+                      size="sm"
                       text={successState.keyToken}
                       variant="outline"
-                      size="sm"
                     />
                   </div>
                 </div>
@@ -251,12 +251,12 @@ export function NewProjectDialog({
                 <Label htmlFor="name">Key name</Label>
                 <Input
                   id="name"
-                  value={keyName}
                   onChange={(e) => {
                     setKeyName(e.target.value);
                     setKeyError('');
                   }}
                   placeholder="e.g., Development Key, Production Key"
+                  value={keyName}
                 />
                 {keyError && (
                   <p className="text-sm text-destructive">{keyError}</p>
@@ -266,14 +266,14 @@ export function NewProjectDialog({
 
             <DialogFooter>
               <Button
+                disabled={isLoading}
+                onClick={() => setStep('project')}
                 type="button"
                 variant="outline"
-                onClick={() => setStep('project')}
-                disabled={isLoading}
               >
                 Back
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button disabled={isLoading} type="submit">
                 {isLoading ? 'Creating...' : 'Create key'}
               </Button>
             </DialogFooter>

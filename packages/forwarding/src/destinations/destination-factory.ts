@@ -13,19 +13,19 @@ export async function sendToDestination(
   switch (destination.type) {
     case 'slack': {
       if (!destination.config.slackWebhookUrl) {
-        return { success: false, error: 'Slack webhook URL is not configured' };
+        return { error: 'Slack webhook URL is not configured', success: false };
       }
       const handler = new SlackDestination();
       return handler.send(data, {
-        webhookUrl: destination.config.slackWebhookUrl,
         channel: destination.config.slackChannel,
+        webhookUrl: destination.config.slackWebhookUrl,
       });
     }
     case 'discord': {
       if (!destination.config.discordWebhookUrl) {
         return {
-          success: false,
           error: 'Discord webhook URL is not configured',
+          success: false,
         };
       }
       const handler = new DiscordDestination();
@@ -35,7 +35,7 @@ export async function sendToDestination(
     }
     case 'teams': {
       if (!destination.config.teamsWebhookUrl) {
-        return { success: false, error: 'Teams webhook URL is not configured' };
+        return { error: 'Teams webhook URL is not configured', success: false };
       }
       const handler = new TeamsDestination();
       return handler.send(data, {
@@ -44,24 +44,24 @@ export async function sendToDestination(
     }
     case 'webhook': {
       if (!destination.config.url) {
-        return { success: false, error: 'Webhook URL is not configured' };
+        return { error: 'Webhook URL is not configured', success: false };
       }
       const handler = new WebhookDestination();
       return handler.send(data, {
-        url: destination.config.url,
-        headers: destination.config.headers,
         authentication: destination.config.authentication,
+        headers: destination.config.headers,
+        url: destination.config.url,
       });
     }
     case 'email':
       return {
-        success: false,
         error: 'Email destination is not implemented yet',
+        success: false,
       };
     default:
       return {
-        success: false,
         error: `Unknown destination type: ${destination.type}`,
+        success: false,
       };
   }
 }

@@ -20,7 +20,7 @@ const data = [
 export function StatsChart() {
   return (
     <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer height="100%" width="100%">
         <LineChart data={data}>
           <Tooltip
             content={({ active, payload }) => {
@@ -52,11 +52,11 @@ export function StatsChart() {
             }}
           />
           <Line
-            type="monotone"
             dataKey="value"
+            dot={false}
             stroke="#ff6b00"
             strokeWidth={2}
-            dot={false}
+            type="monotone"
           />
         </LineChart>
       </ResponsiveContainer>

@@ -50,129 +50,25 @@ interface AuthActions {
 type AuthStore = AuthState & AuthActions;
 
 const defaultInitState: AuthState = {
-  isSignedIn: false,
-  user: null,
-  orgId: null,
-  authToken: null,
-  sessionId: createId({ prefix: 'session' }),
-  isValidatingSession: false,
-  authUrl: null,
-  isSigningIn: false,
   authServer: null,
+  authToken: null,
+  authUrl: null,
   csrfToken: null,
+  fileStorage: new FileStorage({ namespace: 'auth' }),
+  isSignedIn: false,
+  isSigningIn: false,
+  isValidatingSession: false,
+  orgId: null,
   secureStorage:
     env.NEXT_PUBLIC_APP_ENV === 'development'
       ? new FileStorage({ namespace: 'auth' })
       : new SecureStorage({ namespace: 'auth' }),
-  fileStorage: new FileStorage({ namespace: 'auth' }),
+  sessionId: createId({ prefix: 'session' }),
+  user: null,
 };
 // Create and export the store instance
 const store = createStore<AuthStore>()((set, get) => ({
   ...defaultInitState,
-
-  logout: async () => {
-    log('Clearing authentication state');
-    const currentState = get();
-    if (!currentState.isSignedIn && !currentState.user) {
-      log('Auth state already cleared, skipping');
-      get().reset();
-      return;
-    }
-
-    if (currentState.user?.id) {
-      log(
-        'Logging out user: userId=%s, orgId=%s',
-        currentState.user.id,
-        currentState.orgId,
-      );
-      capture({
-        event: 'user_logged_out',
-        properties: {
-          userId: currentState.user?.id,
-          orgId: currentState.orgId,
-          email: currentState.user?.email,
-          sessionId: currentState.sessionId,
-        },
-      });
-    }
-
-    log('Resetting auth state: sessionId=%s', currentState.sessionId);
-
-    try {
-      await currentState.secureStorage.removeItem('token');
-      await currentState.fileStorage.removeItem('sessionId');
-    } catch (error) {
-      log('Error removing token from storage: %O', error);
-    } finally {
-      get().reset();
-      useApiStore.getState().reset();
-    }
-  },
-
-  validateSession: async () => {
-    set({ isValidatingSession: true });
-
-    log('Validating token');
-
-    try {
-      const state = get();
-      const storedToken = state.secureStorage
-        ? await state.secureStorage.getItem('token')
-        : null;
-
-      const sessionId = state.fileStorage
-        ? await state.fileStorage.getItem('sessionId')
-        : null;
-
-      if (!sessionId) {
-        log('No session ID found');
-        await get().logout();
-        return false;
-      }
-
-      if (!storedToken) {
-        log('No stored token found');
-        await get().logout();
-        return false;
-      }
-
-      const apiClient = createClient({
-        authToken: storedToken,
-        sessionCookie: storedToken,
-      });
-
-      useApiStore.setState({
-        api: apiClient,
-      });
-
-      const token = await apiClient.auth.verifySessionToken.query({
-        sessionId,
-      });
-
-      capture({
-        event: 'session_validated',
-        properties: {
-          userId: token.user.id,
-          orgId: token.orgId,
-          email: token.user.email,
-          sessionId: get().sessionId,
-        },
-      });
-
-      set({
-        isValidatingSession: false,
-        isSignedIn: true,
-        user: token.user,
-        orgId: token.orgId,
-        authToken: storedToken,
-      });
-      return true;
-    } catch (error) {
-      log('Error validating token: %O', error);
-      await get().logout();
-      return false;
-    }
-  },
 
   exchangeAuthCode: async (code: string) => {
     set({ isValidatingSession: true });
@@ -200,34 +96,116 @@ const store = createStore<AuthStore>()((set, get) => ({
 
       set({
         authToken,
+        isSignedIn: true,
+        orgId,
         sessionId,
         user,
-        orgId,
-        isSignedIn: true,
       });
 
       log('Authentication completed successfully');
       capture({
-        event: 'user_authenticated',
         distinctId: user.id,
+        event: 'user_authenticated',
         properties: {
-          userId: user.id,
-          orgId,
           email: user.email,
+          orgId,
+          userId: user.id,
         },
       });
 
       return {
         authToken,
-        user,
         orgId,
         sessionId,
+        user,
       };
     } catch (error) {
       handleAuthError(error);
     } finally {
       set({ isValidatingSession: false });
     }
+  },
+
+  logout: async () => {
+    log('Clearing authentication state');
+    const currentState = get();
+    if (!currentState.isSignedIn && !currentState.user) {
+      log('Auth state already cleared, skipping');
+      get().reset();
+      return;
+    }
+
+    if (currentState.user?.id) {
+      log(
+        'Logging out user: userId=%s, orgId=%s',
+        currentState.user.id,
+        currentState.orgId,
+      );
+      capture({
+        event: 'user_logged_out',
+        properties: {
+          email: currentState.user?.email,
+          orgId: currentState.orgId,
+          sessionId: currentState.sessionId,
+          userId: currentState.user?.id,
+        },
+      });
+    }
+
+    log('Resetting auth state: sessionId=%s', currentState.sessionId);
+
+    try {
+      await currentState.secureStorage.removeItem('token');
+      await currentState.fileStorage.removeItem('sessionId');
+    } catch (error) {
+      log('Error removing token from storage: %O', error);
+    } finally {
+      get().reset();
+      useApiStore.getState().reset();
+    }
+  },
+
+  reset: () => {
+    log('Resetting auth state');
+    const currentState = get();
+    currentState.authServer?.stop();
+
+    set({
+      ...defaultInitState,
+      fileStorage: currentState.fileStorage, // Generate new session ID on reset
+      secureStorage: currentState.secureStorage, // Preserve storage instance
+      sessionId: createId({ prefix: 'session' }), // Preserve storage instance
+    });
+    capture({
+      event: 'auth_state_reset',
+    });
+  },
+
+  setAuthUrl: (authUrl: string | null) => {
+    log('Setting auth URL:', authUrl);
+    set({ authUrl });
+
+    if (authUrl) {
+      clipboard.writeSync(authUrl);
+    }
+
+    capture({
+      event: 'auth_state_updated',
+      properties: {
+        hasAuthUrl: !!authUrl,
+      },
+    });
+  },
+
+  setSigningIn: (isSigningIn: boolean) => {
+    log('Setting signing in state:', isSigningIn);
+    set({ isSigningIn });
+    capture({
+      event: 'auth_state_updated',
+      properties: {
+        isSigningIn,
+      },
+    });
   },
 
   signIn: async () => {
@@ -291,10 +269,10 @@ const store = createStore<AuthStore>()((set, get) => ({
       });
 
       set({
-        isSigningIn: false,
-        authUrl: null,
-        isValidatingSession: false,
         authToken: null,
+        authUrl: null,
+        isSigningIn: false,
+        isValidatingSession: false,
       });
     } catch (error) {
       handleAuthError(error);
@@ -305,47 +283,69 @@ const store = createStore<AuthStore>()((set, get) => ({
     }
   },
 
-  setSigningIn: (isSigningIn: boolean) => {
-    log('Setting signing in state:', isSigningIn);
-    set({ isSigningIn });
-    capture({
-      event: 'auth_state_updated',
-      properties: {
-        isSigningIn,
-      },
-    });
-  },
+  validateSession: async () => {
+    set({ isValidatingSession: true });
 
-  setAuthUrl: (authUrl: string | null) => {
-    log('Setting auth URL:', authUrl);
-    set({ authUrl });
+    log('Validating token');
 
-    if (authUrl) {
-      clipboard.writeSync(authUrl);
+    try {
+      const state = get();
+      const storedToken = state.secureStorage
+        ? await state.secureStorage.getItem('token')
+        : null;
+
+      const sessionId = state.fileStorage
+        ? await state.fileStorage.getItem('sessionId')
+        : null;
+
+      if (!sessionId) {
+        log('No session ID found');
+        await get().logout();
+        return false;
+      }
+
+      if (!storedToken) {
+        log('No stored token found');
+        await get().logout();
+        return false;
+      }
+
+      const apiClient = createClient({
+        authToken: storedToken,
+        sessionCookie: storedToken,
+      });
+
+      useApiStore.setState({
+        api: apiClient,
+      });
+
+      const token = await apiClient.auth.verifySessionToken.query({
+        sessionId,
+      });
+
+      capture({
+        event: 'session_validated',
+        properties: {
+          email: token.user.email,
+          orgId: token.orgId,
+          sessionId: get().sessionId,
+          userId: token.user.id,
+        },
+      });
+
+      set({
+        authToken: storedToken,
+        isSignedIn: true,
+        isValidatingSession: false,
+        orgId: token.orgId,
+        user: token.user,
+      });
+      return true;
+    } catch (error) {
+      log('Error validating token: %O', error);
+      await get().logout();
+      return false;
     }
-
-    capture({
-      event: 'auth_state_updated',
-      properties: {
-        hasAuthUrl: !!authUrl,
-      },
-    });
-  },
-
-  reset: () => {
-    log('Resetting auth state');
-    const currentState = get();
-    currentState.authServer?.stop();
-
-    set({
-      ...defaultInitState,
-      sessionId: createId({ prefix: 'session' }), // Generate new session ID on reset
-      secureStorage: currentState.secureStorage, // Preserve storage instance
-      fileStorage: currentState.fileStorage, // Preserve storage instance
-    });
-    capture({
-      event: 'auth_state_reset',
-    });
   },
 }));
 

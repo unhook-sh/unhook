@@ -26,23 +26,21 @@ export class EventQuickPick {
     if (this.authStore) {
       if (this.authStore.isValidatingSession) {
         items.push({
-          label: '$(sync~spin) Validating Session',
           description: 'Please wait while we validate your session',
           detail: 'Your session is being validated...',
+          label: '$(sync~spin) Validating Session',
         });
       } else if (this.authStore.isSignedIn) {
         items.push({
-          label: '$(sign-out) Sign Out',
           description: 'Sign out of your Unhook account',
-          detail: `Currently signed in as ${
-            this.authStore.user?.email ?? 'User'
-          }`,
+          detail: `Currently signed in as ${this.authStore.user?.email ?? 'User'}`,
+          label: '$(sign-out) Sign Out',
         });
       } else {
         items.push({
-          label: '$(sign-in) Sign In',
           description: 'Sign in to your Unhook account',
           detail: 'Sign in to access your webhook events',
+          label: '$(sign-in) Sign In',
         });
       }
     }
@@ -51,14 +49,14 @@ export class EventQuickPick {
     if (this.authStore?.isSignedIn) {
       items.push(
         {
-          label: '$(add) Add New Event',
           description: 'Create a new event',
           detail: 'Add a new event to the list',
+          label: '$(add) Add New Event',
         },
         {
-          label: '$(refresh) Refresh Events',
           description: 'Refresh the events list',
           detail: 'Update the list of events',
+          label: '$(refresh) Refresh Events',
         },
       );
     }
@@ -72,16 +70,16 @@ export class EventQuickPick {
 
     // Add settings item
     items.push({
-      label: '$(settings) Configure Settings',
       description: 'Open settings panel',
       detail: 'Configure Unhook extension settings',
+      label: '$(settings) Configure Settings',
     });
 
     const selected = await vscode.window.showQuickPick(items, {
-      placeHolder: 'Select an action',
-      title: 'Unhook Quick Actions',
       matchOnDescription: true,
       matchOnDetail: true,
+      placeHolder: 'Select an action',
+      title: 'Unhook Quick Actions',
     });
 
     if (selected) {

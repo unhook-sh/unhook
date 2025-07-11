@@ -25,25 +25,25 @@ export async function generateMetadata({
   } = post.metadata;
 
   return {
-    title,
     description,
     openGraph: {
-      title,
       description,
-      type: 'article',
-      publishedTime,
-      url: `${siteConfig.url}/blog/${post.slug}`,
       images: [
         {
           url: image,
         },
       ],
+      publishedTime,
+      title,
+      type: 'article',
+      url: `${siteConfig.url}/blog/${post.slug}`,
     },
+    title,
     twitter: {
       card: 'summary_large_image',
-      title,
       description,
       images: [image],
+      title,
     },
   };
 }
@@ -64,27 +64,27 @@ export default async function Blog({
   return (
     <section id="blog">
       <script
-        type="application/ld+json"
-        suppressHydrationWarning
         // biome-ignore lint/security/noDangerouslySetInnerHtml: we're using a trusted source
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
-            headline: post.metadata.title,
-            datePublished: post.metadata.publishedAt,
-            dateModified: post.metadata.publishedAt,
-            description: post.metadata.summary,
-            image: post.metadata.image
-              ? `${siteConfig.url}${post.metadata.image}`
-              : `${siteConfig.url}/blog/${post.slug}/opengraph-image`,
-            url: `${siteConfig.url}/blog/${post.slug}`,
             author: {
               '@type': 'Person',
               name: siteConfig.name,
             },
+            dateModified: post.metadata.publishedAt,
+            datePublished: post.metadata.publishedAt,
+            description: post.metadata.summary,
+            headline: post.metadata.title,
+            image: post.metadata.image
+              ? `${siteConfig.url}${post.metadata.image}`
+              : `${siteConfig.url}/blog/${post.slug}/opengraph-image`,
+            url: `${siteConfig.url}/blog/${post.slug}`,
           }),
         }}
+        suppressHydrationWarning
+        type="application/ld+json"
       />
       <div className="mx-auto w-full max-w-[800px] px-4 sm:px-6 lg:px-8 space-y-4 my-12">
         <Suspense
@@ -95,11 +95,11 @@ export default async function Blog({
           {post.metadata.image && (
             <div className="mb-8">
               <Image
-                width={1920}
-                height={1080}
-                src={post.metadata.image}
                 alt={post.metadata.title}
                 className="w-full h-auto rounded-lg border shadow-md"
+                height={1080}
+                src={post.metadata.image}
+                width={1920}
               />
             </div>
           )}
@@ -113,8 +113,8 @@ export default async function Blog({
           <Suspense fallback={<p className="h-5" />}>
             <div className="flex items-center space-x-2">
               <time
-                dateTime={post.metadata.publishedAt}
                 className="text-sm text-gray-500"
+                dateTime={post.metadata.publishedAt}
               >
                 {formatDate(post.metadata.publishedAt)}
               </time>
@@ -123,9 +123,9 @@ export default async function Blog({
         </div>
         <div className="flex items-center space-x-2">
           <Author
-            twitterUsername={post.metadata.author}
-            name={post.metadata.author}
             image={'/author.jpg'}
+            name={post.metadata.author}
+            twitterUsername={post.metadata.author}
           />
         </div>
         <article

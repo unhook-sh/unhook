@@ -7,15 +7,15 @@ export function useDimensions(): { width: number; height: number } {
     width: number;
     height: number;
   }>({
-    width: stdout.columns,
     height: stdout.rows,
+    width: stdout.columns,
   });
 
   useEffect(() => {
     const handler = () =>
       setDimensions({
-        width: stdout.columns,
         height: stdout.rows,
+        width: stdout.columns,
       });
     stdout.on('resize', handler);
     return () => {

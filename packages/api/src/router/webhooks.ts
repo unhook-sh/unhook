@@ -55,6 +55,20 @@ export const webhooksRouter = createTRPCRouter({
 
       return webhook;
     }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const [webhook] = await ctx.db
+        .delete(Webhooks)
+        .where(
+          and(eq(Webhooks.id, input.id), eq(Webhooks.orgId, ctx.auth.orgId)),
+        )
+        .returning();
+
+      return webhook;
+    }),
 
   update: protectedProcedure
     .input(UpdateWebhookTypeSchema)
@@ -76,8 +90,8 @@ export const webhooksRouter = createTRPCRouter({
   updateStats: protectedProcedure
     .input(
       z.object({
-        webhookId: z.string(),
         updateLastRequest: z.boolean().optional(),
+        webhookId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -94,20 +108,6 @@ export const webhooksRouter = createTRPCRouter({
             eq(Webhooks.id, input.webhookId),
             eq(Webhooks.orgId, ctx.auth.orgId),
           ),
-        )
-        .returning();
-
-      return webhook;
-    }),
-  delete: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
-
-      const [webhook] = await ctx.db
-        .delete(Webhooks)
-        .where(
-          and(eq(Webhooks.id, input.id), eq(Webhooks.orgId, ctx.auth.orgId)),
         )
         .returning();
 

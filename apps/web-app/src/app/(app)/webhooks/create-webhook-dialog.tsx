@@ -28,18 +28,18 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
   config: z.object({
+    headers: z.object({}),
+    requests: z.object({}),
     storage: z.object({
+      maxRequestBodySize: z.number(),
+      maxResponseBodySize: z.number(),
       storeHeaders: z.boolean(),
       storeRequestBody: z.boolean(),
       storeResponseBody: z.boolean(),
-      maxRequestBodySize: z.number(),
-      maxResponseBodySize: z.number(),
     }),
-    headers: z.object({}),
-    requests: z.object({}),
   }),
+  name: z.string().min(1, 'Name is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -53,18 +53,18 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     defaultValues: {
-      name: '',
       config: {
+        headers: {},
+        requests: {},
         storage: {
+          maxRequestBodySize: 1024 * 1024,
+          maxResponseBodySize: 1024 * 1024,
           storeHeaders: true,
           storeRequestBody: true,
           storeResponseBody: true,
-          maxRequestBodySize: 1024 * 1024,
-          maxResponseBodySize: 1024 * 1024,
         },
-        headers: {},
-        requests: {},
       },
+      name: '',
     },
     resolver: zodResolver(formSchema),
   });
@@ -117,7 +117,7 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
             <DialogFooter>
               <Button disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
-                  <Icons.Spinner size="sm" className="mr-2" />
+                  <Icons.Spinner className="mr-2" size="sm" />
                 )}
                 Create Webhook
               </Button>

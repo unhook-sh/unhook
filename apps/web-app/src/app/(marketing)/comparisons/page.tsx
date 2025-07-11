@@ -14,7 +14,6 @@ import { Navbar } from '../_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
 
 export const metadata = {
-  title: 'Unhook vs Competitors: Webhook Testing Tool Comparisons | Unhook',
   description:
     'Compare Unhook with ngrok, Webhook.site, Beeceptor, Localtunnel and other webhook testing tools. See why teams choose Unhook for better collaboration and VS Code integration.',
   keywords: [
@@ -24,167 +23,175 @@ export const metadata = {
     'beeceptor alternative',
     'webhook testing tools',
   ],
+  title: 'Unhook vs Competitors: Webhook Testing Tool Comparisons | Unhook',
 };
 
 const competitors = [
   {
-    name: 'ngrok',
-    logo: '🚇',
-    description: 'Popular tunneling tool for individual developers',
     category: 'Tunneling Platform',
-    pricing: 'From $8/month',
-    marketShare: 'High',
-    strengths: ['Easy to use', 'Popular', 'Good documentation'],
-    weaknesses: [
-      'Expensive for teams',
-      'No team features',
-      'Per-domain pricing',
-    ],
     comparison: '/vs-ngrok',
+    description: 'Popular tunneling tool for individual developers',
+    logo: '🚇',
+    marketShare: 'High',
+    name: 'ngrok',
+    pricing: 'From $8/month',
+    strengths: ['Easy to use', 'Popular', 'Good documentation'],
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'VS Code integration',
       'No per-domain fees',
     ],
+    weaknesses: [
+      'Expensive for teams',
+      'No team features',
+      'Per-domain pricing',
+    ],
   },
   {
-    name: 'Webhook.site',
-    logo: '🌐',
-    description: 'Simple webhook testing and inspection tool',
     category: 'Webhook Testing',
-    pricing: 'From $7.5/month',
-    marketShare: 'Medium',
-    strengths: ['Simple interface', 'Quick setup', 'Good for testing'],
-    weaknesses: [
-      'Limited team features',
-      'Basic functionality',
-      'No editor integration',
-    ],
     comparison: '/vs-webhook-site',
+    description: 'Simple webhook testing and inspection tool',
+    logo: '🌐',
+    marketShare: 'Medium',
+    name: 'Webhook.site',
+    pricing: 'From $7.5/month',
+    strengths: ['Simple interface', 'Quick setup', 'Good for testing'],
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'VS Code integration',
       'Professional features',
     ],
+    weaknesses: [
+      'Limited team features',
+      'Basic functionality',
+      'No editor integration',
+    ],
   },
   {
-    name: 'Beeceptor',
-    logo: '🐝',
-    description: 'API mocking and webhook testing platform',
     category: 'API Mocking',
-    pricing: 'From $49/month',
-    marketShare: 'Medium',
-    strengths: ['API mocking', 'Multiple protocols', 'Good features'],
-    weaknesses: ['Expensive', 'General-purpose tool', 'No webhook focus'],
     comparison: '/vs-beeceptor',
+    description: 'API mocking and webhook testing platform',
+    logo: '🐝',
+    marketShare: 'Medium',
+    name: 'Beeceptor',
+    pricing: 'From $49/month',
+    strengths: ['API mocking', 'Multiple protocols', 'Good features'],
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'Webhook-focused design',
       'Better pricing',
     ],
+    weaknesses: ['Expensive', 'General-purpose tool', 'No webhook focus'],
   },
   {
-    name: 'Localtunnel',
-    logo: '🔗',
-    description: 'Basic tunneling solution (no longer maintained)',
     category: 'Basic Tunneling',
-    pricing: 'Free only',
-    marketShare: 'Low',
-    strengths: ['Free', 'Simple', 'Open source'],
-    weaknesses: [
-      'Unmaintained',
-      'Unreliable',
-      'No team features',
-      'Basic functionality',
-    ],
     comparison: '/vs-localtunnel',
+    description: 'Basic tunneling solution (no longer maintained)',
+    logo: '🔗',
+    marketShare: 'Low',
+    name: 'Localtunnel',
+    pricing: 'Free only',
+    strengths: ['Free', 'Simple', 'Open source'],
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
       'Active maintenance',
       'Enterprise reliability',
     ],
+    weaknesses: [
+      'Unmaintained',
+      'Unreliable',
+      'No team features',
+      'Basic functionality',
+    ],
   },
   {
-    name: 'Smee.io',
-    logo: '🔌',
-    description: 'GitHub webhook proxy for quick testing',
     category: 'Webhook Proxy',
-    pricing: 'Free',
-    marketShare: 'Medium',
-    strengths: ['Free', 'GitHub integration', 'Quick setup'],
-    weaknesses: [
-      'Basic features only',
-      'No team support',
-      'No authentication',
-      'Temporary URLs only',
-    ],
     comparison: '/vs-smee',
+    description: 'GitHub webhook proxy for quick testing',
+    logo: '🔌',
+    marketShare: 'Medium',
+    name: 'Smee.io',
+    pricing: 'Free',
+    strengths: ['Free', 'GitHub integration', 'Quick setup'],
     unhookAdvantages: [
       'Professional features',
       'Team collaboration',
       'VS Code integration',
       'Persistent URLs',
     ],
+    weaknesses: [
+      'Basic features only',
+      'No team support',
+      'No authentication',
+      'Temporary URLs only',
+    ],
   },
   {
-    name: 'Cloudflare Tunnel',
-    logo: '☁️',
-    description: 'Enterprise-grade secure tunneling solution',
     category: 'Infrastructure Tunneling',
-    pricing: 'From $7/user/month',
-    marketShare: 'High',
-    strengths: ['Enterprise security', 'Global network', 'Zero-trust'],
-    weaknesses: [
-      'Complex setup',
-      'Not webhook-focused',
-      'Requires Cloudflare DNS',
-      'Steep learning curve',
-    ],
     comparison: '/vs-cloudflare-tunnel',
+    description: 'Enterprise-grade secure tunneling solution',
+    logo: '☁️',
+    marketShare: 'High',
+    name: 'Cloudflare Tunnel',
+    pricing: 'From $7/user/month',
+    strengths: ['Enterprise security', 'Global network', 'Zero-trust'],
     unhookAdvantages: [
       'Built for webhooks',
       'Simple setup',
       'Team collaboration',
       'No DNS requirements',
     ],
+    weaknesses: [
+      'Complex setup',
+      'Not webhook-focused',
+      'Requires Cloudflare DNS',
+      'Steep learning curve',
+    ],
   },
   {
-    name: 'Hookdeck',
-    logo: '🎣',
-    description: 'Event gateway for production webhook infrastructure',
     category: 'Event Gateway',
-    pricing: 'From $49/month',
-    marketShare: 'Medium',
-    strengths: ['Production-ready', 'Advanced routing', 'Event queuing'],
-    weaknesses: [
-      'Complex for development',
-      'Higher pricing',
-      'No VS Code integration',
-      'Production-focused',
-    ],
     comparison: '/vs-hookdeck',
+    description: 'Event gateway for production webhook infrastructure',
+    logo: '🎣',
+    marketShare: 'Medium',
+    name: 'Hookdeck',
+    pricing: 'From $49/month',
+    strengths: ['Production-ready', 'Advanced routing', 'Event queuing'],
     unhookAdvantages: [
       'Development-focused',
       'Simple setup',
       'VS Code integration',
       'Better for testing',
     ],
+    weaknesses: [
+      'Complex for development',
+      'Higher pricing',
+      'No VS Code integration',
+      'Production-focused',
+    ],
   },
   {
-    name: 'Svix',
-    logo: '🚀',
-    description: 'Enterprise webhook infrastructure as a service',
     category: 'Webhook Infrastructure',
-    pricing: 'From $490/month',
+    comparison: '/vs-svix',
+    description: 'Enterprise webhook infrastructure as a service',
+    logo: '🚀',
     marketShare: 'High',
+    name: 'Svix',
+    pricing: 'From $490/month',
     strengths: [
       'Enterprise-grade',
       'Sending & receiving',
       'Full infrastructure',
+    ],
+    unhookAdvantages: [
+      'Built for development',
+      'Simple team setup',
+      'VS Code integration',
+      'Testing-focused',
     ],
     weaknesses: [
       'Production-focused',
@@ -192,100 +199,93 @@ const competitors = [
       'High pricing',
       'Not for testing',
     ],
-    comparison: '/vs-svix',
-    unhookAdvantages: [
-      'Built for development',
-      'Simple team setup',
-      'VS Code integration',
-      'Testing-focused',
-    ],
   },
 ];
 
 const comparisonMatrix = [
   {
+    beeceptor: false,
+    cloudflare: false,
     feature: 'Shared Webhook URLs',
-    unhook: true,
-    ngrok: false,
-    webhookSite: false,
-    beeceptor: false,
-    localtunnel: false,
-    smee: false,
-    cloudflare: false,
     hookdeck: false,
+    localtunnel: false,
+    ngrok: false,
+    smee: false,
     svix: false,
+    unhook: true,
+    webhookSite: false,
   },
   {
+    beeceptor: false,
+    cloudflare: false,
     feature: 'Config File in Repo',
-    unhook: true,
-    ngrok: false,
-    webhookSite: false,
-    beeceptor: false,
-    localtunnel: false,
-    smee: false,
-    cloudflare: false,
     hookdeck: false,
+    localtunnel: false,
+    ngrok: false,
+    smee: false,
     svix: false,
+    unhook: true,
+    webhookSite: false,
   },
   {
+    beeceptor: false,
+    cloudflare: false,
     feature: 'VS Code Integration',
-    unhook: true,
-    ngrok: false,
-    webhookSite: false,
-    beeceptor: false,
-    localtunnel: false,
-    smee: false,
-    cloudflare: false,
     hookdeck: false,
+    localtunnel: false,
+    ngrok: false,
+    smee: false,
     svix: false,
+    unhook: true,
+    webhookSite: false,
   },
   {
+    beeceptor: false,
+    cloudflare: false,
     feature: 'Custom Domains Included',
-    unhook: true,
-    ngrok: false,
-    webhookSite: false,
-    beeceptor: false,
-    localtunnel: false,
-    smee: false,
-    cloudflare: false,
     hookdeck: false,
+    localtunnel: false,
+    ngrok: false,
+    smee: false,
     svix: false,
-  },
-  {
-    feature: 'Event Replay',
     unhook: true,
-    ngrok: true,
-    webhookSite: true,
-    beeceptor: true,
-    localtunnel: false,
-    smee: false,
-    cloudflare: false,
-    hookdeck: true,
-    svix: true,
-  },
-  {
-    feature: 'Free Tier',
-    unhook: true,
-    ngrok: true,
-    webhookSite: true,
-    beeceptor: true,
-    localtunnel: true,
-    smee: true,
-    cloudflare: true,
-    hookdeck: true,
-    svix: true,
-  },
-  {
-    feature: 'Enterprise Features',
-    unhook: true,
-    ngrok: true,
     webhookSite: false,
+  },
+  {
     beeceptor: true,
-    localtunnel: false,
-    smee: false,
-    cloudflare: true,
+    cloudflare: false,
+    feature: 'Event Replay',
     hookdeck: true,
+    localtunnel: false,
+    ngrok: true,
+    smee: false,
     svix: true,
+    unhook: true,
+    webhookSite: true,
+  },
+  {
+    beeceptor: true,
+    cloudflare: true,
+    feature: 'Free Tier',
+    hookdeck: true,
+    localtunnel: true,
+    ngrok: true,
+    smee: true,
+    svix: true,
+    unhook: true,
+    webhookSite: true,
+  },
+  {
+    beeceptor: true,
+    cloudflare: true,
+    feature: 'Enterprise Features',
+    hookdeck: true,
+    localtunnel: false,
+    ngrok: true,
+    smee: false,
+    svix: true,
+    unhook: true,
+    webhookSite: false,
   },
 ];
 
@@ -300,7 +300,7 @@ export default function ComparisonsPage() {
         <section className="w-full py-20 lg:py-32">
           <div className="container mx-auto px-6">
             <div className="text-center space-y-8">
-              <Badge variant="outline" className="px-4 py-2">
+              <Badge className="px-4 py-2" variant="outline">
                 Tool Comparisons
               </Badge>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
@@ -340,8 +340,8 @@ export default function ComparisonsPage() {
             <div className="grid md:grid-cols-2 gap-8">
               {competitors.map((competitor) => (
                 <Card
-                  key={competitor.name}
                   className="relative overflow-hidden"
+                  key={competitor.name}
                 >
                   <CardHeader>
                     <div className="flex items-center gap-4 mb-4">
@@ -352,7 +352,7 @@ export default function ComparisonsPage() {
                         </CardTitle>
                         <CardDescription>{competitor.category}</CardDescription>
                       </div>
-                      <Badge variant="secondary" className="ml-auto">
+                      <Badge className="ml-auto" variant="secondary">
                         {competitor.marketShare} Usage
                       </Badge>
                     </div>
@@ -376,8 +376,8 @@ export default function ComparisonsPage() {
                       <ul className="space-y-2">
                         {competitor.unhookAdvantages.map((advantage) => (
                           <li
-                            key={advantage}
                             className="flex items-center gap-2 text-sm"
+                            key={advantage}
                           >
                             <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                             {advantage}
@@ -394,8 +394,8 @@ export default function ComparisonsPage() {
                         <ul className="space-y-1">
                           {competitor.strengths.map((strength) => (
                             <li
-                              key={strength}
                               className="text-sm text-muted-foreground"
+                              key={strength}
                             >
                               • {strength}
                             </li>
@@ -409,8 +409,8 @@ export default function ComparisonsPage() {
                         <ul className="space-y-1">
                           {competitor.weaknesses.map((weakness) => (
                             <li
-                              key={weakness}
                               className="text-sm text-muted-foreground"
+                              key={weakness}
                             >
                               • {weakness}
                             </li>
@@ -468,8 +468,8 @@ export default function ComparisonsPage() {
                 <tbody>
                   {comparisonMatrix.map((row) => (
                     <tr
-                      key={row.feature}
                       className="border-b last:border-b-0 hover:bg-muted/30"
+                      key={row.feature}
                     >
                       <td className="p-4 font-medium">{row.feature}</td>
                       <td className="p-4 text-center">
@@ -555,11 +555,11 @@ export default function ComparisonsPage() {
                 webhook testing with team collaboration and VS Code integration.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="px-8">
+                <Button className="px-8" size="lg">
                   Start Free Trial
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-                <Button variant="outline" size="lg" className="px-8">
+                <Button className="px-8" size="lg" variant="outline">
                   Schedule Demo
                 </Button>
               </div>

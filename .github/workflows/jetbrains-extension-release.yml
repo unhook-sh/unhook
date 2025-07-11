@@ -1,0 +1,101 @@
+name: JetBrains Extension Release
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Changeset NPM Release"]
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+  actions: read
+
+env:
+  FORCE_COLOR: 3
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+  NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+  POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+  NEXT_PUBLIC_APP_ENV: production
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  JETBRAINS_MARKETPLACE_TOKEN: ${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
+  JETBRAINS_CERTIFICATE_CHAIN: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
+  JETBRAINS_PRIVATE_KEY: ${{ secrets.JETBRAINS_PRIVATE_KEY }}
+  JETBRAINS_PRIVATE_KEY_PASSWORD: ${{ secrets.JETBRAINS_PRIVATE_KEY_PASSWORD }}
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      is_version_bump: ${{ steps.check.outputs.is_version_bump }}
+      jetbrains_version_changed: ${{ steps.check-jetbrains.outputs.version_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - id: check
+        run: |
+          if [[ "${{ github.event.workflow_run.head_commit.message }}" =~ ^chore:\ version\ packages.*$ ]]; then
+            echo "is_version_bump=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_version_bump=false" >> $GITHUB_OUTPUT
+          fi
+
+      - id: check-jetbrains
+        name: Check if JetBrains extension version changed
+        run: |
+          # Check if the JetBrains extension version was bumped in the last commit
+          if git diff HEAD~1 HEAD -- apps/jetbrains-extension/package.json | grep -q '"version"'; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "JetBrains extension version was changed"
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "JetBrains extension version was not changed"
+          fi
+
+  release:
+    name: Release JetBrains Extension
+    needs: check-version
+    runs-on: ubuntu-latest
+    if: needs.check-version.outputs.is_version_bump == 'true' && needs.check-version.outputs.jetbrains_version_changed == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need full history for Changesets
+          fetch-depth: 0
+
+      - name: Setup Environment
+        uses: ./tooling/github/setup
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./apps/jetbrains-extension/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Release JetBrains Extension
+        uses: ./tooling/github/jetbrains-extension/github-release
+        with:
+          version: ${{ steps.version.outputs.version }}
+          marketplace_token: ${{ env.JETBRAINS_MARKETPLACE_TOKEN }}
+          certificate_chain: ${{ env.JETBRAINS_CERTIFICATE_CHAIN }}
+          private_key: ${{ env.JETBRAINS_PRIVATE_KEY }}
+          private_key_password: ${{ env.JETBRAINS_PRIVATE_KEY_PASSWORD }}

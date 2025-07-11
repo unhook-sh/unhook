@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@unhook/ui/components/chart';
+import { ChartContainer } from '@unhook/ui/components/chart';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Area,
@@ -102,8 +98,8 @@ export function WebhookLatencyChart({
           p95Latency?: number;
           p99Latency?: number;
         } = {
-          time: `${hour}:${minute}`,
           avgLatency,
+          time: `${hour}:${minute}`,
         };
 
         if (detailed) {
@@ -127,82 +123,82 @@ export function WebhookLatencyChart({
       <ChartContainer
         config={{
           avgLatency: {
-            label: 'Avg Latency',
             color: 'hsl(var(--chart-1))',
+            label: 'Avg Latency',
           },
           ...(detailed
             ? {
                 p95Latency: {
-                  label: 'p95 Latency',
                   color: 'hsl(var(--chart-2))',
+                  label: 'p95 Latency',
                 },
                 p99Latency: {
-                  label: 'p99 Latency',
                   color: 'hsl(var(--chart-3))',
+                  label: 'p99 Latency',
                 },
               }
             : {}),
         }}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer height="100%" width="100%">
           {detailed ? (
             <LineChart
               data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              margin={{ bottom: 0, left: 0, right: 10, top: 10 }}
             >
               <CartesianGrid
+                stroke="hsl(var(--border))"
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="hsl(var(--border))"
               />
               <XAxis
-                dataKey="time"
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
                 axisLine={false}
+                dataKey="time"
+                fontSize={12}
                 minTickGap={30}
+                stroke="hsl(var(--muted-foreground))"
+                tickLine={false}
               />
               <YAxis
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
                 axisLine={false}
+                fontSize={12}
+                stroke="hsl(var(--muted-foreground))"
                 tickFormatter={(value) => `${value}ms`}
+                tickLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
               <Line
-                type="monotone"
+                activeDot={{ r: 4, strokeWidth: 0 }}
                 dataKey="avgLatency"
+                dot={false}
                 stroke="var(--color-avgLatency)"
                 strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0 }}
+                type="monotone"
               />
               <Line
-                type="monotone"
+                activeDot={{ r: 4, strokeWidth: 0 }}
                 dataKey="p95Latency"
+                dot={false}
                 stroke="var(--color-p95Latency)"
                 strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0 }}
+                type="monotone"
               />
               <Line
-                type="monotone"
+                activeDot={{ r: 4, strokeWidth: 0 }}
                 dataKey="p99Latency"
+                dot={false}
                 stroke="var(--color-p99Latency)"
                 strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, strokeWidth: 0 }}
+                type="monotone"
               />
             </LineChart>
           ) : (
             <AreaChart
               data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              margin={{ bottom: 0, left: 0, right: 10, top: 10 }}
             >
               <defs>
-                <linearGradient id="colorLatency" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="colorLatency" x1="0" x2="0" y1="0" y2="1">
                   <stop
                     offset="5%"
                     stopColor="var(--color-avgLatency)"
@@ -216,34 +212,34 @@ export function WebhookLatencyChart({
                 </linearGradient>
               </defs>
               <CartesianGrid
+                stroke="hsl(var(--border))"
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="hsl(var(--border))"
               />
               <XAxis
-                dataKey="time"
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
                 axisLine={false}
+                dataKey="time"
+                fontSize={12}
                 minTickGap={30}
+                stroke="hsl(var(--muted-foreground))"
+                tickLine={false}
               />
               <YAxis
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
                 axisLine={false}
+                fontSize={12}
+                stroke="hsl(var(--muted-foreground))"
                 tickFormatter={(value) => `${value}ms`}
+                tickLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
               <Area
-                type="monotone"
-                dataKey="avgLatency"
-                stroke="var(--color-avgLatency)"
-                fillOpacity={1}
-                fill="url(#colorLatency)"
-                strokeWidth={2}
                 activeDot={{ r: 6, strokeWidth: 0 }}
+                dataKey="avgLatency"
+                fill="url(#colorLatency)"
+                fillOpacity={1}
+                stroke="var(--color-avgLatency)"
+                strokeWidth={2}
+                type="monotone"
               />
             </AreaChart>
           )}

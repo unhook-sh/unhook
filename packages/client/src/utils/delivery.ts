@@ -57,8 +57,8 @@ export function resolveDestination({
   }
   const destinationUrl = getUrlString(destinationDef.url);
   return {
-    url: destinationUrl,
     destination: destinationDef.name,
+    url: destinationUrl,
   };
 }
 
@@ -110,10 +110,10 @@ export async function createRequestsForEventToAllDestinations({
       capture?.({
         event: 'webhook_event_skipped',
         properties: {
-          eventId: event.id,
-          webhookId: event.webhookId,
-          source: event.source,
           destination: dest.name,
+          eventId: event.id,
+          source: event.source,
+          webhookId: event.webhookId,
         },
       });
       continue;
@@ -122,34 +122,34 @@ export async function createRequestsForEventToAllDestinations({
     capture?.({
       event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_deliver',
       properties: {
-        eventId: event.id,
-        webhookId: event.webhookId,
-        method: originRequest.method,
         connectionId: connectionId ?? undefined,
-        pingEnabled: pingEnabledFn ? pingEnabledFn(dest) : !!dest.ping,
-        isEventRetry,
-        source: event.source,
         destination: dest.name,
+        eventId: event.id,
+        isEventRetry,
+        method: originRequest.method,
+        pingEnabled: pingEnabledFn ? pingEnabledFn(dest) : !!dest.ping,
+        source: event.source,
         url: urlString,
+        webhookId: event.webhookId,
       },
     });
     const request = await api.requests.create.mutate({
-      webhookId: event.webhookId,
-      eventId: event.id,
       apiKey: event.apiKey ?? undefined,
       connectionId: connectionId ?? undefined,
-      request: originRequest,
-      source: event.source,
       destination: {
         name: dest.name,
         url: urlString,
       },
+      eventId: event.id,
+      request: originRequest,
+      responseTimeMs: 0,
+      source: event.source,
+      status: 'pending',
       timestamp:
         typeof event.timestamp === 'string'
           ? new Date(event.timestamp)
           : event.timestamp,
-      status: 'pending',
-      responseTimeMs: 0,
+      webhookId: event.webhookId,
     });
     if (typeof event.webhookId === 'string') {
       await api.webhooks.updateStats.mutate({ webhookId: event.webhookId });
@@ -183,21 +183,21 @@ export async function handlePendingRequest({
   requestFn?: DeliveryRequestFn;
 }) {
   const dest = resolveDestination({
-    source: request.source,
     delivery,
     destination,
+    source: request.source,
   });
   if (!dest) return;
   capture?.({
     event: 'webhook_request_received',
     properties: {
-      requestId: request.id,
-      webhookId: request.webhookId,
+      destination: dest.destination,
       eventId: request.eventId,
       method: request.request.method,
+      requestId: request.id,
       source: request.source,
-      destination: dest.destination,
       url: dest.url,
+      webhookId: request.webhookId,
     },
   });
   if (request.status === 'pending') {
@@ -216,9 +216,9 @@ export async function handlePendingRequest({
       const { host: _host, ...headers } = request.request.headers;
       const response = await (requestFn
         ? requestFn(dest.url, {
-            method: request.request.method,
-            headers,
             body: requestBody,
+            headers,
+            method: request.request.method,
           })
         : Promise.reject(new Error('No requestFn provided')));
       const responseText = await response.body.text();
@@ -227,25 +227,25 @@ export async function handlePendingRequest({
       capture?.({
         event: 'webhook_request_completed',
         properties: {
-          requestId: request.id,
-          webhookId: request.webhookId,
           eventId: request.eventId,
           method: request.request.method,
+          requestId: request.id,
           responseStatus: response.statusCode,
           responseTimeMs,
+          webhookId: request.webhookId,
         },
       });
       await api.requests.markCompleted.mutate({
         requestId: request.id,
         response: {
-          status: response.statusCode,
+          body: responseBodyBase64,
           headers: Object.fromEntries(
             Object.entries(response.headers).map(([k, v]) => [
               k,
               Array.isArray(v) ? v.join(', ') : v || '',
             ]),
           ),
-          body: responseBodyBase64,
+          status: response.statusCode,
         },
         responseTimeMs,
       });
@@ -257,8 +257,8 @@ export async function handlePendingRequest({
       }
       if (typeof request.webhookId === 'string') {
         await api.webhooks.updateStats.mutate({
-          webhookId: request.webhookId,
           updateLastRequest: true,
+          webhookId: request.webhookId,
         });
       }
     } catch (error) {
@@ -269,16 +269,16 @@ export async function handlePendingRequest({
       capture?.({
         event: 'webhook_request_failed',
         properties: {
+          eventId: request.eventId,
+          failedReason,
+          method: request.request.method,
           requestId: request.id,
           webhookId: request.webhookId,
-          eventId: request.eventId,
-          method: request.request.method,
-          failedReason,
         },
       });
       await api.requests.markFailed.mutate({
-        requestId: request.id,
         failedReason,
+        requestId: request.id,
       });
       if (typeof request.eventId === 'string') {
         const event = await api.events.byId.query({
@@ -288,29 +288,29 @@ export async function handlePendingRequest({
           if (event.retryCount < event.maxRetries) {
             await api.events.updateEventStatus.mutate({
               eventId: event.id,
-              status: 'processing',
               retryCount: event.retryCount + 1,
+              status: 'processing',
             });
             await api.requests.create.mutate({
-              webhookId: request.webhookId,
-              eventId: event.id,
               apiKey: request.apiKey ?? undefined,
-              source: event.source,
               destination: {
                 name: dest.destination,
                 url: dest.url,
               },
+              eventId: event.id,
               request: event.originRequest,
+              responseTimeMs: 0,
+              source: event.source,
               status: 'pending',
               timestamp: new Date(),
-              responseTimeMs: 0,
+              webhookId: request.webhookId,
             });
             if (onRetryRequest) await onRetryRequest(request);
           } else {
             await api.events.updateEventStatus.mutate({
               eventId: event.id,
-              status: 'failed',
               failedReason: `Max retries (${event.maxRetries}) reached. Last error: ${failedReason}`,
+              status: 'failed',
             });
           }
         }

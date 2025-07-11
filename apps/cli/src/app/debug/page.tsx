@@ -7,16 +7,16 @@ import type { RouteProps } from '~/stores/router-store';
 export const DebugPage: FC<RouteProps> = () => {
   const cpuInfo = cpus();
   const systemInfo = {
-    memory: {
-      total: `${(totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
-      free: `${(freemem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
-      used: `${((totalmem() - freemem()) / 1024 / 1024 / 1024).toFixed(2)} GB`,
-    },
+    architecture: arch(),
     cpu:
       cpuInfo.length > 0 ? (cpuInfo[0]?.model ?? 'Unknown CPU') : 'Unknown CPU',
     cpuCount: cpuInfo.length,
+    memory: {
+      free: `${(freemem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
+      total: `${(totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
+      used: `${((totalmem() - freemem()) / 1024 / 1024 / 1024).toFixed(2)} GB`,
+    },
     osType: type(),
-    architecture: arch(),
     uptime: `${(uptime() / 60 / 60).toFixed(2)} hours`,
   };
 

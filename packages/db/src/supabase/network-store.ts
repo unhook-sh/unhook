@@ -57,14 +57,6 @@ const store = createStore<NetworkStore>()((set, get) => {
   };
 
   return {
-    // Initial state
-    status: 'checking',
-    lastChecked: Date.now(),
-    isNode,
-
-    // Actions
-    setStatus: (status) => set({ status, lastChecked: Date.now() }),
-
     checkConnection: async () => {
       const { isNode } = get();
       set({ status: 'checking' });
@@ -73,10 +65,15 @@ const store = createStore<NetworkStore>()((set, get) => {
         ? checkNodeConnection()
         : checkBrowserConnection());
       set({
-        status: isOnline ? 'online' : 'offline',
         lastChecked: Date.now(),
+        status: isOnline ? 'online' : 'offline',
       });
     },
+    isNode,
+    lastChecked: Date.now(),
+
+    // Actions
+    setStatus: (status) => set({ lastChecked: Date.now(), status }),
 
     startMonitoring: (options = {}) => {
       const { checkConnection } = get();
@@ -96,15 +93,17 @@ const store = createStore<NetworkStore>()((set, get) => {
       } else {
         // Browser event listeners
         window.addEventListener('online', () =>
-          set({ status: 'online', lastChecked: Date.now() }),
+          set({ lastChecked: Date.now(), status: 'online' }),
         );
         window.addEventListener('offline', () =>
-          set({ status: 'offline', lastChecked: Date.now() }),
+          set({ lastChecked: Date.now(), status: 'offline' }),
         );
       }
 
       log('Network monitoring started');
     },
+    // Initial state
+    status: 'checking',
 
     stopMonitoring: () => {
       if (intervalId) {
@@ -114,10 +113,10 @@ const store = createStore<NetworkStore>()((set, get) => {
 
       if (!isNode) {
         window.removeEventListener('online', () =>
-          set({ status: 'online', lastChecked: Date.now() }),
+          set({ lastChecked: Date.now(), status: 'online' }),
         );
         window.removeEventListener('offline', () =>
-          set({ status: 'offline', lastChecked: Date.now() }),
+          set({ lastChecked: Date.now(), status: 'offline' }),
         );
       }
 

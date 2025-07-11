@@ -33,14 +33,14 @@ export class EventItem extends vscode.TreeItem {
     // If there are no requests yet, use a default icon based on event status
     if (!lastRequest) {
       this.iconPath = getStatusIconPath({
-        request: null,
-        eventStatus: event.status,
         context,
+        eventStatus: event.status,
+        request: null,
       });
     } else {
       this.iconPath = getStatusIconPath({
-        request: lastRequest,
         context,
+        request: lastRequest,
       });
     }
     this.contextValue = 'event';

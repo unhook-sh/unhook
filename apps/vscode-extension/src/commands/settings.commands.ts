@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import { env } from '../env';
 
 export function registerSettingsCommands(context: vscode.ExtensionContext) {
@@ -23,8 +24,8 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
       );
       const currentPath = config.get('configFilePath');
       const newPath = await vscode.window.showInputBox({
-        prompt: 'Enter the path to your Unhook config file',
         placeHolder: 'e.g., .unhook/config.json',
+        prompt: 'Enter the path to your Unhook config file',
         value: currentPath as string,
       });
 
@@ -42,6 +43,16 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
   const toggleAutoShowOutputCommand = vscode.commands.registerCommand(
     'unhook.toggleAutoShowOutput',
     async () => {
+      const configManager = ConfigManager.getInstance();
+      const isProduction = !configManager.isDevelopment();
+
+      if (isProduction) {
+        vscode.window.showInformationMessage(
+          'Auto-show output is disabled in production mode and cannot be enabled.',
+        );
+        return;
+      }
+
       const config = vscode.workspace.getConfiguration(
         env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
       );

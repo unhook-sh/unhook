@@ -1,0 +1,50 @@
+{
+  "author": "Unhook",
+  "bugs": {
+    "url": "https://github.com/unhook-sh/unhook/issues"
+  },
+  "description": "Unhook JetBrains Plugin - Webhook Development",
+  "devDependencies": {
+    "@types/node": "24.0.12"
+  },
+  "engines": {
+    "node": ">=20.12.0"
+  },
+  "homepage": "https://unhook.sh",
+  "keywords": [
+    "webhook",
+    "development",
+    "jetbrains",
+    "intellij",
+    "plugin",
+    "testing",
+    "debugging"
+  ],
+  "license": "MIT",
+  "main": "build/distributions/unhook-jetbrains-0.2.4.zip",
+  "name": "unhook-jetbrains",
+  "peerDependencies": {
+    "@unhook/client": "workspace:*",
+    "@unhook/logger": "workspace:*"
+  },
+  "private": true,
+  "repository": {
+    "directory": "apps/jetbrains-extension",
+    "type": "git",
+    "url": "https://github.com/unhook-sh/unhook"
+  },
+  "scripts": {
+    "build:debug": "gradle buildPlugin -PdebugBuild=true",
+    "build:plugin": "gradle buildPlugin",
+    "build.skip": "gradle build",
+    "clean": "gradle clean",
+    "dev.skip": "gradle runIde",
+    "package": "gradle buildPlugin",
+    "publish": "gradle publishPlugin",
+    "publish:test": "gradle publishPlugin -PpublishToJetBrainsMarketplace=false",
+    "test": "gradle test",
+    "typecheck.skip": "echo 'Kotlin compilation handled by Gradle'",
+    "verify": "gradle verifyPlugin"
+  },
+  "version": "0.2.4"
+}

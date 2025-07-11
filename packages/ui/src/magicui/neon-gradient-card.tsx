@@ -99,6 +99,10 @@ const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
 
   return (
     <div
+      className={cn(
+        'relative z-10 h-full w-full rounded-[var(--border-radius)]',
+        className,
+      )}
       ref={containerRef}
       style={
         {
@@ -115,10 +119,6 @@ const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
           '--pseudo-element-width': `${dimensions.width + borderSize * 2}px`,
         } as CSSProperties
       }
-      className={cn(
-        'relative z-10 h-full w-full rounded-[var(--border-radius)]',
-        className,
-      )}
       {...props}
     >
       <div

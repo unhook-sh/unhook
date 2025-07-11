@@ -74,7 +74,7 @@ const MemoizedMarkdownBlock = memo(
     components?: Partial<Components>;
   }) {
     return (
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
         {content}
       </ReactMarkdown>
     );
@@ -103,9 +103,9 @@ function MarkdownComponent({
     <div className={className}>
       {blocks.map((block) => (
         <MemoizedMarkdownBlock
-          key={`${blockId}-block`}
-          content={block}
           components={components}
+          content={block}
+          key={`${blockId}-block`}
         />
       ))}
     </div>

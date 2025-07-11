@@ -32,9 +32,9 @@ export const SelectInput = <T extends string = string>({
   indicatorComponent = figures.pointer,
   renderItem,
   keyMapping = {
-    up: ['k', 'up'],
     down: ['j', 'down'],
     select: ['return'],
+    up: ['k', 'up'],
   },
   showHotkeys = true,
   initialIndex = 0,
@@ -73,9 +73,9 @@ export const SelectInput = <T extends string = string>({
       capture({
         event: 'navigation_key_pressed',
         properties: {
-          key: input || 'up',
-          direction: 'up',
           currentIndex: selectedIndex,
+          direction: 'up',
+          key: input || 'up',
           source: 'select_input',
         },
       });
@@ -86,9 +86,9 @@ export const SelectInput = <T extends string = string>({
       capture({
         event: 'navigation_key_pressed',
         properties: {
-          key: input || 'down',
-          direction: 'down',
           currentIndex: selectedIndex,
+          direction: 'down',
+          key: input || 'down',
           source: 'select_input',
         },
       });
@@ -103,11 +103,11 @@ export const SelectInput = <T extends string = string>({
           properties: {
             hotkey: 'return',
             hotkeyName: 'Select',
-            itemValue: selectedItem.value,
             itemLabel:
               typeof selectedItem.label === 'string'
                 ? selectedItem.label
                 : 'Unknown',
+            itemValue: selectedItem.value,
             source: 'select_input',
           },
         });

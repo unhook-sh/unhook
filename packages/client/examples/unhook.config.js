@@ -19,12 +19,6 @@
  * @type {import('@unhook/client/config').WebhookConfig}
  */
 const config = {
-  // Webhook ID for authentication with the webhook server
-  // Can also be set via:
-  // - WEBHOOK_WEBHOOK_ID environment variable
-  // - --webhook-id command line flag
-  webhookId: 't_2vCR1xwHHTLxE5m20AYewlc5y2j',
-
   // Optional: Unique client identifier
   // Can also be set via WEBHOOK_CLIENT_ID environment variable
   // Default: auto-generated
@@ -34,6 +28,12 @@ const config = {
   // Can also be set via WEBHOOK_DEBUG environment variable
   // Default: false
   debug: false,
+  delivery: [
+    {
+      destination: 'clerk',
+      source: 'clerk',
+    },
+  ],
 
   destination: [
     {
@@ -41,12 +41,11 @@ const config = {
       url: 'http://localhost:3000/api/webhooks/clerk',
     },
   ],
-  delivery: [
-    {
-      source: 'clerk',
-      destination: 'clerk',
-    },
-  ],
+  // Webhook ID for authentication with the webhook server
+  // Can also be set via:
+  // - WEBHOOK_WEBHOOK_ID environment variable
+  // - --webhook-id command line flag
+  webhookId: 't_2vCR1xwHHTLxE5m20AYewlc5y2j',
 };
 
 export default config;

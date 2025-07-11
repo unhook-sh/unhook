@@ -7,8 +7,8 @@ export function TestimonialSection() {
 
   return (
     <section
-      id="testimonials"
       className="flex flex-col items-center justify-center w-full"
+      id="testimonials"
     >
       <SectionHeader>
         <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-center text-balance">

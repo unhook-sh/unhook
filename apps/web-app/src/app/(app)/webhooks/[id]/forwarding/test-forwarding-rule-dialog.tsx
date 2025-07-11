@@ -19,7 +19,7 @@ export function TestForwardingRuleDialog({
   onOpenChange,
 }: TestForwardingRuleDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Test Forwarding Rule</DialogTitle>

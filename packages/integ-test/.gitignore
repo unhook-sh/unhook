@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Test output
+coverage/
+test-results/
+*.log
+
+# Build output
+dist/
+.turbo/
+
+# Environment files
+.env
+.env.local
+.env.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary test files
+tmp/
+temp/
+*.tmp

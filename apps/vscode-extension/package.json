@@ -124,6 +124,12 @@
       },
       {
         "category": "Unhook",
+        "command": "unhook.requestWebhookAccess",
+        "icon": "$(unlock)",
+        "title": "Request Webhook Access"
+      },
+      {
+        "category": "Unhook",
         "command": "unhook.createConfig",
         "icon": "$(new-file)",
         "title": "Create unhook.yml Configuration"

@@ -1,7 +1,7 @@
 import {
+  type WebhookConfig,
   findUpConfig,
   loadConfig,
-  type WebhookConfig,
 } from '@unhook/client/config';
 import {
   createRequestsForEventToAllDestinations,
@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
 import type { AuthStore } from '../services/auth.service';
 import { SettingsService } from '../services/settings.service';
+import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 import { EventItem } from '../tree-items/event.item';
 import { RequestItem } from '../tree-items/request.item';
 
@@ -36,9 +37,11 @@ export class EventsProvider
   private readonly POLL_INTERVAL_MS = 2000; // Changed from 10000 to 2000 for more responsive updates
   private config: WebhookConfig | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
+  private authorizationService: WebhookAuthorizationService;
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
+    this.authorizationService = WebhookAuthorizationService.getInstance();
   }
 
   public setAuthStore(authStore: AuthStore) {
@@ -115,6 +118,11 @@ export class EventsProvider
   public refresh(): void {
     log('Refreshing tree data');
     this._onDidChangeTreeData.fire(undefined);
+  }
+
+  public refreshAndFetchEvents(): void {
+    log('Refreshing and fetching events');
+    this.fetchAndUpdateEvents();
   }
 
   public updateEvents(events: EventTypeWithRequest[]): void {
@@ -297,8 +305,26 @@ export class EventsProvider
         webhookId,
       });
       this.updateEvents(events);
+      // If we successfully fetched events, notify authorization service
+      this.authorizationService.handleAuthorizationSuccess();
     } catch (error) {
       log('Failed to fetch events', { error });
+      // Check if it's an authorization error
+      if (
+        error instanceof Error &&
+        (error.message.indexOf('UNAUTHORIZED') !== -1 ||
+          error.message.indexOf('FORBIDDEN') !== -1 ||
+          error.message.indexOf('do not have access') !== -1 ||
+          error.message.indexOf('not authorized') !== -1)
+      ) {
+        const config = await this.getConfig();
+        if (config?.webhookId && this.authStore) {
+          await this.authorizationService.handleAuthorizationError(
+            config.webhookId,
+            this.authStore,
+          );
+        }
+      }
     }
   }
 
@@ -307,11 +333,10 @@ export class EventsProvider
     for (const event of events) {
       if ('event' in event) {
         const requests = await this.getChildren(event);
-        const request = requests.find(
-          (r): r is RequestItem => 'request' in r && r.request.id === requestId,
-        );
-        if (request) {
-          return request.request;
+        for (const r of requests) {
+          if ('request' in r && r.request.id === requestId) {
+            return r.request;
+          }
         }
       }
     }

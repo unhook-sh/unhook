@@ -12,6 +12,7 @@ import { registerInitCommands } from './commands/init.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
+import { registerWebhookAccessCommands } from './commands/webhook-access.commands';
 import { ConfigManager } from './config.manager';
 import { setupFirstTimeUserHandler } from './handlers/first-time-user.handler';
 import { EventsProvider } from './providers/events.provider';
@@ -21,6 +22,8 @@ import { RequestDetailsWebviewProvider } from './request-details-webview/request
 import { AuthStore } from './services/auth.service';
 import { FirstTimeUserService } from './services/first-time-user.service';
 import { SettingsService } from './services/settings.service';
+import { StatusBarService } from './services/status-bar.service';
+import { WebhookAuthorizationService } from './services/webhook-authorization.service';
 import type { EventItem } from './tree-items/event.item';
 import type { RequestItem } from './tree-items/request.item';
 
@@ -61,6 +64,14 @@ export async function activate(context: vscode.ExtensionContext) {
   const settingsService = SettingsService.getInstance();
   context.subscriptions.push(settingsService);
 
+  // Initialize webhook authorization service
+  const authorizationService = WebhookAuthorizationService.getInstance();
+  context.subscriptions.push(authorizationService);
+
+  // Initialize status bar service
+  const statusBarService = new StatusBarService();
+  context.subscriptions.push(statusBarService);
+
   // Add VS Code output destination to default logger
   // In production, always disable auto-show output regardless of user settings
   const isProduction = !configManager.isDevelopment();
@@ -77,6 +88,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Listen for settings changes
   settingsService.onSettingsChange((settings) => {
+
     // In production, always keep auto-show disabled
     outputDestination.autoShow = isProduction
       ? false
@@ -84,38 +96,8 @@ export async function activate(context: vscode.ExtensionContext) {
     updateStatusBar(); // Update status bar when delivery settings change
   });
 
-  // Create status bar item
-  const statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Left,
-    100,
-  );
-
-  // Update status bar based on auth state and delivery status
-  function updateStatusBar() {
-    const deliveryEnabled = isDeliveryEnabled();
-    const deliveryIcon = deliveryEnabled ? '$(play)' : '$(debug-pause)';
-    const deliveryStatus = deliveryEnabled ? 'enabled' : 'paused';
-
-    if (authStore.isValidatingSession) {
-      statusBarItem.text = '$(sync~spin) Validating Unhook Session...';
-      statusBarItem.tooltip = 'Validating your Unhook session...';
-      statusBarItem.command = undefined;
-    } else if (authStore.isSignedIn) {
-      statusBarItem.text = `$(check) Unhook ${deliveryIcon}`;
-      statusBarItem.tooltip = `Unhook connected • Event forwarding ${deliveryStatus}\nClick to open Quick Actions`;
-      statusBarItem.command = 'unhook.showQuickPick';
-    } else {
-      statusBarItem.text = '$(sign-in) Sign in to Unhook';
-      statusBarItem.tooltip = 'Click to sign in to Unhook';
-      statusBarItem.command = 'unhook.signIn';
-    }
-    statusBarItem.show();
-  }
-
-  // Listen for auth state changes
-  authStore.onDidChangeAuth(() => updateStatusBar());
-
-  // Set up first-time user handler
+  // Set auth store on status bar service
+  statusBarService.setAuthStore(authStore);
   setupFirstTimeUserHandler(authStore, firstTimeUserService);
 
   // Listen for delivery setting changes
@@ -129,18 +111,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
   updateStatusBar();
 
-  // Add status bar item to subscriptions
   context.subscriptions.push(
     authStore,
     signInCommand,
     signOutCommand,
-    statusBarItem,
-    configChangeListener,
   );
 
   // Initialize webhook events provider
   const eventsProvider = new EventsProvider(context);
   eventsProvider.setAuthStore(authStore);
+
+  // Listen for when user already has access and needs to refresh
+  authorizationService.onAccessAlreadyGranted(() => {
+    eventsProvider.refreshAndFetchEvents();
+  });
 
   // Register webhook event commands
   registerEventCommands(context, eventsProvider);
@@ -157,6 +141,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerQuickPickCommand(context);
   registerSettingsCommands(context);
   registerDeliveryCommands(context);
+  registerWebhookAccessCommands(context, authStore);
   registerInitCommands(context);
   registerConfigCommands(context, firstTimeUserService);
 

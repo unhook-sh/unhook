@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 
 export interface UnhookSettings {
   output: {
@@ -51,6 +52,14 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
 
   private loadSettings(): UnhookSettings {
     const config = vscode.workspace.getConfiguration('unhook');
+    const configManager = ConfigManager.getInstance();
+    const isProduction = !configManager.isDevelopment();
+
+    // In production, always disable auto-show output regardless of user settings
+    const autoShowSetting = isProduction
+      ? false
+      : config.get('output.autoShow') ?? false;
+
     return {
       configFilePath: config.get('configFilePath') ?? '',
       delivery: {
@@ -65,7 +74,7 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
         showForNewEvents: config.get('notifications.showForNewEvents') ?? true,
       },
       output: {
-        autoShow: config.get('output.autoShow') ?? false,
+        autoShow: autoShowSetting,
         maxLines: config.get('output.maxLines') ?? 1000,
       },
     };

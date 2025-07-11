@@ -44,7 +44,7 @@ export class ConfigManager {
     return ConfigManager.instance;
   }
 
-  private isDevelopment(): boolean {
+  public isDevelopment(): boolean {
     // Check ExtensionMode from context if available
     if (
       this.context &&

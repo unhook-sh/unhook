@@ -1,7 +1,6 @@
 import type { WebhookConfig } from '@unhook/client/config';
 import { findUpConfig, loadConfig } from '@unhook/client/config';
 import * as vscode from 'vscode';
-import { env } from './env';
 
 export class ConfigManager {
   private static instance: ConfigManager;
@@ -11,11 +10,8 @@ export class ConfigManager {
   private context: vscode.ExtensionContext | undefined;
 
   private constructor() {
-    // Set default URLs based on development mode
-    if (this.isDevelopment()) {
-      this.apiUrl = 'http://localhost:3000';
-      this.dashboardUrl = 'http://localhost:3000';
-    }
+    // Default to production URLs
+    // These will only be overridden in actual development scenarios
   }
 
   static getInstance(context?: vscode.ExtensionContext): ConfigManager {
@@ -25,8 +21,13 @@ export class ConfigManager {
     // Store context if provided
     if (context) {
       ConfigManager.instance.context = context;
-      // Re-check development mode with the context
-      if (ConfigManager.instance.isDevelopment()) {
+      // Only override URLs if we're truly in development mode
+      // Check for Extension Development Host which is the most reliable indicator
+      if (
+        ConfigManager.instance.context.extensionMode ===
+          vscode.ExtensionMode.Development ||
+        vscode.env.appName.includes('Extension Development Host')
+      ) {
         ConfigManager.instance.apiUrl = 'http://localhost:3000';
         ConfigManager.instance.dashboardUrl = 'http://localhost:3000';
       }
@@ -35,7 +36,8 @@ export class ConfigManager {
   }
 
   private isDevelopment(): boolean {
-    // Check ExtensionMode from context if available
+    // Only consider it development mode if we have explicit indicators
+    // Priority 1: Extension context mode (most reliable)
     if (
       this.context &&
       this.context.extensionMode === vscode.ExtensionMode.Development
@@ -43,30 +45,13 @@ export class ConfigManager {
       return true;
     }
 
-    // Check if running in Extension Development Host (most reliable for VS Code extensions)
+    // Priority 2: Extension Development Host (VS Code's development environment)
     if (vscode.env.appName.includes('Extension Development Host')) {
       return true;
     }
 
-    // Check environment variables
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.VSCODE_DEV === 'true'
-    ) {
-      return true;
-    }
-
-    // Check if the extension is not installed from marketplace (development scenario)
-    const extension = vscode.extensions.getExtension(
-      env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
-    );
-    if (
-      extension &&
-      extension.extensionPath.includes('.vscode/extensions') === false
-    ) {
-      return true;
-    }
-
+    // Don't rely on NODE_ENV or other environment variables as they may not be
+    // available in the packaged extension running on user's machines
     return false;
   }
 

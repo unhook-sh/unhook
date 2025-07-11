@@ -2,7 +2,18 @@
 
 import { Badge } from '@unhook/ui/components/badge';
 import { Button } from '@unhook/ui/components/button';
-import { Check } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@unhook/ui/components/card';
+import { BorderBeam } from '@unhook/ui/magicui/border-beam';
+import { NeonGradientCard } from '@unhook/ui/magicui/neon-gradient-card';
+import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
+import { Check, Star } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface PricingPlan {
   name: string;
@@ -39,131 +50,231 @@ export function ComparisonPricing({
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Unhook Pricing */}
           <div>
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-primary mb-2">Unhook</h3>
+            <motion.div
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2L2 8v16c0 8.84 6.11 14.41 14 16 7.89-1.59 14-7.16 14-16V8L12 2z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <h3 className="text-2xl font-bold text-primary">Unhook</h3>
+              </div>
               <p className="text-muted-foreground">
                 Built for teams and collaboration
               </p>
-            </div>
+            </motion.div>
+
             <div className="space-y-6">
-              {unhookPricing.map((plan) => (
-                <div
-                  className={`bg-card border rounded-lg p-6 relative ${
-                    plan.popular ? 'border-primary ring-2 ring-primary/20' : ''
-                  }`}
+              {unhookPricing.map((plan, index) => (
+                <motion.div
                   key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
                 >
-                  {plan.popular && (
-                    <Badge className="absolute -top-3 left-6 bg-primary text-primary-foreground">
-                      Most Popular
-                    </Badge>
+                  {plan.popular ? (
+                    <NeonGradientCard className="w-full relative">
+                      <div className="p-6">
+                        <Badge className="absolute -top-3 left-6 bg-primary text-primary-foreground">
+                          <Star className="w-4 h-4 mr-1" />
+                          Most Popular
+                        </Badge>
+                        <PricingPlanContent plan={plan} isPopular={true} />
+                      </div>
+                    </NeonGradientCard>
+                  ) : (
+                    <Card className="relative">
+                      <CardContent className="p-6">
+                        <PricingPlanContent plan={plan} isPopular={false} />
+                      </CardContent>
+                    </Card>
                   )}
-                  <div className="flex items-baseline gap-2 mb-4">
-                    <h4 className="text-xl font-semibold">{plan.name}</h4>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold">{plan.price}</span>
-                      {plan.period !== 'forever' && (
-                        <span className="text-muted-foreground">
-                          /{plan.period}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature) => (
-                      <li className="flex items-start gap-3" key={feature}>
-                        <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className="w-full"
-                    variant={plan.popular ? 'default' : 'outline'}
-                  >
-                    {plan.price === '$0'
-                      ? 'Start Free'
-                      : plan.price === 'Custom'
-                        ? 'Contact Sales'
-                        : 'Start Trial'}
-                  </Button>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
           {/* Competitor Pricing */}
           <div>
-            <div className="text-center mb-8">
+            <motion.div
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               <h3 className="text-2xl font-bold mb-2">{competitor}</h3>
               <p className="text-muted-foreground">
                 Individual-focused pricing
               </p>
-            </div>
+            </motion.div>
+
             <div className="space-y-6">
-              {competitorPricing.map((plan) => (
-                <div
-                  className="bg-card border rounded-lg p-6 opacity-75"
+              {competitorPricing.map((plan, index) => (
+                <motion.div
                   key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + index * 0.1 }}
                 >
-                  <div className="flex items-baseline gap-2 mb-4">
-                    <h4 className="text-xl font-semibold">{plan.name}</h4>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold">{plan.price}</span>
-                      {plan.period !== 'forever' && (
-                        <span className="text-muted-foreground">
-                          /{plan.period}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature) => (
-                      <li className="flex items-start gap-3" key={feature}>
-                        <Check className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground">
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button className="w-full" disabled variant="outline">
-                    {competitor} Plan
-                  </Button>
-                </div>
+                  <Card className="opacity-75 relative">
+                    <CardContent className="p-6">
+                      <div className="flex items-baseline gap-2 mb-4">
+                        <h4 className="text-xl font-semibold text-muted-foreground">
+                          {plan.name}
+                        </h4>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-bold text-muted-foreground">
+                            {plan.price}
+                          </span>
+                          {plan.period !== 'forever' && (
+                            <span className="text-muted-foreground">
+                              /{plan.period}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <ul className="space-y-3 mb-6">
+                        {plan.features.map((feature) => (
+                          <li className="flex items-start gap-3" key={feature}>
+                            <Check className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                            <span className="text-sm text-muted-foreground">
+                              {feature}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Button className="w-full" disabled variant="outline">
+                        {competitor} Plan
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="mt-16 text-center">
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">
-              Why Unhook Offers Better Value
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6 text-left">
-              <div>
-                <h4 className="font-semibold mb-2">No Hidden Fees</h4>
-                <p className="text-sm text-muted-foreground">
-                  Custom domains included, no per-domain charges
-                </p>
+        <motion.div
+          className="mt-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <Card className="relative overflow-hidden">
+            <BorderBeam
+              size={250}
+              duration={12}
+              colorFrom="hsl(var(--primary))"
+              colorTo="hsl(var(--primary))"
+            />
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold">
+                Why Unhook Offers Better Value
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <h4 className="font-semibold mb-2 text-primary">
+                    No Hidden Fees
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Custom domains included, no per-domain charges
+                  </p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.0 }}
+                >
+                  <h4 className="font-semibold mb-2 text-primary">
+                    Team-First Pricing
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Pay per team, not per individual developer
+                  </p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1 }}
+                >
+                  <h4 className="font-semibold mb-2 text-primary">
+                    More Features
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    VS Code integration, AI testing, and collaboration tools
+                  </p>
+                </motion.div>
               </div>
-              <div>
-                <h4 className="font-semibold mb-2">Team-First Pricing</h4>
-                <p className="text-sm text-muted-foreground">
-                  Pay per team, not per individual developer
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">More Features</h4>
-                <p className="text-sm text-muted-foreground">
-                  VS Code integration, AI testing, and collaboration tools
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+interface PricingPlanContentProps {
+  plan: PricingPlan;
+  isPopular: boolean;
+}
+
+function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
+  return (
+    <>
+      <div className="flex items-baseline gap-2 mb-4">
+        <h4 className="text-xl font-semibold">{plan.name}</h4>
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-bold">{plan.price}</span>
+          {plan.period !== 'forever' && (
+            <span className="text-muted-foreground">/{plan.period}</span>
+          )}
+        </div>
+      </div>
+      <ul className="space-y-3 mb-6">
+        {plan.features.map((feature) => (
+          <li className="flex items-start gap-3" key={feature}>
+            <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <span className="text-sm">{feature}</span>
+          </li>
+        ))}
+      </ul>
+      {isPopular ? (
+        <ShimmerButton className="w-full">
+          {plan.price === '$0'
+            ? 'Start Free'
+            : plan.price === 'Custom'
+            ? 'Contact Sales'
+            : 'Start Trial'}
+        </ShimmerButton>
+      ) : (
+        <Button
+          className="w-full"
+          variant={plan.price === '$0' ? 'outline' : 'default'}
+        >
+          {plan.price === '$0'
+            ? 'Start Free'
+            : plan.price === 'Custom'
+            ? 'Contact Sales'
+            : 'Start Trial'}
+        </Button>
+      )}
+    </>
   );
 }

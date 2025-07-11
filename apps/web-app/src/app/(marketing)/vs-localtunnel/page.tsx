@@ -264,17 +264,80 @@ export default function UnhookVsLocaltunnelPage() {
                 comprehensive webhook development platforms.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              {localtunnelComparison.reasons.map((reason) => (
-                <div
-                  className="bg-card border rounded-lg p-6"
-                  key={reason.title}
-                >
-                  <div className="text-4xl mb-4">{reason.icon}</div>
-                  <h3 className="text-xl font-semibold mb-3">{reason.title}</h3>
-                  <p className="text-muted-foreground">{reason.description}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/20 dark:to-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    🛡️
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">🛡️</div>
+                    <h3 className="text-2xl font-bold mb-4 text-emerald-900 dark:text-emerald-100">
+                      Reliability You Can Trust
+                    </h3>
+                    <p className="text-emerald-800 dark:text-emerald-200 text-lg leading-relaxed">
+                      Unlike Localtunnel's aging infrastructure, Unhook provides
+                      enterprise-grade reliability with SLA guarantees and
+                      active maintenance.
+                    </p>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    👥
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">👥</div>
+                    <h3 className="text-2xl font-bold mb-4 text-blue-900 dark:text-blue-100">
+                      Built for Teams
+                    </h3>
+                    <p className="text-blue-800 dark:text-blue-200 text-lg leading-relaxed">
+                      Localtunnel creates individual tunnels. Unhook provides
+                      one shared webhook URL for your entire team with a config
+                      file that lives in your repo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-950/20 dark:to-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    🏢
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">🏢</div>
+                    <h3 className="text-2xl font-bold mb-4 text-violet-900 dark:text-violet-100">
+                      Professional Features
+                    </h3>
+                    <p className="text-violet-800 dark:text-violet-200 text-lg leading-relaxed">
+                      Go beyond basic tunneling with custom domains,
+                      authentication, monitoring, and VS Code integration.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:col-span-2 lg:col-span-2">
+                <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-950/20 dark:to-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-8 h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4 text-6xl opacity-20">
+                    🎯
+                  </div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-6">🎯</div>
+                    <h3 className="text-2xl font-bold mb-4 text-rose-900 dark:text-rose-100">
+                      Webhook-Focused
+                    </h3>
+                    <p className="text-rose-800 dark:text-rose-200 text-lg leading-relaxed">
+                      Purpose-built for webhook development with intelligent
+                      routing, event replay, and provider integrations.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

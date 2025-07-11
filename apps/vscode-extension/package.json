@@ -120,6 +120,12 @@
         "command": "unhook.signOut",
         "icon": "$(sign-out)",
         "title": "Sign out of Unhook"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.createConfig",
+        "icon": "$(new-file)",
+        "title": "Create unhook.yml Configuration"
       }
     ],
     "configuration": {

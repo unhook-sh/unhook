@@ -23,8 +23,10 @@ export class AuthStore implements vscode.Disposable {
   constructor(private readonly context: vscode.ExtensionContext) {
     // Set the API URL environment variable based on ConfigManager
     const configManager = ConfigManager.getInstance();
-    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
+    const baseUrl = configManager.getApiUrl();
+    process.env.NEXT_PUBLIC_API_URL = baseUrl;
 
+    // Initialise the TRPC client using the correctly set base URL.
     this._api = createApiClient();
   }
 
@@ -73,7 +75,8 @@ export class AuthStore implements vscode.Disposable {
     this._isSignedIn = !!token;
     // Update API URL before creating client
     const configManager = ConfigManager.getInstance();
-    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
+    const baseUrl = configManager.getApiUrl();
+    process.env.NEXT_PUBLIC_API_URL = baseUrl;
     this._api = createApiClient({ authToken: token ?? undefined });
     this._onDidChangeAuth.fire();
     log('Auth token updated', { isSignedIn: this._isSignedIn });

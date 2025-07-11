@@ -30,7 +30,8 @@
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
     "./react": "./src/react/client-exports.ts",
-    "./server": "./src/react/server-exports.ts"
+    "./server": "./src/react/server-exports.ts",
+    "./env": "./src/env.client.ts"
   },
   "license": "MIT",
   "name": "@unhook/api",

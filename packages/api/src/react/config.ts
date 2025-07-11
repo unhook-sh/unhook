@@ -5,10 +5,17 @@ import { env } from '../env.client';
 export const getBaseUrl = () => {
   if (typeof globalThis !== 'undefined' && globalThis.location)
     return globalThis.location.origin;
+  // Prefer runtime environment variable if available (helps VSCode extension and other
+  // non-browser runtimes where we can set process.env at start-up)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const runtimeEnv = (globalThis as any).process?.env as
+    | Record<string, string>
+    | undefined;
+  if (runtimeEnv?.NEXT_PUBLIC_API_URL) return runtimeEnv.NEXT_PUBLIC_API_URL;
   if (env.NEXT_PUBLIC_API_URL) return env.NEXT_PUBLIC_API_URL;
   if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
 
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  return `http://localhost:${runtimeEnv?.PORT ?? 3000}`;
 };
 
 export const createDefaultLinks = ({

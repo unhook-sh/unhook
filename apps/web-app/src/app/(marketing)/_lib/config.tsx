@@ -336,7 +336,7 @@ export const siteConfig = {
           </div>
         ),
         description:
-          'Works with VS Code, Cursor, and other editors. Compatible with all major webhook providers and development environments.',
+          'Works with VS Code, JetBrains IDEs, Cursor, and other editors. Compatible with all major webhook providers and development environments.',
         id: 2,
         title: 'Universal Compatibility',
       },
@@ -394,8 +394,9 @@ export const siteConfig = {
       { href: '#hero', id: 1, name: 'Home' },
       { href: '#bento', id: 2, name: 'How it Works' },
       { href: '/vscode', id: 3, name: 'VS Code Extension' },
-      // { id: 4, name: 'Features', href: '#features' },
-      // { id: 5, name: 'Pricing', href: '#pricing' },
+      { href: '/jetbrains', id: 4, name: 'JetBrains Plugin' },
+      // { id: 5, name: 'Features', href: '#features' },
+      // { id: 6, name: 'Pricing', href: '#pricing' },
     ],
   },
   pricing: {

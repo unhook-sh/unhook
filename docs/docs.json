@@ -89,6 +89,7 @@
             "pages": [
               "cli",
               "vscode-extension",
+              "jetbrains-extension",
               "architecture",
               "cross-platform-setup",
               "essentials/data-model"
@@ -96,7 +97,7 @@
           },
           {
             "group": "Development",
-            "pages": ["contributing", "vscode-extension-automation"]
+            "pages": ["contributing", "vscode-extension-automation", "jetbrains-extension-automation"]
           }
         ],
         "tab": "Guides"

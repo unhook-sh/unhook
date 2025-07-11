@@ -1,0 +1,254 @@
+---
+title: "JetBrains Extension Release Automation"
+description: "Automated release system for the JetBrains plugin"
+---
+
+# JetBrains Extension Release Automation
+
+This document outlines the automated release system for the JetBrains plugin (`apps/jetbrains-extension`) that enables seamless publishing to the JetBrains Marketplace with optional code signing.
+
+## Implementation Overview
+
+The automation consists of two main components:
+
+### 1. GitHub Workflow
+
+The workflow is defined in `.github/workflows/jetbrains-extension-release.yml`:
+
+**Triggers:**
+- Automatically after the "Changeset NPM Release" workflow completes
+- Manual dispatch for testing/emergency releases
+
+**Conditions:**
+- Only runs when the commit message contains "chore: version packages" (indicating a version bump)
+- Only runs when the JetBrains extension's `package.json` version was actually changed
+
+**Process:**
+1. **Version Check**: Validates that this is a version bump commit and that the JetBrains extension version specifically changed
+2. **Release**: Builds, verifies, signs (optionally), publishes to JetBrains Marketplace, and creates GitHub release
+
+### 2. Composite Action
+
+The composite action is located at `tooling/github/jetbrains-extension/github-release/action.yml`:
+
+**Steps:**
+1. **Setup Environment**: Uses the shared setup action and configures Java 21
+2. **Setup Gradle**: Configures Gradle with wrapper validation
+3. **Build Plugin**: Compiles the Kotlin/Java plugin code
+4. **Verify Plugin**: Runs JetBrains plugin verification for compatibility
+5. **Sign Plugin**: (Optional) Signs the plugin with provided certificate
+6. **Build Distribution**: Creates the final plugin ZIP distribution
+7. **Publish to JetBrains Marketplace**: Publishes using Gradle IntelliJ Platform Plugin
+8. **Extract Changelog**: Reads version-specific changes from `CHANGELOG.md`
+9. **Create GitHub Release**: Creates release with tag `jetbrains-v{version}` and attaches ZIP file
+
+## Setup Requirements
+
+### Required GitHub Secrets
+
+Add the following secrets to your GitHub repository:
+
+- `JETBRAINS_MARKETPLACE_TOKEN`: Token for JetBrains Marketplace
+  - Generate at: https://plugins.jetbrains.com/author/me/tokens
+  - Requires publishing permissions
+  - Should be associated with your JetBrains account
+
+### Optional GitHub Secrets (Recommended for Production)
+
+- `JETBRAINS_CERTIFICATE_CHAIN`: Certificate chain for plugin signing
+  - Should be in PEM format
+  - Remove line breaks and store as single-line string
+  - Enhances trust and security for plugin distribution
+
+- `JETBRAINS_PRIVATE_KEY`: Private key for plugin signing
+  - Should be in PEM format  
+  - Remove line breaks and store as single-line string
+  - Must match the certificate chain
+
+- `JETBRAINS_PRIVATE_KEY_PASSWORD`: Password for private key (if encrypted)
+  - Only required if your private key is password-protected
+
+### JetBrains Marketplace Setup
+
+Before publishing to JetBrains Marketplace:
+
+1. **Create JetBrains account** at jetbrains.com
+2. **Apply for publisher status** at plugins.jetbrains.com
+3. **Create API token** in your publisher profile
+4. **Plugin verification** is handled automatically by the workflow
+
+<Note>
+The automation will handle plugin verification and compatibility checks automatically during the build process.
+</Note>
+
+### JetBrains Plugin Configuration
+
+The automation expects:
+- Plugin built with Gradle and IntelliJ Platform Gradle Plugin (already configured)
+- Plugin ID set to "sh.unhook.jetbrains" in `plugin.xml` (already set)
+- Changelog maintained in `apps/jetbrains-extension/CHANGELOG.md` with version sections like:
+
+```markdown
+## [0.2.4] - 2024-01-15
+- Feature description
+- Bug fix description
+
+## [0.2.3] - 2024-01-10
+- Previous version changes
+```
+
+## Workflow Integration
+
+### Automatic Process
+
+1. **Version Bump PR**: Changesets workflow creates PR with version bumps
+2. **PR Merge**: When PR is merged to `main`, Changeset NPM Release workflow runs
+3. **JetBrains Release**: If JetBrains extension version changed, the JetBrains Extension Release workflow automatically triggers
+4. **Build & Verification**: Plugin is built and verified for compatibility
+5. **Optional Signing**: If certificates are configured, plugin is signed for enhanced trust
+6. **Marketplace Publication**: Plugin is published to JetBrains Marketplace
+7. **GitHub Release**: Release created with ZIP file attachment
+
+### Manual Fallback
+
+If automation fails, manual release steps:
+
+```bash
+# Navigate to extension directory
+cd apps/jetbrains-extension
+
+# Build plugin
+./gradlew build
+
+# Verify plugin
+./gradlew verifyPlugin
+
+# Build distribution
+./gradlew buildPlugin
+
+# Publish to JetBrains Marketplace (requires JETBRAINS_MARKETPLACE_TOKEN)
+./gradlew publishPlugin
+```
+
+## Platform Coverage
+
+Publishing to JetBrains Marketplace ensures broad compatibility across all JetBrains IDEs:
+
+- **IntelliJ IDEA** (Community & Ultimate)
+- **WebStorm, PhpStorm, PyCharm** (Professional & Community)
+- **RubyMine, CLion, GoLand**
+- **DataGrip, Rider**
+- **Android Studio** (Google's distribution)
+
+## Plugin Verification
+
+The workflow includes comprehensive verification:
+
+- **Compatibility Check**: Ensures plugin works with target IDE versions (2024.2+)
+- **API Usage Validation**: Detects deprecated or internal API usage
+- **Plugin Structure**: Validates plugin.xml and overall plugin structure
+- **Dependency Analysis**: Checks for missing or conflicting dependencies
+- **Build Integrity**: Verifies successful compilation and packaging
+
+## Code Signing (Optional)
+
+The workflow supports optional plugin signing for enhanced security:
+
+### Benefits of Signing
+- **Enhanced Trust**: Signed plugins are marked as verified
+- **Security**: Prevents tampering and ensures authenticity
+- **Professional Distribution**: Recommended for commercial plugins
+
+### Certificate Requirements
+- **Code Signing Certificate**: From a trusted Certificate Authority
+- **PEM Format**: Certificate chain and private key in PEM format
+- **Key Management**: Secure storage in GitHub Secrets
+
+### Signing Process
+1. **Certificate Validation**: Verifies certificate chain integrity
+2. **Plugin Signing**: Signs the compiled plugin with private key
+3. **Verification**: Confirms signature validity
+4. **Distribution**: Signed plugin ready for marketplace
+
+## Monitoring
+
+The workflow provides clear logging for each step:
+- Build status and compilation output
+- Plugin verification results with detailed reports
+- Signing status (if configured)
+- JetBrains Marketplace publishing result
+- GitHub release creation
+
+Failed steps will be clearly indicated in the GitHub Actions logs with actionable error messages.
+
+## Security Considerations
+
+- `JETBRAINS_MARKETPLACE_TOKEN` is securely stored as GitHub secret
+- Certificate and private key are encrypted in GitHub Secrets
+- Signing certificates have minimal required permissions (code signing only)
+- Plugin files are built from source during workflow execution
+- All steps logged for audit trail
+- No sensitive data exposed in logs
+
+## File Structure
+
+```
+.github/workflows/
+└── jetbrains-extension-release.yml
+
+tooling/github/jetbrains-extension/
+└── github-release/
+    └── action.yml
+
+apps/jetbrains-extension/
+├── build.gradle.kts
+├── gradle.properties
+├── src/main/resources/META-INF/plugin.xml
+└── CHANGELOG.md
+```
+
+<Note>
+The workflow only triggers when the JetBrains extension version specifically changes. GitHub releases use the tag format `jetbrains-v{version}` to distinguish from other extension releases.
+</Note>
+
+## Best Practices
+
+### Version Management
+- ZIP files are automatically attached to GitHub releases for manual distribution
+- Version management is handled by the Changesets workflow - no manual version bumping required
+- Semantic versioning is enforced through changeset configuration
+
+### Quality Assurance
+- Plugin verification runs before publishing to catch compatibility issues
+- Build artifacts include verification reports for debugging
+- Automated testing ensures plugin stability across IDE versions
+
+### Security
+- Code signing enhances plugin trustworthiness
+- Secure token management through GitHub Secrets
+- Certificate validation prevents distribution of compromised plugins
+
+### Development Workflow
+- The automation follows the same patterns as other release workflows for consistency
+- Gradle-based build system provides reliable, reproducible builds
+- Local development workflow mirrors CI/CD process
+
+## Build Artifacts
+
+Each successful build produces:
+
+### Distribution Files
+- **Plugin ZIP**: Ready for marketplace or manual installation
+- **Build Reports**: Compilation and verification results
+- **Verification Report**: Compatibility analysis
+
+### GitHub Release Assets
+- **unhook-jetbrains-{version}.zip**: Main plugin distribution
+- **Build artifacts**: Uploaded for 30 days for debugging
+
+### Marketplace Distribution
+- **Automatic Publication**: Direct upload to JetBrains Marketplace
+- **Version Metadata**: Changelog and compatibility information
+- **Plugin Verification**: Marketplace runs additional checks
+
+This automation provides a production-ready, secure release pipeline that ensures high-quality plugin distribution while maintaining security and reliability standards.

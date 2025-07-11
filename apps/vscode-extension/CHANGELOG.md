@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.5
+
+### Patch Changes
+
+- [`412a037`](https://github.com/unhook-sh/unhook/commit/412a03707f81bc6c541a5083801ca46bdd4219fc) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with login
+
 ## 0.2.4
 
 ### Patch Changes

@@ -6,7 +6,6 @@ import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useRef } from 'react';
-import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 const fadeInUpVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -64,28 +63,19 @@ const JetBrainsMockup = () => {
                 width="16"
               >
                 <title>JetBrains Icon</title>
-                <path
-                  d="M0 0h16v16H0V0Z"
-                  fill="url(#jetbrains-gradient)"
-                />
-                <path
-                  d="M2 2h5v5H2V2Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M9 2h5v5H9V2Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M2 9h5v5H2V9Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M9 9h5v5H9V9Z"
-                  fill="currentColor"
-                />
+                <path d="M0 0h16v16H0V0Z" fill="url(#jetbrains-gradient)" />
+                <path d="M2 2h5v5H2V2Z" fill="currentColor" />
+                <path d="M9 2h5v5H9V2Z" fill="currentColor" />
+                <path d="M2 9h5v5H2V9Z" fill="currentColor" />
+                <path d="M9 9h5v5H9V9Z" fill="currentColor" />
                 <defs>
-                  <linearGradient id="jetbrains-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient
+                    id="jetbrains-gradient"
+                    x1="0%"
+                    x2="100%"
+                    y1="0%"
+                    y2="100%"
+                  >
                     <stop offset="0%" stopColor="#FF6B00" />
                     <stop offset="100%" stopColor="#FF8C00" />
                   </linearGradient>
@@ -202,8 +192,6 @@ const JetBrainsMockup = () => {
 };
 
 export function JetBrainsHeroSection() {
-  const { hero } = siteConfig;
-
   return (
     <section className="w-full relative" id="hero">
       <div className="relative flex flex-col items-center w-full px-6">
@@ -230,23 +218,29 @@ export function JetBrainsHeroSection() {
             >
               <title>JetBrains Icon</title>
               <rect
-                width="16"
-                height="16"
                 fill="url(#jetbrains-gradient-badge)"
+                height="16"
                 rx="2"
+                width="16"
               />
               <text
-                x="8"
-                y="12"
-                textAnchor="middle"
+                fill="white"
                 fontSize="8"
                 fontWeight="bold"
-                fill="white"
+                textAnchor="middle"
+                x="8"
+                y="12"
               >
                 JB
               </text>
               <defs>
-                <linearGradient id="jetbrains-gradient-badge" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient
+                  id="jetbrains-gradient-badge"
+                  x1="0%"
+                  x2="100%"
+                  y1="0%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor="#FF6B00" />
                   <stop offset="100%" stopColor="#FF8C00" />
                 </linearGradient>
@@ -263,7 +257,8 @@ export function JetBrainsHeroSection() {
               className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium tracking-tighter text-balance text-center text-primary"
               variants={fadeInUpVariants}
             >
-              Webhook Testing for<br />
+              Webhook Testing for
+              <br />
               <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
                 JetBrains IDEs
               </span>
@@ -272,8 +267,9 @@ export function JetBrainsHeroSection() {
               className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight max-w-2xl"
               variants={fadeInUpVariants}
             >
-              Debug webhooks directly in IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs. 
-              Seamless integration with your development workflow.
+              Debug webhooks directly in IntelliJ IDEA, WebStorm, PyCharm, and
+              all JetBrains IDEs. Seamless integration with your development
+              workflow.
             </motion.p>
           </motion.div>
 

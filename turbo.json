@@ -52,30 +52,6 @@
         "build/**"
       ]
     },
-    "unhook-jetbrains#build": {
-      "dependsOn": ["^build"],
-      "outputs": [
-        "build/distributions/**",
-        "build/libs/**",
-        "build/reports/**"
-      ]
-    },
-    "unhook-jetbrains#dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "unhook-jetbrains#verify": {
-      "dependsOn": ["build"],
-      "outputs": [
-        "build/reports/**"
-      ]
-    },
-    "unhook-jetbrains#package": {
-      "dependsOn": ["build"],
-      "outputs": [
-        "build/distributions/**"
-      ]
-    },
     "clean": {
       "cache": false
     },
@@ -133,6 +109,22 @@
     "ui-add": {
       "cache": false,
       "interactive": true
+    },
+    "unhook-jetbrains#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/distributions/**", "build/libs/**", "build/reports/**"]
+    },
+    "unhook-jetbrains#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "unhook-jetbrains#package": {
+      "dependsOn": ["build"],
+      "outputs": ["build/distributions/**"]
+    },
+    "unhook-jetbrains#verify": {
+      "dependsOn": ["build"],
+      "outputs": ["build/reports/**"]
     }
   },
   "ui": "tui"

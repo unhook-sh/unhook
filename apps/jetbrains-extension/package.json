@@ -1,27 +1,16 @@
 {
-  "name": "unhook-jetbrains",
-  "version": "0.2.4",
+  "author": "Unhook",
+  "bugs": {
+    "url": "https://github.com/unhook-sh/unhook/issues"
+  },
   "description": "Unhook JetBrains Plugin - Webhook Development",
-  "private": true,
-  "main": "build/distributions/unhook-jetbrains-0.2.4.zip",
-  "scripts": {
-    "build": "gradle build",
-    "build:plugin": "gradle buildPlugin",
-    "build:debug": "gradle buildPlugin -PdebugBuild=true",
-    "clean": "gradle clean",
-    "dev": "gradle runIde",
-    "test": "gradle test",
-    "verify": "gradle verifyPlugin",
-    "package": "gradle buildPlugin",
-    "publish": "gradle publishPlugin",
-    "publish:test": "gradle publishPlugin -PpublishToJetBrainsMarketplace=false",
-    "typecheck": "echo 'Kotlin compilation handled by Gradle'"
+  "devDependencies": {
+    "@types/node": "24.0.12"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/unhook-sh/unhook",
-    "directory": "apps/jetbrains-extension"
+  "engines": {
+    "node": ">=20.12.0"
   },
+  "homepage": "https://unhook.sh",
   "keywords": [
     "webhook",
     "development",
@@ -31,20 +20,31 @@
     "testing",
     "debugging"
   ],
-  "author": "Unhook",
   "license": "MIT",
-  "homepage": "https://unhook.sh",
-  "bugs": {
-    "url": "https://github.com/unhook-sh/unhook/issues"
-  },
-  "engines": {
-    "node": ">=20.12.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0"
-  },
+  "main": "build/distributions/unhook-jetbrains-0.2.4.zip",
+  "name": "unhook-jetbrains",
   "peerDependencies": {
     "@unhook/client": "workspace:*",
     "@unhook/logger": "workspace:*"
-  }
+  },
+  "private": true,
+  "repository": {
+    "directory": "apps/jetbrains-extension",
+    "type": "git",
+    "url": "https://github.com/unhook-sh/unhook"
+  },
+  "scripts": {
+    "build:debug": "gradle buildPlugin -PdebugBuild=true",
+    "build:plugin": "gradle buildPlugin",
+    "build.skip": "gradle build",
+    "clean": "gradle clean",
+    "dev.skip": "gradle runIde",
+    "package": "gradle buildPlugin",
+    "publish": "gradle publishPlugin",
+    "publish:test": "gradle publishPlugin -PpublishToJetBrainsMarketplace=false",
+    "test": "gradle test",
+    "typecheck.skip": "echo 'Kotlin compilation handled by Gradle'",
+    "verify": "gradle verifyPlugin"
+  },
+  "version": "0.2.4"
 }

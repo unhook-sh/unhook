@@ -20,11 +20,11 @@ dependencies {
         create("IC", "2024.2.6")
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
     }
-    
+
     // Shared packages from the workspace
     implementation("@unhook/client:0.5.3")
     implementation("@unhook/logger:workspace:*")
-    
+
     // External dependencies
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:okhttp-sse:4.12.0")
@@ -32,7 +32,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    
+
     // Test dependencies
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
@@ -44,7 +44,7 @@ intellijPlatform {
             sinceBuild = "242"
             untilBuild = "243.*"
         }
-        
+
         changeNotes = """
             <h3>0.2.4</h3>
             <ul>
@@ -56,11 +56,11 @@ intellijPlatform {
             </ul>
         """.trimIndent()
     }
-    
+
     publishing {
         token = System.getenv("JETBRAINS_MARKETPLACE_TOKEN")
     }
-    
+
     signing {
         certificateChain = System.getenv("JETBRAINS_CERTIFICATE_CHAIN")
         privateKey = System.getenv("JETBRAINS_PRIVATE_KEY")
@@ -73,15 +73,15 @@ tasks {
         sourceCompatibility = "21"
         targetCompatibility = "21"
     }
-    
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "21"
     }
-    
+
     test {
         useJUnitPlatform()
     }
-    
+
     buildSearchableOptions {
         enabled = false
     }

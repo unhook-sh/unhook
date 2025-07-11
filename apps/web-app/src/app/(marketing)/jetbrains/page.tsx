@@ -5,24 +5,39 @@ import { CTASection } from '~/app/(marketing)/_components/sections/cta-section';
 import { FAQSection } from '~/app/(marketing)/_components/sections/faq-section';
 import { FooterSection } from '~/app/(marketing)/_components/sections/footer-section';
 import { GrowthSection } from '~/app/(marketing)/_components/sections/growth-section';
-import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
-import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
 import { JetBrainsFeaturesSection } from '~/app/(marketing)/_components/sections/jetbrains-features-section';
 import { JetBrainsHeroSection } from '~/app/(marketing)/_components/sections/jetbrains-hero-section';
+import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
+import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
 import { siteConfig } from '../_lib/config';
 
 export const metadata: Metadata = {
-  title: 'JetBrains Plugin | Unhook - Webhook Testing for IntelliJ IDEA & More',
-  description: 'Debug webhooks directly in JetBrains IDEs. Native plugin for IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs. Real-time monitoring and team collaboration.',
-  keywords: ['JetBrains', 'IntelliJ IDEA', 'WebStorm', 'PyCharm', 'PhpStorm', 'webhook testing', 'plugin', 'debugging', 'development tools'],
+  description:
+    'Debug webhooks directly in JetBrains IDEs. Native plugin for IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs. Real-time monitoring and team collaboration.',
+  keywords: [
+    'JetBrains',
+    'IntelliJ IDEA',
+    'WebStorm',
+    'PyCharm',
+    'PhpStorm',
+    'webhook testing',
+    'plugin',
+    'debugging',
+    'development tools',
+  ],
   openGraph: {
-    title: 'JetBrains Plugin | Unhook - Webhook Testing for IntelliJ IDEA & More',
-    description: 'Debug webhooks directly in JetBrains IDEs. Native plugin for IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs.',
+    description:
+      'Debug webhooks directly in JetBrains IDEs. Native plugin for IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs.',
+    title:
+      'JetBrains Plugin | Unhook - Webhook Testing for IntelliJ IDEA & More',
     url: '/jetbrains',
   },
+  title: 'JetBrains Plugin | Unhook - Webhook Testing for IntelliJ IDEA & More',
   twitter: {
-    title: 'JetBrains Plugin | Unhook - Webhook Testing for IntelliJ IDEA & More',
-    description: 'Debug webhooks directly in JetBrains IDEs. Native plugin for IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs.',
+    description:
+      'Debug webhooks directly in JetBrains IDEs. Native plugin for IntelliJ IDEA, WebStorm, PyCharm, and all JetBrains IDEs.',
+    title:
+      'JetBrains Plugin | Unhook - Webhook Testing for IntelliJ IDEA & More',
   },
 };
 

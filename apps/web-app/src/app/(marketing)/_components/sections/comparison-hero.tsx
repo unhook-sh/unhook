@@ -74,23 +74,23 @@ export function ComparisonHero({
             </Badge>
 
             <WordFadeIn
-              words={title}
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
+              words={title}
             />
 
             <motion.p
+              animate={{ opacity: 1, y: 0 }}
               className="text-xl md:text-2xl text-primary font-semibold"
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: BLUR_FADE_DELAY * 3, duration: 0.5 }}
             >
               {subtitle}
             </motion.p>
 
             <motion.p
+              animate={{ opacity: 1, y: 0 }}
               className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: BLUR_FADE_DELAY * 4, duration: 0.5 }}
             >
               {description}

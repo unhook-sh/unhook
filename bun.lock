@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.13.1",
+      "version": "0.13.3",
       "bin": {
         "unhook": "./bin/cli.js",
       },
@@ -91,11 +91,22 @@
         "ws": "8.18.3",
       },
     },
+    "apps/jetbrains-extension": {
+      "name": "unhook-jetbrains",
+      "version": "0.2.4",
+      "devDependencies": {
+        "@types/node": "24.0.12",
+      },
+      "peerDependencies": {
+        "@unhook/client": "workspace:*",
+        "@unhook/logger": "workspace:*",
+      },
+    },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.2.1",
+      "version": "0.2.4",
       "dependencies": {
-        "@unhook/client": "0.5.1",
+        "@unhook/client": "0.5.3",
         "clsx": "2.1.1",
         "date-fns": "4.1.0",
         "react": "19.1.0",
@@ -110,7 +121,7 @@
         "@types/node": "24.0.12",
         "@types/react": "19.1.8",
         "@types/react-dom": "19.1.6",
-        "@types/vscode": "1.101.0",
+        "@types/vscode": "1.96.0",
         "@vitejs/plugin-react": "4.6.0",
         "@vscode/test-cli": "0.0.11",
         "@vscode/test-electron": "2.5.2",
@@ -129,7 +140,7 @@
     },
     "apps/web-app": {
       "name": "@unhook/web-app",
-      "version": "0.1.10",
+      "version": "0.1.12",
       "dependencies": {
         "@clerk/elements": "0.23.38",
         "@clerk/nextjs": "6.24.0",
@@ -252,7 +263,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.5.1",
+      "version": "0.5.3",
       "dependencies": {
         "@supabase/supabase-js": "2.50.4",
         "@t3-oss/env-core": "0.13.8",
@@ -375,7 +386,7 @@
       "devDependencies": {
         "@types/bun": "1.2.18",
         "@types/debug": "4.1.12",
-        "@types/vscode": "1.101.0",
+        "@types/vscode": "1.96.0",
         "typescript": "5.8.3",
       },
     },
@@ -557,6 +568,9 @@
     "lefthook",
     "supabase",
   ],
+  "overrides": {
+    "@types/vscode": "1.96.0",
+  },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.4.3", "", {}, "sha512-VQKMkwriZbaOgVCby1UDY/LDk5fIjhQicCvVPFqfe+69fWaPWydbWJ3wRt59/YzIwda1I81loas3oCoHxnqvdA=="],
 
@@ -1982,7 +1996,7 @@
 
     "@types/use-sync-external-store": ["@types/use-sync-external-store@0.0.6", "", {}, "sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg=="],
 
-    "@types/vscode": ["@types/vscode@1.101.0", "", {}, "sha512-ZWf0IWa+NGegdW3iU42AcDTFHWW7fApLdkdnBqwYEtHVIBGbTu0ZNQKP/kX3Ds/uMJXIMQNAojHR4vexCEEz5Q=="],
+    "@types/vscode": ["@types/vscode@1.96.0", "", {}, "sha512-qvZbSZo+K4ZYmmDuaodMbAa67Pl6VDQzLKFka6rq+3WUTY4Kro7Bwoi0CuZLO/wema0ygcmpwow7zZfPJTs5jg=="],
 
     "@types/webxr": ["@types/webxr@0.5.22", "", {}, "sha512-Vr6Stjv5jPRqH690f5I5GLjVk8GSsoQSYJ2FVd/3jJF7KaqfwPi3ehfBS96mlQ2kPCwZaX6U0rG2+NGHBKkA/A=="],
 
@@ -4741,6 +4755,8 @@
     "undici": ["undici@7.11.0", "", {}, "sha512-heTSIac3iLhsmZhUCjyS3JQEkZELateufzZuBaVM5RHXdSBMb1LPMQf5x+FH7qjsZYDP0ttAc3nnVpUB+wYbOg=="],
 
     "undici-types": ["undici-types@7.8.0", "", {}, "sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw=="],
+
+    "unhook-jetbrains": ["unhook-jetbrains@workspace:apps/jetbrains-extension"],
 
     "unhook-vscode": ["unhook-vscode@workspace:apps/vscode-extension"],
 

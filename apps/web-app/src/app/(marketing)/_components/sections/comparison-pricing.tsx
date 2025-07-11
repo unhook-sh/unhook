@@ -5,7 +5,6 @@ import { Button } from '@unhook/ui/components/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@unhook/ui/components/card';
@@ -51,18 +50,20 @@ export function ComparisonPricing({
           {/* Unhook Pricing */}
           <div>
             <motion.div
+              animate={{ opacity: 1, y: 0 }}
               className="text-center mb-8"
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
               <div className="flex items-center justify-center gap-2 mb-2">
                 <svg
+                  aria-label="Unhook Logo"
                   className="w-8 h-8 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
+                  <title>Unhook Logo</title>
                   <path
                     d="M12 2L2 8v16c0 8.84 6.11 14.41 14 16 7.89-1.59 14-7.16 14-16V8L12 2z"
                     fill="currentColor"
@@ -78,9 +79,9 @@ export function ComparisonPricing({
             <div className="space-y-6">
               {unhookPricing.map((plan, index) => (
                 <motion.div
-                  key={plan.name}
-                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  key={plan.name}
                   transition={{ delay: 0.2 + index * 0.1 }}
                 >
                   {plan.popular ? (
@@ -90,13 +91,13 @@ export function ComparisonPricing({
                           <Star className="w-4 h-4 mr-1" />
                           Most Popular
                         </Badge>
-                        <PricingPlanContent plan={plan} isPopular={true} />
+                        <PricingPlanContent isPopular={true} plan={plan} />
                       </div>
                     </NeonGradientCard>
                   ) : (
                     <Card className="relative">
                       <CardContent className="p-6">
-                        <PricingPlanContent plan={plan} isPopular={false} />
+                        <PricingPlanContent isPopular={false} plan={plan} />
                       </CardContent>
                     </Card>
                   )}
@@ -108,9 +109,9 @@ export function ComparisonPricing({
           {/* Competitor Pricing */}
           <div>
             <motion.div
+              animate={{ opacity: 1, y: 0 }}
               className="text-center mb-8"
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
               <h3 className="text-2xl font-bold mb-2">{competitor}</h3>
@@ -122,9 +123,9 @@ export function ComparisonPricing({
             <div className="space-y-6">
               {competitorPricing.map((plan, index) => (
                 <motion.div
-                  key={plan.name}
-                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  key={plan.name}
                   transition={{ delay: 0.4 + index * 0.1 }}
                 >
                   <Card className="opacity-75 relative">
@@ -166,17 +167,17 @@ export function ComparisonPricing({
         </div>
 
         <motion.div
+          animate={{ opacity: 1, y: 0 }}
           className="mt-16"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
           <Card className="relative overflow-hidden">
             <BorderBeam
-              size={250}
-              duration={12}
               colorFrom="hsl(var(--primary))"
               colorTo="hsl(var(--primary))"
+              duration={12}
+              size={250}
             />
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold">
@@ -186,8 +187,8 @@ export function ComparisonPricing({
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
                   transition={{ delay: 0.9 }}
                 >
                   <h4 className="font-semibold mb-2 text-primary">
@@ -198,8 +199,8 @@ export function ComparisonPricing({
                   </p>
                 </motion.div>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
                   transition={{ delay: 1.0 }}
                 >
                   <h4 className="font-semibold mb-2 text-primary">
@@ -210,8 +211,8 @@ export function ComparisonPricing({
                   </p>
                 </motion.div>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
                   transition={{ delay: 1.1 }}
                 >
                   <h4 className="font-semibold mb-2 text-primary">
@@ -260,8 +261,8 @@ function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
           {plan.price === '$0'
             ? 'Start Free'
             : plan.price === 'Custom'
-            ? 'Contact Sales'
-            : 'Start Trial'}
+              ? 'Contact Sales'
+              : 'Start Trial'}
         </ShimmerButton>
       ) : (
         <Button
@@ -271,8 +272,8 @@ function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
           {plan.price === '$0'
             ? 'Start Free'
             : plan.price === 'Custom'
-            ? 'Contact Sales'
-            : 'Start Trial'}
+              ? 'Contact Sales'
+              : 'Start Trial'}
         </Button>
       )}
     </>

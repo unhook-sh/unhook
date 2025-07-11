@@ -2,7 +2,16 @@
 
 import { AnimatedList } from '@unhook/ui/magicui/animated-list';
 import { OrbitingCircles } from '@unhook/ui/magicui/orbiting-circle';
-import { Code, Play, Users, Zap, Brain, Settings, Bug, Layers } from 'lucide-react';
+import {
+  Brain,
+  Bug,
+  Code,
+  Layers,
+  Play,
+  Settings,
+  Users,
+  Zap,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 
 const features = [
@@ -69,7 +78,8 @@ export function JetBrainsFeaturesSection() {
             Powerful Features for JetBrains IDEs
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Everything you need to debug webhooks efficiently, right in your favorite IDE
+            Everything you need to debug webhooks efficiently, right in your
+            favorite IDE
           </p>
         </motion.div>
 
@@ -88,9 +98,10 @@ export function JetBrainsFeaturesSection() {
                 <svg
                   aria-label="JetBrains Logo"
                   className="h-10 w-10"
-                  viewBox="0 0 24 24"
                   fill="currentColor"
+                  viewBox="0 0 24 24"
                 >
+                  <title>JetBrains Logo</title>
                   <path d="M0 0h24v24H0V0z" />
                   <path d="M3 3h7.5v7.5H3z" />
                   <path d="M13.5 3H21v7.5h-7.5z" />
@@ -187,9 +198,12 @@ export function JetBrainsFeaturesSection() {
             <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
               <Brain className="w-6 h-6 text-white" />
             </div>
-            <h3 className="font-semibold text-primary mb-2">Smart IDE Integration</h3>
+            <h3 className="font-semibold text-primary mb-2">
+              Smart IDE Integration
+            </h3>
             <p className="text-muted-foreground text-sm">
-              Built specifically for JetBrains IDEs with native tool windows and seamless UX.
+              Built specifically for JetBrains IDEs with native tool windows and
+              seamless UX.
             </p>
           </div>
 
@@ -199,7 +213,8 @@ export function JetBrainsFeaturesSection() {
             </div>
             <h3 className="font-semibold text-primary mb-2">Lightning Fast</h3>
             <p className="text-muted-foreground text-sm">
-              Instant webhook replay and real-time event monitoring across all IDEs.
+              Instant webhook replay and real-time event monitoring across all
+              IDEs.
             </p>
           </div>
 
@@ -207,9 +222,12 @@ export function JetBrainsFeaturesSection() {
             <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
               <Layers className="w-6 h-6 text-white" />
             </div>
-            <h3 className="font-semibold text-primary mb-2">Universal Support</h3>
+            <h3 className="font-semibold text-primary mb-2">
+              Universal Support
+            </h3>
             <p className="text-muted-foreground text-sm">
-              Works with IntelliJ IDEA, WebStorm, PyCharm, PhpStorm, and all JetBrains IDEs.
+              Works with IntelliJ IDEA, WebStorm, PyCharm, PhpStorm, and all
+              JetBrains IDEs.
             </p>
           </div>
         </motion.div>

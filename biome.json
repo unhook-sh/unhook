@@ -13,11 +13,16 @@
   "files": {
     "ignoreUnknown": false,
     "includes": [
-      "!dist/**",
       "**",
+      "!dist/**",
       "!**/dist/**",
       "!node_modules/**",
       "!**/node_modules/**",
+      "!**/.next/**",
+      "!**/.react-email/**",
+      "!**/baml_client/**",
+      "!**/.turbo/**",
+      "!**/*.min.*",
       "!bun.lock"
     ]
   },

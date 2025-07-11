@@ -49,19 +49,19 @@ export function ComparisonFeatures({
         <div className="space-y-8">
           {features.map((category, categoryIndex) => (
             <motion.div
-              key={category.category}
               initial={{ opacity: 0, y: 20 }}
+              key={category.category}
               transition={{ delay: categoryIndex * 0.1, duration: 0.5 }}
               viewport={{ once: true }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               <Card className="relative overflow-hidden bg-gradient-to-br from-card to-card/50 border-2">
                 <BorderBeam
-                  size={200}
-                  duration={15}
-                  delay={categoryIndex * 2}
                   colorFrom="hsl(var(--primary))"
                   colorTo="hsl(var(--primary))"
+                  delay={categoryIndex * 2}
+                  duration={15}
+                  size={200}
                 />
 
                 <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
@@ -84,11 +84,13 @@ export function ComparisonFeatures({
                           <th className="text-center p-6 font-semibold text-lg">
                             <div className="flex items-center justify-center gap-2">
                               <svg
+                                aria-label="Unhook Logo"
                                 className="w-5 h-5 text-primary"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg"
                               >
+                                <title>Unhook Logo</title>
                                 <path
                                   d="M12 2L2 8v16c0 8.84 6.11 14.41 14 16 7.89-1.59 14-7.16 14-16V8L12 2z"
                                   fill="currentColor"
@@ -105,10 +107,10 @@ export function ComparisonFeatures({
                       <tbody>
                         {category.items.map((item, itemIndex) => (
                           <motion.tr
-                            key={item.feature}
+                            animate={{ opacity: 1, x: 0 }}
                             className="border-b last:border-b-0 hover:bg-muted/20 transition-colors"
                             initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            key={item.feature}
                             transition={{
                               delay: categoryIndex * 0.1 + itemIndex * 0.05,
                             }}
@@ -157,9 +159,9 @@ export function ComparisonFeatures({
         </div>
 
         <motion.div
+          animate={{ opacity: 1, y: 0 }}
           className="mt-16 text-center"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
           <ShimmerButton className="px-8 py-3 text-lg font-semibold">

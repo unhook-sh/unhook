@@ -97,7 +97,11 @@
           },
           {
             "group": "Development",
-            "pages": ["contributing", "vscode-extension-automation", "jetbrains-extension-automation"]
+            "pages": [
+              "contributing",
+              "vscode-extension-automation",
+              "jetbrains-extension-automation"
+            ]
           }
         ],
         "tab": "Guides"

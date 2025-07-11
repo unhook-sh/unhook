@@ -9,11 +9,7 @@
   "bugs": {
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
-  "categories": [
-    "Debuggers",
-    "Testing",
-    "Other"
-  ],
+  "categories": ["Debuggers", "Testing", "Other"],
   "contributes": {
     "authentication": [
       {
@@ -173,28 +169,17 @@
     },
     "languages": [
       {
-        "aliases": [
-          "Unhook YAML",
-          "unhook-yaml"
-        ],
+        "aliases": ["Unhook YAML", "unhook-yaml"],
         "configuration": "./language-configuration.json",
         "extensions": [],
-        "filenames": [
-          "unhook.yaml",
-          "unhook.yml"
-        ],
+        "filenames": ["unhook.yaml", "unhook.yml"],
         "id": "unhook-yaml"
       },
       {
-        "aliases": [
-          "Unhook JSON",
-          "unhook-json"
-        ],
+        "aliases": ["Unhook JSON", "unhook-json"],
         "configuration": "./language-configuration.json",
         "extensions": [],
-        "filenames": [
-          "unhook.json"
-        ],
+        "filenames": ["unhook.json"],
         "id": "unhook-json"
       }
     ],
@@ -260,6 +245,7 @@
   },
   "dependencies": {
     "@unhook/client": "0.5.3",
+    "@unhook/logger": "workspace:*",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
@@ -297,12 +283,7 @@
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
   "icon": "logo.png",
-  "keywords": [
-    "webhook",
-    "development",
-    "testing",
-    "debugging"
-  ],
+  "keywords": ["webhook", "development", "testing", "debugging"],
   "main": "./dist/extension.js",
   "name": "unhook-vscode",
   "pricing": "Trial",

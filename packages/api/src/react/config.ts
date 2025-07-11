@@ -1,6 +1,6 @@
 import { httpBatchStreamLink, loggerLink } from '@trpc/client';
 import SuperJSON from 'superjson';
-import { env } from '../env.client';
+import { env } from '../env.client.js';
 
 export const getBaseUrl = () => {
   if (typeof globalThis !== 'undefined' && globalThis.location)

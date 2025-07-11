@@ -48,7 +48,32 @@
         ".expo/**",
         ".output/**",
         ".vercel/output/**",
-        "dist/**"
+        "dist/**",
+        "build/**"
+      ]
+    },
+    "unhook-jetbrains#build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "build/distributions/**",
+        "build/libs/**",
+        "build/reports/**"
+      ]
+    },
+    "unhook-jetbrains#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "unhook-jetbrains#verify": {
+      "dependsOn": ["build"],
+      "outputs": [
+        "build/reports/**"
+      ]
+    },
+    "unhook-jetbrains#package": {
+      "dependsOn": ["build"],
+      "outputs": [
+        "build/distributions/**"
       ]
     },
     "clean": {

@@ -38,14 +38,14 @@ runs:
     - name: Validate Gradle wrapper
       shell: bash
       working-directory: apps/jetbrains-extension
-      run: gradle wrapper --gradle-version=8.5
+      run: ./gradlew wrapper --gradle-version=8.5
 
     - name: Build Plugin
       shell: bash
       working-directory: apps/jetbrains-extension
       run: |
         echo "Building JetBrains plugin..."
-        gradle build
+        ./gradlew build
 
         echo "✅ Plugin built successfully"
 
@@ -54,7 +54,7 @@ runs:
       working-directory: apps/jetbrains-extension
       run: |
         echo "Verifying plugin compatibility..."
-        gradle verifyPlugin
+        ./gradlew verifyPlugin
 
         echo "✅ Plugin verification completed"
 
@@ -68,7 +68,7 @@ runs:
         JETBRAINS_PRIVATE_KEY_PASSWORD: ${{ inputs.private_key_password }}
       run: |
         echo "Signing plugin..."
-        gradle signPlugin
+        ./gradlew signPlugin
 
         echo "✅ Plugin signed successfully"
 
@@ -77,7 +77,7 @@ runs:
       working-directory: apps/jetbrains-extension
       run: |
         echo "Building plugin distribution..."
-        gradle buildPlugin
+        ./gradlew buildPlugin
 
         # Verify the expected file was created
         EXPECTED_FILE="build/distributions/unhook-jetbrains-${{ inputs.version }}.zip"
@@ -99,7 +99,7 @@ runs:
         echo "Publishing to JetBrains Marketplace..."
         
         # Publish the plugin
-        gradle publishPlugin
+        ./gradlew publishPlugin
 
         echo "✅ Successfully published to JetBrains Marketplace!"
 

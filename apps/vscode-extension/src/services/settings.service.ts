@@ -56,9 +56,7 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
     const isProduction = !configManager.isDevelopment();
 
     // In production, always disable auto-show output regardless of user settings
-    const autoShowSetting = isProduction
-      ? false
-      : config.get('output.autoShow') ?? false;
+    const autoShowSetting = isProduction ? false : Boolean(config.get('output.autoShow'));
 
     return {
       configFilePath: config.get('configFilePath') ?? '',

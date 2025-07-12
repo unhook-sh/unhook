@@ -58,7 +58,7 @@ Pre-built prompts for common scenarios:
   "mcpServers": {
     "unhook": {
       "url": "https://app.unhook.sh/api/mcp",
-      "transport": "sse",
+      "transport": "http",
       "headers": {
         "Authorization": "Bearer YOUR_CLERK_TOKEN"
       }

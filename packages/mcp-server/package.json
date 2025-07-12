@@ -7,19 +7,17 @@
   "scripts": {
     "lint": "biome check ./src",
     "format": "biome format --write ./src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "example": "tsx src/example.ts"
   },
   "dependencies": {
     "@unhook/db": "workspace:*",
     "@unhook/logger": "workspace:*",
     "@unhook/api": "workspace:*",
-    "@trpc/server": "11.0.0-rc.502",
-    "drizzle-orm": "^0.36.0",
-    "zod": "catalog:",
-    "eventsource": "^2.0.2"
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/eventsource": "^1.1.15",
     "@types/node": "catalog:node20",
     "typescript": "catalog:"
   }

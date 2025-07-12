@@ -1,6 +1,6 @@
 # Unhook MCP Server
 
-This package provides a Model Context Protocol (MCP) server implementation for Unhook, allowing AI assistants like Claude Desktop and Cursor to access webhook events and request data for debugging purposes.
+This package provides a Model Context Protocol (MCP) server implementation for Unhook using the official TypeScript SDK, allowing AI assistants like Claude Desktop and Cursor to access webhook events and request data for debugging purposes.
 
 ## Features
 
@@ -40,7 +40,7 @@ To use this MCP server in Claude Desktop, add the following to your Claude Deskt
   "mcpServers": {
     "unhook": {
       "url": "https://app.unhook.sh/api/mcp",
-      "transport": "sse",
+      "transport": "http",
       "headers": {
         "Authorization": "Bearer YOUR_AUTH_TOKEN"
       }
@@ -48,6 +48,8 @@ To use this MCP server in Claude Desktop, add the following to your Claude Deskt
   }
 }
 ```
+
+Note: The server uses the Streamable HTTP transport which is compatible with Claude Desktop's HTTP transport option.
 
 ## Usage in Cursor
 
@@ -80,9 +82,10 @@ The MCP server requires authentication via Clerk. Make sure you're logged into t
 
 The MCP server is built using:
 - TypeScript
+- @modelcontextprotocol/sdk - Official MCP TypeScript SDK
 - tRPC for API calls
-- Server-Sent Events (SSE) for real-time communication
-- JSON-RPC 2.0 for message protocol
+- Streamable HTTP transport for real-time communication
+- JSON-RPC 2.0 protocol (handled by the SDK)
 
 ## Development
 

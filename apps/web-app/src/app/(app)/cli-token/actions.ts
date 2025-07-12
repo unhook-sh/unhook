@@ -218,42 +218,108 @@ export const upsertOrg = action
 
     // Create new org if no clerkOrgId provided
     const slug = generateRandomName();
-    const clerkOrg = await client.organizations.createOrganization({
-      createdBy: user.userId,
-      name,
-      slug,
-    });
 
-    if (!clerkOrg) {
-      throw new Error('Failed to create organization in Clerk');
-    }
-
-    // Create org in our database
-    const [org] = await db
-      .insert(Orgs)
-      .values({
-        clerkOrgId: clerkOrg.id,
-        createdByUserId: user.userId,
-        id: clerkOrg.id,
+    try {
+      const clerkOrg = await client.organizations.createOrganization({
+        createdBy: user.userId,
         name,
-      })
-      .returning();
+        slug,
+      });
 
-    if (!org) {
-      // If database creation fails, we should clean up the Clerk org
-      await client.organizations.deleteOrganization(clerkOrg.id);
-      throw new Error('Failed to create organization in database');
+      if (!clerkOrg) {
+        throw new Error('Failed to create organization in Clerk');
+      }
+
+      // Create org in our database with conflict handling
+      const [org] = await db
+        .insert(Orgs)
+        .values({
+          clerkOrgId: clerkOrg.id,
+          createdByUserId: user.userId,
+          id: clerkOrg.id,
+          name,
+        })
+        .onConflictDoUpdate({
+          set: {
+            name,
+            updatedAt: new Date(),
+          },
+          target: Orgs.clerkOrgId,
+        })
+        .returning();
+
+      if (!org) {
+        // If database creation fails, we should clean up the Clerk org
+        try {
+          await client.organizations.deleteOrganization(clerkOrg.id);
+        } catch (deleteError) {
+          console.error(
+            'Failed to cleanup Clerk org after DB error:',
+            deleteError,
+          );
+        }
+        throw new Error('Failed to create organization in database');
+      }
+
+      // Create org membership for the user with conflict handling
+      await db
+        .insert(OrgMembers)
+        .values({
+          orgId: org.id,
+          role: 'admin',
+          userId: user.userId,
+        })
+        .onConflictDoUpdate({
+          set: {
+            role: 'admin',
+            updatedAt: new Date(),
+          },
+          target: [OrgMembers.userId, OrgMembers.orgId],
+        });
+
+      return {
+        id: clerkOrg.id,
+        name: clerkOrg.name,
+      };
+    } catch (error) {
+      // Handle case where organization with same slug already exists
+      if (error && typeof error === 'object' && 'message' in error) {
+        const errorMessage = error.message as string;
+        if (
+          errorMessage.indexOf('slug') !== -1 ||
+          errorMessage.indexOf('already exists') !== -1
+        ) {
+          // Try to find existing org by name for this user
+          const existingOrg = await db.query.Orgs.findFirst({
+            where: (orgs, { eq, and }) =>
+              and(eq(orgs.name, name), eq(orgs.createdByUserId, user.userId)),
+          });
+
+          if (existingOrg) {
+            // Ensure membership exists
+            await db
+              .insert(OrgMembers)
+              .values({
+                orgId: existingOrg.id,
+                role: 'admin',
+                userId: user.userId,
+              })
+              .onConflictDoUpdate({
+                set: {
+                  role: 'admin',
+                  updatedAt: new Date(),
+                },
+                target: [OrgMembers.userId, OrgMembers.orgId],
+              });
+
+            return {
+              id: existingOrg.id,
+              name: existingOrg.name,
+            };
+          }
+        }
+      }
+
+      throw error;
     }
-
-    // Create org membership for the user
-    await db.insert(OrgMembers).values({
-      orgId: org.id,
-      role: 'admin',
-      userId: user.userId,
-    });
-
-    return {
-      id: clerkOrg.id,
-      name: clerkOrg.name,
-    };
   });

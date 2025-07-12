@@ -1,0 +1,248 @@
+---
+title: 'MCP API Overview'
+description: 'Model Context Protocol API endpoints and specifications'
+icon: 'code'
+---
+
+# MCP API Overview
+
+The Unhook MCP (Model Context Protocol) server provides a standardized interface for AI assistants to access webhook data and debugging tools.
+
+## Base URL
+
+```
+https://app.unhook.sh/api/mcp
+```
+
+## Authentication
+
+All requests require authentication using a Bearer token:
+
+```bash
+Authorization: Bearer YOUR_AUTH_TOKEN
+```
+
+Get your API token from the Unhook dashboard settings.
+
+## Transport
+
+The MCP server supports HTTP Server-Sent Events (SSE) transport for real-time bidirectional communication.
+
+## Protocol
+
+The server implements the Model Context Protocol v1.0 specification with JSON-RPC 2.0 messages.
+
+### Request Format
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "unique-request-id",
+  "method": "resources/list",
+  "params": {}
+}
+```
+
+### Response Format
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "unique-request-id",
+  "result": {
+    "resources": [...]
+  }
+}
+```
+
+## Available Methods
+
+### Resources
+
+<ResponseField name="resources/list" type="method">
+  Lists all available resources
+  
+  **Response:**
+  ```json
+  {
+    "resources": [
+      {
+        "uri": "webhook://events/recent",
+        "name": "Recent Webhook Events",
+        "description": "Last 100 webhook events"
+      },
+      {
+        "uri": "webhook://requests/recent", 
+        "name": "Recent Webhook Requests",
+        "description": "Last 100 webhook requests"
+      },
+      {
+        "uri": "webhook://webhooks/list",
+        "name": "Webhook List",
+        "description": "All configured webhooks"
+      }
+    ]
+  }
+  ```
+</ResponseField>
+
+<ResponseField name="resources/read" type="method">
+  Reads a specific resource
+  
+  **Parameters:**
+  - `uri` (string, required): Resource URI to read
+  
+  **Example Request:**
+  ```json
+  {
+    "method": "resources/read",
+    "params": {
+      "uri": "webhook://events/recent"
+    }
+  }
+  ```
+</ResponseField>
+
+### Tools
+
+<ResponseField name="tools/list" type="method">
+  Lists all available tools
+  
+  **Response includes:**
+  - `search_events` - Search webhook events
+  - `search_requests` - Search webhook requests
+  - `analyze_event` - Analyze specific event
+  - `analyze_request` - Analyze specific request
+  - `get_webhook_stats` - Get webhook statistics
+</ResponseField>
+
+<ResponseField name="tools/call" type="method">
+  Executes a tool with parameters
+  
+  **Parameters:**
+  - `name` (string, required): Tool name
+  - `arguments` (object, required): Tool-specific arguments
+  
+  **Example Request:**
+  ```json
+  {
+    "method": "tools/call",
+    "params": {
+      "name": "search_events",
+      "arguments": {
+        "webhookId": "wh_123",
+        "status": "failed",
+        "limit": 50
+      }
+    }
+  }
+  ```
+</ResponseField>
+
+### Prompts
+
+<ResponseField name="prompts/list" type="method">
+  Lists all available prompts
+  
+  **Response includes:**
+  - `debug_webhook_issue` - Debugging workflow
+  - `analyze_failures` - Failure analysis
+  - `performance_report` - Performance analysis
+</ResponseField>
+
+<ResponseField name="prompts/get" type="method">
+  Gets a specific prompt template
+  
+  **Parameters:**
+  - `name` (string, required): Prompt name
+  
+  **Response:**
+  ```json
+  {
+    "name": "debug_webhook_issue",
+    "description": "Help debug webhook issues",
+    "arguments": [
+      {
+        "name": "webhookId",
+        "description": "ID of the webhook to debug",
+        "required": true
+      }
+    ]
+  }
+  ```
+</ResponseField>
+
+## Rate Limits
+
+- **Requests per minute:** 60
+- **Concurrent connections:** 5
+- **Response size:** 10MB max
+
+## Error Handling
+
+Errors follow the JSON-RPC 2.0 error format:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-id",
+  "error": {
+    "code": -32602,
+    "message": "Invalid params",
+    "data": {
+      "details": "Missing required parameter: webhookId"
+    }
+  }
+}
+```
+
+### Common Error Codes
+
+| Code | Message | Description |
+|------|---------|-------------|
+| -32700 | Parse error | Invalid JSON |
+| -32600 | Invalid request | Invalid JSON-RPC |
+| -32601 | Method not found | Unknown method |
+| -32602 | Invalid params | Invalid parameters |
+| -32603 | Internal error | Server error |
+| 401 | Unauthorized | Invalid or missing auth token |
+| 429 | Too Many Requests | Rate limit exceeded |
+
+## Example Session
+
+```bash
+# Initialize connection
+curl -X POST https://app.unhook.sh/api/mcp \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"1","method":"initialize","params":{"protocolVersion":"1.0.0","capabilities":{}}}'
+
+# List resources
+curl -X POST https://app.unhook.sh/api/mcp/message \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"2","method":"resources/list","params":{}}'
+
+# Read events
+curl -X POST https://app.unhook.sh/api/mcp/message \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"3","method":"resources/read","params":{"uri":"webhook://events/recent"}}'
+```
+
+## SDK Support
+
+The MCP server is compatible with:
+- [@modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
+- Claude Desktop MCP client
+- Cursor AI integration
+
+## Webhooks Integration
+
+The MCP server automatically scopes data access to your organization based on the authentication token. You can only access webhooks, events, and requests that belong to your organization.
+
+## Next Steps
+
+- Review the [Tool Reference](/api-reference/mcp/tools) for detailed tool documentation
+- Check the [Resource Reference](/api-reference/mcp/resources) for resource schemas
+- See [Integration Examples](/api-reference/mcp/examples) for common use cases

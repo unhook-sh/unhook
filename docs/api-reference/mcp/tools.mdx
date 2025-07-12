@@ -1,0 +1,387 @@
+---
+title: 'MCP Tools Reference'
+description: 'Detailed documentation for all MCP tools'
+icon: 'wrench'
+---
+
+# MCP Tools Reference
+
+Tools allow AI assistants to perform actions and queries on your webhook data. Each tool has specific parameters and returns structured data.
+
+## search_events
+
+Search and filter webhook events based on various criteria.
+
+### Parameters
+
+<ParamField path="webhookId" type="string" required={false}>
+  Filter events by webhook ID (e.g., "wh_123")
+</ParamField>
+
+<ParamField path="status" type="string" required={false}>
+  Filter by event status
+  - `success` - Successfully processed events
+  - `failed` - Failed events
+  - `pending` - Events waiting to be processed
+</ParamField>
+
+<ParamField path="limit" type="number" required={false} default={100}>
+  Maximum number of events to return (1-100)
+</ParamField>
+
+### Response
+
+```json
+{
+  "events": [
+    {
+      "id": "evt_123",
+      "webhookId": "wh_456",
+      "status": "failed",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "provider": "stripe",
+      "eventType": "payment_intent.succeeded",
+      "error": "Connection timeout",
+      "retryCount": 3
+    }
+  ],
+  "total": 42,
+  "hasMore": true
+}
+```
+
+### Example Usage
+
+```json
+{
+  "name": "search_events",
+  "arguments": {
+    "webhookId": "wh_stripe_prod",
+    "status": "failed",
+    "limit": 50
+  }
+}
+```
+
+## search_requests
+
+Search webhook requests with filtering options.
+
+### Parameters
+
+<ParamField path="webhookId" type="string" required={false}>
+  Filter requests by webhook ID
+</ParamField>
+
+<ParamField path="eventId" type="string" required={false}>
+  Filter requests by event ID
+</ParamField>
+
+<ParamField path="status" type="string" required={false}>
+  Filter by request status
+  - `success` - Successful requests (2xx status codes)
+  - `failed` - Failed requests (4xx, 5xx status codes)
+  - `timeout` - Timed out requests
+</ParamField>
+
+<ParamField path="limit" type="number" required={false} default={100}>
+  Maximum number of requests to return (1-100)
+</ParamField>
+
+### Response
+
+```json
+{
+  "requests": [
+    {
+      "id": "req_789",
+      "eventId": "evt_123",
+      "webhookId": "wh_456",
+      "status": "failed",
+      "statusCode": 500,
+      "duration": 1523,
+      "createdAt": "2024-01-15T10:30:05Z",
+      "method": "POST",
+      "url": "https://api.example.com/webhook",
+      "headers": {
+        "content-type": "application/json",
+        "x-stripe-signature": "..."
+      },
+      "error": "Internal server error"
+    }
+  ],
+  "total": 156,
+  "hasMore": true
+}
+```
+
+### Example Usage
+
+```json
+{
+  "name": "search_requests",
+  "arguments": {
+    "eventId": "evt_123",
+    "status": "failed"
+  }
+}
+```
+
+## analyze_event
+
+Get detailed analysis of a specific webhook event.
+
+### Parameters
+
+<ParamField path="eventId" type="string" required={true}>
+  The ID of the event to analyze
+</ParamField>
+
+### Response
+
+```json
+{
+  "event": {
+    "id": "evt_123",
+    "webhookId": "wh_456",
+    "status": "failed",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "provider": "stripe",
+    "eventType": "payment_intent.succeeded"
+  },
+  "requests": [
+    {
+      "id": "req_789",
+      "status": "failed",
+      "statusCode": 500,
+      "duration": 1523,
+      "createdAt": "2024-01-15T10:30:05Z"
+    }
+  ],
+  "payload": {
+    "id": "pi_123",
+    "object": "payment_intent",
+    "amount": 1000,
+    "currency": "usd"
+  },
+  "analysis": {
+    "failureReason": "Target endpoint returned 500 error",
+    "retryable": true,
+    "recommendations": [
+      "Check target endpoint health",
+      "Review server logs for errors",
+      "Consider implementing retry logic"
+    ]
+  }
+}
+```
+
+### Example Usage
+
+```json
+{
+  "name": "analyze_event",
+  "arguments": {
+    "eventId": "evt_123"
+  }
+}
+```
+
+## analyze_request
+
+Get detailed analysis of a specific webhook request.
+
+### Parameters
+
+<ParamField path="requestId" type="string" required={true}>
+  The ID of the request to analyze
+</ParamField>
+
+### Response
+
+```json
+{
+  "request": {
+    "id": "req_789",
+    "eventId": "evt_123",
+    "webhookId": "wh_456",
+    "status": "failed",
+    "statusCode": 500,
+    "duration": 1523,
+    "createdAt": "2024-01-15T10:30:05Z",
+    "method": "POST",
+    "url": "https://api.example.com/webhook"
+  },
+  "requestHeaders": {
+    "content-type": "application/json",
+    "x-stripe-signature": "...",
+    "user-agent": "Stripe/1.0"
+  },
+  "requestBody": {
+    "id": "pi_123",
+    "object": "payment_intent",
+    "amount": 1000
+  },
+  "responseHeaders": {
+    "content-type": "text/html",
+    "server": "nginx/1.19.0"
+  },
+  "responseBody": "<html><body>Internal Server Error</body></html>",
+  "analysis": {
+    "issue": "Endpoint returned HTML error page instead of JSON",
+    "possibleCauses": [
+      "Application crashed",
+      "Misconfigured error handling",
+      "Database connection failure"
+    ],
+    "recommendations": [
+      "Check application logs",
+      "Verify webhook endpoint configuration",
+      "Test endpoint manually with curl"
+    ]
+  }
+}
+```
+
+### Example Usage
+
+```json
+{
+  "name": "analyze_request",
+  "arguments": {
+    "requestId": "req_789"
+  }
+}
+```
+
+## get_webhook_stats
+
+Get comprehensive statistics for webhooks.
+
+### Parameters
+
+<ParamField path="webhookId" type="string" required={false}>
+  Get stats for specific webhook (omit for all webhooks)
+</ParamField>
+
+<ParamField path="timeRange" type="string" required={false} default="24h">
+  Time range for statistics
+  - `1h` - Last hour
+  - `24h` - Last 24 hours
+  - `7d` - Last 7 days
+  - `30d` - Last 30 days
+</ParamField>
+
+### Response
+
+```json
+{
+  "summary": {
+    "totalEvents": 1523,
+    "successfulEvents": 1456,
+    "failedEvents": 67,
+    "successRate": 0.956,
+    "averageResponseTime": 245
+  },
+  "webhooks": [
+    {
+      "id": "wh_456",
+      "name": "Stripe Production",
+      "provider": "stripe",
+      "stats": {
+        "totalEvents": 892,
+        "successfulEvents": 875,
+        "failedEvents": 17,
+        "successRate": 0.981,
+        "averageResponseTime": 198
+      }
+    }
+  ],
+  "eventTypes": [
+    {
+      "type": "payment_intent.succeeded",
+      "count": 456,
+      "successRate": 0.993,
+      "averageResponseTime": 167
+    }
+  ],
+  "errorDistribution": [
+    {
+      "error": "Connection timeout",
+      "count": 23,
+      "percentage": 0.343
+    },
+    {
+      "error": "500 Internal Server Error",
+      "count": 19,
+      "percentage": 0.284
+    }
+  ],
+  "timeSeriesData": {
+    "labels": ["2024-01-14T00:00:00Z", "2024-01-14T01:00:00Z"],
+    "successful": [45, 52],
+    "failed": [2, 1]
+  }
+}
+```
+
+### Example Usage
+
+```json
+{
+  "name": "get_webhook_stats",
+  "arguments": {
+    "webhookId": "wh_stripe_prod",
+    "timeRange": "7d"
+  }
+}
+```
+
+## Error Handling
+
+All tools return errors in a consistent format:
+
+```json
+{
+  "error": {
+    "code": "INVALID_PARAMETER",
+    "message": "Invalid webhook ID format",
+    "details": {
+      "parameter": "webhookId",
+      "value": "invalid",
+      "expected": "Format: wh_xxx"
+    }
+  }
+}
+```
+
+### Common Error Codes
+
+| Code | Description |
+|------|-------------|
+| `INVALID_PARAMETER` | Invalid parameter value |
+| `NOT_FOUND` | Resource not found |
+| `PERMISSION_DENIED` | No access to resource |
+| `RATE_LIMITED` | Too many requests |
+| `INTERNAL_ERROR` | Server error |
+
+## Best Practices
+
+1. **Use filters effectively** - Always filter by webhookId when debugging specific integrations
+2. **Limit results** - Start with smaller limits and increase if needed
+3. **Check error details** - The analysis tools provide actionable recommendations
+4. **Monitor stats regularly** - Use get_webhook_stats to track webhook health
+5. **Combine tools** - Use search tools to find issues, then analyze tools for details
+
+## Rate Limits
+
+Tools are subject to the following limits:
+- Maximum 60 tool calls per minute
+- Maximum result size of 1MB per call
+- Search results capped at 100 items
+
+## Next Steps
+
+- See [Resource Reference](/api-reference/mcp/resources) for data schemas
+- Check [Integration Examples](/api-reference/mcp/examples) for common workflows
+- Review [MCP Overview](/api-reference/mcp/overview) for protocol details

@@ -1,4 +1,5 @@
-import { UnhookClient } from '@unhook/client';
+import { Connections, Events, Requests, Webhooks } from '@unhook/db/schema';
+import { and, eq } from 'drizzle-orm';
 import fetch from 'node-fetch';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestFactories } from '../test-utils/factories';
@@ -6,7 +7,6 @@ import { testApiServer, testDb } from './setup';
 
 describe('Webhook Lifecycle Integration Tests', () => {
   let factories: TestFactories;
-  let client: UnhookClient;
   let testSetup: Awaited<
     ReturnType<TestFactories['createCompleteWebhookSetup']>
   >;
@@ -14,12 +14,6 @@ describe('Webhook Lifecycle Integration Tests', () => {
   beforeEach(async () => {
     factories = new TestFactories(testDb.db);
     testSetup = await factories.createCompleteWebhookSetup();
-
-    // Initialize client with test API server
-    client = new UnhookClient({
-      apiKey: testSetup.webhook.apiKey,
-      baseUrl: testApiServer.getUrl(),
-    });
   });
 
   describe('Webhook Creation', () => {
@@ -28,8 +22,8 @@ describe('Webhook Lifecycle Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          name: 'Test Webhook',
           isPrivate: false,
+          name: 'Test Webhook',
         },
       );
 
@@ -45,8 +39,8 @@ describe('Webhook Lifecycle Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          name: 'Private Webhook',
           isPrivate: true,
+          name: 'Private Webhook',
         },
       );
 
@@ -55,13 +49,6 @@ describe('Webhook Lifecycle Integration Tests', () => {
 
     it('should create webhook with custom configuration', async () => {
       const customConfig = {
-        storage: {
-          storeHeaders: false,
-          storeRequestBody: true,
-          storeResponseBody: false,
-          maxRequestBodySize: 512 * 1024, // 512KB
-          maxResponseBodySize: 256 * 1024, // 256KB
-        },
         headers: {
           blockList: ['authorization', 'x-api-key'],
           sensitiveHeaders: ['x-secret'],
@@ -71,14 +58,21 @@ describe('Webhook Lifecycle Integration Tests', () => {
           maxRequestsPerMinute: 100,
           maxRetries: 5,
         },
+        storage: {
+          maxRequestBodySize: 512 * 1024, // 512KB
+          maxResponseBodySize: 256 * 1024, // 256KB
+          storeHeaders: false,
+          storeRequestBody: true,
+          storeResponseBody: false,
+        },
       };
 
       const webhook = await factories.createWebhook(
         testSetup.user.id,
         testSetup.org.id,
         {
-          name: 'Custom Config Webhook',
           config: customConfig,
+          name: 'Custom Config Webhook',
         },
       );
 
@@ -101,8 +95,8 @@ describe('Webhook Lifecycle Integration Tests', () => {
 
       const webhooks = await testDb.db
         .select()
-        .from(testDb.db.schema.Webhooks)
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.orgId, testSetup.org.id));
+        .from(Webhooks)
+        .where(eq(Webhooks.orgId, testSetup.org.id));
 
       expect(webhooks).toHaveLength(4); // Including the one from setup
       expect(webhooks.map((w) => w.name)).toContain('Webhook 1');
@@ -122,21 +116,21 @@ describe('Webhook Lifecycle Integration Tests', () => {
 
       const activeWebhooks = await testDb.db
         .select()
-        .from(testDb.db.schema.Webhooks)
+        .from(Webhooks)
         .where(
-          testDb.db.and(
-            testDb.db.eq(testDb.db.schema.Webhooks.orgId, testSetup.org.id),
-            testDb.db.eq(testDb.db.schema.Webhooks.status, 'active'),
+          and(
+            eq(Webhooks.orgId, testSetup.org.id),
+            eq(Webhooks.status, 'active'),
           ),
         );
 
       const inactiveWebhooks = await testDb.db
         .select()
-        .from(testDb.db.schema.Webhooks)
+        .from(Webhooks)
         .where(
-          testDb.db.and(
-            testDb.db.eq(testDb.db.schema.Webhooks.orgId, testSetup.org.id),
-            testDb.db.eq(testDb.db.schema.Webhooks.status, 'inactive'),
+          and(
+            eq(Webhooks.orgId, testSetup.org.id),
+            eq(Webhooks.status, 'inactive'),
           ),
         );
 
@@ -154,12 +148,12 @@ describe('Webhook Lifecycle Integration Tests', () => {
       );
 
       const [updated] = await testDb.db
-        .update(testDb.db.schema.Webhooks)
+        .update(Webhooks)
         .set({ name: 'Updated Name' })
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.id, webhook.id))
+        .where(eq(Webhooks.id, webhook.id))
         .returning();
 
-      expect(updated.name).toBe('Updated Name');
+      expect(updated?.name).toBe('Updated Name');
     });
 
     it('should toggle webhook status', async () => {
@@ -170,20 +164,20 @@ describe('Webhook Lifecycle Integration Tests', () => {
       );
 
       const [deactivated] = await testDb.db
-        .update(testDb.db.schema.Webhooks)
+        .update(Webhooks)
         .set({ status: 'inactive' })
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.id, webhook.id))
+        .where(eq(Webhooks.id, webhook.id))
         .returning();
 
-      expect(deactivated.status).toBe('inactive');
+      expect(deactivated?.status).toBe('inactive');
 
       const [reactivated] = await testDb.db
-        .update(testDb.db.schema.Webhooks)
+        .update(Webhooks)
         .set({ status: 'active' })
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.id, webhook.id))
+        .where(eq(Webhooks.id, webhook.id))
         .returning();
 
-      expect(reactivated.status).toBe('active');
+      expect(reactivated?.status).toBe('active');
     });
 
     it('should update webhook configuration', async () => {
@@ -201,12 +195,12 @@ describe('Webhook Lifecycle Integration Tests', () => {
       };
 
       const [updated] = await testDb.db
-        .update(testDb.db.schema.Webhooks)
+        .update(Webhooks)
         .set({ config: newConfig })
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.id, webhook.id))
+        .where(eq(Webhooks.id, webhook.id))
         .returning();
 
-      expect(updated.config.requests.maxRequestsPerMinute).toBe(200);
+      expect(updated?.config.requests.maxRequestsPerMinute).toBe(200);
     });
   });
 
@@ -235,33 +229,31 @@ describe('Webhook Lifecycle Integration Tests', () => {
       );
 
       // Delete webhook
-      await testDb.db
-        .delete(testDb.db.schema.Webhooks)
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.id, webhook.id));
+      await testDb.db.delete(Webhooks).where(eq(Webhooks.id, webhook.id));
 
       // Verify webhook is deleted
       const deletedWebhook = await testDb.db
         .select()
-        .from(testDb.db.schema.Webhooks)
-        .where(testDb.db.eq(testDb.db.schema.Webhooks.id, webhook.id));
+        .from(Webhooks)
+        .where(eq(Webhooks.id, webhook.id));
 
       expect(deletedWebhook).toHaveLength(0);
 
       // Verify cascading deletes
       const deletedEvent = await testDb.db
         .select()
-        .from(testDb.db.schema.Events)
-        .where(testDb.db.eq(testDb.db.schema.Events.id, event.id));
+        .from(Events)
+        .where(eq(Events.id, event.id));
 
       const deletedRequest = await testDb.db
         .select()
-        .from(testDb.db.schema.Requests)
-        .where(testDb.db.eq(testDb.db.schema.Requests.id, request.id));
+        .from(Requests)
+        .where(eq(Requests.id, request.id));
 
       const deletedConnection = await testDb.db
         .select()
-        .from(testDb.db.schema.Connections)
-        .where(testDb.db.eq(testDb.db.schema.Connections.id, connection.id));
+        .from(Connections)
+        .where(eq(Connections.id, connection.id));
 
       expect(deletedEvent).toHaveLength(0);
       expect(deletedRequest).toHaveLength(0);
@@ -280,18 +272,18 @@ describe('Webhook Lifecycle Integration Tests', () => {
       const response = await fetch(
         `${testApiServer.getUrl()}/wh/${webhook.id}`,
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKey,
-          },
           body: JSON.stringify({
-            event: 'test.webhook',
             data: {
               id: '123',
               name: 'Test Data',
             },
+            event: 'test.webhook',
           }),
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': webhook.apiKey,
+          },
+          method: 'POST',
         },
       );
 
@@ -309,20 +301,20 @@ describe('Webhook Lifecycle Integration Tests', () => {
 
       const customHeaders = {
         'X-Custom-Header': 'custom-value',
-        'X-Webhook-Signature': 'sha256=abcdef123456',
         'X-Request-ID': 'req-123',
+        'X-Webhook-Signature': 'sha256=abcdef123456',
       };
 
       const response = await fetch(
         `${testApiServer.getUrl()}/wh/${webhook.id}`,
         {
-          method: 'POST',
+          body: JSON.stringify({ test: true }),
           headers: {
             'Content-Type': 'application/json',
             'X-API-Key': webhook.apiKey,
             ...customHeaders,
           },
-          body: JSON.stringify({ test: true }),
+          method: 'POST',
         },
       );
 
@@ -335,15 +327,15 @@ describe('Webhook Lifecycle Integration Tests', () => {
         testSetup.org.id,
         {
           config: {
+            headers: {},
+            requests: {},
             storage: {
+              maxRequestBodySize: 1024, // 1KB limit
+              maxResponseBodySize: 1024,
               storeHeaders: true,
               storeRequestBody: true,
               storeResponseBody: true,
-              maxRequestBodySize: 1024, // 1KB limit
-              maxResponseBodySize: 1024,
             },
-            headers: {},
-            requests: {},
           },
         },
       );
@@ -356,12 +348,12 @@ describe('Webhook Lifecycle Integration Tests', () => {
       const response = await fetch(
         `${testApiServer.getUrl()}/wh/${webhook.id}`,
         {
-          method: 'POST',
+          body: JSON.stringify(largePayload),
           headers: {
             'Content-Type': 'application/json',
             'X-API-Key': webhook.apiKey,
           },
-          body: JSON.stringify(largePayload),
+          method: 'POST',
         },
       );
 

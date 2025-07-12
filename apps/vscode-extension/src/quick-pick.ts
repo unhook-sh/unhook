@@ -63,9 +63,9 @@ export class EventQuickPick {
 
     // Add configuration item
     items.push({
-      label: '$(new-file) Create Configuration File',
       description: 'Create unhook.yml configuration file',
       detail: 'Generate a new Unhook configuration file for your project',
+      label: '$(new-file) Create Configuration File',
     });
 
     // Add settings item

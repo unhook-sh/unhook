@@ -19,7 +19,7 @@ export function registerAuthCommands(
           'unhook',
           ['openid', 'email', 'profile'],
           {
-            createIfNone: true,
+            forceNewSession: true,
           },
         );
         if (session) {

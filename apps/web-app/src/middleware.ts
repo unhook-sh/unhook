@@ -6,7 +6,8 @@ const isPrivateRoute = createRouteMatcher([
   // Dashboard and app routes
   '/dashboard(.*)',
   '/settings(.*)',
-  '/api/trpc(.*)',
+  '/cli-token(.*)',
+  '/webhooks(.*)',
   // Add other private routes here as needed
 ]);
 

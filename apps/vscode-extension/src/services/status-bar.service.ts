@@ -7,12 +7,13 @@ import { WebhookAuthorizationService } from './webhook-authorization.service';
 const log = debug('unhook:vscode:status-bar');
 
 export class StatusBarService implements vscode.Disposable {
+  private static instance: StatusBarService;
   private statusBarItem: vscode.StatusBarItem;
   private authStore: AuthStore | null = null;
   private authorizationService: WebhookAuthorizationService;
   private disposables: vscode.Disposable[] = [];
 
-  constructor() {
+  private constructor() {
     log('Initializing StatusBarService');
 
     this.statusBarItem = vscode.window.createStatusBarItem(
@@ -36,6 +37,13 @@ export class StatusBarService implements vscode.Disposable {
       }
     });
     this.disposables.push(configDisposable);
+  }
+
+  public static getInstance(): StatusBarService {
+    if (!StatusBarService.instance) {
+      StatusBarService.instance = new StatusBarService();
+    }
+    return StatusBarService.instance;
   }
 
   setAuthStore(authStore: AuthStore) {

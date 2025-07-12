@@ -1,15 +1,14 @@
-import { execSync } from 'child_process';
-import path from 'path';
-import { createClient } from '@supabase/supabase-js';
-import * as schema from '@unhook/db/src/schema';
+import path from 'node:path';
+import * as schema from '@unhook/db/schema';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
-import { GenericContainer, Wait } from 'testcontainers';
 import type { StartedTestContainer } from 'testcontainers';
+import { GenericContainer, Wait } from 'testcontainers';
 
 export interface TestDatabase {
-  db: ReturnType<typeof drizzle>;
+  db: PostgresJsDatabase<typeof schema>;
   connectionString: string;
   supabaseUrl: string;
   supabaseAnonKey: string;
@@ -50,14 +49,14 @@ async function getLocalDatabase(): Promise<TestDatabase> {
   await migrate(db, { migrationsFolder: migrationsPath });
 
   return {
-    db,
-    connectionString,
-    supabaseUrl,
-    supabaseAnonKey,
-    supabaseServiceRoleKey,
     cleanup: async () => {
       await sql.end();
     },
+    connectionString,
+    db,
+    supabaseAnonKey,
+    supabaseServiceRoleKey,
+    supabaseUrl,
   };
 }
 
@@ -67,9 +66,9 @@ async function getContainerDatabase(): Promise<TestDatabase> {
   // Start PostgreSQL container
   pgContainer = await new GenericContainer('postgres:15')
     .withEnvironment({
-      POSTGRES_USER: 'postgres',
-      POSTGRES_PASSWORD: 'postgres',
       POSTGRES_DB: 'test',
+      POSTGRES_PASSWORD: 'postgres',
+      POSTGRES_USER: 'postgres',
     })
     .withExposedPorts(5432)
     .withWaitStrategy(
@@ -97,11 +96,6 @@ async function getContainerDatabase(): Promise<TestDatabase> {
   console.log('✅ Database migrations completed');
 
   return {
-    db,
-    connectionString,
-    supabaseUrl,
-    supabaseAnonKey,
-    supabaseServiceRoleKey,
     cleanup: async () => {
       await sql.end();
       if (pgContainer) {
@@ -113,5 +107,10 @@ async function getContainerDatabase(): Promise<TestDatabase> {
         supabaseContainer = null;
       }
     },
+    connectionString,
+    db,
+    supabaseAnonKey,
+    supabaseServiceRoleKey,
+    supabaseUrl,
   };
 }

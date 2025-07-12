@@ -1,6 +1,8 @@
 {
   "commitlint": {
-    "extends": ["@unhook/commitlint-config"]
+    "extends": [
+      "@unhook/commitlint-config"
+    ]
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
@@ -39,8 +41,9 @@
     "db:push": "turbo -F @unhook/db push",
     "db:seed": "turbo -F @unhook/db seed",
     "db:studio": "turbo -F @unhook/db studio",
-    "dev": "turbo watch dev --concurrency 20",
+    "dev": "turbo watch dev",
     "dev:next": "turbo watch dev -F @unhook/web-app...",
+    "dev:vscode": "turbo watch dev -F unhook-vscode... -F @unhook/web-app...",
     "docs": "cd docs && mintlify dev",
     "format": "biome check",
     "format:ci": "biome ci",
@@ -51,8 +54,8 @@
     "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... --filter=./apps/vscode-extension... && changeset publish",
     "test": "bun test",
     "test:integ": "turbo run test --filter=@unhook/integ-test",
-    "test:integ:watch": "turbo run test:watch --filter=@unhook/integ-test",
     "test:integ:ci": "turbo run test:ci --filter=@unhook/integ-test",
+    "test:integ:watch": "turbo run test:watch --filter=@unhook/integ-test",
     "typecheck": "turbo run typecheck",
     "ui-add": "turbo run ui-add",
     "version": "changeset version && bun biome check --write",

@@ -1,10 +1,14 @@
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs/promises';
+import type { IncomingHttpHeaders, Server } from 'node:http';
+import os from 'node:os';
+import path from 'node:path';
+import { eq } from 'drizzle-orm';
 import { execa } from 'execa';
-import fs from 'fs/promises';
+import express from 'express';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import waitForExpect from 'wait-for-expect';
 import WebSocket from 'ws';
+import * as schema from '../../db/src/schema';
 import { TestFactories } from '../test-utils/factories';
 import { testApiServer, testDb } from './setup';
 
@@ -13,7 +17,7 @@ describe('CLI Integration Tests', () => {
   let testSetup: Awaited<
     ReturnType<TestFactories['createCompleteWebhookSetup']>
   >;
-  let cliProcess: any;
+  let cliProcess: ReturnType<typeof execa>;
   let tempDir: string;
 
   beforeEach(async () => {
@@ -33,7 +37,7 @@ describe('CLI Integration Tests', () => {
     }
 
     // Clean up temp directory
-    await fs.rm(tempDir, { recursive: true, force: true });
+    await fs.rm(tempDir, { force: true, recursive: true });
   });
 
   describe('CLI Initialization', () => {
@@ -148,7 +152,7 @@ describe('CLI Integration Tests', () => {
 
       ws.send(JSON.stringify({ type: 'ping' }));
 
-      const response = await new Promise<any>((resolve) => {
+      const response = await new Promise<{ type: string }>((resolve) => {
         ws.on('message', (data) => {
           resolve(JSON.parse(data.toString()));
         });
@@ -215,21 +219,23 @@ describe('CLI Integration Tests', () => {
         testSetup.org.id,
         {
           clientId: 'test-cli-client',
-          status: 'connected',
         },
       );
 
       // Simulate disconnection
       await testDb.db
-        .update(testDb.db.schema.Connections)
-        .set({ status: 'disconnected', disconnectedAt: new Date() })
-        .where(testDb.db.eq(testDb.db.schema.Connections.id, connection.id));
+        .update(schema.Connections)
+        .set({ disconnectedAt: new Date() })
+        .where(eq(schema.Connections.id, connection.id));
 
       // Wait for reconnection
       await waitForExpect(async () => {
-        const output = cliProcess.stdout || '';
+        const output =
+          typeof cliProcess.stdout === 'string'
+            ? cliProcess.stdout
+            : cliProcess.stdout?.toString() || '';
         const lines = output.split('\n');
-        const reconnectMessages = lines.filter((line) =>
+        const reconnectMessages = lines.filter((line: string) =>
           line.includes('Reconnecting'),
         );
         expect(reconnectMessages.length).toBeGreaterThan(0);
@@ -238,8 +244,13 @@ describe('CLI Integration Tests', () => {
   });
 
   describe('CLI Webhook Forwarding', () => {
-    let localServer: any;
+    let localServer: Server;
     let localServerPort: number;
+    let receivedWebhooks: {
+      body: unknown;
+      headers: IncomingHttpHeaders;
+      timestamp: Date;
+    }[] = [];
 
     beforeEach(async () => {
       // Initialize CLI
@@ -260,29 +271,30 @@ describe('CLI Integration Tests', () => {
       );
 
       // Start a local server to receive forwarded webhooks
-      const express = require('express');
       const app = express();
       app.use(express.json());
 
-      const receivedWebhooks: any[] = [];
-      app.post('/webhook', (req: any, res: any) => {
+      receivedWebhooks = [];
+      app.post('/webhook', (req, res) => {
         receivedWebhooks.push({
-          headers: req.headers,
           body: req.body,
+          headers: req.headers,
           timestamp: new Date(),
         });
         res.json({ received: true });
       });
 
-      localServer = await new Promise((resolve) => {
+      localServer = await new Promise<Server>((resolve) => {
         const server = app.listen(0, () => {
-          localServerPort = server.address().port;
+          const address = server.address();
+          if (address && typeof address === 'object' && 'port' in address) {
+            localServerPort = address.port;
+          } else {
+            throw new Error('Failed to get server port');
+          }
           resolve(server);
         });
       });
-
-      // Store received webhooks for assertions
-      (localServer as any).receivedWebhooks = receivedWebhooks;
     });
 
     afterEach(async () => {
@@ -326,16 +338,16 @@ describe('CLI Integration Tests', () => {
       const response = await fetch(
         `${testApiServer.getUrl()}/wh/${testSetup.webhook.id}`,
         {
-          method: 'POST',
+          body: JSON.stringify({
+            data: { id: 'test-123' },
+            event: 'test.webhook',
+          }),
           headers: {
             'Content-Type': 'application/json',
             'X-API-Key': testSetup.webhook.apiKey,
             'X-Test-Header': 'test-value',
           },
-          body: JSON.stringify({
-            event: 'test.webhook',
-            data: { id: 'test-123' },
-          }),
+          method: 'POST',
         },
       );
 
@@ -343,15 +355,14 @@ describe('CLI Integration Tests', () => {
 
       // Wait for webhook to be forwarded
       await waitForExpect(() => {
-        expect(localServer.receivedWebhooks).toHaveLength(1);
+        expect(receivedWebhooks).toHaveLength(1);
       }, 5000);
 
-      const forwardedWebhook = localServer.receivedWebhooks[0];
-      expect(forwardedWebhook.body).toEqual({
-        event: 'test.webhook',
+      expect(receivedWebhooks[0]?.body).toEqual({
         data: { id: 'test-123' },
+        event: 'test.webhook',
       });
-      expect(forwardedWebhook.headers['x-test-header']).toBe('test-value');
+      expect(receivedWebhooks[0]?.headers['x-test-header']).toBe('test-value');
     });
 
     it('should handle forwarding failures', async () => {
@@ -386,12 +397,12 @@ describe('CLI Integration Tests', () => {
       const response = await fetch(
         `${testApiServer.getUrl()}/wh/${testSetup.webhook.id}`,
         {
-          method: 'POST',
+          body: JSON.stringify({ test: true }),
           headers: {
             'Content-Type': 'application/json',
             'X-API-Key': testSetup.webhook.apiKey,
           },
-          body: JSON.stringify({ test: true }),
+          method: 'POST',
         },
       );
 

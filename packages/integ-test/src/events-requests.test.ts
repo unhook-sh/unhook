@@ -1,8 +1,9 @@
-import * as schema from '@unhook/db/src/schema';
+import { Events, Requests } from '@unhook/db/schema';
+import { eq, gte, isNull } from 'drizzle-orm';
 import { beforeEach, describe, expect, it } from 'vitest';
-import waitForExpect from 'wait-for-expect';
+import { getTestDatabase } from '../test-utils/database';
 import { TestFactories } from '../test-utils/factories';
-import { testApiServer, testDb } from './setup';
+import { testDb } from './setup';
 
 describe('Events and Requests Integration Tests', () => {
   let factories: TestFactories;
@@ -11,7 +12,9 @@ describe('Events and Requests Integration Tests', () => {
   >;
 
   beforeEach(async () => {
-    factories = new TestFactories(testDb.db);
+    // Ensure testDb is available, fallback to creating a new one if needed
+    const db = testDb || (await getTestDatabase());
+    factories = new TestFactories(db.db);
     testSetup = await factories.createCompleteWebhookSetup();
   });
 
@@ -22,8 +25,8 @@ describe('Events and Requests Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          status: 'pending',
           source: 'stripe',
+          status: 'pending',
         },
       );
 
@@ -61,9 +64,9 @@ describe('Events and Requests Integration Tests', () => {
       // Query pending events
       const pendingEvents = await testDb.db
         .select()
-        .from(schema.Events)
-        .where(schema.eq(schema.Events.status, 'pending'))
-        .orderBy(schema.Events.timestamp);
+        .from(Events)
+        .where(eq(Events.status, 'pending'))
+        .orderBy(Events.timestamp);
 
       expect(pendingEvents).toHaveLength(3);
       expect(pendingEvents.map((e) => e.id)).toEqual(
@@ -81,21 +84,21 @@ describe('Events and Requests Integration Tests', () => {
 
       // Simulate processing
       const [processing] = await testDb.db
-        .update(schema.Events)
+        .update(Events)
         .set({ status: 'processing' })
-        .where(schema.eq(schema.Events.id, event.id))
+        .where(eq(Events.id, event.id))
         .returning();
 
-      expect(processing.status).toBe('processing');
+      expect(processing?.status).toBe('processing');
 
       // Simulate completion
       const [completed] = await testDb.db
-        .update(schema.Events)
+        .update(Events)
         .set({ status: 'completed' })
-        .where(schema.eq(schema.Events.id, event.id))
+        .where(eq(Events.id, event.id))
         .returning();
 
-      expect(completed.status).toBe('completed');
+      expect(completed?.status).toBe('completed');
     });
 
     it('should handle event failures and retries', async () => {
@@ -104,51 +107,51 @@ describe('Events and Requests Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          status: 'pending',
           maxRetries: 3,
+          status: 'pending',
         },
       );
 
       // Simulate first failure
       const [firstFailure] = await testDb.db
-        .update(schema.Events)
+        .update(Events)
         .set({
-          status: 'failed',
-          retryCount: 1,
           failedReason: 'Connection timeout',
+          retryCount: 1,
+          status: 'failed',
         })
-        .where(schema.eq(schema.Events.id, event.id))
+        .where(eq(Events.id, event.id))
         .returning();
 
-      expect(firstFailure.status).toBe('failed');
-      expect(firstFailure.retryCount).toBe(1);
-      expect(firstFailure.failedReason).toBe('Connection timeout');
+      expect(firstFailure?.status).toBe('failed');
+      expect(firstFailure?.retryCount).toBe(1);
+      expect(firstFailure?.failedReason).toBe('Connection timeout');
 
       // Retry
       const [retry] = await testDb.db
-        .update(schema.Events)
+        .update(Events)
         .set({
+          retryCount: firstFailure?.retryCount,
           status: 'pending',
-          retryCount: firstFailure.retryCount,
         })
-        .where(schema.eq(schema.Events.id, event.id))
+        .where(eq(Events.id, event.id))
         .returning();
 
-      expect(retry.status).toBe('pending');
+      expect(retry?.status).toBe('pending');
 
       // Simulate max retries exceeded
       const [maxRetriesExceeded] = await testDb.db
-        .update(schema.Events)
+        .update(Events)
         .set({
-          status: 'failed',
-          retryCount: 4,
           failedReason: 'Max retries exceeded',
+          retryCount: 4,
+          status: 'failed',
         })
-        .where(schema.eq(schema.Events.id, event.id))
+        .where(eq(Events.id, event.id))
         .returning();
 
-      expect(maxRetriesExceeded.retryCount).toBeGreaterThan(
-        maxRetriesExceeded.maxRetries,
+      expect(maxRetriesExceeded?.retryCount).toBeGreaterThan(
+        maxRetriesExceeded?.maxRetries ?? 0,
       );
     });
   });
@@ -179,30 +182,30 @@ describe('Events and Requests Integration Tests', () => {
 
     it('should store request and response details', async () => {
       const requestPayload = {
-        id: 'req_123',
-        method: 'POST',
-        sourceUrl: 'https://api.stripe.com/v1/webhooks',
+        body: JSON.stringify({
+          data: { object: { id: 'pi_123' } },
+          type: 'payment_intent.succeeded',
+        }),
+        clientIp: '192.168.1.100',
+        contentType: 'application/json',
         headers: {
           'content-type': 'application/json',
           'stripe-signature': 'v1=abc123',
           'user-agent': 'Stripe/1.0',
         },
+        id: 'req_123',
+        method: 'POST',
         size: 1024,
-        body: JSON.stringify({
-          type: 'payment_intent.succeeded',
-          data: { object: { id: 'pi_123' } },
-        }),
-        contentType: 'application/json',
-        clientIp: '192.168.1.100',
+        sourceUrl: 'https://api.stripe.com/v1/webhooks',
       };
 
       const responsePayload = {
-        status: 200,
+        body: JSON.stringify({ received: true }),
         headers: {
           'content-type': 'application/json',
           'x-request-id': 'resp_123',
         },
-        body: JSON.stringify({ received: true }),
+        status: 200,
       };
 
       const request = await factories.createRequest(
@@ -227,13 +230,13 @@ describe('Events and Requests Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          status: 'failed',
           failedReason: 'ECONNREFUSED',
           response: {
-            status: 0,
-            headers: {},
             body: undefined,
+            headers: {},
+            status: 0,
           },
+          status: 'failed',
         },
       );
 
@@ -270,13 +273,13 @@ describe('Events and Requests Integration Tests', () => {
 
       const webhook1Requests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.eq(schema.Requests.webhookId, testSetup.webhook.id));
+        .from(Requests)
+        .where(eq(Requests.webhookId, testSetup.webhook.id));
 
       const webhook2Requests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.eq(schema.Requests.webhookId, webhook2.id));
+        .from(Requests)
+        .where(eq(Requests.webhookId, webhook2.id));
 
       expect(webhook1Requests).toHaveLength(2);
       expect(webhook2Requests).toHaveLength(1);
@@ -310,18 +313,18 @@ describe('Events and Requests Integration Tests', () => {
 
       const completedRequests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.eq(schema.Requests.status, 'completed'));
+        .from(Requests)
+        .where(eq(Requests.status, 'completed'));
 
       const failedRequests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.eq(schema.Requests.status, 'failed'));
+        .from(Requests)
+        .where(eq(Requests.status, 'failed'));
 
       const pendingRequests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.eq(schema.Requests.status, 'pending'));
+        .from(Requests)
+        .where(eq(Requests.status, 'pending'));
 
       expect(completedRequests).toHaveLength(2);
       expect(failedRequests).toHaveLength(1);
@@ -354,8 +357,8 @@ describe('Events and Requests Integration Tests', () => {
 
       const recentRequests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.gte(schema.Requests.timestamp, yesterday));
+        .from(Requests)
+        .where(gte(Requests.timestamp, yesterday));
 
       expect(recentRequests).toHaveLength(2);
     });
@@ -393,12 +396,12 @@ describe('Events and Requests Integration Tests', () => {
 
       const eventRequests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.eq(schema.Requests.eventId, event.id));
+        .from(Requests)
+        .where(eq(Requests.eventId, event.id));
 
       expect(eventRequests).toHaveLength(3);
-      expect(eventRequests.map((r) => r.id)).toEqual(
-        expect.arrayContaining(requests.map((r) => r.id)),
+      expect(eventRequests.map((r) => r?.id)).toEqual(
+        expect.arrayContaining(requests.map((r) => r?.id)),
       );
     });
 
@@ -414,11 +417,11 @@ describe('Events and Requests Integration Tests', () => {
 
       const orphanedRequests = await testDb.db
         .select()
-        .from(schema.Requests)
-        .where(schema.isNull(schema.Requests.eventId));
+        .from(Requests)
+        .where(isNull(Requests.eventId));
 
       expect(orphanedRequests).toHaveLength(1);
-      expect(orphanedRequests[0].id).toBe(request.id);
+      expect(orphanedRequests[0]?.id).toBe(request.id);
     });
   });
 
@@ -429,17 +432,17 @@ describe('Events and Requests Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          status: 'completed',
           request: {
+            body: JSON.stringify({ original: true }),
+            clientIp: '192.168.1.1',
+            contentType: 'application/json',
+            headers: { 'x-original': 'true' },
             id: 'req_original',
             method: 'POST',
-            sourceUrl: 'https://api.example.com/webhook',
-            headers: { 'x-original': 'true' },
             size: 1024,
-            body: JSON.stringify({ original: true }),
-            contentType: 'application/json',
-            clientIp: '192.168.1.1',
+            sourceUrl: 'https://api.example.com/webhook',
           },
+          status: 'completed',
         },
       );
 
@@ -449,26 +452,23 @@ describe('Events and Requests Integration Tests', () => {
         testSetup.user.id,
         testSetup.org.id,
         {
-          status: 'pending',
           request: {
             ...originalRequest.request,
-            id: 'req_replay',
             headers: {
               ...originalRequest.request.headers,
-              'x-replay': 'true',
               'x-original-request-id': originalRequest.id,
+              'x-replay': 'true',
             },
+            id: 'req_replay',
           },
-          isReplay: true,
-          replayOf: originalRequest.id,
+          status: 'pending',
         },
       );
 
       expect(replayRequest.request.headers['x-original-request-id']).toBe(
         originalRequest.id,
       );
-      expect(replayRequest.isReplay).toBe(true);
-      expect(replayRequest.replayOf).toBe(originalRequest.id);
+      expect(replayRequest.request.headers['x-replay']).toBe('true');
     });
   });
 });

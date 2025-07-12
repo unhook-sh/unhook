@@ -85,7 +85,12 @@ export class FirstTimeUserService {
         return;
       }
 
-      const workspaceRoot = workspaceFolders[0].uri;
+      const workspaceRoot = workspaceFolders[0]?.uri;
+      if (!workspaceRoot) {
+        log('No workspace folder found');
+        return;
+      }
+
       const configUri = vscode.Uri.joinPath(workspaceRoot, 'unhook.yml');
 
       // Check if file already exists

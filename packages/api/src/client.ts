@@ -8,6 +8,7 @@ export const createClient = (config?: ClientConfig) => {
   return createTRPCClient<AppRouter>({
     links: createDefaultLinks({
       authToken: config?.authToken,
+      baseUrl: config?.baseUrl,
       sessionCookie: config?.sessionCookie,
       sourceHeader: config?.sourceHeader,
     }),

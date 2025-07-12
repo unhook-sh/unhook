@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import * as schema from '@unhook/db/src/schema';
+import * as schema from '@unhook/db/schema';
 import { createId } from '@unhook/id';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
@@ -10,14 +10,14 @@ export class TestFactories {
     overrides?: Partial<schema.UserType>,
   ): Promise<schema.UserType> {
     const user = {
-      id: createId({ prefix: 'user' }),
+      avatarUrl: faker.image.avatar(),
       clerkId: `clerk_${faker.string.alphanumeric(20)}`,
+      createdAt: new Date(),
       email: faker.internet.email(),
       firstName: faker.person.firstName(),
+      id: createId({ prefix: 'user' }),
       lastName: faker.person.lastName(),
-      avatarUrl: faker.image.avatar(),
       online: false,
-      createdAt: new Date(),
       ...overrides,
     };
 
@@ -25,6 +25,9 @@ export class TestFactories {
       .insert(schema.Users)
       .values(user)
       .returning();
+    if (!created) {
+      throw new Error('Failed to create user');
+    }
     return created;
   }
 
@@ -34,15 +37,18 @@ export class TestFactories {
     const user = await this.createUser();
 
     const org = {
-      id: createId({ prefix: 'org' }),
       clerkOrgId: `org_${faker.string.alphanumeric(20)}`,
-      name: faker.company.name(),
-      createdByUserId: user.id,
       createdAt: new Date(),
+      createdByUserId: user.id,
+      id: createId({ prefix: 'org' }),
+      name: faker.company.name(),
       ...overrides,
     };
 
     const [created] = await this.db.insert(schema.Orgs).values(org).returning();
+    if (!created) {
+      throw new Error('Failed to create org');
+    }
     return created;
   }
 
@@ -52,17 +58,20 @@ export class TestFactories {
     role: 'user' | 'admin' | 'superAdmin' = 'user',
   ): Promise<schema.OrgMembersType> {
     const member = {
+      createdAt: new Date(),
       id: createId({ prefix: 'member' }),
-      userId,
       orgId,
       role,
-      createdAt: new Date(),
+      userId,
     };
 
     const [created] = await this.db
       .insert(schema.OrgMembers)
       .values(member)
       .returning();
+    if (!created) {
+      throw new Error('Failed to create org member');
+    }
     return created;
   }
 
@@ -72,26 +81,26 @@ export class TestFactories {
     overrides?: Partial<schema.WebhookType>,
   ): Promise<schema.WebhookType> {
     const webhook = {
-      id: createId({ prefix: 'wh' }),
-      name: faker.lorem.words(2),
       apiKey: createId({ prefix: 'whsk' }),
-      status: 'active' as const,
-      isPrivate: false,
-      requestCount: 0,
       config: {
+        headers: {},
+        requests: {},
         storage: {
+          maxRequestBodySize: 1024 * 1024,
+          maxResponseBodySize: 1024 * 1024,
           storeHeaders: true,
           storeRequestBody: true,
           storeResponseBody: true,
-          maxRequestBodySize: 1024 * 1024,
-          maxResponseBodySize: 1024 * 1024,
         },
-        headers: {},
-        requests: {},
       },
-      userId,
-      orgId,
       createdAt: new Date(),
+      id: createId({ prefix: 'wh' }),
+      isPrivate: false,
+      name: faker.lorem.words(2),
+      orgId,
+      requestCount: 0,
+      status: 'active' as const,
+      userId,
       ...overrides,
     };
 
@@ -99,6 +108,9 @@ export class TestFactories {
       .insert(schema.Webhooks)
       .values(webhook)
       .returning();
+    if (!created) {
+      throw new Error('Failed to create webhook');
+    }
     return created;
   }
 
@@ -109,29 +121,29 @@ export class TestFactories {
     overrides?: Partial<schema.EventType>,
   ): Promise<schema.EventType> {
     const event = {
+      createdAt: new Date(),
       id: createId({ prefix: 'evt' }),
-      webhookId,
+      maxRetries: 3,
+      orgId,
       originRequest: {
-        id: createId({ prefix: 'req' }),
-        method: 'POST',
-        sourceUrl: faker.internet.url(),
+        body: JSON.stringify({ test: true }),
+        clientIp: faker.internet.ipv4(),
+        contentType: 'application/json',
         headers: {
           'content-type': 'application/json',
           'user-agent': faker.internet.userAgent(),
         },
-        size: faker.number.int({ min: 100, max: 10000 }),
-        body: JSON.stringify({ test: true }),
-        contentType: 'application/json',
-        clientIp: faker.internet.ipv4(),
+        id: createId({ prefix: 'req' }),
+        method: 'POST',
+        size: faker.number.int({ max: 10000, min: 100 }),
+        sourceUrl: faker.internet.url(),
       },
-      source: '*',
       retryCount: 0,
-      maxRetries: 3,
+      source: '*',
       status: 'pending' as const,
       timestamp: new Date(),
       userId,
-      orgId,
-      createdAt: new Date(),
+      webhookId,
       ...overrides,
     };
 
@@ -139,6 +151,9 @@ export class TestFactories {
       .insert(schema.Events)
       .values(event)
       .returning();
+    if (!created) {
+      throw new Error('Failed to create event');
+    }
     return created;
   }
 
@@ -149,38 +164,38 @@ export class TestFactories {
     overrides?: Partial<schema.RequestType>,
   ): Promise<schema.RequestType> {
     const request = {
+      createdAt: new Date(),
+      destination: {
+        name: 'Test Destination',
+        url: 'http://localhost:3000',
+      },
       id: createId({ prefix: 'req' }),
-      webhookId,
+      orgId,
       request: {
-        id: createId({ prefix: 'req' }),
-        method: 'POST',
-        sourceUrl: faker.internet.url(),
+        body: JSON.stringify({ test: true }),
+        clientIp: faker.internet.ipv4(),
+        contentType: 'application/json',
         headers: {
           'content-type': 'application/json',
           'user-agent': faker.internet.userAgent(),
         },
-        size: faker.number.int({ min: 100, max: 10000 }),
-        body: JSON.stringify({ test: true }),
-        contentType: 'application/json',
-        clientIp: faker.internet.ipv4(),
-      },
-      source: '*',
-      destination: {
-        url: 'http://localhost:3000',
-        headers: {},
+        id: createId({ prefix: 'req' }),
+        method: 'POST',
+        size: faker.number.int({ max: 10000, min: 100 }),
+        sourceUrl: faker.internet.url(),
       },
       response: {
-        status: 200,
+        body: JSON.stringify({ success: true }),
         headers: {
           'content-type': 'application/json',
         },
-        body: JSON.stringify({ success: true }),
+        status: 200,
       },
+      source: '*',
       status: 'completed' as const,
       timestamp: new Date(),
       userId,
-      orgId,
-      createdAt: new Date(),
+      webhookId,
       ...overrides,
     };
 
@@ -188,6 +203,9 @@ export class TestFactories {
       .insert(schema.Requests)
       .values(request)
       .returning();
+    if (!created) {
+      throw new Error('Failed to create request');
+    }
     return created;
   }
 
@@ -197,52 +215,48 @@ export class TestFactories {
     orgId: string,
     overrides?: Partial<schema.ConnectionType>,
   ): Promise<schema.ConnectionType> {
-    const connection = {
-      id: createId({ prefix: 'conn' }),
-      webhookId,
-      clientId: `client_${faker.string.alphanumeric(10)}`,
-      status: 'connected' as const,
-      connectedAt: new Date(),
-      metadata: {
-        ip: faker.internet.ipv4(),
-        userAgent: faker.internet.userAgent(),
-      },
-      userId,
-      orgId,
-      createdAt: new Date(),
-      ...overrides,
-    };
-
     const [created] = await this.db
       .insert(schema.Connections)
-      .values(connection)
+      .values({
+        clientId: `client_${faker.string.alphanumeric(10)}`,
+        connectedAt: new Date(),
+        createdAt: new Date(),
+        id: createId({ prefix: 'conn' }),
+        ipAddress: faker.internet.ipv4(),
+        orgId,
+        userId,
+        webhookId,
+        ...overrides,
+      })
       .returning();
+    if (!created) {
+      throw new Error('Failed to create connection');
+    }
     return created;
   }
 
   async createForwardingDestination(
-    userId: string,
+    _userId: string,
     orgId: string,
     overrides?: Partial<schema.ForwardingDestinationType>,
   ): Promise<schema.ForwardingDestinationType> {
-    const destination = {
-      id: createId({ prefix: 'dest' }),
-      name: faker.lorem.words(2),
-      url: faker.internet.url(),
-      headers: {},
-      timeout: 30000,
-      retryOnFailure: true,
-      maxRetries: 3,
-      userId,
-      orgId,
-      createdAt: new Date(),
-      ...overrides,
-    };
-
     const [created] = await this.db
       .insert(schema.ForwardingDestinations)
-      .values(destination)
+      .values({
+        config: {
+          url: faker.internet.url(),
+        },
+        createdAt: new Date(),
+        id: createId({ prefix: 'dest' }),
+        name: faker.lorem.words(2),
+        orgId,
+        type: 'webhook',
+        ...overrides,
+      })
       .returning();
+    if (!created) {
+      throw new Error('Failed to create forwarding destination');
+    }
     return created;
   }
 
@@ -270,6 +284,6 @@ export class TestFactories {
       overrides?.webhook,
     );
 
-    return { user, org, webhook };
+    return { org, user, webhook };
   }
 }

@@ -19,13 +19,16 @@ export class AuthStore implements vscode.Disposable {
   private _user: AuthUser | null = null;
   private _isValidatingSession = false;
   private _api: ApiClient;
+  private _configManager: ConfigManager;
 
   constructor(private readonly context: vscode.ExtensionContext) {
-    // Set the API URL environment variable based on ConfigManager
-    const configManager = ConfigManager.getInstance();
-    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
+    // Initialize ConfigManager
+    this._configManager = ConfigManager.getInstance();
 
-    this._api = createApiClient();
+    // Create API client with the base URL from ConfigManager
+    this._api = createApiClient({
+      baseUrl: this._configManager.getApiUrl(),
+    });
   }
 
   get isSignedIn() {
@@ -71,10 +74,11 @@ export class AuthStore implements vscode.Disposable {
 
     this._authToken = token;
     this._isSignedIn = !!token;
-    // Update API URL before creating client
-    const configManager = ConfigManager.getInstance();
-    process.env.NEXT_PUBLIC_API_URL = configManager.getApiUrl();
-    this._api = createApiClient({ authToken: token ?? undefined });
+    // Create API client with auth token and base URL
+    this._api = createApiClient({
+      authToken: token ?? undefined,
+      baseUrl: this._configManager.getApiUrl(),
+    });
     this._onDidChangeAuth.fire();
     log('Auth token updated', { isSignedIn: this._isSignedIn });
   }

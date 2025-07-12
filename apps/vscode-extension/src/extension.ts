@@ -3,12 +3,8 @@ import { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-outp
 import * as vscode from 'vscode';
 import { registerAuthCommands } from './commands/auth.commands';
 import { registerConfigCommands } from './commands/config.commands';
-import {
-  isDeliveryEnabled,
-  registerDeliveryCommands,
-} from './commands/delivery.commands';
+import { registerDeliveryCommands } from './commands/delivery.commands';
 import { registerEventCommands } from './commands/events.commands';
-import { registerInitCommands } from './commands/init.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
@@ -69,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(authorizationService);
 
   // Initialize status bar service
-  const statusBarService = new StatusBarService();
+  const statusBarService = StatusBarService.getInstance();
   context.subscriptions.push(statusBarService);
 
   // Add VS Code output destination to default logger
@@ -88,12 +84,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Listen for settings changes
   settingsService.onSettingsChange((settings) => {
-
     // In production, always keep auto-show disabled
     outputDestination.autoShow = isProduction
       ? false
       : settings.output.autoShow;
-    updateStatusBar(); // Update status bar when delivery settings change
+    statusBarService.update(); // Update status bar when delivery settings change
   });
 
   // Set auth store on status bar service
@@ -101,21 +96,17 @@ export async function activate(context: vscode.ExtensionContext) {
   setupFirstTimeUserHandler(authStore, firstTimeUserService);
 
   // Listen for delivery setting changes
-  const configChangeListener = vscode.workspace.onDidChangeConfiguration(
+  const _configChangeListener = vscode.workspace.onDidChangeConfiguration(
     (e) => {
       if (e.affectsConfiguration('unhook.delivery.enabled')) {
-        updateStatusBar();
+        statusBarService.update();
       }
     },
   );
 
-  updateStatusBar();
+  statusBarService.update();
 
-  context.subscriptions.push(
-    authStore,
-    signInCommand,
-    signOutCommand,
-  );
+  context.subscriptions.push(authStore, signInCommand, signOutCommand);
 
   // Initialize webhook events provider
   const eventsProvider = new EventsProvider(context);
@@ -142,8 +133,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerSettingsCommands(context);
   registerDeliveryCommands(context);
   registerWebhookAccessCommands(context, authStore);
-  registerInitCommands(context);
-  registerConfigCommands(context, firstTimeUserService);
+  registerConfigCommands(context);
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(
@@ -153,8 +143,6 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   );
   context.subscriptions.push(showQuickPickCommand);
-
-
 
   // Register the webhook events provider
   eventsTreeView = vscode.window.createTreeView('unhook.events', {

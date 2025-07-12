@@ -2,7 +2,8 @@ import { httpBatchStreamLink, loggerLink } from '@trpc/client';
 import SuperJSON from 'superjson';
 import { env } from '../env.client';
 
-export const getBaseUrl = () => {
+export const getBaseUrl = (baseUrl?: string) => {
+  if (baseUrl) return baseUrl;
   if (typeof globalThis !== 'undefined' && globalThis.location)
     return globalThis.location.origin;
   if (env.NEXT_PUBLIC_API_URL) return env.NEXT_PUBLIC_API_URL;
@@ -15,10 +16,12 @@ export const createDefaultLinks = ({
   sourceHeader,
   authToken,
   sessionCookie,
+  baseUrl,
 }: {
   sourceHeader?: string;
   authToken?: string;
   sessionCookie?: string;
+  baseUrl?: string;
 } = {}) => [
   loggerLink({
     enabled: (op) =>
@@ -41,7 +44,7 @@ export const createDefaultLinks = ({
       return headers;
     },
     transformer: SuperJSON,
-    url: `${getBaseUrl()}/api/trpc`,
+    url: `${getBaseUrl(baseUrl)}/api/trpc`,
   }),
 ];
 
@@ -49,4 +52,5 @@ export type ClientConfig = {
   sourceHeader?: string;
   authToken?: string;
   sessionCookie?: string;
+  baseUrl?: string;
 };

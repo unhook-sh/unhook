@@ -1,7 +1,7 @@
 import {
-  type WebhookConfig,
   findUpConfig,
   loadConfig,
+  type WebhookConfig,
 } from '@unhook/client/config';
 import {
   createRequestsForEventToAllDestinations,

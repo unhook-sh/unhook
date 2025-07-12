@@ -1,5 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
+  "concurrency": "20",
   "globalEnv": ["NODE_ENV"],
   "globalPassThroughEnv": [
     "NODE_ENV",
@@ -102,14 +103,6 @@
       "env": ["DATABASE_*", "POSTGRES_*"],
       "persistent": true
     },
-    "typecheck": {
-      "dependsOn": ["^build"],
-      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
-    },
-    "ui-add": {
-      "cache": false,
-      "interactive": true
-    },
     "test": {
       "cache": false,
       "dependsOn": ["^build"],
@@ -123,8 +116,16 @@
     },
     "test:watch": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+    },
+    "ui-add": {
+      "cache": false,
+      "interactive": true
     },
     "unhook-jetbrains#build": {
       "dependsOn": ["^build"],

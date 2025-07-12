@@ -1,4 +1,4 @@
-import * as schema from '@unhook/db/src/schema';
+import * as schema from '@unhook/db/schema';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 export async function cleanupTestData(

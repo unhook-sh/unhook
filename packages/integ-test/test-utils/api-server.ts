@@ -1,7 +1,6 @@
-import { Server, createServer } from 'http';
-import express, { Express } from 'express';
+import { createServer, type Server } from 'node:http';
+import express, { type Express } from 'express';
 import { WebSocketServer } from 'ws';
-import { testDb } from '../src/setup';
 
 export class TestApiServer {
   private app: Express;
@@ -41,7 +40,7 @@ export class TestApiServer {
 
   private setupRoutes(): void {
     // Health check
-    this.app.get('/health', (req, res) => {
+    this.app.get('/health', (_req, res) => {
       res.json({ status: 'ok' });
     });
 
@@ -49,39 +48,39 @@ export class TestApiServer {
     this.app.post('/api/webhooks', async (req, res) => {
       // Mock webhook creation
       const webhook = {
-        id: `wh_${Date.now()}`,
-        name: req.body.name,
         apiKey: `whsk_test_${Date.now()}`,
-        status: 'active',
-        isPrivate: req.body.isPrivate || false,
         createdAt: new Date().toISOString(),
+        id: `wh_${Date.now()}`,
+        isPrivate: req.body.isPrivate || false,
+        name: req.body.name,
+        status: 'active',
       };
 
       res.json(webhook);
     });
 
-    this.app.get('/api/webhooks', async (req, res) => {
+    this.app.get('/api/webhooks', async (_req, res) => {
       // Mock webhook listing
       res.json({
-        webhooks: [],
         total: 0,
+        webhooks: [],
       });
     });
 
     this.app.get('/api/webhooks/:id', async (req, res) => {
       // Mock webhook retrieval
       res.json({
-        id: req.params.id,
-        name: 'Test Webhook',
         apiKey: 'whsk_test_123',
-        status: 'active',
-        isPrivate: false,
         createdAt: new Date().toISOString(),
+        id: req.params.id,
+        isPrivate: false,
+        name: 'Test Webhook',
+        status: 'active',
       });
     });
 
     // Events endpoints
-    this.app.get('/api/webhooks/:webhookId/events', async (req, res) => {
+    this.app.get('/api/webhooks/:webhookId/events', async (_req, res) => {
       res.json({
         events: [],
         total: 0,
@@ -89,7 +88,7 @@ export class TestApiServer {
     });
 
     // Requests endpoints
-    this.app.get('/api/webhooks/:webhookId/requests', async (req, res) => {
+    this.app.get('/api/webhooks/:webhookId/requests', async (_req, res) => {
       res.json({
         requests: [],
         total: 0,
@@ -100,12 +99,12 @@ export class TestApiServer {
     this.app.all('/wh/:webhookId', async (req, res) => {
       // Mock webhook reception
       const event = {
-        id: `evt_${Date.now()}`,
-        webhookId: req.params.webhookId,
-        method: req.method,
-        headers: req.headers,
         body: req.body,
+        headers: req.headers,
+        id: `evt_${Date.now()}`,
+        method: req.method,
         timestamp: new Date().toISOString(),
+        webhookId: req.params.webhookId,
       };
 
       // Emit to WebSocket clients
@@ -115,15 +114,15 @@ export class TestApiServer {
             // WebSocket.OPEN
             client.send(
               JSON.stringify({
-                type: 'webhook.received',
                 data: event,
+                type: 'webhook.received',
               }),
             );
           }
         });
       }
 
-      res.json({ received: true, eventId: event.id });
+      res.json({ eventId: event.id, received: true });
     });
   }
 
@@ -161,7 +160,12 @@ export class TestApiServer {
       });
 
       this.server.listen(0, () => {
-        this.port = (this.server!.address() as any).port;
+        const address = this.server?.address();
+        if (address && typeof address === 'object' && 'port' in address) {
+          this.port = address.port;
+        } else {
+          throw new Error('Failed to get server port');
+        }
         resolve();
       });
     });

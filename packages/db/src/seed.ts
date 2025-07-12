@@ -182,7 +182,7 @@ await seed(db, {
           },
         },
       }),
-      id: funcs.default({ defaultValue: 'wh_internal' }),
+      id: funcs.default({ defaultValue: 'wh_seawatts' }),
       orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       requestCount: funcs.int({ maxValue: 1000, minValue: 0 }),

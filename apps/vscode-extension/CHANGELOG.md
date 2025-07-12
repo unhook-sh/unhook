@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.6
+
+### Patch Changes
+
+- [`c0adefa`](https://github.com/unhook-sh/unhook/commit/c0adefa691a4f8211633bb1d321452df96ab1aea) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with vscode login
+
+- Updated dependencies [[`c0adefa`](https://github.com/unhook-sh/unhook/commit/c0adefa691a4f8211633bb1d321452df96ab1aea)]:
+  - @unhook/client@0.5.4
+
 ## 0.2.5
 
 ### Patch Changes

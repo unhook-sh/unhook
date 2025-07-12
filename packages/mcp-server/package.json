@@ -1,0 +1,26 @@
+{
+  "name": "@unhook/mcp-server",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "biome check ./src",
+    "format": "biome format --write ./src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@unhook/db": "workspace:*",
+    "@unhook/logger": "workspace:*",
+    "@unhook/api": "workspace:*",
+    "@trpc/server": "11.0.0-rc.502",
+    "drizzle-orm": "^0.36.0",
+    "zod": "catalog:",
+    "eventsource": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/eventsource": "^1.1.15",
+    "@types/node": "catalog:node20",
+    "typescript": "catalog:"
+  }
+}

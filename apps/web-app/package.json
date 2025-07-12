@@ -16,6 +16,8 @@
     "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
+    "@unhook/logger": "workspace:*",
+    "@unhook/mcp-server": "workspace:*",
     "@unhook/stripe": "workspace:*",
     "@unhook/ui": "workspace:*",
     "@vercel/kv": "3.0.0",

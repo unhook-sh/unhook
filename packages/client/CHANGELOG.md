@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.5.4
+
+### Patch Changes
+
+- [`c0adefa`](https://github.com/unhook-sh/unhook/commit/c0adefa691a4f8211633bb1d321452df96ab1aea) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with vscode login
+
 ## 0.5.3
 
 ### Patch Changes

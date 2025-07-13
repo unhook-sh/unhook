@@ -1,18 +1,18 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.24.0",
-    "@modelcontextprotocol/sdk": "1.15.1",
+    "@clerk/nextjs": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
     "@unhook/analytics": "workspace:*",
     "@unhook/api": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/logger": "workspace:*",
-    "@vercel/mcp-adapter": "0.11.2",
-    "zod": "^3.23.8"
+    "@vercel/mcp-adapter": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "24.0.12",
+    "@types/node": "catalog:",
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.8.3"
+    "typescript": "catalog:"
   },
   "license": "MIT",
   "main": "./src/index.ts",

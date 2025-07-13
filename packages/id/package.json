@@ -1,12 +1,12 @@
 {
   "dependencies": {
-    "@paralleldrive/cuid2": "2.2.2",
-    "ulid": "3.0.1",
-    "unique-names-generator": "4.7.1"
+    "@paralleldrive/cuid2": "catalog:",
+    "ulid": "catalog:",
+    "unique-names-generator": "catalog:"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.8.3"
+    "typescript": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts"

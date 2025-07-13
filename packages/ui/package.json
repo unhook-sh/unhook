@@ -71,7 +71,7 @@
     "@unhook/tsconfig": "workspace:*",
     "tailwindcss": "4.1.11",
     "typescript": "5.8.3",
-    "zod": "3.25.67"
+    "zod": "^3.23.8"
   },
   "exports": {
     "./*": "./src/components/*.tsx",

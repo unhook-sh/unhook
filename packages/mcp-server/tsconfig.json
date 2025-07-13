@@ -1,9 +1,9 @@
 {
-  "extends": "../../tooling/typescript/base.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "outDir": "dist",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["node_modules"],
+  "extends": "@unhook/tsconfig/node.json",
+  "include": ["*.ts", "src"]
 }

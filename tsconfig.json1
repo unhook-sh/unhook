@@ -26,5 +26,29 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true
   },
-  "exclude": ["node_modules", "dist", ".next", ".expo", ".turbo"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".next",
+    ".expo",
+    ".turbo",
+    "**/build",
+    "**/out",
+    "**/.output",
+    "**/.nitro",
+    "**/coverage",
+    "**/.vscode-test",
+    "**/.env*",
+    "**/.vercel",
+    "**/*.tsbuildinfo",
+    "**/*.log",
+    "**/npm-debug.log*",
+    "**/yarn-debug.log*",
+    "**/yarn-error.log*",
+    "**/.bun-debug.log*",
+    "**/.DS_Store",
+    "**/certificates",
+    "**/.unhook",
+    "**/act-output.log"
+  ]
 }

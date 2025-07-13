@@ -16,7 +16,7 @@ async function main() {
 
   // Create a mock context - in production this would come from the API route
   // You'll need to set proper environment variables for database access
-  const context = await createTRPCContext({} as any);
+  const context = await createTRPCContext();
 
   // Check if we have proper authentication
   if (!context.auth?.userId) {

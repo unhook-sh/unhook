@@ -1,9 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 
 import { db } from '@unhook/db/client';
-import type { NextRequest } from 'next/server';
 
-export const createTRPCContext = async (_request: NextRequest) => {
+export const createTRPCContext = async () => {
   let authResult: Awaited<ReturnType<typeof auth>> | null = null;
   try {
     authResult = await auth();

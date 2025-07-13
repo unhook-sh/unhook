@@ -23,7 +23,12 @@
       "!**/baml_client/**",
       "!**/.turbo/**",
       "!**/*.min.*",
-      "!bun.lock"
+      "!bun.lock",
+      "!**/.vscode-test/**",
+      "!**/build/**",
+      "!**/.git/**",
+      "!**/coverage/**",
+      "!**/.nyc_output/**"
     ]
   },
   "formatter": {

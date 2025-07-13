@@ -1,12 +1,7 @@
 import { AIMCPSection } from '~/app/(marketing)/_components/sections/ai-mcp-section';
-import { BentoSection } from '~/app/(marketing)/_components/sections/bento-section';
-import { CTASection } from '~/app/(marketing)/_components/sections/cta-section';
-import { FAQSection } from '~/app/(marketing)/_components/sections/faq-section';
 import { FooterSection } from '~/app/(marketing)/_components/sections/footer-section';
-import { HeroSection } from '~/app/(marketing)/_components/sections/hero-section';
 import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
 import { siteConfig } from '../_lib/config';
-
 export default function MCPPage() {
   return (
     <div className="max-w-7xl mx-auto border-x relative">
@@ -35,17 +30,17 @@ function MCPHeroSection() {
         <div className="text-center">
           <div className="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-2 mb-6">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
+              aria-label="MCP Integration"
+              className="text-blue-400"
               fill="none"
+              height="16"
               stroke="currentColor"
-              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-blue-400"
-              aria-label="MCP Integration"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <title>MCP Integration</title>
               <path d="M12 2L2 7v10c0 5.55 3.84 9.05 9 10 5.16-.95 9-4.45 9-10V7l-10-5z" />
@@ -68,14 +63,14 @@ function MCPHeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/webhooks/create?utm_source=mcp-page&utm_medium=hero-cta"
               className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              href="/webhooks/create?utm_source=mcp-page&utm_medium=hero-cta"
             >
               Get Started with MCP
             </a>
             <a
-              href="https://docs.unhook.sh/mcp-integration"
               className="inline-flex items-center justify-center px-6 py-3 border border-border rounded-lg font-medium hover:bg-accent transition-colors"
+              href="https://docs.unhook.sh/mcp-integration"
             >
               View Documentation
             </a>
@@ -90,21 +85,20 @@ function MCPHeroSection() {
 function MCPFeaturesSection() {
   const features = [
     {
-      title: 'Access Webhook Data',
       description:
         'Query your webhook events and requests directly from AI assistants',
       icon: (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
+          aria-label="Access Webhook Data"
           fill="none"
+          height="24"
           stroke="currentColor"
-          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          aria-label="Access Webhook Data"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <title>Access Webhook Data</title>
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -112,23 +106,23 @@ function MCPFeaturesSection() {
           <path d="M16 8l-5 5" />
         </svg>
       ),
+      title: 'Access Webhook Data',
     },
     {
-      title: 'Intelligent Analysis',
       description:
         'Get AI-powered insights into webhook failures and performance issues',
       icon: (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
+          aria-label="Intelligent Analysis"
           fill="none"
+          height="24"
           stroke="currentColor"
-          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          aria-label="Intelligent Analysis"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <title>Intelligent Analysis</title>
           <path d="M12 2v20" />
@@ -137,50 +131,51 @@ function MCPFeaturesSection() {
           <path d="M17 7L7 17" />
         </svg>
       ),
+      title: 'Intelligent Analysis',
     },
     {
-      title: 'Real-time Debugging',
       description: 'Debug webhook issues as they happen with live data access',
       icon: (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
+          aria-label="Real-time Debugging"
           fill="none"
+          height="24"
           stroke="currentColor"
-          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          aria-label="Real-time Debugging"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <title>Real-time Debugging</title>
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
         </svg>
       ),
+      title: 'Real-time Debugging',
     },
     {
-      title: 'Secure Integration',
       description:
         'Enterprise-grade security with scoped access and authentication',
       icon: (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
+          aria-label="Secure Integration"
           fill="none"
+          height="24"
           stroke="currentColor"
-          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          aria-label="Secure Integration"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <title>Secure Integration</title>
-          <rect x="3" y="11" width="18" height="10" rx="2" ry="2" />
+          <rect height="10" rx="2" ry="2" width="18" x="3" y="11" />
           <path d="M7 11V7a5 5 0 0 1 10 0v4" />
         </svg>
       ),
+      title: 'Secure Integration',
     },
   ];
 
@@ -197,7 +192,7 @@ function MCPFeaturesSection() {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature) => (
-            <div key={feature.title} className="text-center">
+            <div className="text-center" key={feature.title}>
               <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4 text-primary">
                 {feature.icon}
               </div>
@@ -219,25 +214,25 @@ function MCPFeaturesSection() {
 function MCPUseCasesSection() {
   const useCases = [
     {
-      title: 'Debug Failed Webhooks',
       description:
         'Ask Claude or Cursor why your webhooks are failing and get instant analysis with actionable fixes.',
       example:
         '"Why are my Stripe webhooks failing?" → Get detailed error analysis and solutions',
+      title: 'Debug Failed Webhooks',
     },
     {
-      title: 'Performance Monitoring',
       description:
         'Track webhook performance metrics and identify bottlenecks with AI-powered insights.',
       example:
         '"Generate a performance report for my webhooks" → See response times, success rates, and trends',
+      title: 'Performance Monitoring',
     },
     {
-      title: 'Payload Inspection',
       description:
         'Examine webhook payloads and headers to debug integration issues quickly.',
       example:
         '"Show me the last GitHub webhook payload" → Instantly access and analyze webhook data',
+      title: 'Payload Inspection',
     },
   ];
 
@@ -255,8 +250,8 @@ function MCPUseCasesSection() {
         <div className="grid md:grid-cols-3 gap-8">
           {useCases.map((useCase) => (
             <div
-              key={useCase.title}
               className="bg-background border border-border rounded-lg p-6"
+              key={useCase.title}
             >
               <h3 className="font-semibold text-primary mb-3">
                 {useCase.title}
@@ -296,14 +291,15 @@ function MCPIntegrationSection() {
                   <svg
                     className="w-4 h-4 text-white"
                     fill="none"
-                    viewBox="0 0 24 24"
                     stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
+                    <title>Quick Setup</title>
                     <path
+                      d="M5 13l4 4L19 7"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M5 13l4 4L19 7"
                     />
                   </svg>
                 </div>
@@ -319,14 +315,15 @@ function MCPIntegrationSection() {
                   <svg
                     className="w-4 h-4 text-white"
                     fill="none"
-                    viewBox="0 0 24 24"
                     stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
+                    <title>Secure Access</title>
                     <path
+                      d="M5 13l4 4L19 7"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M5 13l4 4L19 7"
                     />
                   </svg>
                 </div>
@@ -342,14 +339,15 @@ function MCPIntegrationSection() {
                   <svg
                     className="w-4 h-4 text-white"
                     fill="none"
-                    viewBox="0 0 24 24"
                     stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
+                    <title>Full Feature Access</title>
                     <path
+                      d="M5 13l4 4L19 7"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M5 13l4 4L19 7"
                     />
                   </svg>
                 </div>
@@ -392,24 +390,24 @@ function MCPIntegrationSection() {
 function MCPFAQSection() {
   const faqs = [
     {
-      question: 'What is Model Context Protocol (MCP)?',
       answer:
         "MCP is an open standard that enables AI assistants to securely access data and tools from external systems. With Unhook's MCP server, AI assistants can access your webhook data for debugging and analysis.",
+      question: 'What is Model Context Protocol (MCP)?',
     },
     {
-      question: 'Which AI assistants support MCP?',
       answer:
         "Currently, Claude Desktop and Cursor have built-in MCP support. Any AI assistant that implements the MCP standard can connect to Unhook's MCP server.",
+      question: 'Which AI assistants support MCP?',
     },
     {
-      question: 'Is my webhook data secure?',
       answer:
         'Yes, all MCP requests require authentication via API tokens. Data access is scoped to your organization only, and all communication is encrypted over HTTPS.',
+      question: 'Is my webhook data secure?',
     },
     {
-      question: 'What can I do with the MCP integration?',
       answer:
         'You can search webhook events, analyze failures, inspect payloads, get performance reports, and receive AI-powered debugging recommendations—all without leaving your AI assistant.',
+      question: 'What can I do with the MCP integration?',
     },
   ];
 
@@ -424,8 +422,8 @@ function MCPFAQSection() {
         <div className="space-y-6">
           {faqs.map((faq) => (
             <div
-              key={faq.question}
               className="border border-border rounded-lg p-6"
+              key={faq.question}
             >
               <h3 className="font-semibold text-primary mb-3">
                 {faq.question}
@@ -454,14 +452,14 @@ function MCPCTASection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="/webhooks/create?utm_source=mcp-page&utm_medium=cta-button"
               className="inline-flex items-center justify-center px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              href="/webhooks/create?utm_source=mcp-page&utm_medium=cta-button"
             >
               Create Your First Webhook
             </a>
             <a
-              href="https://docs.unhook.sh/mcp-integration"
               className="inline-flex items-center justify-center px-8 py-3 border border-border rounded-lg font-medium hover:bg-accent transition-colors"
+              href="https://docs.unhook.sh/mcp-integration"
             >
               Read MCP Documentation
             </a>

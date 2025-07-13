@@ -5,6 +5,7 @@
     ]
   },
   "devDependencies": {
+    "@biomejs/biome": "catalog:",
     "@commitlint/cli": "catalog:",
     "@testing-library/react": "catalog:",
     "@turbo/gen": "catalog:",

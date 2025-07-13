@@ -1,8 +1,8 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
 import type { EventType } from '@unhook/db/schema';
 import { z } from 'zod';
-
 import { trackError, trackToolUsage } from '../analytics';
 
 export const searchEventsSchema = {
@@ -11,7 +11,7 @@ export const searchEventsSchema = {
   webhookId: z.string().optional(),
 };
 
-export function registerSearchEventsTool(server: any, context: Context) {
+export function registerSearchEventsTool(server: McpServer, context: Context) {
   const caller = createCaller(context);
 
   server.registerTool(
@@ -21,7 +21,7 @@ export function registerSearchEventsTool(server: any, context: Context) {
       inputSchema: searchEventsSchema,
       title: 'Search Events',
     },
-    async (args: z.infer<typeof searchEventsSchema>, extra: any) => {
+    async (args, extra) => {
       const startTime = Date.now();
       const userId = extra.authInfo?.extra?.userId;
       const organizationId = extra.authInfo?.extra?.organizationId;

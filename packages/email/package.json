@@ -1,19 +1,19 @@
 {
   "dependencies": {
-    "@react-email/components": "0.2.0",
-    "@react-email/render": "1.1.3",
-    "@t3-oss/env-core": "0.13.8",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "resend": "4.6.0",
-    "server-only": "^0.0.1",
-    "zod": "3.25.67"
+    "@react-email/components": "catalog:",
+    "@react-email/render": "catalog:",
+    "@t3-oss/env-core": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "resend": "catalog:",
+    "server-only": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.8.3"
+    "typescript": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",

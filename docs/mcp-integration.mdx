@@ -1,0 +1,222 @@
+---
+title: 'MCP Integration'
+description: 'Use AI assistants to debug webhooks with Model Context Protocol'
+icon: 'brain'
+---
+
+# MCP Integration
+
+Unhook provides a Model Context Protocol (MCP) server that enables AI assistants like Claude and Cursor to access your webhook data for advanced debugging and analysis.
+
+## What is MCP?
+
+Model Context Protocol (MCP) is an open standard that enables AI assistants to securely access data and tools from external systems. With Unhook's MCP server, AI assistants can:
+
+- Access your webhook events and request history
+- Analyze failure patterns and performance issues
+- Provide intelligent debugging assistance
+- Generate insights from your webhook data
+
+## Features
+
+### Resources
+The MCP server exposes your webhook data as resources that AI assistants can read:
+
+- **Recent Events** - Access the last 100 webhook events
+- **Recent Requests** - View the last 100 webhook requests
+- **Webhook List** - Get all configured webhooks
+
+### Tools
+Interactive tools for querying and analyzing webhook data:
+
+- **search_events** - Search events with filters
+- **search_requests** - Search requests with filters
+- **analyze_event** - Get detailed event analysis
+- **analyze_request** - Get detailed request analysis
+- **get_webhook_stats** - Comprehensive webhook statistics
+
+### Prompts
+Pre-built workflows for common debugging tasks:
+
+- **debug_webhook_issue** - Step-by-step debugging assistance
+- **analyze_failures** - Failure pattern analysis
+- **performance_report** - Performance metrics and recommendations
+
+## Setup
+
+### Claude Desktop
+
+1. **Get your authentication token** from your Unhook dashboard settings
+
+2. **Configure Claude Desktop** by editing your configuration file:
+
+<Tabs>
+  <Tab title="macOS">
+    ```bash
+    # Open config file
+    code ~/Library/Application\ Support/Claude/claude_desktop_config.json
+    ```
+  </Tab>
+  <Tab title="Windows">
+    ```bash
+    # Open config file
+    code %APPDATA%\Claude\claude_desktop_config.json
+    ```
+  </Tab>
+  <Tab title="Linux">
+    ```bash
+    # Open config file
+    code ~/.config/Claude/claude_desktop_config.json
+    ```
+  </Tab>
+</Tabs>
+
+3. **Add the Unhook MCP server** to your configuration:
+
+```json
+{
+  "mcpServers": {
+    "unhook": {
+      "url": "https://app.unhook.sh/api/mcp",
+      "transport": "http",
+      "headers": {
+        "Authorization": "Bearer YOUR_AUTH_TOKEN"
+      }
+    }
+  }
+}
+```
+
+4. **Restart Claude Desktop** to apply the configuration
+
+### Cursor
+
+Cursor supports MCP servers through its composer feature:
+
+1. **Get your authentication token** from your Unhook dashboard settings
+
+2. **Add to Cursor settings**:
+   - Open Cursor Settings (Cmd/Ctrl + ,)
+   - Search for "Model Context Protocol"
+   - Add the Unhook server configuration
+
+3. **Use in Composer**:
+   - Open the Composer (Cmd/Ctrl + K)
+   - The Unhook context will be available automatically
+
+## Usage Examples
+
+### Debugging Failed Webhooks
+
+Ask Claude or Cursor:
+- "Show me all failed webhook events from the last hour"
+- "Why are my Stripe webhooks failing?"
+- "Analyze the error patterns in my webhook requests"
+
+### Performance Analysis
+
+Ask Claude or Cursor:
+- "What's the average response time for my webhooks?"
+- "Which webhooks have the highest failure rate?"
+- "Generate a performance report for my payment webhooks"
+
+### Request Inspection
+
+Ask Claude or Cursor:
+- "Show me the payload for event evt_123"
+- "What headers were sent with the last GitHub webhook?"
+- "Compare successful vs failed requests for my Clerk webhook"
+
+## Security
+
+### Authentication
+- All MCP requests require authentication via your Unhook API token
+- Tokens are scoped to your organization's data only
+- Never share your authentication token publicly
+
+### Data Access
+- MCP servers can only access data you have permission to view
+- All data transmission is encrypted over HTTPS
+- No webhook data is stored by the AI assistant
+
+### Best Practices
+- Use environment-specific tokens for development vs production
+- Rotate your API tokens regularly
+- Review MCP access logs in your dashboard
+
+## Troubleshooting
+
+### Connection Issues
+
+<AccordionGroup>
+  <Accordion title="Claude Desktop can't connect to Unhook">
+    1. Verify your configuration file syntax is valid JSON
+    2. Check that your API token is correct and not expired
+    3. Ensure you're using HTTPS (not HTTP) in the URL
+    4. Restart Claude Desktop after configuration changes
+  </Accordion>
+
+  <Accordion title="No webhook data appearing">
+    1. Confirm you have webhooks configured in your dashboard
+    2. Check that your token has the correct permissions
+    3. Verify you're in the right organization
+    4. Try manually triggering a webhook to generate data
+  </Accordion>
+
+  <Accordion title="Authentication errors">
+    1. Regenerate your API token in the dashboard
+    2. Ensure the "Bearer " prefix is included
+    3. Check for extra spaces or characters in the token
+    4. Verify the token hasn't expired
+  </Accordion>
+</AccordionGroup>
+
+### Performance
+
+<Note>
+The MCP server limits responses to prevent overwhelming AI assistants:
+- Events: Maximum 100 per request
+- Requests: Maximum 100 per request  
+- Use search filters to find specific data
+</Note>
+
+## Advanced Usage
+
+### Custom Prompts
+
+You can create custom debugging workflows:
+
+```
+"Create a detailed analysis of all webhooks that failed in the last 24 hours, 
+grouped by error type, with recommendations for each failure pattern"
+```
+
+### Batch Analysis
+
+Analyze multiple webhooks together:
+
+```
+"Compare the performance of my Stripe and PayPal webhooks, 
+identify which one has better reliability and why"
+```
+
+### Trend Detection
+
+Identify patterns over time:
+
+```
+"Are there any recurring patterns in my webhook failures? 
+Show me time-based trends and correlations"
+```
+
+## API Reference
+
+For detailed API documentation, see the [MCP API Reference](/api-reference/mcp/overview).
+
+## Support
+
+Need help with MCP integration?
+
+- Check our [GitHub discussions](https://github.com/unhook-sh/unhook/discussions)
+- Join our [Discord community](https://discord.gg/qRZzTCK6MZ)
+- Email support at support@unhook.sh

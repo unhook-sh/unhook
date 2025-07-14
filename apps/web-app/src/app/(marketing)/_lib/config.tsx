@@ -299,6 +299,15 @@ export const siteConfig = {
       ],
       title: 'Compare',
     },
+    {
+      links: [
+        { id: 12, title: 'VS Code Extension', url: '/vscode' },
+        { id: 13, title: 'JetBrains Plugin', url: '/jetbrains' },
+        { id: 14, title: 'AI Integration (MCP)', url: '/mcp' },
+        { id: 15, title: 'Unhook CLI', url: '/cli' },
+      ],
+      title: 'Features',
+    },
     // {
     //   title: 'Products',
     //   links: [
@@ -395,6 +404,8 @@ export const siteConfig = {
       { href: '#bento', id: 2, name: 'How it Works' },
       { href: '/vscode', id: 3, name: 'VS Code Extension' },
       { href: '/jetbrains', id: 4, name: 'JetBrains Plugin' },
+      { href: '/mcp', id: 5, name: 'AI Integration' },
+      { href: '/cli', id: 6, name: 'CLI' },
       // { id: 5, name: 'Features', href: '#features' },
       // { id: 6, name: 'Pricing', href: '#pricing' },
     ],

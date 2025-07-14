@@ -1,6 +1,5 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "concurrency": "20",
   "globalEnv": ["NODE_ENV"],
   "globalPassThroughEnv": [
     "NODE_ENV",

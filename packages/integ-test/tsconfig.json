@@ -1,17 +1,10 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "esModuleInterop": true,
-    "lib": ["ES2022"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ES2022",
+    "outDir": "dist",
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "types": ["vitest/globals", "node", "ws"]
   },
-  "exclude": ["node_modules", "dist", "coverage"],
-  "extends": "../../tsconfig.json",
-  "include": ["src/**/*", "vitest.config.ts", "test-utils/**/*"]
+  "exclude": ["node_modules"],
+  "extends": "@unhook/tsconfig/node.json",
+  "include": ["*.ts", "src", "vitest.config.ts", "test-utils/**/*"]
 }

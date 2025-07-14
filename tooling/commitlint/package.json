@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@commitlint/cli": "19.8.1",
-    "@commitlint/config-conventional": "19.8.1"
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:"
   },
   "exports": {
     ".": "./commitlint.config.js"

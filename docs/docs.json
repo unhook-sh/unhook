@@ -89,6 +89,7 @@
             "pages": [
               "cli",
               "vscode-extension",
+              "mcp-integration",
               "jetbrains-extension",
               "architecture",
               "cross-platform-setup",
@@ -111,6 +112,15 @@
           {
             "group": "API Documentation",
             "pages": ["api-reference/introduction"]
+          },
+          {
+            "group": "MCP Reference",
+            "pages": [
+              "api-reference/mcp/overview",
+              "api-reference/mcp/tools",
+              "api-reference/mcp/resources",
+              "api-reference/mcp/examples"
+            ]
           },
           {
             "group": "Endpoint Examples",

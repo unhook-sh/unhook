@@ -2,7 +2,6 @@ import 'server-only';
 
 import { createServerSideHelpers } from '@trpc/react-query/server';
 import { headers } from 'next/headers';
-import { NextRequest } from 'next/server';
 import { cache } from 'react';
 import superjson from 'superjson';
 import { createTRPCContext } from '../context';
@@ -17,11 +16,7 @@ const createContext = cache(async () => {
   const heads = new Headers(await headers());
   heads.set('x-trpc-source', 'rsc');
 
-  const request = new NextRequest('https://notused.com', {
-    headers: heads,
-  });
-
-  return createTRPCContext(request);
+  return createTRPCContext();
 });
 
 export const getQueryClient = cache(createQueryClient);

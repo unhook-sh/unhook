@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@clerk/nextjs": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@unhook/analytics": "workspace:*",
+    "@unhook/api": "workspace:*",
+    "@unhook/db": "workspace:*",
+    "@unhook/logger": "workspace:*",
+    "@vercel/mcp-adapter": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@unhook/tsconfig": "workspace:*",
+    "typescript": "catalog:"
+  },
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "name": "@unhook/mcp-server",
+  "scripts": {
+    "example": "tsx src/example.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "types": "./src/index.ts",
+  "version": "0.0.0"
+}

@@ -31,6 +31,11 @@ const log = debug('unhook:vscode');
 let eventsTreeView: vscode.TreeView<EventItem | RequestItem> | undefined;
 let requestDetailsWebviewProvider: RequestDetailsWebviewProvider;
 
+// Add webhook authorization state
+let _webhookUnauthorized = false;
+let unauthorizedWebhookId: string | null = null;
+let _hasPendingAccessRequest = false;
+
 export async function activate(context: vscode.ExtensionContext) {
   log('Unhook extension is activating...');
 
@@ -162,9 +167,65 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(eventsTreeView);
 
+  // Register command to request webhook access
+  const requestWebhookAccessCommand = vscode.commands.registerCommand(
+    'unhook.requestWebhookAccess',
+    async () => {
+      if (!authStore.isSignedIn) {
+        vscode.window.showErrorMessage('Please sign in to Unhook first');
+        return;
+      }
+
+      if (!unauthorizedWebhookId) {
+        vscode.window.showErrorMessage('No webhook ID found');
+        return;
+      }
+
+      const message = await vscode.window.showInputBox({
+        placeHolder: 'e.g., I need to test webhook integration for project X',
+        prompt: 'Why do you need access to this webhook? (Optional)',
+      });
+
+      try {
+        await authStore.api.webhookAccessRequests.create.mutate({
+          requesterMessage: message,
+          webhookId: unauthorizedWebhookId,
+        });
+
+        vscode.window.showInformationMessage(
+          'Access request sent successfully! You will be notified when your request is reviewed.',
+        );
+
+        // Update state to show pending request
+        _hasPendingAccessRequest = true;
+        statusBarService.update();
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        if (errorMessage.indexOf('already have a pending request') !== -1) {
+          vscode.window.showInformationMessage(
+            'You already have a pending access request for this webhook.',
+          );
+          _hasPendingAccessRequest = true;
+          statusBarService.update();
+        } else if (errorMessage.indexOf('already have access') !== -1) {
+          // User already has access, refresh the provider
+          _webhookUnauthorized = false;
+          unauthorizedWebhookId = null;
+          _hasPendingAccessRequest = false;
+          statusBarService.update();
+          eventsProvider.refresh();
+        } else {
+          vscode.window.showErrorMessage(
+            `Failed to request access: ${errorMessage}`,
+          );
+        }
+      }
+    },
+  );
+  context.subscriptions.push(requestWebhookAccessCommand);
+
   log('Unhook extension activation complete');
 }
-
-export function deactivate() {}
 
 export { eventsTreeView, requestDetailsWebviewProvider };

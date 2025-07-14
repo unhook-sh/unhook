@@ -1,0 +1,301 @@
+---
+title: 'MCP Resources Reference'
+description: 'Data schemas and structures for MCP resources'
+icon: 'database'
+---
+
+# MCP Resources Reference
+
+Resources provide read-only access to your webhook data. Each resource has a unique URI and returns structured data in a consistent format.
+
+## Resource URIs
+
+All resources follow the pattern: `webhook://[type]/[identifier]`
+
+| URI | Description |
+|-----|-------------|
+| `webhook://events/recent` | Last 100 webhook events |
+| `webhook://requests/recent` | Last 100 webhook requests |
+| `webhook://webhooks/list` | All configured webhooks |
+
+## webhook://events/recent
+
+Returns the most recent webhook events across all your webhooks.
+
+### Response Schema
+
+```json
+{
+  "uri": "webhook://events/recent",
+  "mimeType": "application/json",
+  "text": {
+    "events": [
+      {
+        "id": "evt_1234567890",
+        "webhookId": "wh_stripe_prod",
+        "status": "success" | "failed" | "pending",
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "provider": "stripe" | "github" | "clerk" | "custom",
+        "eventType": "payment_intent.succeeded",
+        "payload": {
+          // Event-specific payload data
+        },
+        "error": "Connection timeout", // Only if status is failed
+        "retryCount": 0,
+        "nextRetryAt": "2024-01-15T10:35:00.000Z" // Only if retries scheduled
+      }
+    ],
+    "metadata": {
+      "count": 100,
+      "hasMore": true,
+      "oldestEventAt": "2024-01-15T08:00:00.000Z",
+      "newestEventAt": "2024-01-15T10:30:00.000Z"
+    }
+  }
+}
+```
+
+### Event Status Values
+
+| Status | Description |
+|--------|-------------|
+| `success` | Event processed successfully |
+| `failed` | Event processing failed |
+| `pending` | Event queued for processing |
+
+### Provider Values
+
+| Provider | Description |
+|----------|-------------|
+| `stripe` | Stripe payment webhooks |
+| `github` | GitHub repository events |
+| `clerk` | Clerk authentication events |
+| `custom` | Custom webhook providers |
+
+## webhook://requests/recent
+
+Returns the most recent webhook HTTP requests made by your webhooks.
+
+### Response Schema
+
+```json
+{
+  "uri": "webhook://requests/recent",
+  "mimeType": "application/json",
+  "text": {
+    "requests": [
+      {
+        "id": "req_0987654321",
+        "eventId": "evt_1234567890",
+        "webhookId": "wh_stripe_prod",
+        "status": "success" | "failed" | "timeout",
+        "statusCode": 200,
+        "duration": 245, // milliseconds
+        "createdAt": "2024-01-15T10:30:05.000Z",
+        "method": "POST",
+        "url": "https://api.example.com/webhooks/stripe",
+        "headers": {
+          "content-type": "application/json",
+          "x-stripe-signature": "...",
+          "user-agent": "Stripe/1.0"
+        },
+        "requestBody": {
+          // Request payload
+        },
+        "responseBody": {
+          // Response payload
+        },
+        "error": "Connection refused" // Only if failed
+      }
+    ],
+    "metadata": {
+      "count": 100,
+      "hasMore": true,
+      "oldestRequestAt": "2024-01-15T08:00:05.000Z",
+      "newestRequestAt": "2024-01-15T10:30:05.000Z"
+    }
+  }
+}
+```
+
+### Request Status Values
+
+| Status | Description |
+|--------|-------------|
+| `success` | Request completed with 2xx status |
+| `failed` | Request failed with 4xx/5xx status |
+| `timeout` | Request timed out |
+
+### Common Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | OK - Request successful |
+| 201 | Created - Resource created |
+| 400 | Bad Request - Invalid payload |
+| 401 | Unauthorized - Invalid signature |
+| 404 | Not Found - Endpoint not found |
+| 500 | Internal Server Error |
+| 502 | Bad Gateway |
+| 503 | Service Unavailable |
+| 504 | Gateway Timeout |
+
+## webhook://webhooks/list
+
+Returns all configured webhooks in your organization.
+
+### Response Schema
+
+```json
+{
+  "uri": "webhook://webhooks/list",
+  "mimeType": "application/json",
+  "text": {
+    "webhooks": [
+      {
+        "id": "wh_stripe_prod",
+        "name": "Stripe Production",
+        "description": "Production Stripe payment events",
+        "provider": "stripe",
+        "url": "https://unhook.sh/wh_stripe_prod",
+        "targetUrl": "https://api.example.com/webhooks/stripe",
+        "active": true,
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-15T09:00:00.000Z",
+        "configuration": {
+          "retryEnabled": true,
+          "maxRetries": 3,
+          "retryDelay": 300, // seconds
+          "timeout": 30, // seconds
+          "headers": {
+            "x-api-key": "***" // Sensitive values masked
+          }
+        },
+        "stats": {
+          "totalEvents": 1523,
+          "successfulEvents": 1456,
+          "failedEvents": 67,
+          "lastEventAt": "2024-01-15T10:30:00.000Z"
+        }
+      }
+    ],
+    "metadata": {
+      "count": 5,
+      "activeWebhooks": 4,
+      "inactiveWebhooks": 1
+    }
+  }
+}
+```
+
+### Webhook Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the webhook
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Human-readable name
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Optional description of the webhook's purpose
+</ResponseField>
+
+<ResponseField name="provider" type="string">
+  The webhook provider (stripe, github, clerk, custom)
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  The Unhook URL to configure with the provider
+</ResponseField>
+
+<ResponseField name="targetUrl" type="string">
+  Your endpoint that receives the webhooks
+</ResponseField>
+
+<ResponseField name="active" type="boolean">
+  Whether the webhook is currently active
+</ResponseField>
+
+<ResponseField name="configuration" type="object">
+  Webhook-specific configuration settings
+</ResponseField>
+
+<ResponseField name="stats" type="object">
+  Basic statistics about webhook performance
+</ResponseField>
+
+## Data Limits
+
+Resources are designed to provide quick access to recent data:
+
+- **Events**: Limited to 100 most recent events
+- **Requests**: Limited to 100 most recent requests
+- **Webhooks**: No limit (typically < 50 per organization)
+
+For historical data or larger datasets, use the search tools instead.
+
+## Common Patterns
+
+### Checking Recent Failures
+
+To quickly identify recent issues:
+
+1. Read `webhook://events/recent`
+2. Filter events with `status: "failed"`
+3. Use event IDs to search for related requests
+
+### Monitoring Webhook Health
+
+To assess webhook performance:
+
+1. Read `webhook://webhooks/list`
+2. Check the `stats` field for each webhook
+3. Identify webhooks with high failure rates
+
+### Debugging Specific Events
+
+To investigate a particular event:
+
+1. Read `webhook://events/recent`
+2. Find the event by ID or characteristics
+3. Note the `webhookId` and `eventId`
+4. Use tools to analyze the event details
+
+## Error Responses
+
+If a resource cannot be accessed, the response will include an error:
+
+```json
+{
+  "uri": "webhook://events/recent",
+  "mimeType": "application/json",
+  "error": {
+    "code": "PERMISSION_DENIED",
+    "message": "No access to organization webhooks"
+  }
+}
+```
+
+### Common Error Codes
+
+| Code | Description |
+|------|-------------|
+| `NOT_FOUND` | Resource does not exist |
+| `PERMISSION_DENIED` | No access to resource |
+| `INTERNAL_ERROR` | Server error occurred |
+
+## Best Practices
+
+1. **Cache resource data** - Resources update in real-time, but caching for 30-60 seconds is acceptable
+2. **Use metadata** - Check `hasMore` to know if older data exists
+3. **Combine with tools** - Resources show recent data; use tools for historical analysis
+4. **Monitor regularly** - Set up periodic checks of webhook health
+5. **Handle errors gracefully** - Always check for error responses
+
+## Next Steps
+
+- See [Tools Reference](/api-reference/mcp/tools) for querying and analyzing data
+- Check [Integration Examples](/api-reference/mcp/examples) for usage patterns
+- Review [MCP Overview](/api-reference/mcp/overview) for protocol details

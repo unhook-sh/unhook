@@ -1,0 +1,396 @@
+---
+title: 'MCP Integration Examples'
+description: 'Common workflows and usage patterns for the MCP server'
+icon: 'flask'
+---
+
+# MCP Integration Examples
+
+Learn how to use the Unhook MCP server effectively with these practical examples and workflows.
+
+## Common Debugging Workflows
+
+### Investigating Failed Webhooks
+
+When webhooks start failing, use this workflow to identify and resolve issues:
+
+<CodeGroup>
+
+```typescript Claude Desktop
+// 1. Ask Claude to investigate failures
+"Show me all failed webhook events from the last hour"
+
+// Claude will use search_events tool:
+{
+  "name": "search_events",
+  "arguments": {
+    "status": "failed",
+    "limit": 100
+  }
+}
+
+// 2. Analyze specific failure
+"Why did event evt_123 fail?"
+
+// Claude will use analyze_event tool:
+{
+  "name": "analyze_event", 
+  "arguments": {
+    "eventId": "evt_123"
+  }
+}
+
+// 3. Get recommendations
+"What should I do to fix these webhook failures?"
+```
+
+```typescript Cursor
+// In Cursor Composer, type:
+// "Debug why my Stripe webhooks are failing"
+
+// Cursor will automatically:
+// 1. Search for failed Stripe events
+// 2. Analyze error patterns
+// 3. Suggest fixes in your code
+```
+
+</CodeGroup>
+
+### Performance Monitoring
+
+Track webhook performance and identify bottlenecks:
+
+```typescript
+// Ask: "Generate a performance report for my webhooks"
+
+// The AI will use get_webhook_stats:
+{
+  "name": "get_webhook_stats",
+  "arguments": {
+    "timeRange": "24h"
+  }
+}
+
+// Follow up with:
+// "Which webhook has the slowest response time?"
+// "Show me the performance trend over the last week"
+```
+
+### Payload Inspection
+
+Examine webhook payloads for debugging:
+
+```typescript
+// Ask: "Show me the payload for the last GitHub webhook"
+
+// The AI will:
+// 1. Read recent events
+// 2. Filter for GitHub provider
+// 3. Show the payload data
+
+// Or be specific:
+// "What data did Stripe send in event evt_xyz?"
+```
+
+## Advanced Use Cases
+
+### Failure Pattern Analysis
+
+Identify recurring issues across webhooks:
+
+```typescript
+// Ask: "Find patterns in webhook failures over the last 7 days"
+
+// The AI will:
+{
+  "name": "get_webhook_stats",
+  "arguments": {
+    "timeRange": "7d"
+  }
+}
+
+// Then analyze error distribution and suggest:
+// - Common failure causes
+// - Time-based patterns
+// - Affected endpoints
+```
+
+### Comparative Analysis
+
+Compare webhook performance:
+
+```typescript
+// Ask: "Compare success rates between my Stripe and PayPal webhooks"
+
+// The AI will gather stats for both:
+[
+  {
+    "name": "get_webhook_stats",
+    "arguments": {
+      "webhookId": "wh_stripe_prod",
+      "timeRange": "24h"
+    }
+  },
+  {
+    "name": "get_webhook_stats",
+    "arguments": {
+      "webhookId": "wh_paypal_prod",
+      "timeRange": "24h"
+    }
+  }
+]
+```
+
+### Event Replay Preparation
+
+Prepare to replay failed events:
+
+```typescript
+// Ask: "Help me replay the failed payment webhooks from today"
+
+// The AI will:
+// 1. Search for failed payment events
+// 2. Analyze why they failed
+// 3. Suggest fixes before replay
+// 4. Provide replay instructions
+```
+
+## Integration Patterns
+
+### Continuous Monitoring
+
+Set up regular health checks:
+
+```typescript
+// Morning routine:
+"Give me a webhook health summary for the last 24 hours"
+
+// The AI provides:
+// - Total events processed
+// - Success/failure rates
+// - Any new error types
+// - Performance metrics
+// - Recommendations
+```
+
+### Incident Response
+
+Quick debugging during outages:
+
+```typescript
+// When alerts fire:
+"URGENT: Webhooks are failing. What's happening?"
+
+// Rapid diagnosis flow:
+// 1. Check recent failures
+// 2. Identify error patterns  
+// 3. Analyze specific failures
+// 4. Provide immediate fixes
+```
+
+### Development Testing
+
+Validate webhook implementations:
+
+```typescript
+// During development:
+"Show me the test webhooks I sent in the last hour"
+
+// Verify payloads:
+"Is my endpoint receiving the correct Stripe signature?"
+
+// Debug issues:
+"Why is my local endpoint returning 401?"
+```
+
+## Prompt Engineering Tips
+
+### Effective Queries
+
+<Tabs>
+  <Tab title="Good Prompts">
+    ```
+    ✓ "Show me failed Stripe webhooks from the last hour"
+    ✓ "Why did event evt_123 fail?"
+    ✓ "Compare webhook performance this week vs last week"
+    ✓ "What's causing timeout errors on my GitHub webhook?"
+    ```
+  </Tab>
+  <Tab title="Better Prompts">
+    ```
+    ✓ "Analyze all payment webhook failures from today and suggest fixes"
+    ✓ "Create a performance report comparing all my webhooks"
+    ✓ "Debug evt_123 and show me similar failures"
+    ✓ "Find patterns in webhook failures and recommend preventive measures"
+    ```
+  </Tab>
+</Tabs>
+
+### Context Building
+
+Provide context for better analysis:
+
+```typescript
+// Instead of: "Why are webhooks failing?"
+// Try: "My Stripe webhooks started failing after deploying v2.1. 
+//       Show me what changed and how to fix it."
+
+// Instead of: "Show webhook stats"  
+// Try: "Generate a performance report for customer-facing webhooks,
+//       focusing on payment processing delays"
+```
+
+## Automation Ideas
+
+### Daily Reports
+
+```typescript
+// Morning standup prep:
+"Generate a daily webhook report with:
+- Total events processed
+- Failure rate by provider
+- New error types since yesterday
+- Performance degradation warnings
+- Top 3 issues to address"
+```
+
+### Alert Investigation
+
+```typescript
+// When monitoring alerts trigger:
+"Investigate webhook alert: 
+- Error rate above 5% for wh_stripe_prod
+- Started 15 minutes ago
+- Show me what's failing and why"
+```
+
+### Pre-deployment Checks
+
+```typescript
+// Before deploying:
+"Analyze webhook health for the last 2 hours.
+Are there any issues I should fix before deploying?"
+```
+
+## Code Integration Examples
+
+### Error Handler Improvement
+
+```typescript
+// Ask: "Based on recent failures, how should I improve my webhook error handling?"
+
+// The AI analyzes failures and suggests:
+class WebhookHandler {
+  async processWebhook(payload: any) {
+    try {
+      // Validate signature
+      if (!this.validateSignature(payload)) {
+        // AI notices many 401 errors
+        throw new UnauthorizedError('Invalid signature');
+      }
+      
+      // Process with timeout
+      // AI suggests timeout based on performance stats
+      const result = await Promise.race([
+        this.process(payload),
+        this.timeout(30000) // 30s based on p99 latency
+      ]);
+      
+      return result;
+    } catch (error) {
+      // AI suggests specific error handling
+      if (error.code === 'ECONNREFUSED') {
+        // Retry logic for connection issues
+        return this.scheduleRetry(payload);
+      }
+      throw error;
+    }
+  }
+}
+```
+
+### Monitoring Integration
+
+```typescript
+// Ask: "Generate monitoring code based on common webhook issues"
+
+// The AI creates:
+class WebhookMonitor {
+  async checkHealth() {
+    // Based on MCP data analysis
+    const stats = await this.getWebhookStats('24h');
+    
+    // Alert on high failure rate
+    if (stats.failureRate > 0.05) {
+      await this.alert('High failure rate', stats);
+    }
+    
+    // Alert on performance degradation
+    if (stats.p95Latency > 5000) {
+      await this.alert('Slow webhook processing', stats);
+    }
+  }
+}
+```
+
+## Best Practices
+
+### 1. Start Broad, Then Narrow
+
+```typescript
+// First: "Show me webhook health overview"
+// Then: "Focus on failed Stripe payment webhooks"  
+// Finally: "Analyze event evt_123 in detail"
+```
+
+### 2. Use Time Ranges Effectively
+
+```typescript
+// Recent issues: "last hour", "last 24h"
+// Trends: "last 7d", "last 30d"
+// Comparisons: "this week vs last week"
+```
+
+### 3. Combine Multiple Tools
+
+```typescript
+// Don't just search, also analyze:
+"Find failed webhooks AND explain why they failed AND suggest fixes"
+```
+
+### 4. Ask for Actionable Insights
+
+```typescript
+// Instead of: "Show me errors"
+// Ask: "What specific changes should I make to reduce webhook failures?"
+```
+
+## Troubleshooting Examples
+
+### No Data Appearing
+
+```typescript
+// Diagnose: "Why am I not seeing any webhook data?"
+// The AI will check:
+// - If webhooks are configured
+// - If events are being received
+// - If there are permission issues
+```
+
+### Inconsistent Results
+
+```typescript
+// Ask: "Why do some webhooks work but others fail randomly?"
+// The AI analyzes:
+// - Success patterns
+// - Failure patterns
+// - Environmental factors
+// - Suggests targeted fixes
+```
+
+## Next Steps
+
+- Review the [Tools Reference](/api-reference/mcp/tools) for detailed parameters
+- Check the [Resources Reference](/api-reference/mcp/resources) for data schemas
+- See the [MCP Overview](/api-reference/mcp/overview) for protocol details
+- Read the [Integration Guide](/mcp-integration) for setup instructions

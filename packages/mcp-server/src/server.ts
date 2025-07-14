@@ -14,6 +14,7 @@ import {
 import {
   registerAnalyzeEventTool,
   registerAnalyzeRequestTool,
+  registerCreateTestEventTool,
   registerSearchEventsTool,
   registerSearchRequestsTool,
   registerWebhookStatsTool,
@@ -36,6 +37,7 @@ export function createUnhookMCPServer(context: Context): McpServer {
   registerAnalyzeEventTool(server, context);
   registerAnalyzeRequestTool(server, context);
   registerWebhookStatsTool(server, context);
+  registerCreateTestEventTool(server, context);
 
   // Register Prompts
   registerDebugWebhookPrompt(server);

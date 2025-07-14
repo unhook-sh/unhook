@@ -1,9 +1,12 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
-
 import { trackError, trackResourceAccess } from '../analytics';
 
-export function registerWebhooksListResource(server: any, context: Context) {
+export function registerWebhooksListResource(
+  server: McpServer,
+  context: Context,
+) {
   const caller = createCaller(context);
 
   server.registerResource(
@@ -14,10 +17,10 @@ export function registerWebhooksListResource(server: any, context: Context) {
       mimeType: 'application/json',
       title: 'Configured Webhooks',
     },
-    async (uri: URL, extra: any) => {
+    async (uri: URL, extra) => {
       const startTime = Date.now();
-      const userId = extra?.authInfo?.extra?.userId;
-      const organizationId = extra?.authInfo?.extra?.organizationId;
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
         const webhooks = await caller.webhooks.all();

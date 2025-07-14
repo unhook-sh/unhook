@@ -15,6 +15,7 @@ import { registerWebhooksListResource } from './resources/webhooks-list';
 import {
   registerAnalyzeEventTool,
   registerAnalyzeRequestTool,
+  registerCreateTestEventTool,
   registerSearchEventsTool,
   registerSearchRequestsTool,
   registerWebhookStatsTool,
@@ -36,6 +37,7 @@ export const createWebAppHandler = () => {
       registerAnalyzeEventTool(server, context);
       registerAnalyzeRequestTool(server, context);
       registerWebhookStatsTool(server, context);
+      registerCreateTestEventTool(server, context);
 
       // Register Prompts
       registerDebugWebhookPrompt(server);
@@ -54,7 +56,6 @@ export const createWebAppHandler = () => {
     // Route configuration
     {
       basePath: '/api/mcp',
-      redisUrl: process.env.REDIS_URL,
       sseEndpoint: '/sse',
       sseMessageEndpoint: '/message',
       streamableHttpEndpoint: '/mcp',

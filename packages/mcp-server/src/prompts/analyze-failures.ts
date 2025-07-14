@@ -1,12 +1,12 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-
 import { trackPromptUsage } from '../analytics';
 
 export const analyzeFailuresSchema = {
   webhookId: z.string().optional(),
 };
 
-export function registerAnalyzeFailuresPrompt(server: any) {
+export function registerAnalyzeFailuresPrompt(server: McpServer) {
   server.registerPrompt(
     'analyze_failures',
     {
@@ -14,9 +14,9 @@ export function registerAnalyzeFailuresPrompt(server: any) {
       description: 'Analyze webhook failures and suggest fixes',
       title: 'Analyze Failures',
     },
-    ({ webhookId }: z.infer<typeof analyzeFailuresSchema>, extra: any) => {
-      const userId = extra?.authInfo?.extra?.userId;
-      const organizationId = extra?.authInfo?.extra?.organizationId;
+    ({ webhookId }, extra) => {
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       // Track prompt usage
       trackPromptUsage(
@@ -35,7 +35,7 @@ export function registerAnalyzeFailuresPrompt(server: any) {
               text: 'You are a webhook failure analysis expert. Identify patterns in failures and suggest solutions.',
               type: 'text',
             },
-            role: 'system',
+            role: 'assistant',
           },
           {
             content: {

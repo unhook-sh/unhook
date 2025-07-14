@@ -27,8 +27,8 @@ export function registerSearchRequestsTool(
     },
     async (args, extra) => {
       const startTime = Date.now();
-      const userId = extra.authInfo?.extra?.userId;
-      const organizationId = extra.authInfo?.extra?.organizationId;
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
         let requests = await caller.requests.all();

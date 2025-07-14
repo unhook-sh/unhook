@@ -1,13 +1,14 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import { trackPromptUsage } from '../analytics';
 
 export const debugWebhookSchema = {
-  timeframe: z.string().default('last 24 hours'),
+  timeframe: z.string().optional(),
   webhookId: z.string(),
 };
 
-export function registerDebugWebhookPrompt(server: any) {
+export function registerDebugWebhookPrompt(server: McpServer) {
   server.registerPrompt(
     'debug_webhook_issue',
     {
@@ -15,12 +16,9 @@ export function registerDebugWebhookPrompt(server: any) {
       description: 'Debug a webhook issue step by step',
       title: 'Debug Webhook Issue',
     },
-    (
-      { webhookId, timeframe }: z.infer<typeof debugWebhookSchema>,
-      extra: any,
-    ) => {
-      const userId = extra?.authInfo?.extra?.userId;
-      const organizationId = extra?.authInfo?.extra?.organizationId;
+    ({ webhookId, timeframe = 'last 24 hours' }, extra) => {
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       // Track prompt usage
       trackPromptUsage(
@@ -40,7 +38,7 @@ export function registerDebugWebhookPrompt(server: any) {
               text: 'You are a webhook debugging assistant. Analyze the webhook data and help identify issues.',
               type: 'text',
             },
-            role: 'system',
+            role: 'assistant',
           },
           {
             content: {

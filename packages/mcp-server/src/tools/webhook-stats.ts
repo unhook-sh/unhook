@@ -26,8 +26,8 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
     async ({ webhookId }, extra) => {
       const startTime = Date.now();
 
-      const userId = extra.authInfo?.userId;
-      const organizationId = extra.authInfo?.organizationId;
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
         const webhook = await caller.webhooks.byId({ id: webhookId });

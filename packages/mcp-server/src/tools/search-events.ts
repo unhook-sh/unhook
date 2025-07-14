@@ -23,8 +23,8 @@ export function registerSearchEventsTool(server: McpServer, context: Context) {
     },
     async (args, extra) => {
       const startTime = Date.now();
-      const userId = extra.authInfo?.extra?.userId;
-      const organizationId = extra.authInfo?.extra?.organizationId;
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
         let events = await caller.events.all();

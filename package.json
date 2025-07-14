@@ -6,6 +6,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
+    "@changesets/changelog-github": "catalog:",
+    "@changesets/cli": "2.29.5",
     "@commitlint/cli": "catalog:",
     "@testing-library/react": "catalog:",
     "@turbo/gen": "catalog:",
@@ -28,6 +30,9 @@
     "@types/vscode": "1.96.0"
   },
   "packageManager": "bun@1.2.18",
+  "patchedDependencies": {
+    "@changesets/cli@2.29.5": "patches/@changesets/cli@2.29.5.patch"
+  },
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -83,7 +88,6 @@
     "catalog": {
       "@biomejs/biome": "2.0.6",
       "@changesets/changelog-github": "0.5.1",
-      "@changesets/cli": "2.29.5",
       "@clerk/backend": "2.4.1",
       "@clerk/chrome-extension": "2.5.4",
       "@clerk/clerk-js": "5.71.0",

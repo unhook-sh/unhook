@@ -1,3 +1,4 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
 import type { EventType } from '@unhook/db/schema';
@@ -9,7 +10,7 @@ export const analyzeEventSchema = {
   eventId: z.string(),
 };
 
-export function registerAnalyzeEventTool(server: any, context: Context) {
+export function registerAnalyzeEventTool(server: McpServer, context: Context) {
   const caller = createCaller(context);
 
   server.registerTool(
@@ -19,10 +20,10 @@ export function registerAnalyzeEventTool(server: any, context: Context) {
       inputSchema: analyzeEventSchema,
       title: 'Analyze Event',
     },
-    async ({ eventId }: z.infer<typeof analyzeEventSchema>, extra: any) => {
+    async ({ eventId }, extra) => {
       const startTime = Date.now();
-      const userId = extra.authInfo?.extra?.userId;
-      const organizationId = extra.authInfo?.extra?.organizationId;
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
         const event = await caller.events.byId({ id: eventId });

@@ -21,14 +21,23 @@ export function trackMCPEvent({
     };
 
     if (userId) {
-      posthog.capture(event, eventProperties, { distinctId: userId });
+      posthog.capture({
+        distinctId: userId,
+        event,
+        properties: eventProperties,
+      });
     } else if (organizationId) {
-      posthog.capture(event, {
-        ...eventProperties,
-        organizationId,
+      posthog.capture({
+        distinctId: organizationId,
+        event,
+        properties: eventProperties,
       });
     } else {
-      posthog.capture(event, eventProperties);
+      posthog.capture({
+        distinctId: 'anonymous',
+        event,
+        properties: eventProperties,
+      });
     }
   } catch (error) {
     // Silently fail analytics tracking to not break MCP functionality
@@ -38,7 +47,7 @@ export function trackMCPEvent({
 
 export function trackToolUsage(
   toolName: string,
-  properties: Record<string, any> = {},
+  properties: Record<string, unknown> = {},
   userId?: string,
   organizationId?: string,
 ) {
@@ -55,7 +64,7 @@ export function trackToolUsage(
 
 export function trackResourceAccess(
   resourceName: string,
-  properties: Record<string, any> = {},
+  properties: Record<string, unknown> = {},
   userId?: string,
   organizationId?: string,
 ) {
@@ -72,7 +81,7 @@ export function trackResourceAccess(
 
 export function trackPromptUsage(
   promptName: string,
-  properties: Record<string, any> = {},
+  properties: Record<string, unknown> = {},
   userId?: string,
   organizationId?: string,
 ) {

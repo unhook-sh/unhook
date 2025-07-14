@@ -28,13 +28,13 @@ export const verifyToken = async (
     mockHeaders.set('Authorization', `Bearer ${bearerToken}`);
 
     // Try to authenticate the request with Clerk
-    const authResult = auth();
+    const authResult = await auth();
 
     if (!authResult?.userId) {
       // If standard auth fails, try to decode the JWT as a CLI token
       // CLI tokens are issued with a specific template and can be verified differently
       try {
-        const clerk = clerkClient();
+        const clerk = await clerkClient();
 
         // Get all active sessions to find one that matches our token
         const sessions = await clerk.sessions.getSessionList({
@@ -88,7 +88,7 @@ export const verifyToken = async (
     }
 
     // Get user information from Clerk
-    const clerk = clerkClient();
+    const clerk = await clerkClient();
     const user = await clerk.users.getUser(authResult.userId);
 
     const primaryEmail = user.emailAddresses.find(

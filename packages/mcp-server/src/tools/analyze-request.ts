@@ -1,15 +1,18 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
 import type { RequestType } from '@unhook/db/schema';
 import { z } from 'zod';
-
 import { trackError, trackToolUsage } from '../analytics';
 
 export const analyzeRequestSchema = {
   requestId: z.string(),
 };
 
-export function registerAnalyzeRequestTool(server: any, context: Context) {
+export function registerAnalyzeRequestTool(
+  server: McpServer,
+  context: Context,
+) {
   const caller = createCaller(context);
 
   server.registerTool(
@@ -19,10 +22,10 @@ export function registerAnalyzeRequestTool(server: any, context: Context) {
       inputSchema: analyzeRequestSchema,
       title: 'Analyze Request',
     },
-    async ({ requestId }: z.infer<typeof analyzeRequestSchema>, extra: any) => {
+    async ({ requestId }, extra) => {
       const startTime = Date.now();
-      const userId = extra.authInfo?.extra?.userId;
-      const organizationId = extra.authInfo?.extra?.organizationId;
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
         const request = await caller.requests.byId({ id: requestId });
@@ -112,7 +115,7 @@ ${
 
 Destination:
 - URL: ${request.destination.url}
-- Timeout: ${request.destination.timeout}ms
+- Name: ${request.destination.name}
 
 ${
   request.response

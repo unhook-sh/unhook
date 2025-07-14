@@ -1,12 +1,12 @@
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-
 import { trackPromptUsage } from '../analytics';
 
 export const performanceReportSchema = {
   webhookId: z.string().optional(),
 };
 
-export function registerPerformanceReportPrompt(server: any) {
+export function registerPerformanceReportPrompt(server: McpServer) {
   server.registerPrompt(
     'performance_report',
     {
@@ -14,9 +14,9 @@ export function registerPerformanceReportPrompt(server: any) {
       description: 'Generate a performance report for webhooks',
       title: 'Performance Report',
     },
-    ({ webhookId }: z.infer<typeof performanceReportSchema>, extra: any) => {
-      const userId = extra?.authInfo?.extra?.userId;
-      const organizationId = extra?.authInfo?.extra?.organizationId;
+    ({ webhookId }, extra) => {
+      const userId = extra.authInfo?.extra?.userId as string;
+      const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       // Track prompt usage
       trackPromptUsage(
@@ -35,7 +35,7 @@ export function registerPerformanceReportPrompt(server: any) {
               text: 'You are a webhook performance analyst. Generate comprehensive performance reports.',
               type: 'text',
             },
-            role: 'system',
+            role: 'assistant',
           },
           {
             content: {

@@ -13,7 +13,7 @@ import {
 import { Icons } from '@unhook/ui/custom/icons';
 import { toast } from '@unhook/ui/sonner';
 import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createAuthCode } from '~/app/(app)/cli-token/actions';
 import { env } from '~/env.client';
 import { createWebhook } from './actions';
@@ -31,6 +31,10 @@ export function WebhookWizard(_props: { authToken?: string }) {
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
   const [hasReceivedFirstEvent, setHasReceivedFirstEvent] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
+  const initializationRef = useRef<Promise<void> | null>(null);
+
   const { organization } = useOrganization();
   const { createOrganization, setActive } = useOrganizationList();
   const { user } = useUser();
@@ -40,14 +44,30 @@ export function WebhookWizard(_props: { authToken?: string }) {
   const { executeAsync: executeCreateAuthCode, isPending: isCreatingAuthCode } =
     useAction(createAuthCode);
 
-  useEffect(() => {
-    async function initializeWebhook() {
+  const initializeWebhook = useCallback(async () => {
+    // Prevent multiple simultaneous initialization attempts
+    if (isInitializing || isInitialized) {
+      return;
+    }
+
+    // If there's already an initialization in progress, wait for it
+    if (initializationRef.current) {
+      await initializationRef.current;
+      return;
+    }
+
+    const initPromise = (async () => {
       try {
+        setIsInitializing(true);
+
         const orgName = user?.firstName
           ? `${user.firstName}'s Team`
           : 'Personal Team';
 
-        if (user && createOrganization && !organization) {
+        let currentOrg = organization;
+
+        // Only create organization if we don't have one and we have the ability to create one
+        if (user && createOrganization && !currentOrg) {
           const slug = generateRandomName();
           const result = await createOrganization({
             name: orgName,
@@ -55,19 +75,22 @@ export function WebhookWizard(_props: { authToken?: string }) {
           });
 
           if (result) {
-            setActive({
+            await setActive({
               organization: result.id,
             });
+            currentOrg = result;
           }
         }
 
-        if (!organization) {
-          return;
+        // Wait for organization to be available
+        if (!currentOrg) {
+          throw new Error('Organization not available');
         }
 
         const result = await executeCreateWebhook({
           orgName,
         });
+
         if (result?.data) {
           setWebhook(result.data.webhook);
 
@@ -95,18 +118,32 @@ export function WebhookWizard(_props: { authToken?: string }) {
         toast.error('Failed to create webhook', {
           description: 'Please try again.',
         });
+      } finally {
+        setIsInitializing(false);
+        setIsInitialized(true);
       }
-    }
+    })();
 
-    initializeWebhook();
+    initializationRef.current = initPromise;
+    await initPromise;
+    initializationRef.current = null;
   }, [
-    executeCreateWebhook,
-    executeCreateAuthCode,
+    user,
     organization,
     createOrganization,
     setActive,
-    user,
+    executeCreateWebhook,
+    executeCreateAuthCode,
+    isInitializing,
+    isInitialized,
   ]);
+
+  useEffect(() => {
+    // Only initialize if we have a user and we haven't initialized yet
+    if (user && !isInitialized && !isInitializing) {
+      initializeWebhook();
+    }
+  }, [user, isInitialized, isInitializing, initializeWebhook]);
 
   const webhookUrl = (() => {
     if (!webhook) return '';

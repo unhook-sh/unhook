@@ -1,18 +1,18 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "catalog:",
-    "@modelcontextprotocol/sdk": "catalog:",
+    "@clerk/nextjs": "6.25.0",
+    "@modelcontextprotocol/sdk": "1.15.1",
     "@unhook/analytics": "workspace:*",
     "@unhook/api": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/logger": "workspace:*",
-    "@vercel/mcp-adapter": "catalog:",
-    "zod": "catalog:"
+    "@vercel/mcp-adapter": "1.0.0",
+    "zod": "3.24.2"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
+    "@types/node": "24.0.14",
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -23,7 +23,7 @@
   "private": true,
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "clean": "rm -rf dist node_modules/.cache",
+    "clean": "git clean -xdf .turbo node_modules dist",
     "debug:server": "bun run src/debug-server.ts",
     "dev:inspector": "bun run src/dev-inspector.ts",
     "dev:server": "bun run src/dev-server.ts",
@@ -31,7 +31,7 @@
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "test:watch": "bun test --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "types": "./src/index.ts",
   "version": "0.0.0"

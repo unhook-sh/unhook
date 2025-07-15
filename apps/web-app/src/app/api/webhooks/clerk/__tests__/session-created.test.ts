@@ -32,6 +32,12 @@ describe('handleSessionCreated', () => {
         updated_at: 0,
         user_id: userId,
       },
+      event_attributes: {
+        http_request: {
+          client_ip: '127.0.0.1',
+          user_agent: 'test',
+        },
+      },
       object: 'event',
       type: 'session.created',
     } satisfies SessionWebhookEvent;

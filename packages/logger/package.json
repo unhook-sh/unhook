@@ -1,14 +1,14 @@
 {
   "dependencies": {
-    "bun": "catalog:",
-    "debug": "catalog:",
-    "node-inspect-extracted": "catalog:"
+    "bun": "1.2.18",
+    "debug": "4.4.1",
+    "node-inspect-extracted": "3.1.0"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "@types/debug": "catalog:",
-    "@types/vscode": "catalog:",
-    "typescript": "catalog:"
+    "@types/bun": "1.2.18",
+    "@types/debug": "4.1.12",
+    "@types/vscode": "1.96.0",
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts",

@@ -9,6 +9,7 @@ on:
       - "tooling/**"
       - "package.json"
       - "bun.lock"
+      - "pnpm-lock.yaml"
   push:
     branches: ["main"]
     paths:
@@ -17,6 +18,7 @@ on:
       - "tooling/**"
       - "package.json"
       - "bun.lock"
+      - "pnpm-lock.yaml"
   merge_group:
 
 concurrency:

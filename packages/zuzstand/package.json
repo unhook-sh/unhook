@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "zustand": "catalog:"
+    "zustand": "5.0.6"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts"

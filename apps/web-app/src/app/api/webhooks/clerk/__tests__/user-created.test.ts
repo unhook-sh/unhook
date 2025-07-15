@@ -61,6 +61,12 @@ describe('handleUserCreated', () => {
         verification_attempts_remaining: 0,
         web3_wallets: [],
       },
+      event_attributes: {
+        http_request: {
+          client_ip: '127.0.0.1',
+          user_agent: 'test',
+        },
+      },
       object: 'event',
       type: 'user.created',
     } satisfies UserWebhookEvent;

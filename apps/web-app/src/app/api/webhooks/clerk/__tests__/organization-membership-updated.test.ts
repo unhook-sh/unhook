@@ -59,6 +59,12 @@ describe('handleOrganizationMembershipUpdated', () => {
         role: 'admin',
         updated_at: 0,
       },
+      event_attributes: {
+        http_request: {
+          client_ip: '127.0.0.1',
+          user_agent: 'test',
+        },
+      },
       object: 'event',
       type: 'organizationMembership.updated',
     } satisfies OrganizationMembershipWebhookEvent;

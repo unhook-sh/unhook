@@ -2,15 +2,15 @@
   "dependencies": {
     "@unhook/db": "workspace:*",
     "@unhook/logger": "workspace:*",
-    "drizzle-orm": "catalog:",
-    "isolated-vm": "catalog:",
-    "zod": "catalog:"
+    "drizzle-orm": "0.44.3",
+    "isolated-vm": "6.0.0",
+    "zod": "3.24.2"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
+    "@types/node": "24.0.14",
     "@unhook/tsconfig": "workspace:*",
-    "tsup": "catalog:",
-    "typescript": "catalog:"
+    "tsup": "8.5.0",
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts"

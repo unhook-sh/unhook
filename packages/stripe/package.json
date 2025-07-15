@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "stripe": "catalog:"
+    "stripe": "18.3.0"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts"

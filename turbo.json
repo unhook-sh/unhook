@@ -49,7 +49,8 @@
         ".output/**",
         ".vercel/output/**",
         "dist/**",
-        "build/**"
+        "build/**",
+        "bin/**"
       ]
     },
     "clean": {

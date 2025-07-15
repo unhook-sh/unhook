@@ -1,27 +1,27 @@
 {
   "dependencies": {
-    "@clerk/chrome-extension": "catalog:",
-    "@clerk/nextjs": "catalog:",
-    "@sentry/nextjs": "catalog:",
-    "@t3-oss/env-core": "catalog:",
-    "@t3-oss/env-nextjs": "catalog:",
-    "@vercel/analytics": "catalog:",
-    "@vercel/speed-insights": "catalog:",
-    "nextjs-google-analytics": "catalog:",
-    "posthog-js": "catalog:",
-    "posthog-node": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "zod": "catalog:"
+    "@clerk/chrome-extension": "2.5.5",
+    "@clerk/nextjs": "6.25.0",
+    "@sentry/nextjs": "9.39.0",
+    "@t3-oss/env-core": "0.13.8",
+    "@t3-oss/env-nextjs": "0.13.8",
+    "@vercel/analytics": "1.5.0",
+    "@vercel/speed-insights": "1.2.0",
+    "nextjs-google-analytics": "2.3.7",
+    "posthog-js": "1.257.0",
+    "posthog-node": "5.5.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "3.24.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "catalog:",
-    "@types/chrome": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
+    "@types/aws-lambda": "8.10.150",
+    "@types/chrome": "0.1.0",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
     "@unhook/tsconfig": "workspace:*",
-    "next": "catalog:",
-    "typescript": "catalog:"
+    "next": "15.4.1",
+    "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts",

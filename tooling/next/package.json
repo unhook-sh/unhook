@@ -1,12 +1,12 @@
 {
   "dependencies": {
-    "@million/lint": "catalog:",
-    "@next/bundle-analyzer": "catalog:",
-    "next": "catalog:"
+    "@million/lint": "1.0.14",
+    "@next/bundle-analyzer": "15.4.1",
+    "next": "15.4.1"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "5.8.3"
   },
   "exports": {
     "./base": "./base.mjs"

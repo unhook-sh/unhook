@@ -14,9 +14,13 @@
     "@unhook/tsconfig": "workspace:*",
     "typescript": "catalog:"
   },
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "license": "MIT",
   "main": "./src/index.ts",
   "name": "@unhook/mcp-server",
+  "private": true,
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "clean": "rm -rf dist node_modules/.cache",

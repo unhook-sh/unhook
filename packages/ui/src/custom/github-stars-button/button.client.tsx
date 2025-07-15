@@ -30,9 +30,9 @@ export function GitHubStarsButtonClient({
       target="_blank"
     >
       {/* <span className="flex items-center gap-2 pl-4 pr-2 py-2 border-r border-border"> */}
-      <span className="flex items-center gap-2 px-4 py-2">
+      <span className="flex items-center gap-2 px-2 md:px-4 py-2">
         <Icons.Github size="sm" variant="primary" />
-        <span>Star</span>
+        <span className="hidden md:block">Star</span>
       </span>
       {/* <span className="flex items-center w-12 h-full justify-center px-3 py-2 bg-accent/50 rounded-r-full"> */}
       {/* <NumberTicker

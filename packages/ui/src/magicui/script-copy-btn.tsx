@@ -112,7 +112,7 @@ export function ScriptCopyBtn({
           <div className="min-w-[300px] grow font-mono">
             {highlightedCode ? (
               <div
-                className={`[&>pre]:overflow-x-auto [&>pre]:rounded-md [&>pre]:p-2 [&>pre]:px-4 [&>pre]:font-mono bg-background rounded ${
+                className={`[&>pre]:overflow-x-auto [&>pre]:rounded-md [&>pre]:p-1.5 [&>pre]:px-4 [&>pre]:font-mono bg-background rounded ${
                   theme === 'dark' ? 'dark' : 'light'
                 }`}
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: ok

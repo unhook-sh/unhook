@@ -113,7 +113,7 @@ export function WebhooksList() {
                 <div className="flex items-center gap-2">
                   <Icons.ExternalLink size="sm" variant="muted" />
                   <P className="text-sm text-muted-foreground truncate">
-                    https://{webhook.id}.webhook.unhook.dev
+                    https://{webhook.id}.unhook.sh
                   </P>
                 </div>
                 <div className="flex items-center gap-2">

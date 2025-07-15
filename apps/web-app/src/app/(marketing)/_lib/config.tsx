@@ -249,7 +249,7 @@ export const siteConfig = {
         id: 1,
         image:
           'https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Generate Webhook URLs',
+        title: 'Unhook CLI',
       },
       {
         component: <UnhookConfigDemo />,
@@ -264,7 +264,7 @@ export const siteConfig = {
         id: 3,
         image:
           'https://images.unsplash.com/photo-1720378042271-60aff1e1c538?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Monitor & Debug',
+        title: 'VS Code Extension',
       },
       {
         content:
@@ -272,7 +272,7 @@ export const siteConfig = {
         id: 4,
         image:
           'https://images.unsplash.com/photo-1666882990322-e7f3b8df4f75?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D',
-        title: 'Share & Collaborate',
+        title: 'MCP Server',
       },
     ],
     title: 'Simple. Secure. Collaborative.',
@@ -365,7 +365,7 @@ export const siteConfig = {
     title: 'Built for Secure Development',
   },
   hero: {
-    badge: 'Introducing VS Code Extension and MCP Server',
+    badge: 'Introducing VS Code Extension',
     badgeIcon: (
       <svg
         aria-label="Webhook Icon"

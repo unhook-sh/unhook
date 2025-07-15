@@ -136,9 +136,13 @@ export const Feature = ({
     }
   };
 
-  // interval for changing images
+  // interval for changing images (desktop only)
   // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to set the interval once
   useEffect(() => {
+    // Only run auto-rotation on desktop (lg and up)
+    const isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) return;
+
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex !== undefined ? (prevIndex + 1) % featureItems.length : 0,
@@ -150,6 +154,10 @@ export const Feature = ({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: we only need to set the interval once
   useEffect(() => {
+    // Only run auto-scroll on desktop (lg and up)
+    const isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) return;
+
     const handleAutoScroll = () => {
       const nextIndex =
         (currentIndex !== undefined ? currentIndex + 1 : 0) %
@@ -163,6 +171,10 @@ export const Feature = ({
   }, [collapseDelay, currentIndex, featureItems.length]);
 
   useEffect(() => {
+    // Only run scroll handling on desktop (lg and up)
+    const isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) return;
+
     const carousel = carouselRef.current;
     if (carousel) {
       const handleScroll = () => {
@@ -369,83 +381,55 @@ export const Feature = ({
             </Accordion.Root>
           </div>
           <div
-            className={`col-span-5 h-[350px] min-h-[200px] w-auto lg:col-span-3 ${
+            className={`col-span-5 h-[350px] min-h-[200px] w-auto lg:col-span-3 hidden lg:block ${
               ltr && 'md:order-1'
             }`}
           >
             {renderMedia()}
           </div>
 
-          <ul
-            className="col-span-5 flex snap-x flex-nowrap overflow-x-auto [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_10%,white_90%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_10%,white_90%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden snap-mandatory"
-            ref={carouselRef}
-            style={{
-              padding: '50px calc(50%)',
-            }}
-          >
-            {featureItems.map((item, index) => (
-              <button
-                className="card relative grid h-full max-w-64 shrink-0 items-start justify-center p-3 bg-background border-l last:border-r border-t border-b first:rounded-tl-xl last:rounded-tr-xl"
+          <div className="col-span-5 flex flex-col gap-4 lg:hidden">
+            {featureItems.map((item, _index) => (
+              <div
+                className="flex flex-col gap-4 p-4 bg-background border rounded-lg"
                 key={item.id}
-                onClick={() => setCurrentIndex(index)}
-                style={{
-                  scrollSnapAlign: 'center',
-                }}
-                type="button"
               >
-                <div
-                  className={cn(
-                    'absolute overflow-hidden rounded-lg transition-opacity',
-                    'data-[state=closed]:opacity-0 data-[state=open]:opacity-100',
-                    'bg-neutral-300/50 dark:bg-neutral-300/30',
-                    {
-                      'bottom-0 top-0 h-full w-0.5 left-0':
-                        linePosition === 'left',
-                      'bottom-0 top-0 h-full w-0.5 right-0':
-                        linePosition === 'right',
-                      'left-0 right-0 bottom-0 h-0.5 w-full':
-                        linePosition === 'bottom',
-                      'left-0 right-0 top-0 h-0.5 w-full':
-                        linePosition === 'top',
-                    },
-                  )}
-                  data-state={currentIndex === index ? 'open' : 'closed'}
-                >
-                  <div
-                    className={cn(
-                      'absolute transition-all ease-linear',
-                      lineColor,
-                      {
-                        'left-0 top-0 h-full': ['top', 'bottom'].includes(
-                          linePosition,
-                        ),
-                        'left-0 top-0 w-full': ['left', 'right'].includes(
-                          linePosition,
-                        ),
-                      },
-                      currentIndex === index
-                        ? ['left', 'right'].includes(linePosition)
-                          ? 'h-full'
-                          : 'w-full'
-                        : ['left', 'right'].includes(linePosition)
-                          ? 'h-0'
-                          : 'w-0',
-                    )}
-                    style={{
-                      transitionDuration:
-                        currentIndex === index ? `${collapseDelay}ms` : '0s',
-                    }}
-                  />
-                </div>
                 <div className="flex flex-col gap-2">
                   <h2 className="text-lg font-bold">{item.title}</h2>
-                  <p className="mx-0 max-w-sm text-balance text-sm font-medium leading-relaxed">
+                  <p className="text-sm font-medium leading-relaxed">
                     {item.content}
                   </p>
                 </div>
-              </button>
+                {item.component && (
+                  <div className="w-full h-48 rounded-lg border border-neutral-300/50 overflow-hidden">
+                    {item.component}
+                  </div>
+                )}
+                {item.image && (
+                  <div className="w-full h-48 rounded-lg border border-neutral-300/50 overflow-hidden">
+                    <img
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                      src={item.image}
+                    />
+                  </div>
+                )}
+                {item.video && (
+                  <div className="w-full h-48 rounded-lg border border-neutral-300/50 overflow-hidden">
+                    <video
+                      autoPlay
+                      className="w-full h-full object-cover"
+                      loop
+                      muted
+                      playsInline
+                      preload="auto"
+                      src={item.video}
+                    />
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>

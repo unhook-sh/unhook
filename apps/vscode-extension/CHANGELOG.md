@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.8
+
+### Patch Changes
+
+- [`3915e59`](https://github.com/unhook-sh/unhook/commit/3915e59b88628eb99b22b8d92bd01555ac1338a2) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with build
+
 ## 0.2.7
 
 ### Patch Changes

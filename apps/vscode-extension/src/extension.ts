@@ -138,7 +138,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerSettingsCommands(context);
   registerDeliveryCommands(context);
   registerWebhookAccessCommands(context, authStore);
-  registerConfigCommands(context);
+  registerConfigCommands(context, authStore);
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(

@@ -61,12 +61,21 @@ export class EventQuickPick {
       );
     }
 
-    // Add configuration item
+    // Add configuration items
     items.push({
       description: 'Create unhook.yml configuration file',
       detail: 'Generate a new Unhook configuration file for your project',
       label: '$(new-file) Create Configuration File',
     });
+
+    // Add MCP configuration item if signed in
+    if (this.authStore?.isSignedIn) {
+      items.push({
+        description: 'Create Cursor MCP configuration',
+        detail: 'Generate MCP configuration for Cursor AI assistant',
+        label: '$(server) Create MCP Config',
+      });
+    }
 
     // Add settings item
     items.push({
@@ -98,6 +107,9 @@ export class EventQuickPick {
           break;
         case '$(new-file) Create Configuration File':
           await vscode.commands.executeCommand('unhook.createConfig');
+          break;
+        case '$(server) Create MCP Config':
+          await vscode.commands.executeCommand('unhook.createMcpConfig');
           break;
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(

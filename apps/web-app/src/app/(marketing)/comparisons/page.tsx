@@ -11,7 +11,6 @@ import { ArrowRight, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { FooterSection } from '../_components/sections/footer-section';
 import { Navbar } from '../_components/sections/navbar';
-import { siteConfig } from '../_lib/config';
 
 export const metadata = {
   description:
@@ -294,7 +293,7 @@ export default function ComparisonsPage() {
     <div className="max-w-7xl mx-auto border-x relative">
       <div className="block w-px h-full border-l border-border absolute top-0 left-6 z-10" />
       <div className="block w-px h-full border-r border-border absolute top-0 right-6 z-10" />
-      <Navbar navs={siteConfig.nav.links} />
+      <Navbar />
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         {/* Hero Section */}
         <section className="w-full py-20 lg:py-32">

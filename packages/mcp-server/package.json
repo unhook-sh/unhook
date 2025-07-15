@@ -11,14 +11,24 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@unhook/testing": "workspace:*",
     "@unhook/tsconfig": "workspace:*",
+    "bun-types": "catalog:",
     "typescript": "catalog:"
   },
   "license": "MIT",
   "main": "./src/index.ts",
   "name": "@unhook/mcp-server",
   "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "clean": "rm -rf dist node_modules/.cache",
+    "debug:server": "bun run src/debug-server.ts",
+    "dev:inspector": "bun run src/dev-inspector.ts",
+    "dev:server": "bun run src/dev-server.ts",
     "example": "tsx src/example.ts",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:watch": "bun test --watch",
     "typecheck": "tsc --noEmit"
   },
   "types": "./src/index.ts",

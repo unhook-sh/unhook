@@ -51,6 +51,70 @@
       "runtimeArgs": ["--inspect-brk"],
       "stopOnEntry": false,
       "type": "node"
+    },
+    {
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mcp-server",
+      "env": {
+        "DEBUG": "*",
+        "NODE_ENV": "development"
+      },
+      "name": "Debug MCP Server",
+      "program": "${workspaceFolder}/packages/mcp-server/src/dev-server.ts",
+      "request": "launch",
+      "stopOnEntry": false,
+      "type": "bun"
+    },
+    {
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mcp-server",
+      "env": {
+        "DEBUG": "*",
+        "NODE_ENV": "development"
+      },
+      "name": "Debug MCP Inspector",
+      "program": "${workspaceFolder}/packages/mcp-server/src/dev-inspector.ts",
+      "request": "launch",
+      "stopOnEntry": false,
+      "type": "bun"
+    },
+    {
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mcp-server",
+      "env": {
+        "DEBUG": "*",
+        "NODE_ENV": "development"
+      },
+      "name": "Debug MCP Debug Server",
+      "program": "${workspaceFolder}/packages/mcp-server/src/debug-server.ts",
+      "request": "launch",
+      "stopOnEntry": false,
+      "type": "bun"
+    },
+    {
+      "args": ["src/test/mcp-server.test.ts"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/packages/mcp-server",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "name": "Test MCP Server",
+      "program": "test",
+      "request": "launch",
+      "stopOnEntry": false,
+      "type": "bun"
+    },
+    {
+      "command": "infisical run -- bun run src/dev-server.ts",
+      "cwd": "${workspaceFolder}/packages/mcp-server",
+      "env": {
+        "DEBUG": "*",
+        "INFISICAL_RUN": "true",
+        "NODE_ENV": "development"
+      },
+      "name": "MCP Server with Infisical",
+      "request": "launch",
+      "type": "node-terminal"
     }
   ],
   "version": "0.2.0"

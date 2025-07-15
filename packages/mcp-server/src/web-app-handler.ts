@@ -68,7 +68,7 @@ export const createAuthHandler = () => {
   const handler = createWebAppHandler();
   return withMcpAuth(handler, verifyToken, {
     required: true,
-    requiredScopes: ['read:webhooks', 'read:events'],
-    resourceMetadataPath: '/.well-known/oauth-protected-resource',
+    // requiredScopes: ['read:webhooks', 'read:events'],
+    // resourceMetadataPath: '/.well-known/oauth-protected-resource',
   });
 };

@@ -4,6 +4,7 @@ import { FirstBentoAnimation } from '~/app/(marketing)/_components/first-bento-a
 import { FourthBentoAnimation } from '~/app/(marketing)/_components/fourth-bento-animation';
 import { SecondBentoAnimation } from '~/app/(marketing)/_components/second-bento-animation';
 import { ThirdBentoAnimation } from '~/app/(marketing)/_components/third-bento-animation';
+import { UnhookConfigDemo } from '~/app/(marketing)/_components/unhook-config-demo';
 import { SecurityShieldBackground } from '../_components/security-shield-background';
 
 export const Highlight = ({
@@ -251,12 +252,11 @@ export const siteConfig = {
         title: 'Generate Webhook URLs',
       },
       {
+        component: <UnhookConfigDemo />,
         content:
           "Webhooks are securely routed to the appropriate developer's machine based on active sessions.",
         id: 2,
-        image:
-          'https://images.unsplash.com/photo-1686170287433-c95faf6d3608?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzfHx8ZW58MHx8fHx8fA%3D%3D',
-        title: 'Route to Local Environment',
+        title: 'Individual Repo Configuration',
       },
       {
         content:
@@ -303,10 +303,22 @@ export const siteConfig = {
       links: [
         { id: 12, title: 'VS Code Extension', url: '/vscode' },
         { id: 13, title: 'JetBrains Plugin', url: '/jetbrains' },
-        { id: 14, title: 'AI Integration (MCP)', url: '/mcp' },
+        { id: 14, title: 'MCP Server', url: '/mcp' },
         { id: 15, title: 'Unhook CLI', url: '/cli' },
       ],
-      title: 'Features',
+      title: 'Products',
+    },
+    {
+      links: [
+        {
+          id: 16,
+          title: 'Changelog',
+          url: 'https://github.com/unhook-sh/unhook/releases',
+        },
+        // { id: 17, title: 'Blog', url: '/blog' },
+        { id: 18, title: 'Docs', url: 'https://docs.unhook.sh' },
+      ],
+      title: 'Resources',
     },
     // {
     //   title: 'Products',
@@ -353,7 +365,7 @@ export const siteConfig = {
     title: 'Built for Secure Development',
   },
   hero: {
-    badge: 'Introducing shared webhook URLs',
+    badge: 'Introducing VS Code Extension and MCP Server',
     badgeIcon: (
       <svg
         aria-label="Webhook Icon"
@@ -419,12 +431,14 @@ export const siteConfig = {
         buttonText: 'Start Free',
         description: 'Perfect for individual developers',
         features: [
-          'Unlimited local testing',
+          'Unlimited webhook events',
           'Basic webhook monitoring',
+          'Local event routing',
           'Single developer',
+          'Public webhook URLs',
           'Community support',
         ],
-        href: '#',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta',
         isPopular: false,
         name: 'Free',
         period: 'month',
@@ -432,20 +446,20 @@ export const siteConfig = {
         yearlyPrice: '$0',
       },
       {
+        betaFree: true,
         buttonColor: 'bg-secondary text-white',
         buttonText: 'Start Trial',
         description: 'Ideal for development teams',
         features: [
-          'Everything in Free',
           'Team webhook sharing',
           'Advanced monitoring',
-          'Custom domains',
-          'Priority support',
-          'Team management',
+          'Private webhook URLs',
+          'Custom webhook subdomains',
           'Usage analytics',
-          'Provider integrations',
+          'Route to external integrations',
+          'Priority support',
         ],
-        href: '#',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta',
         isPopular: true,
         name: 'Team',
         period: 'month',
@@ -454,16 +468,14 @@ export const siteConfig = {
       },
       {
         buttonColor: 'bg-primary text-primary-foreground',
-        buttonText: 'Contact Sales',
+        buttonText: 'Schedule a call',
         description: 'For large organizations with custom needs',
         features: [
-          'Everything in Team',
-          'Custom integrations',
-          'Advanced security',
+          'On-premise deployment',
           'SLA support',
           'Dedicated account manager',
         ],
-        href: '#',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta',
         isPopular: false,
         name: 'Enterprise',
         period: 'month',

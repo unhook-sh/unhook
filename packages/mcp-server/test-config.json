@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "unhook": {
+      "args": ["run", "src/dev-server.ts"],
+      "command": "bun",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  }
+}

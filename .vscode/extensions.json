@@ -1,7 +1,20 @@
 {
   "recommendations": [
+    // Existing recommendations
     "biomejs.biome",
     "yoavbls.pretty-ts-errors",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+
+    // Bun support
+    "oven.bun-vscode",
+
+    // Debugging
+    "ms-vscode.js-debug-nightly",
+
+    // Markdown
+    "yzhang.markdown-all-in-one",
+
+    // Environment variables
+    "mikestead.dotenv"
   ]
 }

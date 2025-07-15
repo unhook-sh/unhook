@@ -18,6 +18,8 @@ const nextConfig = {
       { hostname: 'img.clerk.com' },
       { hostname: 'image.tmdb.org' },
       { hostname: 'picsum.photos' },
+      { hostname: 'unhook.sh' },
+      { hostname: 'randomuser.me' },
     ],
   },
   logging: {

@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "incremental": true,
     "paths": {
       "@unhook/analytics/*": ["../../packages/analytics/src/*"],
       "@unhook/ui/*": ["../../packages/ui/src/*"],
       "@unhook/zustand/*": ["../../packages/zustand/src/*"],
       "~/*": ["./src/*"]
     },
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "exclude": ["node_modules", ".next"],

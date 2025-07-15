@@ -1,40 +1,86 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
 {
   "tasks": [
     {
-      "args": ["run", "build:debug"],
+      "args": ["run", "build"],
       "command": "bun",
-      "group": "build",
-      "label": "build-vscode-extension",
+      "group": {
+        "isDefault": false,
+        "kind": "build"
+      },
+      "label": "Build MCP Server",
       "options": {
-        "cwd": "${workspaceFolder}/apps/vscode-extension"
+        "cwd": "${workspaceFolder}/packages/mcp-server"
       },
-      "presentation": {
-        "close": true,
-        "panel": "new",
-        "reveal": "always"
-      },
+      "problemMatcher": "$tsc",
       "type": "shell"
     },
     {
-      "args": ["run", "dev:webview"],
+      "args": ["test"],
+      "command": "bun",
+      "group": {
+        "isDefault": false,
+        "kind": "test"
+      },
+      "label": "Test MCP Server",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/mcp-server"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": ["run", "dev:server"],
       "command": "bun",
       "isBackground": true,
-      "label": "start-dev-server",
+      "label": "Start MCP Dev Server",
       "options": {
-        "cwd": "${workspaceFolder}/apps/vscode-extension"
+        "cwd": "${workspaceFolder}/packages/mcp-server"
       },
-      "presentation": {
-        "panel": "shared",
-        "reveal": "always"
+      "problemMatcher": {
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting Unhook MCP development server",
+          "endsPattern": "MCP development server is running"
+        },
+        "pattern": {
+          "column": 3,
+          "file": 1,
+          "line": 2,
+          "message": 4,
+          "regexp": "^(.*):(.*):(.*): (.*)$"
+        }
       },
       "type": "shell"
     },
     {
-      "dependsOn": ["build-vscode-extension"],
-      "dependsOrder": "parallel",
-      "label": "prepare-extension"
+      "args": ["run", "dev:inspector"],
+      "command": "bun",
+      "label": "Start MCP Inspector",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/mcp-server"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": ["run", "typecheck"],
+      "command": "bun",
+      "label": "Typecheck MCP Server",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/mcp-server"
+      },
+      "problemMatcher": "$tsc",
+      "type": "shell"
+    },
+    {
+      "args": ["run", "build:debug"],
+      "command": "bun",
+      "label": "prepare-extension",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/vscode-extension"
+      },
+      "problemMatcher": "$tsc",
+      "type": "shell"
     }
   ],
   "version": "2.0.0"

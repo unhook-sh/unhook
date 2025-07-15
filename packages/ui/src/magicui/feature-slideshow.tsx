@@ -77,6 +77,7 @@ type FeatureItem = {
   content: string;
   image?: string;
   video?: string;
+  component?: React.ReactNode;
 };
 type FeatureProps = {
   collapseDelay?: number;
@@ -197,6 +198,33 @@ export const Feature = ({
       );
     }
 
+    // Priority: component > image > video > fallback
+    if (currentItem.component) {
+      return (
+        <div className="relative h-full w-full overflow-hidden">
+          <motion.div
+            animate={{
+              opacity: 1,
+            }}
+            className={cn(
+              'aspect-auto h-full w-full rounded-xl border border-neutral-300/50 p-1',
+              'transition-all duration-300',
+            )}
+            initial={{
+              opacity: 0,
+            }}
+            key={currentIndex}
+            transition={{
+              duration: 0.3,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+          >
+            {currentItem.component}
+          </motion.div>
+        </div>
+      );
+    }
+
     if (currentItem.image) {
       return (
         <div className="relative h-full w-full overflow-hidden">
@@ -210,7 +238,6 @@ export const Feature = ({
           />
 
           {/* Main Image */}
-          {/** biome-ignore lint/performance/noImgElement: we need to use img element for animation */}
           <motion.img
             alt={currentItem.title}
             animate={{

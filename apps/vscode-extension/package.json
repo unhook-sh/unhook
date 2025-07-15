@@ -136,6 +136,12 @@
         "command": "unhook.createConfig",
         "icon": "$(new-file)",
         "title": "Create unhook.yml Configuration"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.createMcpConfig",
+        "icon": "$(server)",
+        "title": "Create Cursor MCP Configuration"
       }
     ],
     "configuration": {

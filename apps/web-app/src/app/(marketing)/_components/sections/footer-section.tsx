@@ -6,13 +6,14 @@ import { FlickeringGrid } from '@unhook/ui/magicui/flickering-grid';
 import Link from 'next/link';
 import { Icons } from '~/app/(marketing)/_components/icons';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
+
 export function FooterSection() {
   const tablet = useMediaQuery({ query: '(max-width: 1024px)' });
 
   return (
     <footer className="w-full pb-0" id="footer">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between p-10">
-        <div className="flex flex-col items-start justify-start gap-y-5 max-w-xs mx-0">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,320px)_1fr] gap-y-10 md:gap-x-16 p-10 items-start">
+        <div className="flex flex-col items-start gap-y-5 max-w-xs mx-0">
           <Link className="flex items-center gap-2" href="/">
             <Icons.logo className="size-12" />
             <p className="text-xl font-semibold text-primary">Unhook</p>
@@ -31,8 +32,8 @@ export function FooterSection() {
             {/* <Icons.gdprDark className="size-12" /> */}
           </div>
         </div>
-        <div className="pt-5 md:w-1/2">
-          <div className="flex flex-col items-start justify-start md:flex-row md:items-center md:justify-between gap-y-5 lg:pl-10">
+        <div className="w-full">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-y-6 gap-x-8">
             {siteConfig.footerLinks.map((column) => (
               <ul className="flex flex-col gap-y-2" key={column.title}>
                 <li className="mb-2 text-sm font-semibold text-primary">
@@ -45,7 +46,7 @@ export function FooterSection() {
                   >
                     <Link href={link.url}>{link.title}</Link>
                     <div className="flex size-4 items-center justify-center border border-border rounded translate-x-0 transform opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100">
-                      <ChevronRightIcon className="h-4 w-4 " />
+                      <ChevronRightIcon className="size-4" />
                     </div>
                   </li>
                 ))}
@@ -59,8 +60,6 @@ export function FooterSection() {
         <div className="absolute inset-0 mx-6">
           <FlickeringGrid
             className="h-full w-full"
-            // text={tablet ? 'Unhook' : 'Streamline your workflow'}
-            // fontSize={tablet ? 70 : 90}
             color="#6B7280"
             flickerChance={0.1}
             fontSize={tablet ? 95 : 160}

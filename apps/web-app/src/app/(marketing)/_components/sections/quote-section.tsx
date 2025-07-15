@@ -19,7 +19,9 @@ export function QuoteSection() {
             <Image
               alt={quoteSection.author.name}
               className="size-full rounded-full object-contain"
+              height={40}
               src={quoteSection.author.image}
+              width={40}
             />
           </div>
           <div className="text-left">

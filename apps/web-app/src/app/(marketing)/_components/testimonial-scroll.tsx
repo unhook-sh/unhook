@@ -34,7 +34,15 @@ export const TestimonialCard = ({
     </div>
 
     <div className="flex w-full select-none items-center justify-start gap-3.5">
-      {img && <Image alt={name} className="size-8 rounded-full" src={img} />}
+      {img && (
+        <Image
+          alt={name}
+          className="size-8 rounded-full"
+          height={32}
+          src={img}
+          width={32}
+        />
+      )}
 
       <div>
         <p className="font-medium text-primary/90">{name}</p>

@@ -1,6 +1,8 @@
 'use client';
 
+import { Badge } from '@unhook/ui/badge';
 import { cn } from '@unhook/ui/lib/utils';
+import { FileIcon } from 'lucide-react';
 import { type MotionProps, motion } from 'motion/react';
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 
@@ -93,9 +95,10 @@ export const TypingAnimation = ({
 interface TerminalProps {
   children: React.ReactNode;
   className?: string;
+  filename?: string;
 }
 
-export const Terminal = ({ children, className }: TerminalProps) => {
+export const Terminal = ({ children, className, filename }: TerminalProps) => {
   return (
     <div
       className={cn(
@@ -104,10 +107,16 @@ export const Terminal = ({ children, className }: TerminalProps) => {
       )}
     >
       <div className="flex flex-col gap-y-2 border-b border-border p-4">
-        <div className="flex flex-row gap-x-2">
+        <div className="flex flex-row gap-x-2 items-center">
           <div className="h-2 w-2 rounded-full bg-red-500" />
           <div className="h-2 w-2 rounded-full bg-yellow-500" />
           <div className="h-2 w-2 rounded-full bg-green-500" />
+          {filename && (
+            <Badge className="px-3 py-1.5 text-sm" variant="outline">
+              <FileIcon className="mr-2 size-4" />
+              {filename}
+            </Badge>
+          )}
         </div>
       </div>
       <pre className="py-4 px-6 md:px-4 md:py-4">

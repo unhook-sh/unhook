@@ -77,6 +77,25 @@ export function PricingSection() {
   }) => {
     const price = billingCycle === 'yearly' ? tier.yearlyPrice : tier.price;
 
+    if (tier.betaFree) {
+      return (
+        <div className="flex flex-col items-center">
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-semibold line-through text-muted-foreground">
+              {price}
+            </span>
+            <span className="text-4xl font-semibold text-primary">Free</span>
+            <span className="text-base text-muted-foreground font-medium">
+              /{billingCycle === 'yearly' ? 'year' : 'month'}
+            </span>
+          </div>
+          <span className="mt-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wide">
+            during beta
+          </span>
+        </div>
+      );
+    }
+
     return (
       <motion.span
         animate={{ filter: 'blur(0px)', opacity: 1, x: 0 }}
@@ -138,9 +157,6 @@ export function PricingSection() {
                 </p>
                 <div className="flex items-baseline mt-2">
                   <PriceDisplay tier={tier} />
-                  <span className="ml-2">
-                    /{billingCycle === 'yearly' ? 'year' : 'month'}
-                  </span>
                 </div>
                 <p className="text-sm mt-2">{tier.description}</p>
               </div>
@@ -154,14 +170,19 @@ export function PricingSection() {
                   }`}
                   type="button"
                 >
-                  {tier.buttonText}
+                  {tier.betaFree ? 'Start Free' : tier.buttonText}
                 </button>
               </div>
               <hr className="border-border dark:border-white/20" />
               <div className="p-4">
-                {tier.name !== 'Basic' && (
+                {tier.name !== 'Basic' && tier.name !== 'Free' && (
                   <p className="text-sm mb-4">
-                    Everything in {tier.name === 'Pro' ? 'Basic' : 'Pro'} +
+                    Everything in{' '}
+                    {tier.name === 'Team'
+                      ? 'Free'
+                      : tier.name === 'Enterprise'
+                        ? 'Team'
+                        : 'Pro'}{' '}
                   </p>
                 )}
                 <ul className="space-y-3">

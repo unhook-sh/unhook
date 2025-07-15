@@ -9,7 +9,6 @@ import { JetBrainsFeaturesSection } from '~/app/(marketing)/_components/sections
 import { JetBrainsHeroSection } from '~/app/(marketing)/_components/sections/jetbrains-hero-section';
 import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
 import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
-import { siteConfig } from '../_lib/config';
 
 export const metadata: Metadata = {
   description:
@@ -46,7 +45,7 @@ export default function JetBrainsPage() {
     <div className="max-w-7xl mx-auto border-x relative">
       <div className="block w-px h-full border-l border-border absolute top-0 left-6 z-10" />
       <div className="block w-px h-full border-r border-border absolute top-0 right-6 z-10" />
-      <Navbar navs={siteConfig.nav.links} />
+      <Navbar />
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <JetBrainsHeroSection />
         {/* <CompanyShowcase /> */}

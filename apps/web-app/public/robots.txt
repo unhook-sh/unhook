@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://unhook.com
+Host: https://unhook.sh
 
 # Sitemaps
-Sitemap: https://unhook.com/sitemap.xml
+Sitemap: https://unhook.sh/sitemap.xml

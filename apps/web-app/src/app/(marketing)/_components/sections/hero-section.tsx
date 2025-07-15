@@ -1,5 +1,6 @@
 'use client';
 
+import { ScriptCopyBtn } from '@unhook/ui/magicui/script-copy-btn';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { HeroTerminalSection } from '~/app/(marketing)/_components/sections/hero-terminal-section';
@@ -34,6 +35,14 @@ const staggerContainer = {
 
 export function HeroSection() {
   const { hero } = siteConfig;
+
+  // biome-ignore assist/source/useSortedKeys: we need to keep the order of the package managers
+  const commandMap = {
+    npm: 'npm install -g @unhook/cli',
+    pnpm: 'pnpm add -g @unhook/cli',
+    yarn: 'yarn global add @unhook/cli',
+    bun: 'bun add -g @unhook/cli',
+  };
 
   return (
     <section className="w-full relative" id="hero">
@@ -72,21 +81,31 @@ export function HeroSection() {
             </motion.p>
           </motion.div>
           <motion.div
-            className="flex flex-col md:flex-row items-center gap-2.5 flex-wrap justify-center"
+            className="flex flex-col items-center gap-6"
             variants={fadeInUpVariants}
           >
-            <Link
-              className="bg-secondary h-9 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-48 px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
-              href={hero.cta.primary.href}
-            >
-              {hero.cta.primary.text}
-            </Link>
-            <Link
-              className="h-10 flex items-center justify-center w-48 px-5 text-sm font-normal tracking-wide text-primary rounded-full transition-all ease-out active:scale-95 bg-white dark:bg-background border border-[#E5E7EB] dark:border-[#27272A] hover:bg-white/80 dark:hover:bg-background/80"
-              href={hero.cta.secondary.href}
-            >
-              {hero.cta.secondary.text}
-            </Link>
+            <ScriptCopyBtn
+              className="w-full max-w-md"
+              codeLanguage="bash"
+              commandMap={commandMap}
+              darkTheme="none"
+              lightTheme="none"
+              showMultiplePackageOptions={true}
+            />
+            <div className="flex flex-col md:flex-row items-center gap-2.5 flex-wrap justify-center">
+              <Link
+                className="bg-secondary h-9 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-48 px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
+                href={hero.cta.primary.href}
+              >
+                {hero.cta.primary.text}
+              </Link>
+              <Link
+                className="h-10 flex items-center justify-center w-48 px-5 text-sm font-normal tracking-wide text-primary rounded-full transition-all ease-out active:scale-95 bg-white dark:bg-background border border-[#E5E7EB] dark:border-[#27272A] hover:bg-white/80 dark:hover:bg-background/80"
+                href={hero.cta.secondary.href}
+              >
+                {hero.cta.secondary.text}
+              </Link>
+            </div>
           </motion.div>
         </motion.div>
       </div>

@@ -11,9 +11,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@unhook/testing": "workspace:*",
     "@unhook/tsconfig": "workspace:*",
-    "bun-types": "catalog:",
     "typescript": "catalog:"
   },
   "license": "MIT",

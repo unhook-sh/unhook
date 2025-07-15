@@ -75,6 +75,7 @@ runs:
         bun --filter @unhook/cli build
       env:
         BUN_BUILD_TARGET: "$BUN_TARGET"
+        NODE_ENV: ${{ env.NODE_ENV }}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
         NEXT_PUBLIC_POSTHOG_KEY: ${{ env.NEXT_PUBLIC_POSTHOG_KEY }}

@@ -29,6 +29,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NODE_ENV: ${{ secrets.NODE_ENV }}
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
   OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
@@ -89,3 +90,4 @@ jobs:
           version: ${{ steps.version.outputs.version }}
           vsce_pat: ${{ env.VSCE_PAT }}
           ovsx_pat: ${{ env.OVSX_PAT }}
+          node_env: ${{ env.NODE_ENV }}

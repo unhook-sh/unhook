@@ -60,7 +60,7 @@ export class ConfigManager {
 
     // Check environment variables
     if (
-      process.env.NODE_ENV === 'development' ||
+      // process.env.NODE_ENV === 'development' ||
       process.env.VSCODE_DEV === 'true'
     ) {
       return true;

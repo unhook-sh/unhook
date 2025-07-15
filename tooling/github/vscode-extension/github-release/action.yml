@@ -11,7 +11,9 @@ inputs:
   ovsx_pat:
     description: "Personal Access Token for Open VSX Registry"
     required: true
-
+  node_env:
+    description: "Node environment"
+    required: true
 runs:
   using: composite
   steps:
@@ -21,6 +23,8 @@ runs:
     - name: Package VSCode Extension
       shell: bash
       working-directory: apps/vscode-extension
+      env:
+        NODE_ENV: ${{ inputs.NODE_ENV }}
       run: |
         echo "Preparing, building, and packaging VSCode extension..."
         bun run package

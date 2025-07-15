@@ -17,7 +17,6 @@
     "checkly": "6.1.1",
     "knip": "5.61.3",
     "lefthook": "1.12.2",
-    "mintlify": "4.2.15",
     "turbo": "2.5.4",
     "typescript": "5.8.3",
     "vitest": "3.2.4"
@@ -44,7 +43,7 @@
     "dev": "turbo watch dev",
     "dev:next": "turbo watch dev -F @unhook/web-app...",
     "dev:vscode": "turbo watch dev -F unhook-vscode... -F @unhook/web-app...",
-    "docs": "cd docs && mintlify dev",
+    "docs": "turbo run dev --filter=@unhook/docs...",
     "format": "biome check",
     "format:ci": "biome ci",
     "format:fix": "biome check --write",
@@ -85,7 +84,8 @@
     "packages": [
       "packages/*",
       "apps/*",
-      "tooling/*"
+      "tooling/*",
+      "docs"
     ]
   }
 }

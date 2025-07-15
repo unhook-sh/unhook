@@ -15,6 +15,7 @@
     "yzhang.markdown-all-in-one",
 
     // Environment variables
-    "mikestead.dotenv"
+    "mikestead.dotenv",
+    "unhook.unhook-vscode"
   ]
 }

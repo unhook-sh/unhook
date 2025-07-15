@@ -1,0 +1,355 @@
+---
+title: 'VS Code Extension'
+description: 'Monitor and debug webhooks directly in VS Code'
+icon: 'code'
+---
+
+# VS Code Extension
+
+The Unhook VS Code extension provides seamless webhook monitoring and debugging directly within your development environment, eliminating the need to switch between your editor and external tools.
+
+## Overview
+
+The VS Code extension enables you to:
+- View webhook events in real-time within VS Code
+- Inspect webhook payloads and responses
+- Replay webhook events for testing
+- Debug webhook issues without leaving your editor
+- Collaborate with team members on webhook development
+
+## Installation
+
+Install the extension from the VS Code marketplace:
+
+1. **Open VS Code**
+2. **Go to Extensions** (Ctrl+Shift+X / Cmd+Shift+X)
+3. **Search for "Unhook"**
+4. **Click Install**
+
+Or install directly from the command line:
+
+```bash
+code --install-extension unhook.unhook-vscode
+```
+
+## Quick Start
+
+1. **Sign in to Unhook**:
+   - Open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
+   - Run "Unhook: Sign In"
+   - Follow the authentication flow
+
+2. **View webhook events**:
+   - Open the Unhook sidebar (Unhook icon in the activity bar)
+   - See real-time webhook events as they arrive
+
+3. **Inspect and replay events**:
+   - Click on any webhook event to view details
+   - Use the "Replay Event" button to resend the webhook
+
+## Features
+
+### Real-time Webhook Monitoring
+
+Monitor webhook events as they happen without leaving your editor:
+
+<CardGroup cols={2}>
+  <Card title="Live Event Feed" icon="radio">
+    See webhook events in real-time as they arrive from providers
+  </Card>
+  <Card title="Event Details" icon="search">
+    Inspect headers, payloads, and response data for each event
+  </Card>
+  <Card title="Status Tracking" icon="check-circle">
+    Track success/failure status and response times
+  </Card>
+  <Card title="Provider Filtering" icon="filter">
+    Filter events by provider (Stripe, GitHub, Clerk, etc.)
+  </Card>
+</CardGroup>
+
+### Webhook Event Inspection
+
+Dive deep into webhook data with comprehensive inspection tools:
+
+```json
+{
+  "event": {
+    "id": "evt_1234567890",
+    "provider": "stripe",
+    "type": "payment_intent.succeeded",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "status": "success"
+  },
+  "request": {
+    "method": "POST",
+    "url": "https://unhook.sh/wh_stripe_prod",
+    "headers": {
+      "content-type": "application/json",
+      "stripe-signature": "..."
+    },
+    "body": {
+      "id": "pi_123",
+      "object": "payment_intent",
+      "amount": 1000,
+      "currency": "usd"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {...},
+    "body": {...},
+    "duration": 245
+  }
+}
+```
+
+### Event Replay
+
+Test your webhook handlers by replaying events:
+
+1. **Select an event** from the sidebar
+2. **Click "Replay Event"** button
+3. **Monitor the response** in real-time
+4. **Debug any issues** with your webhook handler
+
+### Team Collaboration
+
+Work seamlessly with your team on webhook development:
+
+- **Shared webhook URLs**: Use the same webhook URL across your team
+- **Real-time updates**: See when team members are active
+- **Event sharing**: Share specific events with team members for debugging
+
+## Configuration
+
+### Workspace Configuration
+
+Create an `unhook.yaml` file in your project root:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+server:
+  apiUrl: "https://app.unhook.sh"
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+delivery:
+  - destination: "local"
+```
+
+### VS Code Settings
+
+Configure the extension through VS Code settings:
+
+```json
+{
+  "unhook.configFilePath": "./unhook.yaml",
+  "unhook.autoRefresh": true,
+  "unhook.refreshInterval": 5000,
+  "unhook.showNotifications": true
+}
+```
+
+### Environment Variables
+
+Set configuration via environment variables:
+
+```bash
+# API configuration
+NEXT_PUBLIC_API_URL=https://app.unhook.sh
+NEXT_PUBLIC_WEBHOOK_BASE_URL=https://unhook.sh
+
+# Authentication
+UNHOOK_API_KEY=your_api_key
+```
+
+## Usage Guide
+
+### Viewing Webhook Events
+
+1. **Open the Unhook sidebar** (click the Unhook icon in the activity bar)
+2. **Browse events** in the event list
+3. **Click on an event** to view details
+4. **Use filters** to find specific events
+
+### Inspecting Event Details
+
+When you click on a webhook event, you'll see:
+
+<Steps>
+  <Step title="Event Information">
+    - Event ID, provider, type, and timestamp
+    - Success/failure status and response time
+  </Step>
+  <Step title="Request Details">
+    - HTTP method and URL
+    - Headers and request body
+    - Provider-specific metadata
+  </Step>
+  <Step title="Response Information">
+    - HTTP status code
+    - Response headers and body
+    - Processing duration
+  </Step>
+</Steps>
+
+### Replaying Events
+
+1. **Select an event** from the sidebar
+2. **Click "Replay Event"** in the event details
+3. **Monitor the replay** in real-time
+4. **Check your application logs** for the replayed event
+
+### Debugging Failed Events
+
+When webhooks fail, the extension helps you debug:
+
+<AccordionGroup>
+  <Accordion title="Check Response Status">
+    Look at the HTTP status code returned by your endpoint
+  </Accordion>
+  <Accordion title="Review Error Messages">
+    Check the response body for error details
+  </Accordion>
+  <Accordion title="Verify Headers">
+    Ensure your endpoint is handling required headers correctly
+  </Accordion>
+  <Accordion title="Test Locally">
+    Use the replay feature to test your endpoint with the same payload
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+### Stripe Webhooks
+
+```yaml
+# unhook.yaml
+webhookId: "wh_stripe_prod"
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+delivery:
+  - destination: "stripe-handler"
+```
+
+Monitor Stripe payment events in real-time and replay them for testing.
+
+### GitHub Webhooks
+
+```yaml
+# unhook.yaml
+webhookId: "wh_github_repo"
+destination:
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+delivery:
+  - destination: "github-handler"
+```
+
+Track repository events like pushes, pull requests, and issues.
+
+### Clerk Authentication
+
+```yaml
+# unhook.yaml
+webhookId: "wh_clerk_auth"
+destination:
+  - name: "auth-handler"
+    url: "http://localhost:3000/api/webhooks/clerk"
+delivery:
+  - destination: "auth-handler"
+```
+
+Monitor user authentication events and session changes.
+
+## Advanced Features
+
+### Custom Event Filtering
+
+Filter events by various criteria:
+
+- **Provider**: Filter by Stripe, GitHub, Clerk, etc.
+- **Status**: Show only successful or failed events
+- **Time range**: Filter by recent events
+- **Event type**: Filter by specific event types
+
+### Event Export
+
+Export webhook events for analysis:
+
+1. **Select events** in the sidebar
+2. **Right-click** and choose "Export Events"
+3. **Choose format** (JSON, CSV)
+4. **Download** the exported file
+
+### Performance Monitoring
+
+Track webhook performance metrics:
+
+- **Response times**: Monitor how fast your endpoints respond
+- **Success rates**: Track webhook delivery success
+- **Error patterns**: Identify common failure causes
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Extension Not Loading">
+    - Restart VS Code
+    - Check if the extension is properly installed
+    - Verify you're signed in to Unhook
+  </Accordion>
+
+  <Accordion title="No Events Showing">
+    - Verify your webhook is active
+    - Check your webhook URL is correctly configured
+    - Ensure you have the correct permissions
+  </Accordion>
+
+  <Accordion title="Authentication Issues">
+    - Sign out and sign back in
+    - Check your internet connection
+    - Verify your Unhook account is active
+  </Accordion>
+
+  <Accordion title="Replay Not Working">
+    - Check your local server is running
+    - Verify the endpoint URL is correct
+    - Check your server logs for errors
+  </Accordion>
+</AccordionGroup>
+
+### Debug Mode
+
+Enable debug mode for detailed logging:
+
+1. **Open Command Palette** (Ctrl+Shift+P / Cmd+Shift+P)
+2. **Run "Developer: Toggle Developer Tools"**
+3. **Check the Console tab** for extension logs
+
+## Best Practices
+
+1. **Keep the sidebar open**: Monitor webhooks while coding
+2. **Use event replay**: Test your handlers with real data
+3. **Filter events**: Focus on relevant events for your development
+4. **Export for analysis**: Save important events for later review
+5. **Collaborate with team**: Share events for debugging sessions
+
+## Keyboard Shortcuts
+
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Open Unhook sidebar | `Ctrl+Shift+U` | `Cmd+Shift+U` |
+| Refresh events | `Ctrl+R` | `Cmd+R` |
+| Replay selected event | `Ctrl+Shift+R` | `Cmd+Shift+R` |
+| Export events | `Ctrl+Shift+E` | `Cmd+Shift+E` |
+
+## Next Steps
+
+- [CLI Tool](/solutions/cli-tool) - Command line webhook testing
+- [Team Collaboration](/solutions/team-collaboration) - Work with your team
+- [Provider Integrations](/solutions/provider-integrations) - Connect with services
+- [MCP Integration](/solutions/mcp-server) - AI-powered webhook debugging

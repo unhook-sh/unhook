@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mint": "4.2.12"
+  },
+  "name": "@unhook/docs",
+  "private": true,
+  "scripts": {
+    "dev": "mint dev"
+  }
+}

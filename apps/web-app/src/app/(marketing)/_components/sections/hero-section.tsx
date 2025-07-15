@@ -56,13 +56,22 @@ export function HeroSection() {
           initial="hidden"
           variants={staggerContainer}
         >
-          <motion.p
-            className="border border-border bg-accent rounded-full text-sm h-8 px-3 flex items-center gap-2"
+          <motion.div
+            className="border border-border bg-accent rounded-full text-sm h-8 px-3 flex items-center gap-2 hover:bg-accent/50 transition-colors"
             variants={fadeInUpVariants}
           >
-            {hero.badgeIcon}
-            {hero.badge}
-          </motion.p>
+            {hero.badgeUrl ? (
+              <Link className="flex items-center gap-2" href={hero.badgeUrl}>
+                {hero.badgeIcon}
+                {hero.badge}
+              </Link>
+            ) : (
+              <>
+                {hero.badgeIcon}
+                {hero.badge}
+              </>
+            )}
+          </motion.div>
           <motion.div
             className="flex flex-col items-center justify-center gap-5"
             variants={staggerContainer}

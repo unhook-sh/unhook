@@ -386,7 +386,10 @@ function NavigationMenuSection() {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/vscode" title="VS Code Extension">
+              <ListItem
+                href="https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode"
+                title="VS Code Extension"
+              >
                 Debug webhooks without leaving your editor. View and replay
                 events directly in VS Code.
               </ListItem>
@@ -394,10 +397,16 @@ function NavigationMenuSection() {
                 Full webhook testing integration for IntelliJ, WebStorm, and
                 other JetBrains IDEs.
               </ListItem>
-              <ListItem href="/mcp" title="MCP Server">
+              <ListItem
+                href="https://docs.unhook.sh/mcp-integration"
+                title="MCP Server"
+              >
                 Use Cursor, Claude, and other MCP clients to test your webhooks.
               </ListItem>
-              <ListItem href="/cli" title="Unhook CLI">
+              <ListItem
+                href="https://npmjs.com/package/@unhook/cli"
+                title="Unhook CLI"
+              >
                 Command-line interface for webhook testing. Perfect for CI/CD
                 and automation.
               </ListItem>
@@ -412,33 +421,42 @@ function NavigationMenuSection() {
           <NavigationMenuContent className="bg-background">
             <ul className="grid w-[500px] gap-3 p-4 md:w-[600px] md:grid-cols-2 lg:w-[700px]">
               <ListItem
-                href="/solutions/team-collaboration"
+                href="https://docs.unhook.sh/team-collaboration"
                 title="Team Collaboration"
               >
                 Share webhook URLs across your team while maintaining individual
                 development environments.
               </ListItem>
-              <ListItem href="/solutions/local-testing" title="Local Testing">
+              <ListItem
+                href="https://docs.unhook.sh/local-testing"
+                title="Local Testing"
+              >
                 Test webhooks in your local environment without exposing it to
                 the internet.
               </ListItem>
               <ListItem
-                href="/solutions/ai-development"
+                href="https://docs.unhook.sh/ai-development"
                 title="AI & MCP Development"
               >
                 Test webhooks triggered by AI agents and MCP servers. Debug
                 AI-driven workflows.
               </ListItem>
-              <ListItem href="/solutions/debugging" title="Real-time Debugging">
+              <ListItem
+                href="https://docs.unhook.sh/debugging"
+                title="Real-time Debugging"
+              >
                 Monitor webhook requests in real-time with payload inspection
                 and replay capabilities.
               </ListItem>
-              <ListItem href="/solutions/security" title="Secure Development">
+              <ListItem
+                href="https://docs.unhook.sh/security"
+                title="Secure Development"
+              >
                 End-to-end encryption ensures your webhook data remains private
                 and secure.
               </ListItem>
               <ListItem
-                href="/solutions/providers"
+                href="https://docs.unhook.sh/providers"
                 title="Provider Integrations"
               >
                 Built-in support for Stripe, GitHub, Clerk, and more. Easy to

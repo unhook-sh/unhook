@@ -97,6 +97,17 @@
             ]
           },
           {
+            "group": "Solutions",
+            "pages": [
+              "solutions/cli-tool",
+              "solutions/vscode-extension",
+              "solutions/jetbrains-plugin",
+              "solutions/mcp-server",
+              "solutions/team-collaboration",
+              "solutions/provider-integrations"
+            ]
+          },
+          {
             "group": "Development",
             "pages": [
               "contributing",

@@ -1,0 +1,531 @@
+---
+title: 'Provider Integrations'
+description: 'Connect with popular webhook providers like Stripe, GitHub, and Clerk'
+icon: 'plug'
+---
+
+# Provider Integrations
+
+Unhook provides built-in support for major webhook providers, making it easy to test and debug webhooks from popular services like Stripe, GitHub, Clerk, and many more.
+
+## Overview
+
+Unhook supports webhook providers across multiple categories:
+
+<CardGroup cols={2}>
+  <Card title="Payment Processing" icon="credit-card">
+    Stripe, PayPal, Square, and more
+  </Card>
+  <Card title="Version Control" icon="git-branch">
+    GitHub, GitLab, Bitbucket
+  </Card>
+  <Card title="Authentication" icon="shield">
+    Clerk, Auth0, Supabase Auth
+  </Card>
+  <Card title="Communication" icon="message-circle">
+    Slack, Discord, Twilio
+  </Card>
+  <Card title="E-commerce" icon="shopping-cart">
+    Shopify, WooCommerce, BigCommerce
+  </Card>
+  <Card title="Custom Providers" icon="settings">
+    Any webhook-enabled service
+  </Card>
+</CardGroup>
+
+## Supported Providers
+
+### Payment Processing
+
+#### Stripe
+
+The most popular payment processor with comprehensive webhook support.
+
+**Supported Events:**
+- `payment_intent.succeeded`
+- `payment_intent.payment_failed`
+- `invoice.payment_succeeded`
+- `customer.subscription.created`
+- `charge.succeeded`
+- And 100+ more events
+
+**Configuration:**
+```yaml
+# unhook.yaml
+webhookId: "wh_stripe_prod"
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+source:
+  - name: "stripe"
+delivery:
+  - source: "stripe"
+    destination: "stripe-handler"
+```
+
+**Stripe Dashboard Setup:**
+1. Go to Stripe Dashboard → Webhooks
+2. Add endpoint: `https://unhook.sh/wh_stripe_prod`
+3. Select events to listen for
+4. Save webhook
+
+#### PayPal
+
+PayPal's webhook system for payment notifications.
+
+**Supported Events:**
+- `PAYMENT.CAPTURE.COMPLETED`
+- `PAYMENT.CAPTURE.DENIED`
+- `CHECKOUT.ORDER.APPROVED`
+- `BILLING.SUBSCRIPTION.CREATED`
+
+**Configuration:**
+```yaml
+# unhook.yaml
+webhookId: "wh_paypal_prod"
+destination:
+  - name: "paypal-handler"
+    url: "http://localhost:3000/api/webhooks/paypal"
+source:
+  - name: "paypal"
+delivery:
+  - source: "paypal"
+    destination: "paypal-handler"
+```
+
+### Version Control
+
+#### GitHub
+
+GitHub webhooks for repository events and actions.
+
+**Supported Events:**
+- `push` - Code pushes to repository
+- `pull_request` - Pull request events
+- `issues` - Issue creation and updates
+- `release` - Release creation
+- `workflow_run` - GitHub Actions workflow runs
+
+**Configuration:**
+```yaml
+# unhook.yaml
+webhookId: "wh_github_repo"
+destination:
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+source:
+  - name: "github"
+delivery:
+  - source: "github"
+    destination: "github-handler"
+```
+
+**GitHub Repository Setup:**
+1. Go to repository Settings → Webhooks
+2. Add webhook: `https://unhook.sh/wh_github_repo`
+3. Select events to listen for
+4. Set content type to `application/json`
+5. Save webhook
+
+#### GitLab
+
+GitLab webhooks for repository and CI/CD events.
+
+**Supported Events:**
+- `Push Hook` - Code pushes
+- `Merge Request Hook` - Merge request events
+- `Pipeline Hook` - CI/CD pipeline events
+- `Issue Hook` - Issue events
+
+### Authentication
+
+#### Clerk
+
+Modern authentication platform with comprehensive webhook support.
+
+**Supported Events:**
+- `user.created`
+- `user.updated`
+- `user.deleted`
+- `session.created`
+- `session.ended`
+- `organization.created`
+
+**Configuration:**
+```yaml
+# unhook.yaml
+webhookId: "wh_clerk_auth"
+destination:
+  - name: "clerk-handler"
+    url: "http://localhost:3000/api/webhooks/clerk"
+source:
+  - name: "clerk"
+delivery:
+  - source: "clerk"
+    destination: "clerk-handler"
+```
+
+**Clerk Dashboard Setup:**
+1. Go to Clerk Dashboard → Webhooks
+2. Add endpoint: `https://unhook.sh/wh_clerk_auth`
+3. Select events to listen for
+4. Save webhook
+
+#### Auth0
+
+Auth0's webhook system for authentication events.
+
+**Supported Events:**
+- `post-login`
+- `post-registration`
+- `post-change-password`
+- `post-user-creation`
+
+### Communication
+
+#### Slack
+
+Slack webhooks for workspace events and interactions.
+
+**Supported Events:**
+- `message` - New messages in channels
+- `reaction_added` - Emoji reactions
+- `channel_created` - New channels
+- `team_join` - New team members
+
+#### Discord
+
+Discord webhooks for server events.
+
+**Supported Events:**
+- `MESSAGE_CREATE` - New messages
+- `MEMBER_JOIN` - New members
+- `CHANNEL_CREATE` - New channels
+- `GUILD_MEMBER_UPDATE` - Member updates
+
+### E-commerce
+
+#### Shopify
+
+Shopify webhooks for store events.
+
+**Supported Events:**
+- `orders/create` - New orders
+- `products/create` - New products
+- `customers/create` - New customers
+- `inventory_levels/update` - Inventory changes
+
+**Configuration:**
+```yaml
+# unhook.yaml
+webhookId: "wh_shopify_store"
+destination:
+  - name: "shopify-handler"
+    url: "http://localhost:3000/api/webhooks/shopify"
+source:
+  - name: "shopify"
+delivery:
+  - source: "shopify"
+    destination: "shopify-handler"
+```
+
+## Custom Provider Support
+
+### Generic Webhook Support
+
+Unhook supports any webhook-enabled service through generic webhook handling:
+
+```yaml
+# unhook.yaml
+webhookId: "wh_custom_service"
+destination:
+  - name: "custom-handler"
+    url: "http://localhost:3000/api/webhooks/custom"
+source:
+  - name: "custom"
+delivery:
+  - source: "custom"
+    destination: "custom-handler"
+```
+
+### Custom Provider Configuration
+
+Configure custom providers with specific requirements:
+
+```yaml
+# unhook.yaml
+webhookId: "wh_custom_api"
+destination:
+  - name: "custom-api-handler"
+    url: "http://localhost:3000/api/webhooks/custom"
+    headers:
+      x-api-key: "your_api_key"
+      x-custom-header: "custom_value"
+source:
+  - name: "custom-api"
+delivery:
+  - source: "custom-api"
+    destination: "custom-api-handler"
+```
+
+## Provider-Specific Features
+
+### Signature Verification
+
+Many providers include signature verification for security:
+
+#### Stripe Signature Verification
+
+```typescript
+// Verify Stripe webhook signature
+import { headers } from 'next/headers';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+export async function POST(request: Request) {
+  const body = await request.text();
+  const signature = headers().get('stripe-signature');
+
+  try {
+    const event = stripe.webhooks.constructEvent(body, signature!, webhookSecret);
+    // Process the event
+    return Response.json({ received: true });
+  } catch (err) {
+    return Response.json({ error: 'Invalid signature' }, { status: 400 });
+  }
+}
+```
+
+#### GitHub Signature Verification
+
+```typescript
+// Verify GitHub webhook signature
+import crypto from 'crypto';
+
+export async function POST(request: Request) {
+  const body = await request.text();
+  const signature = headers().get('x-hub-signature-256');
+  const secret = process.env.GITHUB_WEBHOOK_SECRET!;
+
+  const expectedSignature = `sha256=${crypto
+    .createHmac('sha256', secret)
+    .update(body)
+    .digest('hex')}`;
+
+  if (signature !== expectedSignature) {
+    return Response.json({ error: 'Invalid signature' }, { status: 401 });
+  }
+
+  const event = JSON.parse(body);
+  // Process the event
+  return Response.json({ received: true });
+}
+```
+
+### Event Filtering
+
+Filter events by type for specific providers:
+
+```yaml
+# unhook.yaml
+webhookId: "wh_stripe_filtered"
+destination:
+  - name: "stripe-payments"
+    url: "http://localhost:3000/api/webhooks/stripe/payments"
+  - name: "stripe-subscriptions"
+    url: "http://localhost:3000/api/webhooks/stripe/subscriptions"
+source:
+  - name: "stripe"
+    events:
+      - "payment_intent.succeeded"
+      - "payment_intent.payment_failed"
+      - "customer.subscription.created"
+      - "customer.subscription.updated"
+delivery:
+  - source: "stripe"
+    events: ["payment_intent.*"]
+    destination: "stripe-payments"
+  - source: "stripe"
+    events: ["customer.subscription.*"]
+    destination: "stripe-subscriptions"
+```
+
+## Integration Examples
+
+### Multi-Provider Setup
+
+Handle multiple providers in a single configuration:
+
+```yaml
+# unhook.yaml
+webhookId: "wh_multi_provider"
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+  - name: "clerk-handler"
+    url: "http://localhost:3000/api/webhooks/clerk"
+source:
+  - name: "stripe"
+  - name: "github"
+  - name: "clerk"
+delivery:
+  - source: "stripe"
+    destination: "stripe-handler"
+  - source: "github"
+    destination: "github-handler"
+  - source: "clerk"
+    destination: "clerk-handler"
+```
+
+### Environment-Specific Providers
+
+Different providers for different environments:
+
+```yaml
+# unhook.dev.yaml
+webhookId: "wh_dev"
+destination:
+  - name: "stripe-test"
+    url: "http://localhost:3000/api/webhooks/stripe"
+source:
+  - name: "stripe"
+    mode: "test"  # Use Stripe test mode
+delivery:
+  - source: "stripe"
+    destination: "stripe-test"
+
+# unhook.prod.yaml
+webhookId: "wh_prod"
+destination:
+  - name: "stripe-live"
+    url: "http://localhost:3000/api/webhooks/stripe"
+source:
+  - name: "stripe"
+    mode: "live"  # Use Stripe live mode
+delivery:
+  - source: "stripe"
+    destination: "stripe-live"
+```
+
+## Testing Provider Integrations
+
+### Local Testing
+
+Test provider integrations locally:
+
+```bash
+# Start webhook listener
+unhook listen --port 3000 --webhook-id wh_stripe_test
+
+# Test with curl
+curl -X POST http://localhost:3000/api/webhooks/stripe \
+  -H "Content-Type: application/json" \
+  -H "Stripe-Signature: ..." \
+  -d '{"type":"payment_intent.succeeded","data":{...}}'
+```
+
+### Provider-Specific Testing
+
+Use provider testing tools:
+
+#### Stripe CLI
+
+```bash
+# Install Stripe CLI
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+
+# Trigger test events
+stripe trigger payment_intent.succeeded
+```
+
+#### GitHub Webhook Testing
+
+```bash
+# Use GitHub's webhook testing feature
+# Go to repository Settings → Webhooks → Recent Deliveries
+# Click on any delivery to see the payload
+```
+
+## Troubleshooting
+
+### Common Provider Issues
+
+<AccordionGroup>
+  <Accordion title="Signature Verification Failures">
+    - Verify webhook secret is correct
+    - Check signature header format
+    - Ensure payload hasn't been modified
+  </Accordion>
+
+  <Accordion title="Event Not Received">
+    - Check webhook URL is correct
+    - Verify events are selected in provider dashboard
+    - Check webhook is active and not disabled
+  </Accordion>
+
+  <Accordion title="Provider Rate Limits">
+    - Check provider's rate limiting documentation
+    - Implement exponential backoff
+    - Monitor webhook delivery status
+  </Accordion>
+
+  <Accordion title="Payload Format Issues">
+    - Verify content-type headers
+    - Check payload structure matches provider documentation
+    - Test with provider's sample payloads
+  </Accordion>
+</AccordionGroup>
+
+### Provider-Specific Debugging
+
+#### Stripe Debugging
+
+```bash
+# Check Stripe webhook logs
+stripe logs tail
+
+# Test webhook endpoint
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+#### GitHub Debugging
+
+```bash
+# Check webhook delivery status
+# Go to repository Settings → Webhooks → Recent Deliveries
+# Look for failed deliveries and error messages
+```
+
+## Best Practices
+
+### Provider Configuration
+
+1. **Use environment-specific webhooks**: Separate test and production webhooks
+2. **Implement signature verification**: Always verify webhook signatures
+3. **Handle idempotency**: Webhooks may be delivered multiple times
+4. **Monitor webhook health**: Track delivery success rates
+
+### Security Considerations
+
+1. **Keep secrets secure**: Store webhook secrets in environment variables
+2. **Verify signatures**: Always verify webhook signatures for security
+3. **Use HTTPS**: Ensure all webhook endpoints use HTTPS
+4. **Monitor access**: Track webhook access and usage
+
+### Performance Optimization
+
+1. **Process webhooks asynchronously**: Don't block on webhook processing
+2. **Implement retry logic**: Handle temporary failures gracefully
+3. **Monitor response times**: Keep webhook processing fast
+4. **Use webhook queues**: Queue webhooks for background processing
+
+## Next Steps
+
+- [CLI Tool](/solutions/cli-tool) - Test webhooks locally
+- [VS Code Extension](/solutions/vscode-extension) - Monitor webhooks in your editor
+- [Team Collaboration](/solutions/team-collaboration) - Share webhooks with your team
+- [Security Features](/solutions/security) - Learn about webhook security

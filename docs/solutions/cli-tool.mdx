@@ -1,0 +1,322 @@
+---
+title: 'CLI Tool'
+description: 'Command line interface for local webhook testing and development'
+icon: 'terminal'
+---
+
+# Unhook CLI Tool
+
+The Unhook CLI is a powerful command-line interface that enables developers to test webhooks locally without exposing their development environment to the internet.
+
+## Overview
+
+The CLI tool provides a seamless way to:
+- Create shareable webhook URLs that route to your local environment
+- Monitor webhook events in real-time
+- Debug webhook payloads and responses
+- Collaborate with team members using shared webhook configurations
+
+## Installation
+
+Install the Unhook CLI globally using your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install -g @unhook/cli
+```
+
+```bash yarn
+yarn global add @unhook/cli
+```
+
+```bash pnpm
+pnpm add -g @unhook/cli
+```
+
+```bash bun
+bun add -g @unhook/cli
+```
+
+</CodeGroup>
+
+## Quick Start
+
+1. **Initialize your project**:
+   ```bash
+   npx @unhook/cli init
+   ```
+
+2. **Start listening for webhooks**:
+   ```bash
+   unhook listen --port 3000
+   ```
+
+3. **Use the generated webhook URL** in your provider's settings:
+   ```
+   https://unhook.sh/wh_your_webhook_id
+   ```
+
+## Core Features
+
+### Local Webhook Routing
+
+The CLI creates a secure tunnel that routes incoming webhooks to your local development server:
+
+```bash
+# Route webhooks to local port 3000
+unhook listen --port 3000
+
+# Route to a specific endpoint
+unhook listen --port 3000 --path /api/webhooks
+
+# Route to a remote URL
+unhook listen --redirect https://api.example.com/webhooks
+```
+
+### Real-time Monitoring
+
+Monitor webhook activity directly in your terminal:
+
+```bash
+# Enable debug mode for detailed logging
+unhook listen --debug
+
+# View webhook statistics
+unhook stats
+
+# Check connection status
+unhook status
+```
+
+### Team Collaboration
+
+Share webhook URLs across your team while maintaining individual environments:
+
+```bash
+# Use a shared webhook ID
+unhook listen --webhook-id team_webhook_id
+
+# Set a unique client ID for team routing
+unhook listen --client-id dev1 --webhook-id team_webhook_id
+```
+
+## Configuration
+
+### Configuration File
+
+Create an `unhook.yaml` file in your project root:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+debug: false
+telemetry: true
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+    ping: true
+source:
+  - name: "stripe"
+  - name: "github"
+delivery:
+  - source: "stripe"
+    destination: "local"
+  - source: "github"
+    destination: "local"
+```
+
+### Environment Variables
+
+All CLI options can be set via environment variables:
+
+```bash
+# Core settings
+WEBHOOK_PORT=3000
+WEBHOOK_API_KEY=your_api_key
+WEBHOOK_CLIENT_ID=dev-1
+WEBHOOK_DEBUG=true
+
+# Advanced settings
+WEBHOOK_REDIRECT=https://api.example.com
+WEBHOOK_PING=true
+```
+
+## Command Reference
+
+### `unhook listen`
+
+Start listening for webhook events.
+
+**Options:**
+- `--port, -p`: Local port to deliver requests to
+- `--webhook-id, -t`: Webhook ID to use
+- `--client-id, -c`: Unique client ID for team routing
+- `--redirect, -r`: Redirect URL instead of local port
+- `--debug, -d`: Enable debug logging
+- `--ping`: Health check configuration
+
+**Examples:**
+```bash
+# Basic usage
+unhook listen --port 3000
+
+# With custom client ID
+unhook listen --client-id dev-1 --port 3000
+
+# Redirect to remote URL
+unhook listen --redirect https://api.example.com/webhooks
+```
+
+### `unhook init`
+
+Initialize a new Unhook project.
+
+**Examples:**
+```bash
+# Initialize with default settings
+npx @unhook/cli init
+
+# Initialize with specific webhook ID
+npx @unhook/cli init --webhook-id wh_123
+```
+
+### `unhook status`
+
+Check the status of your webhook connection.
+
+**Examples:**
+```bash
+# Check current status
+unhook status
+
+# Check with verbose output
+unhook status --verbose
+```
+
+## Advanced Features
+
+### Health Checks
+
+Configure health checks for your endpoints:
+
+```yaml
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+    ping: true  # Enable default health check
+  - name: "custom"
+    url: "http://localhost:3001/api/webhooks"
+    ping: "http://localhost:3001/health"  # Custom health check URL
+```
+
+### Multiple Destinations
+
+Route different webhook types to different endpoints:
+
+```yaml
+destination:
+  - name: "stripe-endpoint"
+    url: "http://localhost:3000/api/webhooks/stripe"
+  - name: "github-endpoint"
+    url: "http://localhost:3000/api/webhooks/github"
+delivery:
+  - source: "stripe"
+    destination: "stripe-endpoint"
+  - source: "github"
+    destination: "github-endpoint"
+```
+
+### Authentication
+
+Configure API key authentication for private webhooks:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+apiKey: "your_api_key"  # Required for private webhooks
+destination:
+  - name: "secure-endpoint"
+    url: "http://localhost:3000/api/webhooks"
+```
+
+## Integration Examples
+
+### Stripe Webhooks
+
+```bash
+# Start listening for Stripe webhooks
+unhook listen --port 3000 --webhook-id wh_stripe_prod
+
+# Configure in Stripe dashboard
+# Webhook URL: https://unhook.sh/wh_stripe_prod
+```
+
+### GitHub Webhooks
+
+```bash
+# Start listening for GitHub webhooks
+unhook listen --port 3000 --webhook-id wh_github_repo
+
+# Configure in GitHub repository settings
+# Webhook URL: https://unhook.sh/wh_github_repo
+```
+
+### Clerk Authentication
+
+```bash
+# Start listening for Clerk webhooks
+unhook listen --port 3000 --webhook-id wh_clerk_auth
+
+# Configure in Clerk dashboard
+# Webhook URL: https://unhook.sh/wh_clerk_auth
+```
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Connection Issues">
+    - Check your internet connection
+    - Verify the webhook ID is correct
+    - Ensure the port is available and not blocked by firewall
+  </Accordion>
+
+  <Accordion title="Authentication Problems">
+    - Clear auth data: `rm ~/.unhook/auth-storage.json`
+    - Re-run initialization: `npx @unhook/cli init`
+    - Verify API key is correct
+  </Accordion>
+
+  <Accordion title="Webhook Not Receiving Events">
+    - Check webhook URL is correctly configured in provider dashboard
+    - Verify webhook is active in Unhook dashboard
+    - Enable debug mode: `unhook listen --debug`
+  </Accordion>
+</AccordionGroup>
+
+### Debug Mode
+
+Enable debug logging for detailed troubleshooting:
+
+```bash
+# Enable debug mode
+unhook listen --debug
+
+# View debug information in real-time
+# Check connection status, webhook events, and error messages
+```
+
+## Best Practices
+
+1. **Use Client IDs**: Always specify a meaningful client ID in team environments
+2. **Enable Health Checks**: Configure health checks for all endpoints
+3. **Use Configuration Files**: Keep settings in version control for team consistency
+4. **Monitor Logs**: Use debug mode when troubleshooting issues
+5. **Secure API Keys**: Store sensitive information in environment variables
+
+## Next Steps
+
+- [VS Code Extension](/solutions/vscode-extension) - Monitor webhooks in your editor
+- [Team Collaboration](/solutions/team-collaboration) - Share webhooks with your team
+- [Provider Integrations](/solutions/provider-integrations) - Connect with popular services
+- [Security Features](/solutions/security) - Learn about data protection

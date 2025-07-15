@@ -287,24 +287,26 @@ export const siteConfig = {
     },
     {
       links: [
-        { id: 3, title: 'All Comparisons', url: '/comparisons' },
-        { id: 4, title: 'vs ngrok', url: '/vs-ngrok' },
-        { id: 5, title: 'vs Webhook.site', url: '/vs-webhook-site' },
-        { id: 6, title: 'vs Beeceptor', url: '/vs-beeceptor' },
-        { id: 7, title: 'vs Localtunnel', url: '/vs-localtunnel' },
-        { id: 8, title: 'vs Smee.io', url: '/vs-smee' },
-        { id: 9, title: 'vs Cloudflare Tunnel', url: '/vs-cloudflare-tunnel' },
-        { id: 10, title: 'vs Hookdeck', url: '/vs-hookdeck' },
-        { id: 11, title: 'vs Svix', url: '/vs-svix' },
-      ],
-      title: 'Compare',
-    },
-    {
-      links: [
-        { id: 12, title: 'VS Code Extension', url: '/vscode' },
-        { id: 13, title: 'JetBrains Plugin', url: '/jetbrains' },
-        { id: 14, title: 'MCP Server', url: '/mcp' },
-        { id: 15, title: 'Unhook CLI', url: '/cli' },
+        {
+          id: 12,
+          title: 'VS Code Extension',
+          url: 'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
+        },
+        {
+          id: 13,
+          title: 'JetBrains Plugin',
+          url: 'https://plugins.jetbrains.com/plugin/24002-unhook',
+        },
+        {
+          id: 14,
+          title: 'MCP Server',
+          url: 'https://docs.unhook.sh/mcp-integration',
+        },
+        {
+          id: 15,
+          title: 'Unhook CLI',
+          url: 'https://www.npmjs.com/package/@unhook/cli',
+        },
       ],
       title: 'Products',
     },
@@ -320,6 +322,21 @@ export const siteConfig = {
       ],
       title: 'Resources',
     },
+    {
+      links: [
+        { id: 3, title: 'All Comparisons', url: '/comparisons' },
+        { id: 4, title: 'vs ngrok', url: '/vs-ngrok' },
+        { id: 5, title: 'vs Webhook.site', url: '/vs-webhook-site' },
+        { id: 6, title: 'vs Beeceptor', url: '/vs-beeceptor' },
+        { id: 7, title: 'vs Localtunnel', url: '/vs-localtunnel' },
+        { id: 8, title: 'vs Smee.io', url: '/vs-smee' },
+        { id: 9, title: 'vs Cloudflare Tunnel', url: '/vs-cloudflare-tunnel' },
+        { id: 10, title: 'vs Hookdeck', url: '/vs-hookdeck' },
+        { id: 11, title: 'vs Svix', url: '/vs-svix' },
+      ],
+      title: 'Compare',
+    },
+
     // {
     //   title: 'Products',
     //   links: [
@@ -383,6 +400,8 @@ export const siteConfig = {
         <path d="M2.37845 10.5993L2.57045 10.4893L6.88445 12.9533C7.22435 13.1474 7.60901 13.2496 8.00045 13.2496C8.39189 13.2496 8.77656 13.1474 9.11645 12.9533L13.4305 10.4883L13.6225 10.5983C13.7374 10.6638 13.833 10.7586 13.8994 10.8731C13.9659 10.9875 14.0009 11.1175 14.0009 11.2498C14.0009 11.3821 13.9659 11.5121 13.8994 11.6265C13.833 11.7409 13.7374 11.8357 13.6225 11.9013L8.37245 14.9013C8.25915 14.966 8.13093 15 8.00045 15C7.86997 15 7.74175 14.966 7.62845 14.9013L2.37845 11.9013C2.2635 11.8357 2.16795 11.7409 2.10148 11.6265C2.03501 11.5121 2 11.3821 2 11.2498C2 11.1175 2.03501 10.9875 2.10148 10.8731C2.16795 10.7586 2.2635 10.6638 2.37845 10.5983V10.5993Z" />
       </svg>
     ),
+    badgeUrl:
+      'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
     cta: {
       primary: {
         href: '/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
@@ -416,8 +435,8 @@ export const siteConfig = {
       { href: '#bento', id: 2, name: 'How it Works' },
       { href: '/vscode', id: 3, name: 'VS Code Extension' },
       { href: '/jetbrains', id: 4, name: 'JetBrains Plugin' },
-      { href: '/mcp', id: 5, name: 'AI Integration' },
-      { href: '/cli', id: 6, name: 'CLI' },
+      { href: '/mcp', id: 5, name: 'MCP Server' },
+      { href: 'https://www.npmjs.com/package/@unhook/cli', id: 6, name: 'CLI' },
       // { id: 5, name: 'Features', href: '#features' },
       // { id: 6, name: 'Pricing', href: '#pricing' },
     ],
@@ -428,17 +447,18 @@ export const siteConfig = {
     pricingItems: [
       {
         buttonColor: 'bg-accent text-primary',
-        buttonText: 'Start Free',
+        buttonText: 'Create Webhook URL',
         description: 'Perfect for individual developers',
         features: [
-          'Unlimited webhook events',
+          '10 webhook events per day',
+          'One Webhook URL',
           'Basic webhook monitoring',
           'Local event routing',
           'Single developer',
           'Public webhook URLs',
           'Community support',
         ],
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-free',
         isPopular: false,
         name: 'Free',
         period: 'month',
@@ -451,20 +471,23 @@ export const siteConfig = {
         buttonText: 'Start Trial',
         description: 'Ideal for development teams',
         features: [
+          'Unlimited webhook events',
+          'Unlimited Webhook URLs',
+          'MCP Server',
           'Team webhook sharing',
-          'Advanced monitoring',
+          // 'Custom webhook subdomains',
           'Private webhook URLs',
-          'Custom webhook subdomains',
-          'Usage analytics',
-          'Route to external integrations',
+          // 'Advanced monitoring',
+          // 'Usage analytics',
+          // 'Route to external integrations',
           'Priority support',
         ],
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-team',
         isPopular: true,
         name: 'Team',
         period: 'month',
-        price: '$29',
-        yearlyPrice: '$290',
+        price: '$19',
+        yearlyPrice: '$15',
       },
       {
         buttonColor: 'bg-primary text-primary-foreground',
@@ -475,7 +498,7 @@ export const siteConfig = {
           'SLA support',
           'Dedicated account manager',
         ],
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta',
+        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-enterprise',
         isPopular: false,
         name: 'Enterprise',
         period: 'month',

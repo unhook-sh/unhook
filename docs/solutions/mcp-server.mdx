@@ -1,0 +1,416 @@
+---
+title: 'MCP Server'
+description: 'AI-powered webhook debugging with Model Context Protocol'
+icon: 'brain'
+---
+
+# MCP Server
+
+The Unhook MCP (Model Context Protocol) server enables AI assistants to access and analyze your webhook data, providing intelligent debugging and insights for webhook development.
+
+## Overview
+
+The MCP server allows AI assistants like Claude, Cursor, and other AI tools to:
+- Search and analyze webhook events
+- Provide intelligent debugging recommendations
+- Generate performance reports
+- Identify patterns in webhook failures
+- Offer contextual assistance for webhook development
+
+## What is MCP?
+
+Model Context Protocol (MCP) is a standard for connecting AI models to external data sources and tools. The Unhook MCP server provides a bridge between AI assistants and your webhook data, enabling intelligent analysis and debugging.
+
+## Installation
+
+### For Claude Desktop
+
+1. **Download the MCP server** from the [Unhook releases page](https://github.com/unhook-sh/unhook/releases)
+2. **Add to Claude Desktop**:
+   - Open Claude Desktop settings
+   - Go to "Connections" → "Add connection"
+   - Select "MCP Server"
+   - Choose the Unhook MCP server binary
+3. **Configure authentication**:
+   - Add your Unhook API key
+   - Test the connection
+
+### For Cursor
+
+1. **Install the MCP extension** in Cursor
+2. **Configure the Unhook server**:
+   - Add your API key
+   - Set the server endpoint
+3. **Enable in your workspace**
+
+### For Other AI Tools
+
+The MCP server is compatible with any tool that supports the Model Context Protocol:
+
+```bash
+# Example configuration
+{
+  "mcpServers": {
+    "unhook": {
+      "command": "unhook-mcp-server",
+      "args": ["--api-key", "your_api_key"]
+    }
+  }
+}
+```
+
+## Features
+
+### Intelligent Webhook Analysis
+
+AI assistants can now analyze your webhook data:
+
+<CardGroup cols={2}>
+  <Card title="Event Search" icon="search">
+    Search webhook events by provider, status, time range, and more
+  </Card>
+  <Card title="Failure Analysis" icon="bug">
+    Identify patterns in webhook failures and suggest fixes
+  </Card>
+  <Card title="Performance Insights" icon="gauge-high">
+    Analyze response times and success rates
+  </Card>
+  <Card title="Debugging Assistance" icon="lightbulb">
+    Get contextual help for webhook development issues
+  </Card>
+</CardGroup>
+
+### AI-Powered Debugging
+
+Get intelligent recommendations for webhook issues:
+
+```typescript
+// Ask your AI assistant:
+"Show me all failed Stripe webhooks from the last hour"
+
+// The AI will use the MCP server to:
+// 1. Search for failed Stripe events
+// 2. Analyze error patterns
+// 3. Suggest specific fixes
+// 4. Provide debugging steps
+```
+
+### Performance Monitoring
+
+Track webhook performance with AI insights:
+
+```typescript
+// Ask for performance analysis:
+"Generate a performance report for my webhooks"
+
+// The AI provides:
+// - Success/failure rates by provider
+// - Response time analysis
+// - Error pattern identification
+// - Optimization recommendations
+```
+
+## Available Tools
+
+### search_events
+
+Search webhook events with filtering options.
+
+**Parameters:**
+- `webhookId` (optional): Filter by specific webhook
+- `status` (optional): Filter by success/failed/pending
+- `limit` (optional): Maximum number of events (1-100)
+
+**Example:**
+```typescript
+// Search for failed Stripe events
+{
+  "name": "search_events",
+  "arguments": {
+    "webhookId": "wh_stripe_prod",
+    "status": "failed",
+    "limit": 50
+  }
+}
+```
+
+### analyze_event
+
+Get detailed analysis of a specific webhook event.
+
+**Parameters:**
+- `eventId` (required): The ID of the event to analyze
+
+**Example:**
+```typescript
+// Analyze a specific failure
+{
+  "name": "analyze_event",
+  "arguments": {
+    "eventId": "evt_1234567890"
+  }
+}
+```
+
+### get_webhook_stats
+
+Get comprehensive statistics for webhooks.
+
+**Parameters:**
+- `webhookId` (optional): Get stats for specific webhook
+- `timeRange` (optional): Time range (1h, 24h, 7d, 30d)
+
+**Example:**
+```typescript
+// Get performance stats
+{
+  "name": "get_webhook_stats",
+  "arguments": {
+    "webhookId": "wh_stripe_prod",
+    "timeRange": "24h"
+  }
+}
+```
+
+## Usage Examples
+
+### Debugging Webhook Failures
+
+```typescript
+// Ask your AI assistant:
+"Debug why my Stripe webhooks are failing"
+
+// The AI will:
+// 1. Search for recent failed Stripe events
+// 2. Analyze error patterns
+// 3. Check response codes and error messages
+// 4. Suggest specific fixes based on the data
+// 5. Provide debugging steps
+```
+
+### Performance Analysis
+
+```typescript
+// Ask for performance insights:
+"Analyze webhook performance for the last week"
+
+// The AI provides:
+// - Success rate trends
+// - Response time analysis
+// - Provider-specific insights
+// - Optimization recommendations
+```
+
+### Event Investigation
+
+```typescript
+// Investigate specific events:
+"Show me the payload for event evt_1234567890"
+
+// The AI will:
+// 1. Retrieve the specific event
+// 2. Show the full payload
+// 3. Highlight important fields
+// 4. Explain what the event represents
+```
+
+## Configuration
+
+### API Key Setup
+
+1. **Get your API key** from the Unhook dashboard
+2. **Configure in your AI tool**:
+   ```bash
+   # Set environment variable
+   export UNHOOK_API_KEY=your_api_key
+
+   # Or configure in tool settings
+   ```
+
+### Server Configuration
+
+Configure the MCP server for your environment:
+
+```json
+{
+  "mcpServers": {
+    "unhook": {
+      "command": "unhook-mcp-server",
+      "args": [
+        "--api-key", "your_api_key",
+        "--endpoint", "https://app.unhook.sh/api/mcp",
+        "--timeout", "30000"
+      ]
+    }
+  }
+}
+```
+
+### Authentication
+
+The MCP server uses your Unhook API key for authentication:
+
+1. **Generate API key** in Unhook dashboard
+2. **Set in environment** or configuration
+3. **Test connection** with your AI tool
+
+## Integration Examples
+
+### Claude Desktop
+
+```bash
+# Add to Claude Desktop connections
+{
+  "name": "Unhook Webhooks",
+  "command": "unhook-mcp-server",
+  "args": ["--api-key", "your_api_key"]
+}
+```
+
+### Cursor AI
+
+```json
+// Cursor settings
+{
+  "mcp": {
+    "servers": {
+      "unhook": {
+        "command": "unhook-mcp-server",
+        "args": ["--api-key", "your_api_key"]
+      }
+    }
+  }
+}
+```
+
+### Custom AI Tools
+
+```typescript
+// Example integration
+import { MCPClient } from '@modelcontextprotocol/sdk';
+
+const client = new MCPClient({
+  server: {
+    command: 'unhook-mcp-server',
+    args: ['--api-key', process.env.UNHOOK_API_KEY]
+  }
+});
+
+// Use the client to access webhook data
+const events = await client.tools.call('search_events', {
+  status: 'failed',
+  limit: 10
+});
+```
+
+## Advanced Features
+
+### Custom Prompts
+
+Create custom prompts for specific webhook scenarios:
+
+```typescript
+// Example prompt for debugging Stripe webhooks
+const stripeDebugPrompt = `
+Analyze the failed Stripe webhooks and provide:
+1. Common error patterns
+2. Specific fixes for each error type
+3. Code examples for handling the errors
+4. Testing recommendations
+`;
+```
+
+### Automated Analysis
+
+Set up automated webhook analysis:
+
+```typescript
+// Daily webhook health check
+const dailyReport = `
+Generate a daily webhook report with:
+- Total events processed
+- Success/failure rates by provider
+- New error types since yesterday
+- Performance degradation warnings
+- Top 3 issues to address
+`;
+```
+
+### Pattern Recognition
+
+Identify patterns in webhook behavior:
+
+```typescript
+// Pattern analysis
+const patternAnalysis = `
+Find patterns in webhook failures:
+- Time-based patterns (specific hours/days)
+- Provider-specific issues
+- Error type clustering
+- Response time correlations
+`;
+```
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Connection Issues">
+    - Verify your API key is correct
+    - Check internet connectivity
+    - Ensure the MCP server binary is executable
+  </Accordion>
+
+  <Accordion title="Authentication Errors">
+    - Regenerate your API key
+    - Check key permissions
+    - Verify the key is properly set in configuration
+  </Accordion>
+
+  <Accordion title="No Data Available">
+    - Ensure you have active webhooks
+    - Check webhook permissions
+    - Verify the time range for queries
+  </Accordion>
+
+  <Accordion title="Tool Not Found">
+    - Update to the latest MCP server version
+    - Check tool compatibility
+    - Verify server configuration
+  </Accordion>
+</AccordionGroup>
+
+### Debug Mode
+
+Enable debug mode for detailed logging:
+
+```bash
+# Run with debug logging
+unhook-mcp-server --debug --api-key your_api_key
+
+# Check logs for connection and authentication issues
+```
+
+## Best Practices
+
+1. **Use specific queries**: Ask for specific data rather than general requests
+2. **Leverage time ranges**: Use appropriate time ranges for analysis
+3. **Combine tools**: Use multiple tools together for comprehensive analysis
+4. **Save important insights**: Export or document important findings
+5. **Regular monitoring**: Set up regular webhook health checks
+
+## Security Considerations
+
+- **API Key Protection**: Keep your API key secure and rotate regularly
+- **Data Access**: The MCP server only accesses your organization's webhook data
+- **Rate Limiting**: Respect API rate limits to avoid throttling
+- **Audit Logs**: Monitor MCP server access for security purposes
+
+## Next Steps
+
+- [CLI Tool](/solutions/cli-tool) - Command line webhook testing
+- [VS Code Extension](/solutions/vscode-extension) - IDE integration
+- [Team Collaboration](/solutions/team-collaboration) - Work with your team
+- [Provider Integrations](/solutions/provider-integrations) - Connect with services
+- [API Reference](/api-reference/mcp/overview) - Detailed MCP API documentation

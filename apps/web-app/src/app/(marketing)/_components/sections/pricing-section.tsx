@@ -53,7 +53,7 @@ function PricingTabs({ activeTab, setActiveTab, className }: TabsProps) {
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
             {tab === 'yearly' && (
-              <span className="ml-2 text-xs font-semibold text-secondary bg-secondary/15 py-0.5 w-[calc(100%+1rem)] px-1 rounded-full">
+              <span className="ml-2 text-xs font-semibold text-primary bg-secondary/50 py-0.5 w-[calc(100%+1rem)] px-1 rounded-full">
                 -20%
               </span>
             )}
@@ -66,7 +66,7 @@ function PricingTabs({ activeTab, setActiveTab, className }: TabsProps) {
 
 export function PricingSection() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>(
-    'monthly',
+    'yearly',
   );
 
   // Update price animation
@@ -86,7 +86,7 @@ export function PricingSection() {
             </span>
             <span className="text-4xl font-semibold text-primary">Free</span>
             <span className="text-base text-muted-foreground font-medium">
-              /{billingCycle === 'yearly' ? 'year' : 'month'}
+              /{billingCycle === 'yearly' ? 'month' : 'month'}
             </span>
           </div>
           <span className="mt-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wide">
@@ -170,7 +170,7 @@ export function PricingSection() {
                   }`}
                   type="button"
                 >
-                  {tier.betaFree ? 'Start Free' : tier.buttonText}
+                  {tier.betaFree ? 'Create Webhook URL' : tier.buttonText}
                 </button>
               </div>
               <hr className="border-border dark:border-white/20" />
@@ -193,7 +193,17 @@ export function PricingSection() {
                           'size-5 rounded-full border border-primary/20 flex items-center justify-center',
                           tier.isPopular &&
                             'bg-muted-foreground/40 border-border',
+                          tier.name === 'Team' &&
+                            'border-[var(--secondary)]/30',
                         )}
+                        style={
+                          tier.name === 'Team'
+                            ? {
+                                backgroundColor:
+                                  'color-mix(in srgb, var(--secondary) 20%, transparent)',
+                              }
+                            : undefined
+                        }
                       >
                         <div className="size-3 flex items-center justify-center">
                           <svg

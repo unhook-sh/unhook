@@ -1,0 +1,425 @@
+---
+title: 'JetBrains Plugin'
+description: 'Monitor and debug webhooks in JetBrains IDEs'
+icon: 'jetbrains'
+---
+
+# JetBrains Plugin
+
+The Unhook JetBrains plugin brings powerful webhook monitoring and debugging capabilities to all JetBrains IDEs, including IntelliJ IDEA, WebStorm, PyCharm, and more.
+
+## Overview
+
+The JetBrains plugin provides:
+- Real-time webhook event monitoring within your IDE
+- Webhook payload inspection and debugging
+- Event replay functionality for testing
+- Team collaboration features
+- Seamless integration with your development workflow
+
+## Supported IDEs
+
+The Unhook plugin works with all JetBrains IDEs:
+
+<CardGroup cols={2}>
+  <Card title="IntelliJ IDEA" icon="intellij">
+    Ultimate and Community editions
+  </Card>
+  <Card title="WebStorm" icon="webstorm">
+    JavaScript and TypeScript development
+  </Card>
+  <Card title="PyCharm" icon="pycharm">
+    Python development (Professional and Community)
+  </Card>
+  <Card title="PhpStorm" icon="phpstorm">
+    PHP development
+  </Card>
+  <Card title="GoLand" icon="goland">
+    Go development
+  </Card>
+  <Card title="Rider" icon="rider">
+    .NET development
+  </Card>
+</CardGroup>
+
+## Installation
+
+### From JetBrains Marketplace
+
+1. **Open your JetBrains IDE**
+2. **Go to Settings/Preferences** (Ctrl+Alt+S / Cmd+,)
+3. **Navigate to Plugins**
+4. **Search for "Unhook"**
+5. **Click Install**
+
+### From Plugin Repository
+
+1. **Download the plugin** from [JetBrains Plugin Repository](https://plugins.jetbrains.com/plugin/24002-unhook)
+2. **Install from disk** in your IDE's plugin settings
+3. **Restart your IDE**
+
+## Quick Start
+
+1. **Sign in to Unhook**:
+   - Open the Unhook tool window (View → Tool Windows → Unhook)
+   - Click "Sign In" and follow the authentication flow
+
+2. **View webhook events**:
+   - The Unhook tool window shows real-time webhook events
+   - Events are automatically updated as they arrive
+
+3. **Inspect and replay events**:
+   - Click on any event to view detailed information
+   - Use the "Replay" button to resend webhooks to your local server
+
+## Features
+
+### Real-time Webhook Monitoring
+
+Monitor webhook events directly in your IDE:
+
+<CardGroup cols={2}>
+  <Card title="Live Event Feed" icon="radio">
+    See webhook events as they arrive from providers
+  </Card>
+  <Card title="Event Details" icon="search">
+    Inspect headers, payloads, and response data
+  </Card>
+  <Card title="Status Tracking" icon="check-circle">
+    Track success/failure status and response times
+  </Card>
+  <Card title="Provider Filtering" icon="filter">
+    Filter events by provider (Stripe, GitHub, Clerk, etc.)
+  </Card>
+</CardGroup>
+
+### Webhook Event Inspection
+
+Dive deep into webhook data with comprehensive inspection tools:
+
+```json
+{
+  "event": {
+    "id": "evt_1234567890",
+    "provider": "stripe",
+    "type": "payment_intent.succeeded",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "status": "success"
+  },
+  "request": {
+    "method": "POST",
+    "url": "https://unhook.sh/wh_stripe_prod",
+    "headers": {
+      "content-type": "application/json",
+      "stripe-signature": "..."
+    },
+    "body": {
+      "id": "pi_123",
+      "object": "payment_intent",
+      "amount": 1000,
+      "currency": "usd"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {...},
+    "body": {...},
+    "duration": 245
+  }
+}
+```
+
+### Event Replay
+
+Test your webhook handlers by replaying events:
+
+1. **Select an event** from the event list
+2. **Click "Replay Event"** button
+3. **Monitor the response** in real-time
+4. **Debug any issues** with your webhook handler
+
+### Team Collaboration
+
+Work seamlessly with your team on webhook development:
+
+- **Shared webhook URLs**: Use the same webhook URL across your team
+- **Real-time updates**: See when team members are active
+- **Event sharing**: Share specific events with team members for debugging
+
+## Configuration
+
+### Project Configuration
+
+Create an `unhook.yaml` file in your project root:
+
+```yaml
+webhookId: "wh_your_webhook_id"
+server:
+  apiUrl: "https://app.unhook.sh"
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+delivery:
+  - destination: "local"
+```
+
+### Plugin Settings
+
+Configure the plugin through IDE settings:
+
+1. **Open Settings/Preferences** (Ctrl+Alt+S / Cmd+,)
+2. **Navigate to Tools → Unhook**
+3. **Configure settings**:
+   - Auto-refresh interval
+   - Notification preferences
+   - Default webhook ID
+   - API endpoint
+
+### Environment Variables
+
+Set configuration via environment variables:
+
+```bash
+# API configuration
+NEXT_PUBLIC_API_URL=https://app.unhook.sh
+NEXT_PUBLIC_WEBHOOK_BASE_URL=https://unhook.sh
+
+# Authentication
+UNHOOK_API_KEY=your_api_key
+```
+
+## Usage Guide
+
+### Opening the Unhook Tool Window
+
+1. **View → Tool Windows → Unhook**
+2. **Or use the Unhook icon** in the tool window bar
+3. **The tool window appears** at the bottom of your IDE
+
+### Viewing Webhook Events
+
+1. **Open the Unhook tool window**
+2. **Browse events** in the event list
+3. **Click on an event** to view details
+4. **Use filters** to find specific events
+
+### Inspecting Event Details
+
+When you click on a webhook event, you'll see:
+
+<Steps>
+  <Step title="Event Information">
+    - Event ID, provider, type, and timestamp
+    - Success/failure status and response time
+  </Step>
+  <Step title="Request Details">
+    - HTTP method and URL
+    - Headers and request body
+    - Provider-specific metadata
+  </Step>
+  <Step title="Response Information">
+    - HTTP status code
+    - Response headers and body
+    - Processing duration
+  </Step>
+</Steps>
+
+### Replaying Events
+
+1. **Select an event** from the event list
+2. **Click "Replay Event"** in the event details
+3. **Monitor the replay** in real-time
+4. **Check your application logs** for the replayed event
+
+### Debugging Failed Events
+
+When webhooks fail, the plugin helps you debug:
+
+<AccordionGroup>
+  <Accordion title="Check Response Status">
+    Look at the HTTP status code returned by your endpoint
+  </Accordion>
+  <Accordion title="Review Error Messages">
+    Check the response body for error details
+  </Accordion>
+  <Accordion title="Verify Headers">
+    Ensure your endpoint is handling required headers correctly
+  </Accordion>
+  <Accordion title="Test Locally">
+    Use the replay feature to test your endpoint with the same payload
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+### Stripe Webhooks
+
+```yaml
+# unhook.yaml
+webhookId: "wh_stripe_prod"
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+delivery:
+  - destination: "stripe-handler"
+```
+
+Monitor Stripe payment events in real-time and replay them for testing.
+
+### GitHub Webhooks
+
+```yaml
+# unhook.yaml
+webhookId: "wh_github_repo"
+destination:
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+delivery:
+  - destination: "github-handler"
+```
+
+Track repository events like pushes, pull requests, and issues.
+
+### Clerk Authentication
+
+```yaml
+# unhook.yaml
+webhookId: "wh_clerk_auth"
+destination:
+  - name: "auth-handler"
+    url: "http://localhost:3000/api/webhooks/clerk"
+delivery:
+  - destination: "auth-handler"
+```
+
+Monitor user authentication events and session changes.
+
+## Advanced Features
+
+### Custom Event Filtering
+
+Filter events by various criteria:
+
+- **Provider**: Filter by Stripe, GitHub, Clerk, etc.
+- **Status**: Show only successful or failed events
+- **Time range**: Filter by recent events
+- **Event type**: Filter by specific event types
+
+### Event Export
+
+Export webhook events for analysis:
+
+1. **Select events** in the event list
+2. **Right-click** and choose "Export Events"
+3. **Choose format** (JSON, CSV)
+4. **Download** the exported file
+
+### Performance Monitoring
+
+Track webhook performance metrics:
+
+- **Response times**: Monitor how fast your endpoints respond
+- **Success rates**: Track webhook delivery success
+- **Error patterns**: Identify common failure causes
+
+### IDE Integration
+
+The plugin integrates seamlessly with your IDE:
+
+- **Project-aware**: Automatically detects project configuration
+- **Run configurations**: Create run configurations for webhook testing
+- **Debug integration**: Use IDE debugger with webhook replay
+- **Version control**: Track webhook configuration changes
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Plugin Not Loading">
+    - Restart your IDE
+    - Check if the plugin is properly installed
+    - Verify you're signed in to Unhook
+  </Accordion>
+
+  <Accordion title="No Events Showing">
+    - Verify your webhook is active
+    - Check your webhook URL is correctly configured
+    - Ensure you have the correct permissions
+  </Accordion>
+
+  <Accordion title="Authentication Issues">
+    - Sign out and sign back in
+    - Check your internet connection
+    - Verify your Unhook account is active
+  </Accordion>
+
+  <Accordion title="Replay Not Working">
+    - Check your local server is running
+    - Verify the endpoint URL is correct
+    - Check your server logs for errors
+  </Accordion>
+</AccordionGroup>
+
+### Debug Mode
+
+Enable debug mode for detailed logging:
+
+1. **Open Settings/Preferences** (Ctrl+Alt+S / Cmd+,)
+2. **Navigate to Tools → Unhook**
+3. **Enable "Debug Mode"**
+4. **Check the IDE log** for plugin messages
+
+### Plugin Logs
+
+View plugin logs for troubleshooting:
+
+1. **Help → Diagnostic Tools → Debug Log Settings**
+2. **Add "com.unhook"** to the loggers
+3. **Restart your IDE**
+4. **Check the log file** for detailed information
+
+## Best Practices
+
+1. **Keep the tool window open**: Monitor webhooks while coding
+2. **Use event replay**: Test your handlers with real data
+3. **Filter events**: Focus on relevant events for your development
+4. **Export for analysis**: Save important events for later review
+5. **Collaborate with team**: Share events for debugging sessions
+6. **Use project configuration**: Keep webhook settings in version control
+
+## Keyboard Shortcuts
+
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Open Unhook tool window | `Alt+U` | `Cmd+U` |
+| Refresh events | `Ctrl+R` | `Cmd+R` |
+| Replay selected event | `Ctrl+Shift+R` | `Cmd+Shift+R` |
+| Export events | `Ctrl+Shift+E` | `Cmd+Shift+E` |
+
+## IDE-Specific Features
+
+### IntelliJ IDEA
+
+- **Run configurations**: Create webhook testing run configurations
+- **Debug integration**: Use the debugger with webhook replay
+- **Project structure**: Organize webhook configurations in project structure
+
+### WebStorm
+
+- **JavaScript debugging**: Debug webhook handlers with full JavaScript support
+- **TypeScript support**: Full TypeScript integration for webhook development
+- **Node.js integration**: Seamless Node.js debugging
+
+### PyCharm
+
+- **Python debugging**: Debug Python webhook handlers
+- **Django/Flask integration**: Framework-specific webhook support
+- **Virtual environment**: Use project virtual environments
+
+## Next Steps
+
+- [CLI Tool](/solutions/cli-tool) - Command line webhook testing
+- [VS Code Extension](/solutions/vscode-extension) - VS Code integration
+- [Team Collaboration](/solutions/team-collaboration) - Work with your team
+- [Provider Integrations](/solutions/provider-integrations) - Connect with services

@@ -1,0 +1,426 @@
+---
+title: 'Team Collaboration'
+description: 'Share webhook URLs and collaborate with your development team'
+icon: 'users'
+---
+
+# Team Collaboration
+
+Unhook's team collaboration features enable development teams to share webhook URLs while maintaining individual development environments, streamlining webhook testing and debugging across the entire team.
+
+## Overview
+
+Team collaboration in Unhook provides:
+- Shared webhook URLs across your entire team
+- Individual developer environments with automatic routing
+- Real-time team activity monitoring
+- Centralized webhook configuration management
+- Seamless onboarding for new team members
+
+## How It Works
+
+### Shared Webhook URLs
+
+Instead of each developer having their own webhook URL, the entire team uses a single shared URL:
+
+```
+https://unhook.sh/wh_team_webhook_id
+```
+
+This URL is configured in your webhook provider (Stripe, GitHub, Clerk, etc.) and automatically routes webhooks to the active developer.
+
+### Intelligent Routing
+
+When a webhook is received, Unhook intelligently routes it to the appropriate developer:
+
+<Steps>
+  <Step title="Webhook Reception">
+    Provider sends webhook to the shared URL
+  </Step>
+  <Step title="Active Session Detection">
+    Unhook identifies which team member is currently active
+  </Step>
+  <Step title="Automatic Routing">
+    Webhook is delivered to the active developer's local environment
+  </Step>
+  <Step title="Team Visibility">
+    All team members can see the webhook event in their dashboard
+  </Step>
+</Steps>
+
+## Team Setup
+
+### Creating a Team Webhook
+
+1. **Create a new webhook** in the Unhook dashboard
+2. **Set webhook type** to "Team"
+3. **Invite team members** to the webhook
+4. **Share the webhook URL** with your team
+
+### Team Member Onboarding
+
+New team members can join easily:
+
+```bash
+# 1. Install Unhook CLI
+npm install -g @unhook/cli
+
+# 2. Initialize with team webhook
+npx @unhook/cli init --webhook-id wh_team_webhook_id
+
+# 3. Start listening
+unhook listen --port 3000
+```
+
+### Configuration Sharing
+
+Share webhook configuration across your team:
+
+```yaml
+# unhook.yaml (shared in repository)
+webhookId: "wh_team_webhook_id"
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+source:
+  - name: "stripe"
+  - name: "github"
+delivery:
+  - source: "stripe"
+    destination: "local"
+  - source: "github"
+    destination: "local"
+```
+
+## Features
+
+### Real-time Team Activity
+
+Monitor team activity in real-time:
+
+<CardGroup cols={2}>
+  <Card title="Active Developers" icon="user-check">
+    See which team members are currently online
+  </Card>
+  <Card title="Webhook Events" icon="radio">
+    View all webhook events across the team
+  </Card>
+  <Card title="Event Routing" icon="route">
+    Track which developer received each webhook
+  </Card>
+  <Card title="Team Statistics" icon="bar-chart">
+    Monitor team-wide webhook performance
+  </Card>
+</CardGroup>
+
+### Individual Environments
+
+Each developer maintains their own local environment:
+
+```bash
+# Developer 1
+unhook listen --client-id dev1 --port 3000
+
+# Developer 2
+unhook listen --client-id dev2 --port 3001
+
+# Developer 3
+unhook listen --client-id dev3 --port 3002
+```
+
+### Centralized Configuration
+
+Manage webhook configuration centrally:
+
+```yaml
+# Team configuration (unhooked.yaml)
+webhookId: "wh_team_webhook_id"
+team:
+  name: "Development Team"
+  members:
+    - id: "dev1"
+      name: "Alice"
+      port: 3000
+    - id: "dev2"
+      name: "Bob"
+      port: 3001
+    - id: "dev3"
+      name: "Charlie"
+      port: 3002
+```
+
+## Use Cases
+
+### Development Team Workflow
+
+1. **Shared Development**:
+   - All developers use the same webhook URL
+   - Webhooks route to the active developer
+   - No need to update provider settings
+
+2. **Testing Coordination**:
+   - Coordinate webhook testing across the team
+   - Avoid conflicts when multiple developers test simultaneously
+   - Share webhook events for debugging
+
+3. **Onboarding**:
+   - New developers get immediate access to webhooks
+   - No manual URL sharing or configuration
+   - Consistent development environment
+
+### Feature Development
+
+```bash
+# Feature branch development
+git checkout feature/new-payment-flow
+
+# Start webhook listener
+unhook listen --client-id feature-payment --port 3000
+
+# Test new payment webhooks
+# Webhooks automatically route to your environment
+```
+
+### Production Testing
+
+```bash
+# Production webhook testing
+unhook listen --client-id prod-test --port 3000
+
+# Test production webhooks safely
+# Isolated from other team members
+```
+
+## Configuration Examples
+
+### Basic Team Setup
+
+```yaml
+# unhook.yaml
+webhookId: "wh_team_webhook_id"
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+delivery:
+  - destination: "local"
+```
+
+### Advanced Team Configuration
+
+```yaml
+# unhook.yaml
+webhookId: "wh_team_webhook_id"
+clientId: "dev1"  # Unique identifier for this developer
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+source:
+  - name: "stripe"
+  - name: "github"
+delivery:
+  - source: "stripe"
+    destination: "stripe-handler"
+  - source: "github"
+    destination: "github-handler"
+```
+
+### Environment-Specific Configuration
+
+```yaml
+# unhook.dev.yaml
+webhookId: "wh_team_dev"
+destination:
+  - name: "local"
+    url: "http://localhost:3000/api/webhooks"
+
+# unhook.staging.yaml
+webhookId: "wh_team_staging"
+destination:
+  - name: "local"
+    url: "http://localhost:3001/api/webhooks"
+```
+
+## Team Management
+
+### Inviting Team Members
+
+1. **From the dashboard**:
+   - Go to your team webhook settings
+   - Click "Invite Member"
+   - Enter their email address
+   - Send invitation
+
+2. **Via CLI**:
+   ```bash
+   unhook team invite user@example.com
+   ```
+
+### Managing Permissions
+
+Control team member access:
+
+- **View**: Can see webhook events
+- **Replay**: Can replay webhook events
+- **Configure**: Can modify webhook settings
+- **Admin**: Full administrative access
+
+### Team Activity Monitoring
+
+Track team activity:
+
+```bash
+# View team status
+unhook team status
+
+# See active members
+unhook team members
+
+# Check webhook routing
+unhook team routing
+```
+
+## Best Practices
+
+### Team Coordination
+
+1. **Use meaningful client IDs**: `dev1`, `feature-payment`, `prod-test`
+2. **Coordinate testing times**: Avoid conflicts when testing simultaneously
+3. **Share webhook events**: Use the dashboard to share important events
+4. **Document configurations**: Keep webhook configs in version control
+
+### Development Workflow
+
+1. **Feature branches**: Use different client IDs for feature development
+2. **Environment isolation**: Separate dev, staging, and production webhooks
+3. **Testing coordination**: Communicate when testing webhooks
+4. **Event sharing**: Share relevant events for debugging
+
+### Configuration Management
+
+1. **Version control**: Keep webhook configs in your repository
+2. **Environment variables**: Use env vars for sensitive information
+3. **Documentation**: Document webhook setup for new team members
+4. **Regular updates**: Keep configurations up to date
+
+## Troubleshooting
+
+### Common Team Issues
+
+<AccordionGroup>
+  <Accordion title="Webhook Not Routing">
+    - Check if you're the active developer
+    - Verify your client ID is unique
+    - Ensure your local server is running
+  </Accordion>
+
+  <Accordion title="Multiple Developers Active">
+    - Coordinate testing times with your team
+    - Use different client IDs for isolation
+    - Check team activity in the dashboard
+  </Accordion>
+
+  <Accordion title="Permission Issues">
+    - Verify you have the correct permissions
+    - Check team membership status
+    - Contact your team admin
+  </Accordion>
+
+  <Accordion title="Configuration Conflicts">
+    - Use environment-specific configs
+    - Avoid conflicting port numbers
+    - Coordinate configuration changes
+  </Accordion>
+</AccordionGroup>
+
+### Debug Team Routing
+
+```bash
+# Check team status
+unhook team status
+
+# View routing information
+unhook team routing --verbose
+
+# Check your client ID
+unhook status
+```
+
+## Security Considerations
+
+### Team Access Control
+
+- **Role-based permissions**: Control access based on team roles
+- **Audit logging**: Track who accessed what webhook data
+- **Secure sharing**: Webhook data is encrypted and secure
+- **Access revocation**: Remove team member access when needed
+
+### Data Privacy
+
+- **Organization isolation**: Teams can only access their own webhooks
+- **Event privacy**: Webhook events are private to your team
+- **Secure transmission**: All data is encrypted in transit
+- **No data retention**: Webhook payloads are not permanently stored
+
+## Integration Examples
+
+### Stripe Team Webhooks
+
+```yaml
+# Team Stripe configuration
+webhookId: "wh_team_stripe"
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+delivery:
+  - destination: "stripe-handler"
+```
+
+Configure in Stripe dashboard: `https://unhook.sh/wh_team_stripe`
+
+### GitHub Team Webhooks
+
+```yaml
+# Team GitHub configuration
+webhookId: "wh_team_github"
+destination:
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+delivery:
+  - destination: "github-handler"
+```
+
+Configure in GitHub repository: `https://unhook.sh/wh_team_github`
+
+### Multi-Provider Team Setup
+
+```yaml
+# Comprehensive team setup
+webhookId: "wh_team_comprehensive"
+destination:
+  - name: "stripe-handler"
+    url: "http://localhost:3000/api/webhooks/stripe"
+  - name: "github-handler"
+    url: "http://localhost:3000/api/webhooks/github"
+  - name: "clerk-handler"
+    url: "http://localhost:3000/api/webhooks/clerk"
+source:
+  - name: "stripe"
+  - name: "github"
+  - name: "clerk"
+delivery:
+  - source: "stripe"
+    destination: "stripe-handler"
+  - source: "github"
+    destination: "github-handler"
+  - source: "clerk"
+    destination: "clerk-handler"
+```
+
+## Next Steps
+
+- [CLI Tool](/solutions/cli-tool) - Command line webhook testing
+- [VS Code Extension](/solutions/vscode-extension) - IDE integration
+- [Provider Integrations](/solutions/provider-integrations) - Connect with services
+- [Security Features](/solutions/security) - Learn about data protection

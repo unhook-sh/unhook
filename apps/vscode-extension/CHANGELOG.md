@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.11
+
+### Patch Changes
+
+- [`9290173`](https://github.com/unhook-sh/unhook/commit/929017360e42bbd98b4db26bd29cae8e72eb36b9) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with isDevelopment
+
 ## 0.2.10
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @unhook/cli
 
+## 0.13.5
+
+### Patch Changes
+
+- [`a8a3cc2`](https://github.com/unhook-sh/unhook/commit/a8a3cc2812fa94005f43452d712a7554fcaf3b47) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with login
+
 ## 0.13.4
 
 ### Patch Changes

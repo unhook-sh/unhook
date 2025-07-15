@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.7
+
+### Patch Changes
+
+- [`226b907`](https://github.com/unhook-sh/unhook/commit/226b907103d45817cd0a11a6c5e671ad930c95bd) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with catalog and client
+
+- Updated dependencies [[`226b907`](https://github.com/unhook-sh/unhook/commit/226b907103d45817cd0a11a6c5e671ad930c95bd)]:
+  - @unhook/client@0.5.7
+
 ## 0.13.6
 
 ### Patch Changes

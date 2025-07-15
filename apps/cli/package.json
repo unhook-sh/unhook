@@ -13,7 +13,7 @@
     "@clerk/types": "catalog:",
     "@t3-oss/env-core": "catalog:",
     "@unhook/api": "workspace:*",
-    "@unhook/client": "catalog:",
+    "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",

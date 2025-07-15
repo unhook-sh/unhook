@@ -14,7 +14,7 @@
     "@trpc/server": "catalog:",
     "@unhook/analytics": "workspace:*",
     "@unhook/api": "workspace:*",
-    "@unhook/client": "catalog:",
+    "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",

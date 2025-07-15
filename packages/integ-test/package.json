@@ -2,7 +2,7 @@
   "dependencies": {
     "@supabase/supabase-js": "catalog:",
     "@unhook/api": "workspace:*",
-    "@unhook/client": "catalog:",
+    "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/utils": "workspace:*",

@@ -277,7 +277,7 @@
     }
   },
   "dependencies": {
-    "@unhook/client": "catalog:",
+    "@unhook/client": "workspace:*",
     "clsx": "catalog:",
     "date-fns": "catalog:",
     "react": "catalog:",

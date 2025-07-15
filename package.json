@@ -175,7 +175,6 @@
       "@types/vscode": "1.96.0",
       "@types/ws": "8.18.1",
       "@types/yargs": "17.0.33",
-      "@unhook/client": "0.5.4",
       "@vercel/analytics": "1.5.0",
       "@vercel/kv": "3.0.0",
       "@vercel/mcp-adapter": "0.11.2",

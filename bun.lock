@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.13.4",
+      "version": "0.13.6",
       "bin": {
         "unhook": "./bin/cli.js",
       },
@@ -35,7 +35,7 @@
         "@clerk/types": "catalog:",
         "@t3-oss/env-core": "catalog:",
         "@unhook/api": "workspace:*",
-        "@unhook/client": "catalog:",
+        "@unhook/client": "workspace:*",
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/logger": "workspace:*",
@@ -93,7 +93,7 @@
     },
     "apps/jetbrains-extension": {
       "name": "unhook-jetbrains",
-      "version": "0.2.5",
+      "version": "0.2.7",
       "devDependencies": {
         "@types/node": "catalog:",
       },
@@ -104,9 +104,9 @@
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.2.6",
+      "version": "0.2.8",
       "dependencies": {
-        "@unhook/client": "catalog:",
+        "@unhook/client": "workspace:*",
         "clsx": "catalog:",
         "date-fns": "catalog:",
         "react": "catalog:",
@@ -156,7 +156,7 @@
         "@trpc/server": "catalog:",
         "@unhook/analytics": "workspace:*",
         "@unhook/api": "workspace:*",
-        "@unhook/client": "catalog:",
+        "@unhook/client": "workspace:*",
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/logger": "workspace:*",
@@ -266,7 +266,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.5.4",
+      "version": "0.5.6",
       "dependencies": {
         "@supabase/supabase-js": "catalog:",
         "@t3-oss/env-core": "catalog:",
@@ -384,7 +384,7 @@
       "dependencies": {
         "@supabase/supabase-js": "catalog:",
         "@unhook/api": "workspace:*",
-        "@unhook/client": "catalog:",
+        "@unhook/client": "workspace:*",
         "@unhook/db": "workspace:*",
         "@unhook/id": "workspace:*",
         "@unhook/utils": "workspace:*",
@@ -722,7 +722,6 @@
     "@types/vscode": "1.96.0",
     "@types/ws": "8.18.1",
     "@types/yargs": "17.0.33",
-    "@unhook/client": "0.5.4",
     "@vercel/analytics": "1.5.0",
     "@vercel/kv": "3.0.0",
     "@vercel/mcp-adapter": "0.11.2",

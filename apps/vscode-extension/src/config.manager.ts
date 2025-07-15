@@ -46,17 +46,17 @@ export class ConfigManager {
 
   public isDevelopment(): boolean {
     // Check ExtensionMode from context if available
-    if (
-      this.context &&
-      this.context.extensionMode === vscode.ExtensionMode.Development
-    ) {
-      return true;
-    }
+    // if (
+    //   this.context &&
+    //   this.context.extensionMode === vscode.ExtensionMode.Development
+    // ) {
+    //   return true;
+    // }
 
-    // Check if running in Extension Development Host (most reliable for VS Code extensions)
-    if (vscode.env.appName.includes('Extension Development Host')) {
-      return true;
-    }
+    // // Check if running in Extension Development Host (most reliable for VS Code extensions)
+    // if (vscode.env.appName.includes('Extension Development Host')) {
+    //   return true;
+    // }
 
     // Check environment variables
     if (
@@ -66,16 +66,16 @@ export class ConfigManager {
       return true;
     }
 
-    // Check if the extension is not installed from marketplace (development scenario)
-    const extension = vscode.extensions.getExtension(
-      env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
-    );
-    if (
-      extension &&
-      extension.extensionPath.includes('.vscode/extensions') === false
-    ) {
-      return true;
-    }
+    // // Check if the extension is not installed from marketplace (development scenario)
+    // const extension = vscode.extensions.getExtension(
+    //   env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+    // );
+    // if (
+    //   extension &&
+    //   extension.extensionPath.includes('.vscode/extensions') === false
+    // ) {
+    //   return true;
+    // }
 
     return false;
   }

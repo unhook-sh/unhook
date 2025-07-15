@@ -72,12 +72,12 @@ export default defineConfig({
   external: [
     'keytar', // Native module
     'posthog-js',
+    '@unhook/client',
   ],
   format: ['esm'],
   minify: !isDevBuild,
   noExternal: [
     '@unhook/api',
-    '@unhook/client',
     '@unhook/db',
     '@unhook/id',
     '@unhook/logger',

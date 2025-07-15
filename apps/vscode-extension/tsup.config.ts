@@ -30,12 +30,12 @@ export default defineConfig({
     'string_decoder',
     'url',
     'util',
+    '@unhook/client',
     'zlib',
   ],
   format: ['cjs'],
   minify: !isDevBuild,
   noExternal: [
-    '@unhook/client',
     // Bundle all dependencies except Node.js built-ins and vscode
     /^(?!vscode$|assert$|buffer$|child_process$|crypto$|events$|fs$|http$|https$|net$|os$|path$|process$|readline$|stream$|string_decoder$|url$|util$|zlib$)/,
   ],

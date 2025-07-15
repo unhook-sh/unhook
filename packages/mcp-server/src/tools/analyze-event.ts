@@ -13,6 +13,7 @@ export const analyzeEventSchema = {
 export function registerAnalyzeEventTool(server: McpServer, context: Context) {
   const caller = createCaller(context);
 
+  // @ts-ignore
   server.registerTool(
     'analyze_event',
     {

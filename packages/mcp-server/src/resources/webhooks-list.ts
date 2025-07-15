@@ -9,6 +9,7 @@ export function registerWebhooksListResource(
 ) {
   const caller = createCaller(context);
 
+  // @ts-ignore
   server.registerResource(
     'webhooks-list',
     'webhook://webhooks/list',

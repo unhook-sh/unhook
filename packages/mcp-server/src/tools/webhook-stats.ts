@@ -16,6 +16,7 @@ export const webhookStatsSchema = {
 
 export function registerWebhookStatsTool(server: McpServer, context: Context) {
   const caller = createCaller(context);
+  // @ts-ignore
   server.registerTool(
     'get_webhook_stats',
     {

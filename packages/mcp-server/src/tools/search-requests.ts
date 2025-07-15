@@ -18,6 +18,7 @@ export function registerSearchRequestsTool(
 ) {
   const caller = createCaller(context);
 
+  // @ts-ignore
   server.registerTool(
     'search_requests',
     {

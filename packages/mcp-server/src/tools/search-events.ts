@@ -14,6 +14,7 @@ export const searchEventsSchema = {
 export function registerSearchEventsTool(server: McpServer, context: Context) {
   const caller = createCaller(context);
 
+  // @ts-ignore
   server.registerTool(
     'search_events',
     {

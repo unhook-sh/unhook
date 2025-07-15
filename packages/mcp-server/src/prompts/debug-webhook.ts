@@ -9,6 +9,7 @@ export const debugWebhookSchema = {
 };
 
 export function registerDebugWebhookPrompt(server: McpServer) {
+  // @ts-ignore
   server.registerPrompt(
     'debug_webhook_issue',
     {

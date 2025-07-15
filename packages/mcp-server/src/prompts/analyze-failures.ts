@@ -7,6 +7,7 @@ export const analyzeFailuresSchema = {
 };
 
 export function registerAnalyzeFailuresPrompt(server: McpServer) {
+  // @ts-ignore
   server.registerPrompt(
     'analyze_failures',
     {

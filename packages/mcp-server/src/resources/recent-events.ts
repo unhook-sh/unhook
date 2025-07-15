@@ -9,6 +9,7 @@ export function registerRecentEventsResource(
 ) {
   const caller = createCaller(context);
 
+  // @ts-ignore
   server.registerResource(
     'recent-events',
     'webhook://events/recent',

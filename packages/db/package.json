@@ -17,7 +17,7 @@
     "pg": "8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "3.24.2",
+    "zod": "3.25.76",
     "zustand": "5.0.6"
   },
   "devDependencies": {

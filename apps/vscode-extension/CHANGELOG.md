@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.12
+
+### Patch Changes
+
+- [`ae8f7e9`](https://github.com/unhook-sh/unhook/commit/ae8f7e905e0a5ecdde1f9c4173c85f9f57cb40e5) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with isDevelopment and NODE_ENV
+
+- Updated dependencies [[`ae8f7e9`](https://github.com/unhook-sh/unhook/commit/ae8f7e905e0a5ecdde1f9c4173c85f9f57cb40e5)]:
+  - @unhook/client@0.5.9
+
 ## 0.2.11
 
 ### Patch Changes

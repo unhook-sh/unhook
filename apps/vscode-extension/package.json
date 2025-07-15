@@ -277,7 +277,7 @@
     }
   },
   "dependencies": {
-    "@unhook/client": "0.5.6",
+    "@unhook/client": "workspace:*",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",

@@ -9,6 +9,8 @@ import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 export function FooterSection() {
   const tablet = useMediaQuery({ query: '(max-width: 1024px)' });
+  const mobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const fontSize = mobile ? 70 : tablet ? 90 : 160;
 
   return (
     <footer className="w-full pb-0" id="footer">
@@ -62,7 +64,7 @@ export function FooterSection() {
             className="h-full w-full"
             color="#6B7280"
             flickerChance={0.1}
-            fontSize={tablet ? 95 : 160}
+            fontSize={fontSize}
             gridGap={tablet ? 2 : 3}
             maxOpacity={0.3}
             squareSize={2}

@@ -1,5 +1,6 @@
 'use client';
 
+import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { motion } from 'motion/react';
 import { memo, useMemo, useState } from 'react';
@@ -168,43 +169,7 @@ export const PricingCard = memo(function PricingCard({
                     : undefined
                 }
               >
-                <div className="size-3 flex items-center justify-center">
-                  <svg
-                    className="block dark:hidden"
-                    fill="none"
-                    height="7"
-                    viewBox="0 0 8 7"
-                    width="8"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title>Checkmark Icon</title>
-                    <path
-                      d="M1.5 3.48828L3.375 5.36328L6.5 0.988281"
-                      stroke="#101828"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-
-                  <svg
-                    className="hidden dark:block"
-                    fill="none"
-                    height="7"
-                    viewBox="0 0 8 7"
-                    width="8"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title>Checkmark Icon</title>
-                    <path
-                      d="M1.5 3.48828L3.375 5.36328L6.5 0.988281"
-                      stroke="#FAFAFA"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                </div>
+                <Icons.Check size="sm" variant="muted" />
               </div>
               <span className="text-sm">{feature}</span>
             </li>

@@ -1,6 +1,5 @@
 'use client';
 
-import { cn } from '@unhook/ui/lib/utils';
 import * as React from 'react';
 import * as RechartsPrimitive from 'recharts';
 import type { LegendPayload } from 'recharts/types/component/DefaultLegendContent';
@@ -11,6 +10,8 @@ import type {
 } from 'recharts/types/component/DefaultTooltipContent';
 import type { Props as LegendProps } from 'recharts/types/component/Legend';
 import type { TooltipContentProps } from 'recharts/types/component/Tooltip';
+
+import { cn } from '../lib/utils';
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { dark: '.dark', light: '' } as const;

@@ -35,7 +35,7 @@ export function PricingTabs({
         >
           {activeTab === tab && (
             <motion.div
-              className="absolute inset-0 rounded-full bg-white dark:bg-[#3F3F46] shadow-md border border-border"
+              className="absolute inset-0 rounded-full bg-primary-foreground shadow-md border border-border"
               layoutId="active-tab"
               transition={{
                 damping: 25,
@@ -54,7 +54,7 @@ export function PricingTabs({
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
             {tab === 'yearly' && (
-              <span className="ml-2 text-xs font-semibold text-primary bg-secondary/50 py-0.5 w-[calc(100%+1rem)] px-1 rounded-full">
+              <span className="ml-2 text-xs font-semibold bg-secondary text-primary-foreground py-0.5 w-[calc(100%+1rem)] px-1 rounded-full">
                 2 months free
               </span>
             )}

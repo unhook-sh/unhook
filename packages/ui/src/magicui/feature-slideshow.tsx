@@ -91,7 +91,7 @@ export const Feature = ({
   collapseDelay = 5000,
   ltr = false,
   linePosition = 'left',
-  lineColor = 'bg-neutral-500 dark:bg-white',
+  lineColor = 'bg-primary',
   featureItems,
 }: FeatureProps) => {
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
@@ -206,7 +206,7 @@ export const Feature = ({
 
     if (!currentItem) {
       return (
-        <div className="aspect-auto h-full w-full rounded-xl border border-neutral-300/50 bg-gray-200 p-1 animate-pulse" />
+        <div className="aspect-auto h-full w-full rounded-xl border border-border bg-muted p-1 animate-pulse" />
       );
     }
 
@@ -219,7 +219,7 @@ export const Feature = ({
               opacity: 1,
             }}
             className={cn(
-              'aspect-auto h-full w-full rounded-xl border border-neutral-300/50 p-1',
+              'aspect-auto h-full w-full rounded-xl border border-border p-1',
               'transition-all duration-300',
             )}
             initial={{
@@ -243,7 +243,7 @@ export const Feature = ({
           {/* Placeholder/Fallback */}
           <div
             className={cn(
-              'absolute inset-0 bg-gray-200 rounded-xl border border-neutral-300/50',
+              'absolute inset-0 bg-muted rounded-xl border border-border',
               'transition-all duration-150',
               imageLoaded ? 'opacity-0' : 'opacity-100',
             )}
@@ -258,7 +258,7 @@ export const Feature = ({
               opacity: imageLoaded ? 1 : 0,
             }}
             className={cn(
-              'aspect-auto h-full w-full rounded-xl border border-neutral-300/50 object-cover p-1',
+              'aspect-auto h-full w-full rounded-xl border border-border object-cover p-1',
               'transition-all duration-300',
               imageLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-xl',
             )}
@@ -295,7 +295,7 @@ export const Feature = ({
     }
 
     return (
-      <div className="aspect-auto h-full w-full rounded-xl border border-neutral-300/50 bg-gray-200 p-1" />
+      <div className="aspect-auto h-full w-full rounded-xl border border-border bg-muted p-1" />
     );
   };
 
@@ -320,8 +320,8 @@ export const Feature = ({
               {featureItems.map((item, index) => (
                 <AccordionItem
                   className={cn(
-                    'relative data-[state=open]:bg-white dark:data-[state=open]:bg-[#27272A] rounded-lg data-[state=closed]:rounded-none data-[state=closed]:border-0',
-                    'dark:data-[state=open]:shadow-[0px_0px_0px_1px_rgba(249,250,251,0.06),0px_0px_0px_1px_var(--color-zinc-800,#27272A),0px_1px_2px_-0.5px_rgba(0,0,0,0.24),0px_2px_4px_-1px_rgba(0,0,0,0.24)]',
+                    'relative data-[state=open]:bg-primary-foreground rounded-lg data-[state=closed]:rounded-none data-[state=closed]:border-0',
+                    // 'dark:data-[state=open]:shadow-[0px_0px_0px_1px_rgba(249,250,251,0.06),0px_0px_0px_1px_var(--color-zinc-800,#27272A),0px_1px_2px_-0.5px_rgba(0,0,0,0.24),0px_2px_4px_-1px_rgba(0,0,0,0.24)]',
                     'data-[state=open]:shadow-[0px_0px_1px_0px_rgba(0,0,0,0.16),0px_1px_2px_-0.5px_rgba(0,0,0,0.16)]',
                   )}
                   key={item.id}
@@ -331,7 +331,7 @@ export const Feature = ({
                     className={cn(
                       'absolute overflow-hidden rounded-lg transition-opacity',
                       'data-[state=closed]:opacity-0 data-[state=open]:opacity-100',
-                      'bg-neutral-300/50 dark:bg-neutral-300/30',
+                      'bg-muted',
                       {
                         'bottom-0 top-0 h-full w-0.5 left-0':
                           linePosition === 'left',
@@ -402,12 +402,12 @@ export const Feature = ({
                   </p>
                 </div>
                 {item.component && (
-                  <div className="w-full h-48 rounded-lg border border-neutral-300/50 overflow-hidden">
+                  <div className="w-full h-48 rounded-lg border border-border overflow-hidden">
                     {item.component}
                   </div>
                 )}
                 {item.image && (
-                  <div className="w-full h-48 rounded-lg border border-neutral-300/50 overflow-hidden">
+                  <div className="w-full h-48 rounded-lg border border-border overflow-hidden">
                     {/** biome-ignore lint/performance/noImgElement: we need to use img for the image */}
                     <img
                       alt={item.title}
@@ -417,7 +417,7 @@ export const Feature = ({
                   </div>
                 )}
                 {item.video && (
-                  <div className="w-full h-48 rounded-lg border border-neutral-300/50 overflow-hidden">
+                  <div className="w-full h-48 rounded-lg border border-border overflow-hidden">
                     <video
                       autoPlay
                       className="w-full h-full object-cover"

@@ -8,12 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@unhook/ui/chart';
+import { type ChartConfig, ChartContainer } from '@unhook/ui/chart';
 import { useIsMobile } from '@unhook/ui/hooks/use-mobile';
 import {
   Select,
@@ -24,7 +19,7 @@ import {
 } from '@unhook/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@unhook/ui/toggle-group';
 import * as React from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid } from 'recharts';
 
 export const description = 'An interactive area chart';
 
@@ -237,7 +232,7 @@ export function ChartAreaInteractive() {
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />
-            <XAxis
+            {/* <XAxis
               axisLine={false}
               dataKey="date"
               minTickGap={32}
@@ -250,8 +245,8 @@ export function ChartAreaInteractive() {
               }}
               tickLine={false}
               tickMargin={8}
-            />
-            <ChartTooltip
+            /> */}
+            {/* <ChartTooltip
               content={
                 <ChartTooltipContent
                   accessibilityLayer
@@ -269,7 +264,7 @@ export function ChartAreaInteractive() {
               }
               cursor={false}
               defaultIndex={isMobile ? -1 : 10}
-            />
+            /> */}
             <Area
               dataKey="mobile"
               fill="url(#fillMobile)"

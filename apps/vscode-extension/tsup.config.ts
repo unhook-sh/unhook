@@ -2,14 +2,18 @@ import { defineConfig } from 'tsup';
 
 // Build mode detection (production vs development)
 const isDevBuild =
-  process.argv.includes('--dev') ||
-  process.env.NODE_ENV === 'development' ||
-  process.env.CI !== 'true';
+  process.argv.includes('--dev') || process.env.NODE_ENV === 'development';
 
 export default defineConfig({
   bundle: true,
   clean: false,
   entry: ['src/extension.ts'], // VS Code extensions require CommonJS
+  env: {
+    NEXT_PUBLIC_APP_ENV: isDevBuild ? 'development' : 'production',
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? '',
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? '',
+    NODE_ENV: isDevBuild ? 'development' : 'production',
+  },
   external: [
     'vscode',
     // Node.js built-ins

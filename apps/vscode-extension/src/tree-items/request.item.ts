@@ -77,7 +77,7 @@ export class RequestItem extends vscode.TreeItem {
       addSuffix: true,
     });
     this.iconPath = getStatusIconPath({ context, request });
-    this.contextValue = 'request';
+    this.contextValue = 'unhook.request';
     this.resourceUri = vscode.Uri.parse('unhook://request');
     this.tooltip = new vscode.MarkdownString(
       `**${request.destination.name}**\n${request.destination.url}\n\nStatus: ${request.status}\n\nTime: ${formatDistance(request.timestamp, new Date(), { addSuffix: true })}`,

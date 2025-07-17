@@ -171,10 +171,10 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
             await emailClient.send({
               subject: `New webhook access request for ${webhook.name}`,
               template: React.createElement(WebhookAccessRequestEmail, {
-                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
-                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests`,
+                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
+                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${webhook.id}/access-requests`,
                 message: input.requesterMessage,
-                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
+                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
                 requesterEmail: user.email,
                 requesterName:
                   user.firstName && user.lastName
@@ -326,7 +326,7 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
                     : undefined,
                 dashboardUrl:
                   input.status === 'approved'
-                    ? `${envClient.NEXT_PUBLIC_API_URL}/webhooks/${accessRequest.webhook.id}`
+                    ? `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${accessRequest.webhook.id}`
                     : undefined,
                 requesterName: requester.firstName || requester.email,
                 responseMessage: input.responseMessage,

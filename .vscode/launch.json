@@ -36,7 +36,7 @@
       "cwd": "${workspaceFolder}/apps/vscode-extension",
       "name": "Run VSCode Extension",
       "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
-      "preLaunchTask": "prepare-extension",
+      // "preLaunchTask": "prepare-extension",
       "request": "launch",
       "type": "extensionHost"
     },

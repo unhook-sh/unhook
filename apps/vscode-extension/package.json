@@ -139,16 +139,54 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.createMcpConfig",
+        "command": "unhook.createCursorMcpServer",
         "icon": "$(server)",
-        "title": "Create Cursor MCP Configuration"
+        "title": "Create Cursor MCP Server"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.configureServerUrls",
+        "icon": "$(settings-gear)",
+        "title": "Configure Server URLs"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.configureApiKey",
+        "icon": "$(key)",
+        "title": "Configure API Key"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.promptAnalyticsConsent",
+        "icon": "$(graph)",
+        "title": "Analytics Consent"
       }
     ],
     "configuration": {
       "properties": {
+        "unhook.analytics.enabled": {
+          "default": false,
+          "description": "Enable anonymous usage analytics to help improve Unhook. No personal information is collected.",
+          "type": "boolean"
+        },
+        "unhook.apiKey": {
+          "default": "",
+          "description": "Your Unhook API key for MCP server access. Get this from https://unhook.sh/app/api-keys",
+          "type": "string"
+        },
+        "unhook.apiUrl": {
+          "default": "https://unhook.sh",
+          "description": "The base URL for the Unhook API. Change this to point to your self-hosted Unhook instance.",
+          "type": "string"
+        },
         "unhook.configFilePath": {
           "default": "",
           "description": "Path to the Unhook config file. If not set, the extension will look in the workspace root.",
+          "type": "string"
+        },
+        "unhook.dashboardUrl": {
+          "default": "https://unhook.sh",
+          "description": "The base URL for the Unhook dashboard. Change this to point to your self-hosted Unhook dashboard.",
           "type": "string"
         },
         "unhook.delivery.enabled": {
@@ -221,27 +259,27 @@
         {
           "command": "unhook.copyEvent",
           "group": "inline",
-          "when": "view == unhook.events && viewItem == event"
+          "when": "view == unhook.events && viewItem == unhook.event"
         },
         {
           "command": "unhook.viewEvent",
           "group": "inline",
-          "when": "view == unhook.events && viewItem == event"
+          "when": "view == unhook.events && viewItem == unhook.event"
         },
         {
           "command": "unhook.replayEvent",
           "group": "inline",
-          "when": "view == unhook.events && viewItem == event"
+          "when": "view == unhook.events && viewItem == unhook.event"
         },
         {
           "command": "unhook.viewRequest",
           "group": "inline",
-          "when": "view == unhook.events && viewItem == request"
+          "when": "view == unhook.events && viewItem == unhook.request"
         },
         {
           "command": "unhook.replayRequest",
           "group": "inline",
-          "when": "view == unhook.events && viewItem == request"
+          "when": "view == unhook.events && viewItem == unhook.request"
         }
       ],
       "view/title": [

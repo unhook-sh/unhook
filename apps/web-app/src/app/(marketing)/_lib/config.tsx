@@ -4,7 +4,6 @@ import { FirstBentoAnimation } from '~/app/(marketing)/_components/first-bento-a
 import { FourthBentoAnimation } from '~/app/(marketing)/_components/fourth-bento-animation';
 import { SecondBentoAnimation } from '~/app/(marketing)/_components/second-bento-animation';
 import { ThirdBentoAnimation } from '~/app/(marketing)/_components/third-bento-animation';
-import { UnhookConfigDemo } from '~/app/(marketing)/_components/unhook-config-demo';
 import { SecurityShieldBackground } from '../_components/security-shield-background';
 
 export const Highlight = ({
@@ -27,6 +26,17 @@ export const Highlight = ({
 };
 
 export const BLUR_FADE_DELAY = 0.15;
+
+// Team pricing constants
+export const TEAM_PRICING = {
+  BASE_PRICE_MONTHLY: 30,
+  BASE_PRICE_YEARLY: 24,
+  DEFAULT_SEATS: 1,
+  INCLUDED_SEATS: 1,
+  MAX_SEATS: 50,
+  PRICE_PER_SEAT_MONTHLY: 10,
+  PRICE_PER_SEAT_YEARLY: 8,
+} as const;
 
 const url = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 export const siteConfig = {
@@ -170,12 +180,12 @@ export const siteConfig = {
   ctaSection: {
     backgroundImage: '/agent-cta-background.png',
     button: {
-      href: '/webhooks/create?utm_source=marketing-site&utm_medium=cta-button',
+      href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=cta-button',
       text: 'Create Your Webhook URL Today',
     },
     id: 'cta',
     subtext: 'Start testing webhooks in minutes',
-    title: 'Test Webhooks Locally',
+    title: 'Test AI Agent Workflows Locally',
   },
   description: 'Secure webhook testing and development platform.',
   faqSection: {
@@ -245,35 +255,44 @@ export const siteConfig = {
     items: [
       {
         content:
-          'Create shareable webhook URLs that route to your local environment. Perfect for team collaboration.',
-        id: 1,
-        image:
-          'https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        title: 'Unhook CLI',
-      },
-      {
-        component: <UnhookConfigDemo />,
-        content:
-          "Webhooks are securely routed to the appropriate developer's machine based on active sessions.",
-        id: 2,
-        title: 'Individual Repo Configuration',
-      },
-      {
-        content:
           'Real-time monitoring through our web dashboard for webhook inspection and debugging.',
-        id: 3,
+        id: 1,
         image:
           'https://images.unsplash.com/photo-1720378042271-60aff1e1c538?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMHx8fGVufDB8fHx8fA%3D%3D',
         title: 'VS Code Extension',
       },
       {
         content:
+          'Create shareable webhook URLs that route to your local environment. Perfect for team collaboration.',
+        id: 2,
+        image:
+          'https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        title: 'JetBrains Plugin (coming soon)',
+      },
+      {
+        content:
           'Share webhook URLs across your team while maintaining individual developer environments.',
-        id: 4,
+        id: 3,
         image:
           'https://images.unsplash.com/photo-1666882990322-e7f3b8df4f75?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D',
         title: 'MCP Server',
       },
+      {
+        content:
+          'Create shareable webhook URLs that route to your local environment. Perfect for team collaboration.',
+        id: 4,
+        image:
+          'https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        title: 'Unhook CLI',
+      },
+
+      // {
+      //   component: <UnhookConfigDemo />,
+      //   content:
+      //     "Webhooks are securely routed to the appropriate developer's machine based on active sessions.",
+      //   id: 2,
+      //   title: 'Individual Repo Configuration',
+      // },
     ],
     title: 'Simple. Secure. Collaborative.',
   },
@@ -325,14 +344,18 @@ export const siteConfig = {
     {
       links: [
         { id: 3, title: 'All Comparisons', url: '/comparisons' },
-        { id: 4, title: 'vs ngrok', url: '/vs-ngrok' },
-        { id: 5, title: 'vs Webhook.site', url: '/vs-webhook-site' },
-        { id: 6, title: 'vs Beeceptor', url: '/vs-beeceptor' },
-        { id: 7, title: 'vs Localtunnel', url: '/vs-localtunnel' },
-        { id: 8, title: 'vs Smee.io', url: '/vs-smee' },
-        { id: 9, title: 'vs Cloudflare Tunnel', url: '/vs-cloudflare-tunnel' },
-        { id: 10, title: 'vs Hookdeck', url: '/vs-hookdeck' },
-        { id: 11, title: 'vs Svix', url: '/vs-svix' },
+        { id: 4, title: 'vs ngrok', url: '/comparisons#ngrok' },
+        { id: 5, title: 'vs Webhook.site', url: '/comparisons#webhook-site' },
+        { id: 6, title: 'vs Beeceptor', url: '/comparisons#beeceptor' },
+        { id: 7, title: 'vs Localtunnel', url: '/comparisons#localtunnel' },
+        { id: 8, title: 'vs Smee.io', url: '/comparisons#smee' },
+        {
+          id: 9,
+          title: 'vs Cloudflare Tunnel',
+          url: '/comparisons#cloudflare-tunnel',
+        },
+        { id: 10, title: 'vs Hookdeck', url: '/comparisons#hookdeck' },
+        { id: 11, title: 'vs Svix', url: '/comparisons#svix' },
       ],
       title: 'Compare',
     },
@@ -382,29 +405,14 @@ export const siteConfig = {
     title: 'Built for Secure Development',
   },
   hero: {
-    badge: 'Introducing VS Code Extension',
-    badgeIcon: (
-      <svg
-        aria-label="Webhook Icon"
-        className="dark:fill-white fill-[#364153]"
-        fill="none"
-        height="16"
-        role="img"
-        viewBox="0 0 16 16"
-        width="16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <title>Webhook Icon</title>
-        <path d="M7.62758 1.09876C7.74088 1.03404 7.8691 1 7.99958 1C8.13006 1 8.25828 1.03404 8.37158 1.09876L13.6216 4.09876C13.7363 4.16438 13.8316 4.25915 13.8979 4.37347C13.9642 4.48779 13.9992 4.6176 13.9992 4.74976C13.9992 4.88191 13.9642 5.01172 13.8979 5.12604C13.8316 5.24036 13.7363 5.33513 13.6216 5.40076L8.37158 8.40076C8.25828 8.46548 8.13006 8.49952 7.99958 8.49952C7.8691 8.49952 7.74088 8.46548 7.62758 8.40076L2.37758 5.40076C2.26287 5.33513 2.16753 5.24036 2.10123 5.12604C2.03492 5.01172 2 4.88191 2 4.74976C2 4.6176 2.03492 4.48779 2.10123 4.37347C2.16753 4.25915 2.26287 4.16438 2.37758 4.09876L7.62758 1.09876Z" />
-        <path d="M2.56958 7.23928L2.37758 7.34928C2.26287 7.41491 2.16753 7.50968 2.10123 7.624C2.03492 7.73831 2 7.86813 2 8.00028C2 8.13244 2.03492 8.26225 2.10123 8.37657C2.16753 8.49089 2.26287 8.58566 2.37758 8.65128L7.62758 11.6513C7.74088 11.716 7.8691 11.75 7.99958 11.75C8.13006 11.75 8.25828 11.716 8.37158 11.6513L13.6216 8.65128C13.7365 8.58573 13.8321 8.49093 13.8986 8.3765C13.965 8.26208 14 8.13211 14 7.99978C14 7.86745 13.965 7.73748 13.8986 7.62306C13.8321 7.50864 13.7365 7.41384 13.6216 7.34828L13.4296 7.23828L9.11558 9.70328C8.77568 9.89744 8.39102 9.99956 7.99958 9.99956C7.60814 9.99956 7.22347 9.89744 6.88358 9.70328L2.56958 7.23928Z" />
-        <path d="M2.37845 10.5993L2.57045 10.4893L6.88445 12.9533C7.22435 13.1474 7.60901 13.2496 8.00045 13.2496C8.39189 13.2496 8.77656 13.1474 9.11645 12.9533L13.4305 10.4883L13.6225 10.5983C13.7374 10.6638 13.833 10.7586 13.8994 10.8731C13.9659 10.9875 14.0009 11.1175 14.0009 11.2498C14.0009 11.3821 13.9659 11.5121 13.8994 11.6265C13.833 11.7409 13.7374 11.8357 13.6225 11.9013L8.37245 14.9013C8.25915 14.966 8.13093 15 8.00045 15C7.86997 15 7.74175 14.966 7.62845 14.9013L2.37845 11.9013C2.2635 11.8357 2.16795 11.7409 2.10148 11.6265C2.03501 11.5121 2 11.3821 2 11.2498C2 11.1175 2.03501 10.9875 2.10148 10.8731C2.16795 10.7586 2.2635 10.6638 2.37845 10.5983V10.5993Z" />
-      </svg>
-    ),
+    badge: 'Free During Beta',
+    badgeIcon: <span>🔥</span>,
     badgeUrl:
-      'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
+      // 'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
+      'https://unhook.sh/app/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
     cta: {
       primary: {
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
+        href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
         text: 'Create Webhook URL',
       },
       secondary: {
@@ -413,8 +421,8 @@ export const siteConfig = {
       },
     },
     description:
-      'Open source toolkit for webhook development. Test, debug, and share webhooks with your team - all from your local environment.',
-    title: 'Webhook Development Simplified',
+      'Open source toolkit for webhook development. Test, debug, webhooks and AI agents with your team - all from your local environment.',
+    title: 'AI-Powered Webhook Development',
   },
   keywords: [
     'Webhook Testing',
@@ -432,11 +440,26 @@ export const siteConfig = {
   nav: {
     links: [
       { href: '#hero', id: 1, name: 'Home' },
-      { href: '#bento', id: 2, name: 'How it Works' },
-      { href: '/vscode', id: 3, name: 'VS Code Extension' },
-      { href: '/jetbrains', id: 4, name: 'JetBrains Plugin' },
-      { href: '/mcp', id: 5, name: 'MCP Server' },
-      { href: 'https://www.npmjs.com/package/@unhook/cli', id: 6, name: 'CLI' },
+      {
+        href: 'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
+        id: 3,
+        name: 'VS Code Extension',
+      },
+      {
+        href: 'https://plugins.jetbrains.com/plugin/24002-unhook',
+        id: 4,
+        name: 'JetBrains Plugin',
+      },
+      {
+        href: 'https://docs.unhook.sh/mcp-integration',
+        id: 5,
+        name: 'MCP Server',
+      },
+      {
+        href: 'https://www.npmjs.com/package/@unhook/cli',
+        id: 6,
+        name: 'Unhook CLI',
+      },
       // { id: 5, name: 'Features', href: '#features' },
       // { id: 6, name: 'Pricing', href: '#pricing' },
     ],
@@ -450,15 +473,16 @@ export const siteConfig = {
         buttonText: 'Create Webhook URL',
         description: 'Perfect for individual developers',
         features: [
-          '10 webhook events per day',
-          'One Webhook URL',
+          'CLI & Editor extension access',
+          '50 webhook events per day',
+          '1 webhook URL',
           'Basic webhook monitoring',
           'Local event routing',
           'Single developer',
           'Public webhook URLs',
           'Community support',
         ],
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-free',
+        href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-free',
         isPopular: false,
         name: 'Free',
         period: 'month',
@@ -471,23 +495,28 @@ export const siteConfig = {
         buttonText: 'Start Trial',
         description: 'Ideal for development teams',
         features: [
+          'AI-Powered debugging with MCP Server',
+          'Trace AI Agent Workflows',
           'Unlimited webhook events',
-          'Unlimited Webhook URLs',
-          'MCP Server',
+          'Unlimited webhook URLs',
           'Team webhook sharing',
-          // 'Custom webhook subdomains',
+          'Unlimited developers',
           'Private webhook URLs',
+          'Custom webhook transformations',
+          'Custom webhook subdomains',
+          'Advanced monitoring & analytics',
+          'Route to external integrations',
           // 'Advanced monitoring',
           // 'Usage analytics',
           // 'Route to external integrations',
-          'Priority support',
+          // 'Priority support',
         ],
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-team',
+        href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-team',
         isPopular: true,
         name: 'Team',
         period: 'month',
-        price: '$19',
-        yearlyPrice: '$15',
+        price: '$30',
+        yearlyPrice: '$24',
       },
       {
         buttonColor: 'bg-primary text-primary-foreground',
@@ -495,10 +524,15 @@ export const siteConfig = {
         description: 'For large organizations with custom needs',
         features: [
           'On-premise deployment',
-          'SLA support',
+          'SSO & SAML integration',
+          'Custom API rate limits',
+          'Audit logs & compliance',
+          '99.9% uptime SLA',
           'Dedicated account manager',
+          'Priority support',
+          'Custom training & onboarding',
         ],
-        href: '/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-enterprise',
+        href: 'https://cal.com/seawatts/30min',
         isPopular: false,
         name: 'Enterprise',
         period: 'month',

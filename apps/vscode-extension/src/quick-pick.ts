@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { ConfigManager } from './config.manager';
 import { env } from './env';
 import type { AuthStore } from './services/auth.service';
 
@@ -68,12 +69,33 @@ export class EventQuickPick {
       label: '$(new-file) Create Configuration File',
     });
 
-    // Add MCP configuration item if signed in
-    if (this.authStore?.isSignedIn) {
+    // Add server configuration item
+    items.push({
+      description: 'Configure server URLs for cloud or self-hosted',
+      detail: 'Set API and dashboard URLs for your Unhook instance',
+      label: '$(settings-gear) Configure Server URLs',
+    });
+
+    // Add API key configuration item
+    const configManager = ConfigManager.getInstance();
+    const hasApiKey = configManager.hasApiKey();
+
+    items.push({
+      description: hasApiKey
+        ? 'Update your API key for MCP server access'
+        : 'Configure API key for MCP server access',
+      detail: hasApiKey
+        ? 'API key is configured'
+        : 'Required for Cursor MCP server integration',
+      label: hasApiKey ? '$(key) Update API Key' : '$(key) Configure API Key',
+    });
+
+    // Add MCP configuration item if API key is configured
+    if (hasApiKey) {
       items.push({
-        description: 'Create Cursor MCP configuration',
-        detail: 'Generate MCP configuration for Cursor AI assistant',
-        label: '$(server) Create MCP Config',
+        description: 'Create Cursor MCP server configuration',
+        detail: 'Generate MCP configuration and Cursor rules for AI assistant',
+        label: '$(server) Create Cursor MCP Server',
       });
     }
 
@@ -108,8 +130,15 @@ export class EventQuickPick {
         case '$(new-file) Create Configuration File':
           await vscode.commands.executeCommand('unhook.createConfig');
           break;
-        case '$(server) Create MCP Config':
-          await vscode.commands.executeCommand('unhook.createMcpConfig');
+        case '$(settings-gear) Configure Server URLs':
+          await vscode.commands.executeCommand('unhook.configureServerUrls');
+          break;
+        case '$(key) Configure API Key':
+        case '$(key) Update API Key':
+          await vscode.commands.executeCommand('unhook.configureApiKey');
+          break;
+        case '$(server) Create Cursor MCP Server':
+          await vscode.commands.executeCommand('unhook.createCursorMcpServer');
           break;
         case '$(settings) Configure Settings':
           await vscode.commands.executeCommand(

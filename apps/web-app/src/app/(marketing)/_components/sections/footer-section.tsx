@@ -16,7 +16,7 @@ export function FooterSection() {
         <div className="flex flex-col items-start gap-y-5 max-w-xs mx-0">
           <Link className="flex items-center gap-2" href="/">
             <Icons.logo className="size-12" />
-            <p className="text-xl font-semibold text-primary">Unhook</p>
+            <p className="text-xl font-semibold text-primary">Unhook AI</p>
           </Link>
           <p className="tracking-tight text-muted-foreground font-medium">
             {siteConfig.hero.description}
@@ -66,7 +66,7 @@ export function FooterSection() {
             gridGap={tablet ? 2 : 3}
             maxOpacity={0.3}
             squareSize={2}
-            text={'Unhook'}
+            text={'Unhook AI'}
           />
         </div>
       </div>

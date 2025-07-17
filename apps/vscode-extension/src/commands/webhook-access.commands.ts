@@ -3,28 +3,40 @@ import * as vscode from 'vscode';
 import type { AuthStore } from '../services/auth.service';
 import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 
-const _log = debug('unhook:vscode:webhook-access-commands');
+const log = debug('unhook:vscode:webhook-access-commands');
 
 export function registerWebhookAccessCommands(
   context: vscode.ExtensionContext,
   authStore: AuthStore,
 ) {
+  log('Registering webhook access commands');
+
   const authorizationService = WebhookAuthorizationService.getInstance();
 
   // Register request webhook access command
   const requestWebhookAccessCommand = vscode.commands.registerCommand(
     'unhook.requestWebhookAccess',
     async () => {
-      try {
-        const message = await vscode.window.showInputBox({
-          placeHolder: 'e.g., I need to test webhook integration for project X',
-          prompt: 'Why do you need access to this webhook? (Optional)',
-        });
+      log('Request webhook access command triggered');
 
+      const message = await vscode.window.showInputBox({
+        placeHolder: 'e.g., I need to test webhook integration for project X',
+        prompt: 'Why do you need access to this webhook? (Optional)',
+      });
+
+      log('User provided message for access request', {
+        hasMessage: !!message,
+        messageLength: message?.length,
+      });
+
+      try {
+        log('Calling authorization service to request access');
         await authorizationService.requestAccess(authStore, message);
+        log('Access request completed successfully');
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error';
+        log('Failed to request access', { error: errorMessage });
         vscode.window.showErrorMessage(
           `Failed to request access: ${errorMessage}`,
         );
@@ -33,6 +45,7 @@ export function registerWebhookAccessCommands(
   );
 
   context.subscriptions.push(requestWebhookAccessCommand);
+  log('Webhook access commands registered successfully');
 
   return {
     requestWebhookAccessCommand,

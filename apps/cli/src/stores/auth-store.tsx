@@ -225,7 +225,7 @@ const store = createStore<AuthStore>()((set, get) => ({
       const csrfToken = createId({ prefix: 'csrf' });
       const port = await findAvailablePort();
       const webAppUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const authUrl = new URL('/cli-token', webAppUrl);
+      const authUrl = new URL('/app/auth-code', webAppUrl);
       authUrl.searchParams.set('port', port.toString());
       authUrl.searchParams.set('csrf', csrfToken);
 

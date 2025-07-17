@@ -16,10 +16,10 @@
 <url><loc>https://unhook.sh/vs-ngrok</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 <url><loc>https://unhook.sh/vs-svix</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 <url><loc>https://unhook.sh/vs-cloudflare-tunnel</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/cli-token/success</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/cli-token</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/app/auth-code/success</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/app/auth-code</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 <url><loc>https://unhook.sh/pricing</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/webhooks</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/dashboard</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/app/webhooks</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/app/dashboard</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 <url><loc>https://unhook.sh/blog</loc><lastmod>2025-07-15T16:21:07.435Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

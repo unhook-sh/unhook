@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 const log = debug('unhook:vscode:first-time-user');
 
 const FIRST_TIME_USER_KEY = 'unhook.firstTimeUser';
+const ANALYTICS_CONSENT_KEY = 'unhook.analytics.consentAsked';
 const UNHOOK_YML_TEMPLATE = `# Unhook Configuration
 # Documentation: https://unhook.sh/docs/configuration
 
@@ -43,9 +44,69 @@ export class FirstTimeUserService {
     return isFirstTime === undefined || isFirstTime === true;
   }
 
+  async hasAskedForAnalyticsConsent(): Promise<boolean> {
+    return (
+      this.context.globalState.get<boolean>(ANALYTICS_CONSENT_KEY) === true
+    );
+  }
+
+  async markAnalyticsConsentAsked(): Promise<void> {
+    await this.context.globalState.update(ANALYTICS_CONSENT_KEY, true);
+    log('Marked analytics consent as asked');
+  }
+
   async markAsExistingUser(): Promise<void> {
     await this.context.globalState.update(FIRST_TIME_USER_KEY, false);
     log('Marked user as existing user');
+  }
+
+  async promptForAnalyticsConsent(): Promise<boolean> {
+    // Check if VS Code telemetry is disabled - if so, don't ask for consent
+    if (!vscode.env.isTelemetryEnabled) {
+      log('VS Code telemetry is disabled, skipping analytics consent prompt');
+      await this.markAnalyticsConsentAsked();
+      return false;
+    }
+
+    const result = await vscode.window.showInformationMessage(
+      'Help improve Unhook by sharing anonymous usage data? This helps us understand how developers use webhooks and improve the extension. No personal information is collected.',
+      'Yes, Enable Analytics',
+      'No, Thanks',
+      'Learn More',
+    );
+
+    let enabled = false;
+
+    switch (result) {
+      case 'Yes, Enable Analytics':
+        enabled = true;
+        break;
+      case 'Learn More':
+        await vscode.env.openExternal(
+          vscode.Uri.parse('https://unhook.sh/docs/analytics'),
+        );
+        // Ask again after they learn more
+        return this.promptForAnalyticsConsent();
+      default:
+        // User chose "No, Thanks" or dismissed the notification
+        enabled = false;
+        break;
+    }
+
+    // Update the analytics setting
+    const config = vscode.workspace.getConfiguration('unhook');
+    await config.update('analytics.enabled', enabled, true);
+
+    // Mark that we've asked for consent
+    await this.markAnalyticsConsentAsked();
+
+    if (enabled) {
+      vscode.window.showInformationMessage(
+        'Analytics enabled. You can change this setting anytime in the Unhook extension settings.',
+      );
+    }
+
+    return enabled;
   }
 
   async promptForUnhookYmlCreation(): Promise<void> {

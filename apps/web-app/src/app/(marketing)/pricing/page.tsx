@@ -48,7 +48,7 @@ const pricingTiers: PricingTier[] = [
       'Custom domains',
     ],
     highlight: true,
-    href: '/webhooks/create?utm_source=pricing&utm_medium=team',
+    href: '/app/webhooks/create?utm_source=pricing&utm_medium=team',
     name: 'Team',
     price: '$49',
   },
@@ -66,7 +66,7 @@ const pricingTiers: PricingTier[] = [
       'SLA guarantees',
       'On-premise deployment option',
     ],
-    href: 'https://cal.com/unhook/enterprise-demo',
+    href: 'https://cal.com/seawatts/30min',
     name: 'Enterprise',
     price: 'Custom',
   },
@@ -127,7 +127,7 @@ export default function PricingPage() {
                 : 'text-muted-foreground',
             )}
           >
-            Yearly (save 20%)
+            Yearly (2 months free)
           </span>
         </div>
 

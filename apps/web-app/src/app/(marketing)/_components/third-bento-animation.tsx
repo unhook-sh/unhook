@@ -1,11 +1,15 @@
+/** biome-ignore-all lint/performance/noImgElement: we need to use img for the images */
 'use client';
 
-import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { AnimatedBeam } from '@unhook/ui/magicui/animated-beam';
 import type React from 'react';
 import { forwardRef, useRef } from 'react';
 import { Icons as MarketingIcons } from './icons';
+
+function getBrandLogoUrl(domain: string) {
+  return `https://cdn.brandfetch.io/${domain}/w/60/h/60?c=1idGJK6TyS2PPBb74bA`;
+}
 
 const Circle = forwardRef<
   HTMLDivElement,
@@ -14,7 +18,7 @@ const Circle = forwardRef<
   return (
     <div
       className={cn(
-        'z-10 flex size-12 items-center justify-center rounded-full border-2 border-border bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]',
+        'z-10 flex size-12 items-center justify-center border-2 rounded-full border-border bg-white shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]',
         className,
       )}
       ref={ref}
@@ -47,29 +51,52 @@ export function ThirdBentoAnimation({ className }: { className?: string }) {
       <div className="flex size-full max-w-lg flex-row items-stretch justify-between gap-10">
         <div className="flex flex-col justify-center gap-2">
           <Circle ref={div1Ref}>
-            <Icons.Slack variant="muted" />
+            <img
+              alt="Slack logo"
+              className="size-12 rounded-full"
+              src={getBrandLogoUrl('slack.com')}
+            />
           </Circle>
           <Circle ref={div2Ref}>
-            <Icons.Github variant="muted" />
+            <img
+              alt="Github logo"
+              className="size-12 rounded-full"
+              src={getBrandLogoUrl('github.com')}
+            />
           </Circle>
           <Circle ref={div3Ref}>
-            <Icons.Stripe variant="muted" />
+            <img
+              alt="Stripe logo"
+              className="size-12 rounded-full"
+              src={getBrandLogoUrl('stripe.com')}
+            />
           </Circle>
           <Circle ref={div4Ref}>
-            <Icons.Discord variant="muted" />
+            <img
+              alt="Discord logo"
+              className="size-12 rounded-full"
+              src={getBrandLogoUrl('discord.com')}
+            />
           </Circle>
           <Circle ref={div5Ref}>
-            <Icons.Clerk variant="muted" />
+            <img
+              alt="Clerk logo"
+              className="size-12 rounded-full"
+              src={getBrandLogoUrl('clerk.com')}
+            />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
-          <Circle className="size-16" ref={div6Ref}>
+          <Circle
+            className="size-16 bg-primary-foreground border border-primary/50"
+            ref={div6Ref}
+          >
             <MarketingIcons.logo className="size-7 md:size-10" />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
           <div
-            className="text-xs bg-white rounded-full p-2 text-black font-mono border border-border"
+            className="text-xs bg-primary-foreground rounded-full p-2 text-primary font-mono border border-primary/50"
             ref={div7Ref}
           >
             localhost:3000

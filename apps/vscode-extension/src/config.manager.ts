@@ -84,10 +84,8 @@ export class ConfigManager {
     try {
       // First check VS Code settings for server URLs
       const vscodeConfig = vscode.workspace.getConfiguration('unhook');
-      const settingsApiUrl = vscodeConfig.get<string>('server.apiUrl');
-      const settingsDashboardUrl = vscodeConfig.get<string>(
-        'server.dashboardUrl',
-      );
+      const settingsApiUrl = vscodeConfig.get<string>('apiUrl');
+      const settingsDashboardUrl = vscodeConfig.get<string>('dashboardUrl');
 
       if (settingsApiUrl) {
         this.apiUrl = settingsApiUrl;
@@ -180,5 +178,26 @@ export class ConfigManager {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     const workspacePath = workspaceFolders?.[0]?.uri.fsPath;
     await this.loadConfiguration(workspacePath);
+  }
+
+  hasConfigFile(): boolean {
+    return this.config !== null;
+  }
+
+  isAnalyticsEnabled(): boolean {
+    // Check VS Code settings for analytics configuration
+    const vscodeConfig = vscode.workspace.getConfiguration('unhook');
+    return vscodeConfig.get<boolean>('analytics.enabled', false);
+  }
+
+  getApiKey(): string | null {
+    // Check VS Code settings for API key
+    const vscodeConfig = vscode.workspace.getConfiguration('unhook');
+    const apiKey = vscodeConfig.get<string>('apiKey', '');
+    return apiKey || null;
+  }
+
+  hasApiKey(): boolean {
+    return !!this.getApiKey();
   }
 }

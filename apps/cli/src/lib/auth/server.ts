@@ -109,7 +109,7 @@ export class AuthServer {
     }
 
     // Redirect to success page
-    const successUrl = `${env.NEXT_PUBLIC_API_URL}/cli-token/success`;
+    const successUrl = `${env.NEXT_PUBLIC_API_URL}/app/auth-code/success`;
     res.writeHead(302, { Location: successUrl });
     res.end();
 

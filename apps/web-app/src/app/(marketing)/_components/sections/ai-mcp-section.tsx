@@ -195,7 +195,7 @@ export function AIMCPSection() {
             </span>
           </motion.div>
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-            Test AI Actions with MCP Servers
+            Test AI Agents with MCP Servers
           </h2>
           <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
             Debug AI agent workflows by testing webhooks triggered by Model

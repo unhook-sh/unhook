@@ -19,10 +19,10 @@ https://app.unhook.sh/api/mcp
 All requests require authentication using a Bearer token:
 
 ```bash
-Authorization: Bearer YOUR_AUTH_TOKEN
+Authorization: Bearer YOUR_API_KEY
 ```
 
-Get your API token from the Unhook dashboard settings.
+Get your API key from https://unhook.sh/app/api-keys.
 
 ## Transport
 
@@ -61,7 +61,7 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
 
 <ResponseField name="resources/list" type="method">
   Lists all available resources
-  
+
   **Response:**
   ```json
   {
@@ -72,7 +72,7 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
         "description": "Last 100 webhook events"
       },
       {
-        "uri": "webhook://requests/recent", 
+        "uri": "webhook://requests/recent",
         "name": "Recent Webhook Requests",
         "description": "Last 100 webhook requests"
       },
@@ -88,10 +88,10 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
 
 <ResponseField name="resources/read" type="method">
   Reads a specific resource
-  
+
   **Parameters:**
   - `uri` (string, required): Resource URI to read
-  
+
   **Example Request:**
   ```json
   {
@@ -107,7 +107,7 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
 
 <ResponseField name="tools/list" type="method">
   Lists all available tools
-  
+
   **Response includes:**
   - `search_events` - Search webhook events
   - `search_requests` - Search webhook requests
@@ -118,11 +118,11 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
 
 <ResponseField name="tools/call" type="method">
   Executes a tool with parameters
-  
+
   **Parameters:**
   - `name` (string, required): Tool name
   - `arguments` (object, required): Tool-specific arguments
-  
+
   **Example Request:**
   ```json
   {
@@ -143,7 +143,7 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
 
 <ResponseField name="prompts/list" type="method">
   Lists all available prompts
-  
+
   **Response includes:**
   - `debug_webhook_issue` - Debugging workflow
   - `analyze_failures` - Failure analysis
@@ -152,10 +152,10 @@ The server implements the Model Context Protocol v1.0 specification with JSON-RP
 
 <ResponseField name="prompts/get" type="method">
   Gets a specific prompt template
-  
+
   **Parameters:**
   - `name` (string, required): Prompt name
-  
+
   **Response:**
   ```json
   {
@@ -205,7 +205,7 @@ Errors follow the JSON-RPC 2.0 error format:
 | -32601 | Method not found | Unknown method |
 | -32602 | Invalid params | Invalid parameters |
 | -32603 | Internal error | Server error |
-| 401 | Unauthorized | Invalid or missing auth token |
+| 401 | Unauthorized | Invalid or missing API key |
 | 429 | Too Many Requests | Rate limit exceeded |
 
 ## Example Session
@@ -213,19 +213,19 @@ Errors follow the JSON-RPC 2.0 error format:
 ```bash
 # Initialize connection
 curl -X POST https://app.unhook.sh/api/mcp \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":"1","method":"initialize","params":{"protocolVersion":"1.0.0","capabilities":{}}}'
 
 # List resources
 curl -X POST https://app.unhook.sh/api/mcp/message \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":"2","method":"resources/list","params":{}}'
 
 # Read events
 curl -X POST https://app.unhook.sh/api/mcp/message \
-  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":"3","method":"resources/read","params":{"uri":"webhook://events/recent"}}'
 ```
@@ -239,7 +239,7 @@ The MCP server is compatible with:
 
 ## Webhooks Integration
 
-The MCP server automatically scopes data access to your organization based on the authentication token. You can only access webhooks, events, and requests that belong to your organization.
+The MCP server automatically scopes data access to your organization based on the API key. You can only access webhooks, events, and requests that belong to your organization.
 
 ## Next Steps
 

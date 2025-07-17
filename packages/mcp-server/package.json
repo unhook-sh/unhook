@@ -22,7 +22,7 @@
   "name": "@unhook/mcp-server",
   "private": true,
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build.skip": "tsup",
     "clean": "git clean -xdf .turbo node_modules dist",
     "debug:server": "bun run src/debug-server.ts",
     "dev:inspector": "bun run src/dev-inspector.ts",

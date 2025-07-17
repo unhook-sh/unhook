@@ -322,10 +322,59 @@ export function registerEventCommands(
   const filterCommand = vscode.commands.registerCommand(
     'unhook.events.filter',
     async () => {
-      // TODO: Implement filter command
-      vscode.window.showInformationMessage(
-        'Filter command not implemented yet',
-      );
+      const currentFilter = provider.getCurrentFilter();
+
+      const items: vscode.QuickPickItem[] = [
+        {
+          description: 'Enter text to filter events',
+          detail:
+            'Filter events by ID, source, status, failed reason, or webhook ID',
+          label: '$(search) Set Filter',
+        },
+        {
+          description: 'Remove current filter',
+          detail: currentFilter
+            ? `Currently filtering: "${currentFilter}"`
+            : 'No active filter',
+          label: '$(clear-all) Clear Filter',
+        },
+      ];
+
+      const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select filter action',
+        title: 'Filter Events',
+      });
+
+      if (selected) {
+        switch (selected.label) {
+          case '$(search) Set Filter': {
+            const filterText = await vscode.window.showInputBox({
+              placeHolder:
+                'Enter filter text (ID, source, status, failed reason, or webhook ID)',
+              prompt:
+                'Filter events by ID, source, status, failed reason, or webhook ID',
+              value: currentFilter,
+            });
+
+            if (filterText !== undefined) {
+              provider.setFilter(filterText);
+              if (filterText) {
+                vscode.window.showInformationMessage(
+                  `Filter applied: "${filterText}"`,
+                );
+              } else {
+                vscode.window.showInformationMessage('Filter cleared');
+              }
+            }
+            break;
+          }
+
+          case '$(clear-all) Clear Filter':
+            provider.setFilter('');
+            vscode.window.showInformationMessage('Filter cleared');
+            break;
+        }
+      }
     },
   );
   context.subscriptions.push(filterCommand);

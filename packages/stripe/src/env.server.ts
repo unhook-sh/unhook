@@ -20,9 +20,12 @@ export const env = createEnv({
    * This way you can ensure the app isn't built with invalid env vars.
    */
   server: {
-    STRIPE_METER_EVENT_NAME: z.string(),
-    STRIPE_PRICE_METER_LOOKUP_KEY: z.string(),
-    STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY: z.string(),
+    STRIPE_METER_EVENT_NAME: z.string().optional().default('usage'),
+    STRIPE_PRICE_METER_LOOKUP_KEY: z.string().optional().default('usage'),
+    STRIPE_PRICE_SUBSCRIPTION_LOOKUP_KEY: z
+      .string()
+      .optional()
+      .default('subscription'),
     STRIPE_PUBLISHABLE_KEY: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),

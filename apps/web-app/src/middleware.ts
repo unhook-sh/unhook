@@ -4,11 +4,7 @@ import { NextResponse } from 'next/server';
 // Define routes that require authentication
 const isPrivateRoute = createRouteMatcher([
   // Dashboard and app routes
-  '/dashboard(.*)',
-  '/settings(.*)',
-  '/cli-token(.*)',
-  '/webhooks(.*)',
-  // Add other private routes here as needed
+  '/app(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

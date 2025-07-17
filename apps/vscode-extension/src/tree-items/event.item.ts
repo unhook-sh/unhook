@@ -43,7 +43,7 @@ export class EventItem extends vscode.TreeItem {
         request: lastRequest,
       });
     }
-    this.contextValue = 'event';
+    this.contextValue = 'unhook.event';
     this.resourceUri = vscode.Uri.parse('unhook://event');
     this.tooltip = new vscode.MarkdownString('Event');
     this.tooltip.isTrusted = true;

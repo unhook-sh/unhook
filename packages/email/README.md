@@ -49,9 +49,9 @@ await emailClient.send({
     webhookName="Production Webhook"
     webhookId="wh_123"
     message="I need access for testing"
-    approveUrl="https://unhook.sh/approve/123"
-    rejectUrl="https://unhook.sh/reject/123"
-    dashboardUrl="https://unhook.sh/dashboard"
+    approveUrl="https://unhook.sh/app/approve/123"
+    rejectUrl="https://unhook.sh/app/reject/123"
+    dashboardUrl="https://unhook.sh/app/dashboard"
   />,
 });
 ```

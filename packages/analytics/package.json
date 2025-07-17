@@ -20,13 +20,15 @@
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
     "@unhook/tsconfig": "workspace:*",
-    "next": "15.4.1",
+    "next": "15.4.2-canary.4",
     "typescript": "5.8.3"
   },
   "exports": {
     ".": "./src/index.ts",
+    "./posthog/chrome-extension": "./src/posthog/chrome-extension.tsx",
     "./posthog/client": "./src/posthog/client.tsx",
-    "./posthog/server": "./src/posthog/server.ts"
+    "./posthog/server": "./src/posthog/server.ts",
+    "./posthog/vscode": "./src/posthog/vscode.ts"
   },
   "license": "MIT",
   "name": "@unhook/analytics",

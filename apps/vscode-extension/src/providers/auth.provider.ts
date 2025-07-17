@@ -93,7 +93,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     try {
       // Open browser for auth
       const authUrl = new URL(
-        '/cli-token',
+        '/app/auth-code',
         ConfigManager.getInstance().getApiUrl(),
       );
       const editorScheme = this.getEditorUriScheme();

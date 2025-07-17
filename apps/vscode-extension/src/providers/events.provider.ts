@@ -11,6 +11,7 @@ import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
+import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
 import { SettingsService } from '../services/settings.service';
 import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
@@ -38,10 +39,15 @@ export class EventsProvider
   private config: WebhookConfig | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
   private authorizationService: WebhookAuthorizationService;
+  private analyticsService: AnalyticsService | null = null;
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
     this.authorizationService = WebhookAuthorizationService.getInstance();
+  }
+
+  public setAnalyticsService(analyticsService: AnalyticsService) {
+    this.analyticsService = analyticsService;
   }
 
   public setAuthStore(authStore: AuthStore) {
@@ -108,7 +114,10 @@ export class EventsProvider
           (event) =>
             event.id.toLowerCase().includes(this.filterText) ||
             event.source.toLowerCase().includes(this.filterText) ||
-            event.status.toLowerCase().includes(this.filterText),
+            event.status.toLowerCase().includes(this.filterText) ||
+            (event.failedReason?.toLowerCase().includes(this.filterText) ??
+              false) ||
+            event.webhookId.toLowerCase().includes(this.filterText),
         )
       : this.events;
 
@@ -173,6 +182,20 @@ export class EventsProvider
       (event) => previousEventIds.indexOf(event.id) === -1,
     );
     if (newEventsOnly.length > 0) {
+      // Track new webhook events
+      for (const event of newEventsOnly) {
+        this.analyticsService?.trackWebhookEvent(
+          event.source,
+          'webhook_received',
+          {
+            event_id: event.id,
+            has_requests: (event.requests?.length ?? 0) > 0,
+            request_count: event.requests?.length ?? 0,
+            status: event.status,
+          },
+        );
+      }
+
       const message =
         newEventsOnly.length === 1
           ? `New webhook event received: ${
@@ -186,6 +209,17 @@ export class EventsProvider
     for (const event of newEvents) {
       const previousEvent = previousEventMap[event.id];
       if (previousEvent && previousEvent.status !== event.status) {
+        // Track status change
+        this.analyticsService?.trackWebhookEvent(
+          event.source,
+          'webhook_status_changed',
+          {
+            event_id: event.id,
+            new_status: event.status,
+            old_status: previousEvent.status,
+          },
+        );
+
         vscode.window.showInformationMessage(
           `Event ${event.id} status changed from ${previousEvent.status} to ${event.status}`,
         );
@@ -409,9 +443,32 @@ export class EventsProvider
           });
         }
 
+        // Track successful delivery
+        this.analyticsService?.trackWebhookEvent(
+          event.source,
+          'webhook_delivered',
+          {
+            auto_delivery: true,
+            destination_count: config.destination?.length ?? 0,
+            event_id: event.id,
+          },
+        );
+
         log(`Successfully delivered event ${event.id}`);
       } catch (error) {
         log(`Failed to deliver event ${event.id}:`, error);
+
+        // Track delivery failure
+        this.analyticsService?.trackWebhookEvent(
+          event.source,
+          'webhook_delivery_failed',
+          {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            event_id: event.id,
+            max_retries: event.maxRetries,
+            retry_count: event.retryCount,
+          },
+        );
 
         // Update event status to failed if max retries reached
         if (event.retryCount >= event.maxRetries && this.authStore) {

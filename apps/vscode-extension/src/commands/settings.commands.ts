@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
 import { env } from '../env';
+import { FirstTimeUserService } from '../services/first-time-user.service';
 
 export function registerSettingsCommands(context: vscode.ExtensionContext) {
   // Command to open settings
@@ -14,6 +15,16 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
     },
   );
   context.subscriptions.push(openSettingsCommand);
+
+  // Command to prompt for analytics consent
+  const promptAnalyticsConsentCommand = vscode.commands.registerCommand(
+    'unhook.promptAnalyticsConsent',
+    async () => {
+      const firstTimeUserService = new FirstTimeUserService(context);
+      await firstTimeUserService.promptForAnalyticsConsent();
+    },
+  );
+  context.subscriptions.push(promptAnalyticsConsentCommand);
 
   // Command to set config file path
   const setConfigFilePathCommand = vscode.commands.registerCommand(

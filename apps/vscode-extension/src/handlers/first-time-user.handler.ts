@@ -13,9 +13,19 @@ export function setupFirstTimeUserHandler(
       // Check if first-time user
       firstTimeUserService.isFirstTimeUser().then((isFirstTime) => {
         if (isFirstTime) {
-          // Show prompt after a short delay to let the success message appear first
-          setTimeout(() => {
-            firstTimeUserService.promptForUnhookYmlCreation();
+          // Show analytics consent prompt first, then unhook.yml prompt
+          setTimeout(async () => {
+            // Check if we've already asked for analytics consent
+            const hasAskedForConsent =
+              await firstTimeUserService.hasAskedForAnalyticsConsent();
+            if (!hasAskedForConsent) {
+              await firstTimeUserService.promptForAnalyticsConsent();
+            }
+
+            // Show unhook.yml prompt after a short delay
+            setTimeout(() => {
+              firstTimeUserService.promptForUnhookYmlCreation();
+            }, 1000);
           }, 2000);
         }
       });

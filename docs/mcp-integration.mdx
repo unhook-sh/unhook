@@ -4,125 +4,470 @@ description: 'Use AI assistants to debug webhooks with Model Context Protocol'
 icon: 'brain'
 ---
 
-# MCP Integration
+# Unhook MCP Server
 
-Unhook provides a Model Context Protocol (MCP) server that enables AI assistants like Claude and Cursor to access your webhook data for advanced debugging and analysis.
+Use Unhook's webhook data through the Model Context Protocol
 
-## What is MCP?
-
-Model Context Protocol (MCP) is an open standard that enables AI assistants to securely access data and tools from external systems. With Unhook's MCP server, AI assistants can:
-
-- Access your webhook events and request history
-- Analyze failure patterns and performance issues
-- Provide intelligent debugging assistance
-- Generate insights from your webhook data
+A Model Context Protocol (MCP) server implementation that integrates Unhook for webhook debugging and analysis capabilities. Our MCP server provides access to your webhook events, requests, and analytics through AI assistants like Claude and Cursor.
 
 ## Features
 
-### Resources
-The MCP server exposes your webhook data as resources that AI assistants can read:
+- Webhook event monitoring and analysis
+- Request inspection and debugging
+- Performance metrics and failure analysis
+- Real-time webhook data access
+- Cloud and self-hosted support
+- SSE transport support
 
-- **Recent Events** - Access the last 100 webhook events
-- **Recent Requests** - View the last 100 webhook requests
-- **Webhook List** - Get all configured webhooks
+## Installation
 
-### Tools
-Interactive tools for querying and analyzing webhook data:
+You can either use our remote hosted URL or run the server locally. Get your API key from your Unhook dashboard at https://unhook.sh/app/api-keys.
 
-- **search_events** - Search events with filters
-- **search_requests** - Search requests with filters
-- **analyze_event** - Get detailed event analysis
-- **analyze_request** - Get detailed request analysis
-- **get_webhook_stats** - Comprehensive webhook statistics
+### Remote hosted URL
 
-### Prompts
-Pre-built workflows for common debugging tasks:
+```json
+https://unhook.sh/api/mcp/{YOUR_API_KEY}/sse
+```
 
-- **debug_webhook_issue** - Step-by-step debugging assistance
-- **analyze_failures** - Failure pattern analysis
-- **performance_report** - Performance metrics and recommendations
+### Running with npx
 
-## Setup
+```bash
+env UNHOOK_API_KEY=your-api-key npx -y @unhook/mcp-server
+```
 
-### Claude Desktop
+### Manual Installation
 
-1. **Get your authentication token** from your Unhook dashboard settings
+```bash
+npm install -g @unhook/mcp-server
+```
 
-2. **Configure Claude Desktop** by editing your configuration file:
+> Try out our MCP Server on MCP.so's playground or integrate with your favorite AI assistant.
 
-<Tabs>
-  <Tab title="macOS">
-    ```bash
-    # Open config file
-    code ~/Library/Application\ Support/Claude/claude_desktop_config.json
-    ```
-  </Tab>
-  <Tab title="Windows">
-    ```bash
-    # Open config file
-    code %APPDATA%\Claude\claude_desktop_config.json
-    ```
-  </Tab>
-  <Tab title="Linux">
-    ```bash
-    # Open config file
-    code ~/.config/Claude/claude_desktop_config.json
-    ```
-  </Tab>
-</Tabs>
+## Configuration
 
-3. **Add the Unhook MCP server** to your configuration:
+### Environment Variables
+
+#### Required for Cloud API
+
+- `UNHOOK_API_KEY`: Your Unhook API key
+  - Required when using cloud API (default)
+  - Get this from https://unhook.sh/app/api-keys
+- `UNHOOK_API_URL` (Optional): Custom API endpoint for self-hosted instances
+  - Example: `https://api.your-domain.com`
+  - If not provided, the cloud API will be used (requires API key)
+
+#### Optional Configuration
+
+##### Retry Configuration
+
+- `UNHOOK_RETRY_MAX_ATTEMPTS`: Maximum number of retry attempts (default: 3)
+- `UNHOOK_RETRY_INITIAL_DELAY`: Initial delay in milliseconds before first retry (default: 1000)
+- `UNHOOK_RETRY_MAX_DELAY`: Maximum delay in milliseconds between retries (default: 10000)
+- `UNHOOK_RETRY_BACKOFF_FACTOR`: Exponential backoff multiplier (default: 2)
+
+##### Rate Limiting
+
+- `UNHOOK_RATE_LIMIT_REQUESTS`: Maximum requests per minute (default: 60)
+- `UNHOOK_RATE_LIMIT_WINDOW`: Rate limit window in milliseconds (default: 60000)
+
+### Configuration Examples
+
+#### Basic Cloud Configuration
 
 ```json
 {
   "mcpServers": {
     "unhook": {
-      "url": "https://app.unhook.sh/api/mcp",
-      "transport": "http",
-      "headers": {
-        "Authorization": "Bearer YOUR_AUTH_TOKEN"
+      "url": "https://unhook.sh/api/mcp/YOUR_API_KEY/sse",
+      "transport": "sse"
+    }
+  }
+}
+```
+
+#### Self-Hosted Configuration
+
+```json
+{
+  "mcpServers": {
+    "unhook": {
+      "command": "npx",
+      "args": ["-y", "@unhook/mcp-server"],
+      "env": {
+        "UNHOOK_API_KEY": "your-api-key",
+        "UNHOOK_API_URL": "https://api.your-domain.com"
       }
     }
   }
 }
 ```
 
-4. **Restart Claude Desktop** to apply the configuration
+## Running on Different Platforms
 
-### Cursor
+### Running on Cursor
 
-Cursor supports MCP servers through its composer feature:
+Add Unhook MCP server to Cursor
 
-1. **Get your authentication token** from your Unhook dashboard settings
+#### Manual Installation
 
-2. **Add to Cursor settings**:
-   - Open Cursor Settings (Cmd/Ctrl + ,)
-   - Search for "Model Context Protocol"
-   - Add the Unhook server configuration
+**Note**: Requires Cursor version 0.45.6+
 
-3. **Use in Composer**:
-   - Open the Composer (Cmd/Ctrl + K)
-   - The Unhook context will be available automatically
+To configure Unhook MCP in Cursor **v0.48.6**:
+
+1. Open Cursor Settings
+2. Go to Features > MCP Servers
+3. Click "+ Add new global MCP server"
+4. Enter the following code:
+
+```json
+{
+  "mcpServers": {
+    "unhook": {
+      "command": "npx",
+      "args": ["-y", "@unhook/mcp-server"],
+      "env": {
+        "UNHOOK_API_KEY": "YOUR-API-KEY"
+      }
+    }
+  }
+}
+```
+
+To configure Unhook MCP in Cursor **v0.45.6**:
+
+1. Open Cursor Settings
+2. Go to Features > MCP Servers
+3. Click "+ Add New MCP Server"
+4. Enter the following:
+   - Name: "unhook" (or your preferred name)
+   - Type: "command"
+   - Command: `env UNHOOK_API_KEY=your-api-key npx -y @unhook/mcp-server`
+
+> If you are using Windows and are running into issues, try `cmd /c "set UNHOOK_API_KEY=your-api-key && npx -y @unhook/mcp-server"`
+
+Replace `your-api-key` with your Unhook API key. If you don't have one yet, you can get it from https://unhook.sh/app/api-keys.
+
+After adding, refresh the MCP server list to see the new tools. The Composer Agent will automatically use Unhook MCP when appropriate, but you can explicitly request it by describing your webhook debugging needs.
+
+### Running on Windsurf
+
+Add this to your `./codeium/windsurf/model_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-server-unhook": {
+      "command": "npx",
+      "args": ["-y", "@unhook/mcp-server"],
+      "env": {
+        "UNHOOK_API_KEY": "YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+### Running with SSE Mode
+
+To run the server using Server-Sent Events (SSE) locally instead of the default stdio transport:
+
+```bash
+env SSE_LOCAL=true UNHOOK_API_KEY=your-api-key npx -y @unhook/mcp-server
+```
+
+Use the url: `http://localhost:3000/sse` or `https://unhook.sh/api/mcp/{YOUR_API_KEY}/sse`
+
+### Running on VS Code
+
+For manual installation, add the following JSON block to your User Settings (JSON) file in VS Code. You can do this by pressing `Ctrl + Shift + P` and typing `Preferences: Open User Settings (JSON)`.
+
+```json
+{
+  "mcp": {
+    "inputs": [
+      {
+        "type": "promptString",
+        "id": "apiKey",
+        "description": "Unhook API Key",
+        "password": true
+      }
+    ],
+    "servers": {
+      "unhook": {
+        "command": "npx",
+        "args": ["-y", "@unhook/mcp-server"],
+        "env": {
+          "UNHOOK_API_KEY": "${input:apiKey}"
+        }
+      }
+    }
+  }
+}
+```
+
+Optionally, you can add it to a file called `.vscode/mcp.json` in your workspace. This will allow you to share the configuration with others:
+
+```json
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "apiKey",
+      "description": "Unhook API Key",
+      "password": true
+    }
+  ],
+  "servers": {
+    "unhook": {
+      "command": "npx",
+      "args": ["-y", "@unhook/mcp-server"],
+      "env": {
+        "UNHOOK_API_KEY": "${input:apiKey}"
+      }
+    }
+  }
+}
+```
+
+### Running on Claude Desktop
+
+Add this to the Claude config file:
+
+```json
+{
+  "mcpServers": {
+    "unhook": {
+      "url": "https://unhook.sh/api/mcp/{YOUR_API_KEY}/sse"
+    }
+  }
+}
+```
+
+## Rate Limiting and Performance
+
+The server utilizes Unhook's built-in rate limiting and performance optimization:
+
+- Automatic rate limit handling with exponential backoff
+- Efficient data pagination for large datasets
+- Smart request caching and deduplication
+- Automatic retries for transient errors
+
+## Available Tools
+
+### 1. Search Events Tool (`search_events`)
+
+Search webhook events with advanced filtering options.
+
+```json
+{
+  "name": "search_events",
+  "arguments": {
+    "webhookId": "wh_123",
+    "status": "failed",
+    "limit": 50,
+    "startDate": "2024-01-01T00:00:00Z",
+    "endDate": "2024-01-31T23:59:59Z",
+    "source": "stripe"
+  }
+}
+```
+
+### 2. Search Requests Tool (`search_requests`)
+
+Search webhook requests with detailed filtering.
+
+```json
+{
+  "name": "search_requests",
+  "arguments": {
+    "webhookId": "wh_123",
+    "status": "failed",
+    "limit": 50,
+    "minResponseTime": 1000,
+    "maxResponseTime": 5000
+  }
+}
+```
+
+### 3. Analyze Event Tool (`analyze_event`)
+
+Get detailed analysis of a specific webhook event.
+
+```json
+{
+  "name": "analyze_event",
+  "arguments": {
+    "eventId": "evt_123"
+  }
+}
+```
+
+### 4. Analyze Request Tool (`analyze_request`)
+
+Get detailed analysis of a specific webhook request.
+
+```json
+{
+  "name": "analyze_request",
+  "arguments": {
+    "requestId": "req_123"
+  }
+}
+```
+
+### 5. Get Webhook Stats Tool (`get_webhook_stats`)
+
+Get comprehensive statistics for webhooks.
+
+```json
+{
+  "name": "get_webhook_stats",
+  "arguments": {
+    "webhookId": "wh_123",
+    "timeRange": "24h",
+    "includeFailures": true,
+    "includePerformance": true
+  }
+}
+```
+
+### 6. Create Test Event Tool (`create_test_event`)
+
+Create a test webhook event for debugging.
+
+```json
+{
+  "name": "create_test_event",
+  "arguments": {
+    "webhookId": "wh_123",
+    "payload": {
+      "test": "data",
+      "timestamp": "2024-01-01T00:00:00Z"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Test-Header": "test-value"
+    }
+  }
+}
+```
+
+### 7. Debug Webhook Issue Tool (`debug_webhook_issue`)
+
+Get intelligent debugging assistance for webhook issues.
+
+```json
+{
+  "name": "debug_webhook_issue",
+  "arguments": {
+    "webhookId": "wh_123",
+    "issueType": "failures",
+    "timeRange": "1h",
+    "includeRecommendations": true
+  }
+}
+```
+
+### 8. Performance Report Tool (`performance_report`)
+
+Generate comprehensive performance reports.
+
+```json
+{
+  "name": "performance_report",
+  "arguments": {
+    "webhookIds": ["wh_123", "wh_456"],
+    "timeRange": "7d",
+    "includeTrends": true,
+    "includeRecommendations": true
+  }
+}
+```
+
+## Available Resources
+
+### Recent Events (`webhook://events/recent`)
+
+Access the most recent webhook events with metadata.
+
+### Recent Requests (`webhook://requests/recent`)
+
+Access the most recent webhook requests with response data.
+
+### Webhook List (`webhook://webhooks/list`)
+
+Get all configured webhooks in your organization.
+
+### Active Connections (`webhook://connections/active`)
+
+View currently active webhook connections.
+
+### Statistics Overview (`webhook://stats/overview`)
+
+Get high-level statistics for all webhooks.
+
+## Logging System
+
+The server includes comprehensive logging:
+
+- Connection status and authentication
+- Request/response performance metrics
+- Error conditions and retry attempts
+- Rate limit tracking
+
+Example log messages:
+
+```
+[INFO] Unhook MCP Server initialized successfully
+[INFO] Connected to webhook wh_123
+[INFO] Retrieved 50 events for analysis
+[WARNING] Rate limit approaching, throttling requests
+[ERROR] Authentication failed, retrying in 2s...
+```
+
+## Error Handling
+
+The server provides robust error handling:
+
+- Automatic retries for transient errors
+- Rate limit handling with backoff
+- Detailed error messages with context
+- Authentication error recovery
+- Network resilience
+
+Example error response:
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Error: Rate limit exceeded. Retrying in 2 seconds..."
+    }
+  ],
+  "isError": true
+}
+```
 
 ## Usage Examples
 
 ### Debugging Failed Webhooks
 
-Ask Claude or Cursor:
+Ask your AI assistant:
 - "Show me all failed webhook events from the last hour"
 - "Why are my Stripe webhooks failing?"
 - "Analyze the error patterns in my webhook requests"
 
 ### Performance Analysis
 
-Ask Claude or Cursor:
+Ask your AI assistant:
 - "What's the average response time for my webhooks?"
 - "Which webhooks have the highest failure rate?"
 - "Generate a performance report for my payment webhooks"
 
 ### Request Inspection
 
-Ask Claude or Cursor:
+Ask your AI assistant:
 - "Show me the payload for event evt_123"
 - "What headers were sent with the last GitHub webhook?"
 - "Compare successful vs failed requests for my Clerk webhook"
@@ -130,9 +475,9 @@ Ask Claude or Cursor:
 ## Security
 
 ### Authentication
-- All MCP requests require authentication via your Unhook API token
-- Tokens are scoped to your organization's data only
-- Never share your authentication token publicly
+- All MCP requests require authentication via your Unhook API key
+- API keys are scoped to your organization's data only
+- Never share your API key publicly
 
 ### Data Access
 - MCP servers can only access data you have permission to view
@@ -140,8 +485,8 @@ Ask Claude or Cursor:
 - No webhook data is stored by the AI assistant
 
 ### Best Practices
-- Use environment-specific tokens for development vs production
-- Rotate your API tokens regularly
+- Use environment-specific API keys for development vs production
+- Rotate your API keys regularly
 - Review MCP access logs in your dashboard
 
 ## Troubleshooting
@@ -149,25 +494,32 @@ Ask Claude or Cursor:
 ### Connection Issues
 
 <AccordionGroup>
-  <Accordion title="Claude Desktop can't connect to Unhook">
+  <Accordion title="AI assistant can't connect to Unhook">
     1. Verify your configuration file syntax is valid JSON
-    2. Check that your API token is correct and not expired
+    2. Check that your API key is correct and not expired
     3. Ensure you're using HTTPS (not HTTP) in the URL
-    4. Restart Claude Desktop after configuration changes
+    4. Restart your AI assistant after configuration changes
   </Accordion>
 
   <Accordion title="No webhook data appearing">
     1. Confirm you have webhooks configured in your dashboard
-    2. Check that your token has the correct permissions
+    2. Check that your API key has the correct permissions
     3. Verify you're in the right organization
     4. Try manually triggering a webhook to generate data
   </Accordion>
 
   <Accordion title="Authentication errors">
-    1. Regenerate your API token in the dashboard
-    2. Ensure the "Bearer " prefix is included
-    3. Check for extra spaces or characters in the token
-    4. Verify the token hasn't expired
+    1. Regenerate your API key in the dashboard
+    2. Ensure the API key is properly formatted in the configuration
+    3. Check for extra spaces or characters in the API key
+    4. Verify the API key hasn't expired
+  </Accordion>
+
+  <Accordion title="Rate limiting issues">
+    1. Check your current rate limits in the dashboard
+    2. Reduce the frequency of requests
+    3. Use pagination to limit data size
+    4. Contact support if you need higher limits
   </Accordion>
 </AccordionGroup>
 
@@ -176,42 +528,30 @@ Ask Claude or Cursor:
 <Note>
 The MCP server limits responses to prevent overwhelming AI assistants:
 - Events: Maximum 100 per request
-- Requests: Maximum 100 per request  
+- Requests: Maximum 100 per request
 - Use search filters to find specific data
+- Enable pagination for large datasets
 </Note>
 
-## Advanced Usage
+## Development
 
-### Custom Prompts
+```bash
+# Install dependencies
+npm install
 
-You can create custom debugging workflows:
+# Build
+npm run build
 
-```
-"Create a detailed analysis of all webhooks that failed in the last 24 hours, 
-grouped by error type, with recommendations for each failure pattern"
-```
-
-### Batch Analysis
-
-Analyze multiple webhooks together:
-
-```
-"Compare the performance of my Stripe and PayPal webhooks, 
-identify which one has better reliability and why"
+# Run tests
+npm test
 ```
 
-### Trend Detection
+### Contributing
 
-Identify patterns over time:
-
-```
-"Are there any recurring patterns in my webhook failures? 
-Show me time-based trends and correlations"
-```
-
-## API Reference
-
-For detailed API documentation, see the [MCP API Reference](/api-reference/mcp/overview).
+1. Fork the repository
+2. Create your feature branch
+3. Run tests: `npm test`
+4. Submit a pull request
 
 ## Support
 
@@ -220,3 +560,7 @@ Need help with MCP integration?
 - Check our [GitHub discussions](https://github.com/unhook-sh/unhook/discussions)
 - Join our [Discord community](https://discord.gg/qRZzTCK6MZ)
 - Email support at support@unhook.sh
+
+## License
+
+MIT License - see LICENSE file for details

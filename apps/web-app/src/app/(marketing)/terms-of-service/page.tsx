@@ -15,7 +15,7 @@ export default function Page() {
           Terms Of Service
         </h1>
         <SphereMask />
-        <section className="container mt-24 flex max-w-5xl flex-col gap-8 text-left px-4">
+        <section className="container flex max-w-5xl flex-col gap-8 text-left p-4 mx-auto">
           <div>
             <h2 className="mb-1 mt-5 text-xl">Seawatts, LLC.</h2>
             <h2 className="mb-4">Terms of Service</h2>

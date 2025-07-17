@@ -1,14 +1,14 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "banner": {
-    "content": "Unhook is currently in beta."
+    "content": "Unhook AI is currently in beta."
   },
   "colors": {
     "dark": "#009689",
     "light": "#009689",
     "primary": "#009689"
   },
-  "description": "Unhook is a simple, secure, and reliable webhook service that allows you to create and manage webhooks for your applications.",
+  "description": "Unhook AI is a simple, secure, and reliable webhook service that allows you to create and manage webhooks for your applications.",
   "favicon": "/logo/favicon.png",
   "fonts": {
     "family": "Geist",
@@ -34,7 +34,7 @@
     "dark": "/logo/logo-dark.svg",
     "light": "/logo/logo-light.svg"
   },
-  "name": "Unhook",
+  "name": "Unhook AI",
   "navbar": {
     "links": [
       {

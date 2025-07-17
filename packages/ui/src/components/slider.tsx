@@ -37,13 +37,13 @@ function Slider({
     >
       <SliderPrimitive.Track
         className={cn(
-          'relative grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-1.5',
+          'relative grow overflow-hidden rounded-full bg-primary/20 data-[orientation=horizontal]:h-1.5 data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-1.5',
         )}
         data-slot="slider-track"
       >
         <SliderPrimitive.Range
           className={cn(
-            'absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',
+            'absolute bg-secondary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',
           )}
           data-slot="slider-range"
         />

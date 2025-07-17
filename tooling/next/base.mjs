@@ -4,8 +4,24 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   experimental: {
+    // Forward browser logs to the terminal for easier debugging
+    browserDebugInfoInTerminal: true,
+
+    // Activate new client-side router improvements
+    clientSegmentCache: true,
+
+    // Explore route composition and segment overrides via DevTools
+    devtoolSegmentExplorer: true, // will be renamed to cacheComponents in Next.js 16
+
+    // Enable new caching and pre-rendering behavior
+    dynamicIO: true,
+
+    // Enable support for `global-not-found`, which allows you to more easily define a global 404 page.
+    globalNotFound: true,
     scrollRestoration: true,
-    // dynamicIO: true,
+
+    // Enable persistent caching for the turbopack dev server and build.
+    turbopackPersistentCaching: true,
   },
   images: {
     remotePatterns: [
@@ -20,6 +36,7 @@ const nextConfig = {
       { hostname: 'picsum.photos' },
       { hostname: 'unhook.sh' },
       { hostname: 'randomuser.me' },
+      { hostname: 'cdn.brandfetch.io' },
     ],
   },
   logging: {

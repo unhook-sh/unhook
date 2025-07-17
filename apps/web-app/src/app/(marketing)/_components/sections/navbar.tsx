@@ -134,7 +134,7 @@ export function Navbar() {
               <Icons.logo className="size-12" />
               {/* {!hasScrolled && ( */}
               <div className="flex items-center gap-2">
-                <p className="text-lg font-semibold text-primary">Unhook</p>
+                <p className="text-lg font-semibold text-primary">Unhook AI</p>
                 <Badge variant="secondary">Beta</Badge>
               </div>
               {/* )} */}
@@ -153,7 +153,7 @@ export function Navbar() {
                 <SignedOut>
                   <Link
                     className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
-                    href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+                    href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
                   >
                     Create Webhook URL
                   </Link>
@@ -164,7 +164,7 @@ export function Navbar() {
                     className="hidden md:flex rounded-full"
                     variant="outline"
                   >
-                    <Link href="/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+                    <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
                       Dashboard
                     </Link>
                   </Button>
@@ -175,7 +175,7 @@ export function Navbar() {
                     className="hidden md:flex rounded-full"
                     variant="outline"
                   >
-                    <Link href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                    <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
                       Sign In
                     </Link>
                   </Button>
@@ -300,20 +300,20 @@ export function Navbar() {
                   </Link> */}
                   <Link
                     className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
-                    href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+                    href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
                   >
                     Create Webhook URL
                   </Link>
                   <SignedIn>
                     <Button asChild className="rounded-full" variant="outline">
-                      <Link href="/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+                      <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
                         Dashboard
                       </Link>
                     </Button>
                   </SignedIn>
                   <SignedOut>
                     <Button asChild className="rounded-full" variant="outline">
-                      <Link href="/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                      <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
                         Sign In
                       </Link>
                     </Button>
@@ -373,11 +373,11 @@ function NavigationMenuSection() {
                 <NavigationMenuLink asChild>
                   <Link
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/10 to-primary/5 p-6 no-underline outline-none focus:shadow-md"
-                    href="/webhooks/create"
+                    href="/app/webhooks/create"
                   >
                     <Icons.logo className="w-full h-full mb-2" />
                     <div className="mb-2 mt-4 text-lg font-medium">
-                      Unhook Platform
+                      Unhook AI Platform
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
                       Test webhooks locally, share URLs with your team, and
@@ -397,10 +397,7 @@ function NavigationMenuSection() {
                 Full webhook testing integration for IntelliJ, WebStorm, and
                 other JetBrains IDEs.
               </ListItem>
-              <ListItem
-                href="https://docs.unhook.sh/mcp-integration"
-                title="MCP Server"
-              >
+              <ListItem href="/mcp" title="MCP Server">
                 Use Cursor, Claude, and other MCP clients to test your webhooks.
               </ListItem>
               <ListItem

@@ -3,9 +3,13 @@ import { seed } from 'drizzle-seed';
 
 import { db } from './client';
 import {
+  ApiKeys,
   AuthCodes,
   Connections,
   Events,
+  ForwardingDestinations,
+  ForwardingExecutions,
+  ForwardingRules,
   OrgMembers,
   Orgs,
   Requests,
@@ -25,10 +29,18 @@ await db.delete(Connections);
 await db.delete(Events);
 await db.delete(AuthCodes);
 await db.delete(WebhookAccessRequests);
+await db.delete(ForwardingDestinations);
+await db.delete(ForwardingExecutions);
+await db.delete(ForwardingRules);
+await db.delete(ApiKeys);
 
 await seed(db, {
+  ApiKeys,
   Connections,
   Events,
+  ForwardingDestinations,
+  ForwardingExecutions,
+  ForwardingRules,
   OrgMembers,
   Orgs,
   Requests,
@@ -36,9 +48,18 @@ await seed(db, {
   WebhookAccessRequests,
   Webhooks,
 }).refine((funcs) => ({
+  ApiKeys: {
+    columns: {
+      key: funcs.default({
+        defaultValue: 'usk-live-300nYp2JItCuoiHhaioQv82QHwo',
+      }),
+      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+    },
+    count: 1,
+  },
   Connections: {
     columns: {
-      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
     },
     count: 1,
   },
@@ -71,7 +92,7 @@ await seed(db, {
   },
   OrgMembers: {
     columns: {
-      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
       userId: funcs.default({
         defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
       }),
@@ -81,9 +102,9 @@ await seed(db, {
   Orgs: {
     columns: {
       clerkOrgId: funcs.default({
-        defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j',
+        defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo',
       }),
-      id: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      id: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
     },
     count: 1,
   },
@@ -102,7 +123,7 @@ await seed(db, {
           },
         ],
       }),
-      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
       request: funcs.default({
         defaultValue: {
           body: Buffer.from(
@@ -146,17 +167,17 @@ await seed(db, {
       clerkId: funcs.default({
         defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
       }),
-      email: funcs.email(),
-      firstName: funcs.firstName(),
+      email: funcs.default({ defaultValue: 'chris.watts.t@gmail.com' }),
+      firstName: funcs.default({ defaultValue: 'Chris' }),
       id: funcs.default({ defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT' }),
-      lastName: funcs.lastName(),
+      lastName: funcs.default({ defaultValue: 'Watts' }),
       online: funcs.boolean(),
     },
     count: 1,
   },
   WebhookAccessRequests: {
     columns: {
-      webhookId: funcs.default({ defaultValue: 'wh_internal' }),
+      webhookId: funcs.default({ defaultValue: 'wh_seawatts' }),
     },
     count: 1,
   },
@@ -183,7 +204,7 @@ await seed(db, {
         },
       }),
       id: funcs.default({ defaultValue: 'wh_seawatts' }),
-      orgId: funcs.default({ defaultValue: 'org_2vCR1xwHHTLxE5m20AYewlc5y2j' }),
+      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       requestCount: funcs.int({ maxValue: 1000, minValue: 0 }),
       status: funcs.default({ defaultValue: 'active' }),

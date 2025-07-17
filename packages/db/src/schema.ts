@@ -120,8 +120,8 @@ export const Orgs = pgTable('orgs', {
     .primaryKey(),
   name: text('name').notNull(),
   // Stripe fields
-  stripeCustomerId: text('stripeCustomerId').unique(),
-  stripeSubscriptionId: text('stripeSubscriptionId').unique(),
+  stripeCustomerId: text('stripeCustomerId'),
+  stripeSubscriptionId: text('stripeSubscriptionId'),
   stripeSubscriptionStatus: stripeSubscriptionStatusEnum(
     'stripeSubscriptionStatus',
   ),
@@ -872,21 +872,6 @@ export const ApiKeys = pgTable('apiKeys', {
     })
     .notNull()
     .default(sql`auth.jwt()->>'org_id'`),
-  permissions: json('permissions')
-    .$type<{
-      read?: boolean;
-      write?: boolean;
-      delete?: boolean;
-      admin?: boolean;
-      webhookIds?: string[]; // Specific webhooks this key can access
-    }>()
-    .notNull()
-    .default({
-      admin: false,
-      delete: false,
-      read: true,
-      write: false,
-    }),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
     withTimezone: true,

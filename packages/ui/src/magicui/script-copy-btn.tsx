@@ -126,7 +126,7 @@ export function ScriptCopyBtn({
           </div>
           <Button
             aria-label={copied ? 'Copied' : 'Copy to clipboard'}
-            className="relative ml-2 rounded-md"
+            className="relative ml-2 rounded-md hidden md:block"
             onClick={copyToClipboard}
             size="icon"
             variant="outline"

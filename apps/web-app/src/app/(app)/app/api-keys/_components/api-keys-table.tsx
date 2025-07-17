@@ -30,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from '@unhook/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
 import { format } from 'date-fns';
 import { useState } from 'react';
 
@@ -63,12 +64,20 @@ export function ApiKeysTable() {
   const apiKeys = api.apiKeys.all.useQuery();
   const apiUtils = api.useUtils();
   const deleteApiKey = api.apiKeys.delete.useMutation({
+    onSettled: (_, __, variables) => {
+      setDeletingKeys((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.id);
+        return newSet;
+      });
+    },
     onSuccess: () => {
       apiUtils.apiKeys.all.invalidate();
     },
   });
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
+  const [deletingKeys, setDeletingKeys] = useState<Set<string>>(new Set());
 
   const toggleKeyVisibility = (id: string) => {
     setShowKeys((prev) => ({
@@ -90,6 +99,7 @@ export function ApiKeysTable() {
 
   const handleConfirmDelete = () => {
     if (keyToDelete) {
+      setDeletingKeys((prev) => new Set(prev).add(keyToDelete));
       deleteApiKey.mutate({ id: keyToDelete });
       setKeyToDelete(null);
     }
@@ -124,11 +134,16 @@ export function ApiKeysTable() {
             : // Show actual data when loaded
               apiKeys.data?.map((apiKey) => (
                 <TableRow key={apiKey.id}>
-                  <TableCell className="font-medium">{apiKey.name}</TableCell>
+                  <TableCell className="font-medium truncate max-w-40">
+                    <Tooltip>
+                      <TooltipTrigger>{apiKey.name}</TooltipTrigger>
+                      <TooltipContent>{apiKey.name}</TooltipContent>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Input
-                        className="font-mono text-sm"
+                        className="font-mono text-sm min-w-60"
                         readOnly
                         // type={showKeys[apiKey.id] ? 'text' : 'password'}
                         value={
@@ -152,7 +167,7 @@ export function ApiKeysTable() {
                       <CopyButton
                         className="h-8 w-8 p-0"
                         size="sm"
-                        text={apiKey.id}
+                        text={apiKey.key}
                         variant="outline"
                       />
                     </div>
@@ -173,12 +188,12 @@ export function ApiKeysTable() {
                       <AlertDialogTrigger asChild>
                         <Button
                           className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          disabled={deleteApiKey.isPending}
+                          disabled={deletingKeys.has(apiKey.id)}
                           onClick={() => handleDeleteClick(apiKey.id)}
                           size="sm"
                           variant="ghost"
                         >
-                          {deleteApiKey.isPending ? (
+                          {deletingKeys.has(apiKey.id) ? (
                             <IconLoader2 className="animate-spin" size="sm" />
                           ) : (
                             <IconTrash size="sm" />
@@ -201,10 +216,10 @@ export function ApiKeysTable() {
                           </AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            disabled={deleteApiKey.isPending}
+                            disabled={deletingKeys.has(apiKey.id)}
                             onClick={handleConfirmDelete}
                           >
-                            {deleteApiKey.isPending ? (
+                            {deletingKeys.has(apiKey.id) ? (
                               <>
                                 <IconLoader2
                                   className="mr-2 animate-spin"

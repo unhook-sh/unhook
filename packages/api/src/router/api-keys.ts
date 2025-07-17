@@ -36,16 +36,21 @@ export const apiKeysRouter = createTRPCRouter({
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
       if (!ctx.auth.userId) throw new Error('User ID is required');
 
-      const [apiKey] = await ctx.db
-        .insert(ApiKeys)
-        .values({
-          ...input,
-          orgId: ctx.auth.orgId,
-          userId: ctx.auth.userId,
-        })
-        .returning();
+      try {
+        const [apiKey] = await ctx.db
+          .insert(ApiKeys)
+          .values({
+            ...input,
+            orgId: ctx.auth.orgId,
+            userId: ctx.auth.userId,
+          })
+          .returning();
 
-      return apiKey;
+        return apiKey;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Failed to create API key');
+      }
     }),
 
   delete: protectedProcedure

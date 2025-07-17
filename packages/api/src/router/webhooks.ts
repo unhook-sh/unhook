@@ -1,4 +1,5 @@
 import {
+  ApiKeys,
   CreateWebhookTypeSchema,
   UpdateWebhookTypeSchema,
   Webhooks,
@@ -44,10 +45,17 @@ export const webhooksRouter = createTRPCRouter({
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
       if (!ctx.auth.userId) throw new Error('User ID is required');
 
+      const apiKey = await ctx.db.query.ApiKeys.findFirst({
+        where: and(eq(ApiKeys.orgId, ctx.auth.orgId)),
+      });
+
+      if (!apiKey) throw new Error('API key not found');
+
       const [webhook] = await ctx.db
         .insert(Webhooks)
         .values({
           ...input,
+          apiKey: apiKey.id,
           orgId: ctx.auth.orgId,
           userId: ctx.auth.userId,
         })

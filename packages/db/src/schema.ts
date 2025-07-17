@@ -297,6 +297,7 @@ export const Webhooks = pgTable('webhooks', {
 export type WebhookType = typeof Webhooks.$inferSelect;
 
 export const CreateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
+  apiKey: true,
   createdAt: true,
   orgId: true,
   updatedAt: true,

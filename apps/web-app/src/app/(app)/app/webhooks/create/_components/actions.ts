@@ -2,7 +2,7 @@
 
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { db } from '@unhook/db/client';
-import { OrgMembers, Orgs, Users, Webhooks } from '@unhook/db/schema';
+import { ApiKeys, OrgMembers, Orgs, Users, Webhooks } from '@unhook/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
@@ -125,10 +125,19 @@ export const createWebhook = action
       };
     }
 
+    const apiKey = await db.query.ApiKeys.findFirst({
+      where: and(eq(ApiKeys.orgId, targetOrgId)),
+    });
+
+    if (!apiKey) {
+      throw new Error('API key not found');
+    }
+
     // If no default webhook exists, create a new one
     const [webhook] = await db
       .insert(Webhooks)
       .values({
+        apiKey: apiKey.id,
         isPrivate,
         name: 'Default',
         orgId: targetOrgId,

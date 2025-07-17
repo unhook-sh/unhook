@@ -60,6 +60,302 @@ const drawerMenuVariants = {
   visible: { opacity: 1 },
 };
 
+// Logo component
+function Logo({ hasScrolled }: { hasScrolled: boolean }) {
+  return (
+    <Link className="flex items-center gap-1" href="/">
+      <Icons.logo className="size-12" />
+      <div className="flex items-center gap-2">
+        <p className="text-lg font-semibold text-primary">Unhook AI</p>
+        <Badge variant="secondary">Beta</Badge>
+      </div>
+    </Link>
+  );
+}
+
+// Desktop action buttons component
+function DesktopActionButtons() {
+  return (
+    <div className="flex items-center space-x-4">
+      <SignedOut>
+        <Link
+          className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
+          href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+        >
+          Create Webhook URL
+        </Link>
+      </SignedOut>
+      <SignedIn>
+        <Button
+          asChild
+          className="hidden md:flex rounded-full"
+          variant="outline"
+        >
+          <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+            Dashboard
+          </Link>
+        </Button>
+      </SignedIn>
+      <SignedOut>
+        <Button
+          asChild
+          className="hidden md:flex rounded-full"
+          variant="outline"
+        >
+          <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+            Sign In
+          </Link>
+        </Button>
+      </SignedOut>
+    </div>
+  );
+}
+
+// Mobile menu toggle button
+function MobileMenuToggle({
+  isOpen,
+  onToggle,
+}: {
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      className="md:hidden border border-border size-8 rounded-md cursor-pointer flex items-center justify-center"
+      onClick={onToggle}
+      type="button"
+    >
+      {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+    </button>
+  );
+}
+
+// Mobile menu item component
+function MobileMenuItem({
+  item,
+  isActive,
+  isAnchor,
+  onClose,
+}: {
+  item: { href: string; id: number; name: string };
+  isActive: boolean;
+  isAnchor: boolean;
+  onClose: () => void;
+}) {
+  if (isAnchor) {
+    return (
+      <a
+        className={`underline-offset-4 hover:text-primary/80 transition-colors ${
+          isActive ? 'text-primary font-medium' : 'text-primary/60'
+        }`}
+        href={item.href}
+        onClick={(e) => {
+          e.preventDefault();
+          const element = document.getElementById(item.href.substring(1));
+          element?.scrollIntoView({ behavior: 'smooth' });
+          onClose();
+        }}
+      >
+        {item.name}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      className="underline-offset-4 hover:text-primary/80 transition-colors text-primary/60"
+      href={item.href}
+      onClick={onClose}
+    >
+      {item.name}
+    </Link>
+  );
+}
+
+// Mobile menu content
+function MobileMenuContent({
+  isOpen,
+  onClose,
+  activeSection,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  activeSection: string;
+}) {
+  const isAnchorLink = (href: string) => href.startsWith('#');
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            animate="visible"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            exit="exit"
+            initial="hidden"
+            onClick={onClose}
+            transition={{ duration: 0.2 }}
+            variants={overlayVariants}
+          />
+
+          <motion.div
+            animate="visible"
+            className="fixed inset-x-0 w-[95%] mx-auto bottom-3 bg-background border border-border p-4 rounded-xl shadow-lg"
+            exit="exit"
+            initial="hidden"
+            variants={drawerVariants}
+          >
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <Link className="flex items-center gap-3" href="/">
+                  <Icons.logo className="size-7 md:size-10" />
+                  <p className="text-lg font-semibold text-primary">Unhook</p>
+                </Link>
+                <button
+                  className="border border-border rounded-md p-1 cursor-pointer"
+                  onClick={onClose}
+                  type="button"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              <motion.ul
+                className="flex flex-col text-sm mb-4 border border-border rounded-md"
+                variants={drawerMenuContainerVariants}
+              >
+                <AnimatePresence>
+                  {siteConfig.nav.links.map((item) => {
+                    const isAnchor = isAnchorLink(item.href);
+                    const isActive = isAnchor
+                      ? activeSection === item.href.substring(1)
+                      : false;
+
+                    return (
+                      <motion.li
+                        className="p-2.5 border-b border-border last:border-b-0"
+                        key={item.id}
+                        variants={drawerMenuVariants}
+                      >
+                        <MobileMenuItem
+                          isActive={isActive}
+                          isAnchor={isAnchor}
+                          item={item}
+                          onClose={onClose}
+                        />
+                      </motion.li>
+                    );
+                  })}
+                </AnimatePresence>
+              </motion.ul>
+
+              <div className="flex flex-col gap-2">
+                <Link
+                  className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
+                  href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+                >
+                  Create Webhook URL
+                </Link>
+                <SignedIn>
+                  <Button asChild className="rounded-full" variant="outline">
+                    <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+                      Dashboard
+                    </Link>
+                  </Button>
+                </SignedIn>
+                <SignedOut>
+                  <Button asChild className="rounded-full" variant="outline">
+                    <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                      Sign In
+                    </Link>
+                  </Button>
+                </SignedOut>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// Right side controls (GitHub stars, theme toggle, mobile menu)
+function RightSideControls({
+  isDrawerOpen,
+  toggleDrawer,
+}: {
+  isDrawerOpen: boolean;
+  toggleDrawer: () => void;
+}) {
+  return (
+    <div className="flex flex-row items-center gap-1 md:gap-3 shrink-0">
+      <DesktopActionButtons />
+      <GitHubStarsButtonWrapper
+        className="rounded-full"
+        repo="unhook-sh/unhook"
+      />
+      <ThemeToggle className="rounded-full" mode="toggle" />
+      <MobileMenuToggle isOpen={isDrawerOpen} onToggle={toggleDrawer} />
+    </div>
+  );
+}
+
+// Main navbar header component
+function NavbarHeader({
+  hasScrolled,
+  isDrawerOpen,
+  toggleDrawer,
+  activeSection,
+}: {
+  hasScrolled: boolean;
+  isDrawerOpen: boolean;
+  toggleDrawer: () => void;
+  activeSection: string;
+}) {
+  return (
+    <motion.header
+      animate={{ opacity: 1 }}
+      className={cn(
+        'sticky z-50 mx-4 flex justify-center transition-all duration-300 md:mx-0',
+        hasScrolled ? 'top-6' : 'top-4 mx-0',
+      )}
+      initial={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        animate={{ width: hasScrolled ? MAX_WIDTH : INITIAL_WIDTH }}
+        initial={{ width: INITIAL_WIDTH }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        <div
+          className={cn(
+            'mx-auto max-w-7xl rounded-2xl transition-all duration-300  xl:px-0',
+            hasScrolled
+              ? 'px-2 border border-border backdrop-blur-lg bg-background/75'
+              : 'shadow-none px-7',
+          )}
+        >
+          <div className="flex h-[56px] items-center justify-between pl-1 md:pl-2 pr-4">
+            <Logo hasScrolled={hasScrolled} />
+            <NavigationMenuSection />
+            <RightSideControls
+              isDrawerOpen={isDrawerOpen}
+              toggleDrawer={toggleDrawer}
+            />
+          </div>
+        </div>
+      </motion.div>
+
+      <MobileMenuContent
+        activeSection={activeSection}
+        isOpen={isDrawerOpen}
+        onClose={toggleDrawer}
+      />
+    </motion.header>
+  );
+}
+
+// Main Navbar component
 export function Navbar() {
   const { scrollY } = useScroll();
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -104,227 +400,14 @@ export function Navbar() {
   }, [scrollY]);
 
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
-  const handleOverlayClick = () => setIsDrawerOpen(false);
 
   return (
-    <motion.header
-      animate={{ opacity: 1 }}
-      className={cn(
-        'sticky z-50 mx-4 flex justify-center transition-all duration-300 md:mx-0',
-        hasScrolled ? 'top-6' : 'top-4 mx-0',
-      )}
-      initial={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div
-        animate={{ width: hasScrolled ? MAX_WIDTH : INITIAL_WIDTH }}
-        initial={{ width: INITIAL_WIDTH }}
-        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-      >
-        <div
-          className={cn(
-            'mx-auto max-w-7xl rounded-2xl transition-all duration-300  xl:px-0',
-            hasScrolled
-              ? 'px-2 border border-border backdrop-blur-lg bg-background/75'
-              : 'shadow-none px-7',
-          )}
-        >
-          <div className="flex h-[56px] items-center justify-between pl-1 md:pl-2 pr-4">
-            <Link className="flex items-center gap-1" href="/">
-              <Icons.logo className="size-12" />
-              {/* {!hasScrolled && ( */}
-              <div className="flex items-center gap-2">
-                <p className="text-lg font-semibold text-primary">Unhook AI</p>
-                <Badge variant="secondary">Beta</Badge>
-              </div>
-              {/* )} */}
-            </Link>
-
-            <NavigationMenuSection />
-
-            <div className="flex flex-row items-center gap-1 md:gap-3 shrink-0">
-              <div className="flex items-center space-x-4">
-                {/* <Link
-                  className="hidden md:flex items-center text-sm font-medium text-primary/80 hover:text-primary transition-colors"
-                  href="/pricing"
-                >
-                  Pricing
-                </Link> */}
-                <SignedOut>
-                  <Link
-                    className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
-                    href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
-                  >
-                    Create Webhook URL
-                  </Link>
-                </SignedOut>
-                <SignedIn>
-                  <Button
-                    asChild
-                    className="hidden md:flex rounded-full"
-                    variant="outline"
-                  >
-                    <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
-                      Dashboard
-                    </Link>
-                  </Button>
-                </SignedIn>
-                <SignedOut>
-                  <Button
-                    asChild
-                    className="hidden md:flex rounded-full"
-                    variant="outline"
-                  >
-                    <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
-                      Sign In
-                    </Link>
-                  </Button>
-                </SignedOut>
-              </div>
-              <GitHubStarsButtonWrapper
-                className="rounded-full"
-                repo="unhook-sh/unhook"
-              />
-              <ThemeToggle className="rounded-full" mode="toggle" />
-              <button
-                className="md:hidden border border-border size-8 rounded-md cursor-pointer flex items-center justify-center"
-                onClick={toggleDrawer}
-                type="button"
-              >
-                {isDrawerOpen ? (
-                  <X className="size-5" />
-                ) : (
-                  <Menu className="size-5" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {isDrawerOpen && (
-          <>
-            <motion.div
-              animate="visible"
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-              exit="exit"
-              initial="hidden"
-              onClick={handleOverlayClick}
-              transition={{ duration: 0.2 }}
-              variants={overlayVariants}
-            />
-
-            <motion.div
-              animate="visible"
-              className="fixed inset-x-0 w-[95%] mx-auto bottom-3 bg-background border border-border p-4 rounded-xl shadow-lg"
-              exit="exit"
-              initial="hidden"
-              variants={drawerVariants}
-            >
-              {/* Mobile menu content */}
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <Link className="flex items-center gap-3" href="/">
-                    <Icons.logo className="size-7 md:size-10" />
-                    <p className="text-lg font-semibold text-primary">Unhook</p>
-                  </Link>
-                  <button
-                    className="border border-border rounded-md p-1 cursor-pointer"
-                    onClick={toggleDrawer}
-                    type="button"
-                  >
-                    <X className="size-5" />
-                  </button>
-                </div>
-
-                <motion.ul
-                  className="flex flex-col text-sm mb-4 border border-border rounded-md"
-                  variants={drawerMenuContainerVariants}
-                >
-                  <AnimatePresence>
-                    {siteConfig.nav.links.map((item) => {
-                      const isAnchor = isAnchorLink(item.href);
-                      const isActive = isAnchor
-                        ? activeSection === item.href.substring(1)
-                        : false;
-
-                      return (
-                        <motion.li
-                          className="p-2.5 border-b border-border last:border-b-0"
-                          key={item.id}
-                          variants={drawerMenuVariants}
-                        >
-                          {isAnchor ? (
-                            <a
-                              className={`underline-offset-4 hover:text-primary/80 transition-colors ${
-                                isActive
-                                  ? 'text-primary font-medium'
-                                  : 'text-primary/60'
-                              }`}
-                              href={item.href}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                const element = document.getElementById(
-                                  item.href.substring(1),
-                                );
-                                element?.scrollIntoView({ behavior: 'smooth' });
-                                setIsDrawerOpen(false);
-                              }}
-                            >
-                              {item.name}
-                            </a>
-                          ) : (
-                            <Link
-                              className="underline-offset-4 hover:text-primary/80 transition-colors text-primary/60"
-                              href={item.href}
-                              onClick={() => setIsDrawerOpen(false)}
-                            >
-                              {item.name}
-                            </Link>
-                          )}
-                        </motion.li>
-                      );
-                    })}
-                  </AnimatePresence>
-                </motion.ul>
-
-                {/* Action buttons */}
-                <div className="flex flex-col gap-2">
-                  {/* <Link
-                    className="h-8 flex items-center justify-center text-sm font-medium text-primary/80 hover:text-primary transition-colors"
-                    href="/pricing"
-                  >
-                    Pricing
-                  </Link> */}
-                  <Link
-                    className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
-                    href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
-                  >
-                    Create Webhook URL
-                  </Link>
-                  <SignedIn>
-                    <Button asChild className="rounded-full" variant="outline">
-                      <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
-                        Dashboard
-                      </Link>
-                    </Button>
-                  </SignedIn>
-                  <SignedOut>
-                    <Button asChild className="rounded-full" variant="outline">
-                      <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
-                        Sign In
-                      </Link>
-                    </Button>
-                  </SignedOut>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </motion.header>
+    <NavbarHeader
+      activeSection={activeSection}
+      hasScrolled={hasScrolled}
+      isDrawerOpen={isDrawerOpen}
+      toggleDrawer={toggleDrawer}
+    />
   );
 }
 

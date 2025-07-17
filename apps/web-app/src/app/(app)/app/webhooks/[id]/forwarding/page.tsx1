@@ -12,6 +12,7 @@ interface ForwardingPageProps {
 }
 
 export default async function ForwardingPage({ params }: ForwardingPageProps) {
+  'use cache';
   const webhookId = (await params).id;
 
   return (

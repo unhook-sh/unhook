@@ -77,11 +77,21 @@ export const Users = pgTable('user', {
 });
 
 export const UsersRelations = relations(Users, ({ many }) => ({
+  apiKeys: many(ApiKeys),
   authCodes: many(AuthCodes),
   connections: many(Connections),
   events: many(Events),
+  forwardingDestinations: many(ForwardingDestinations),
+  forwardingExecutions: many(ForwardingExecutions),
+  forwardingRules: many(ForwardingRules),
   orgMembers: many(OrgMembers),
   requests: many(Requests),
+  webhookAccessRequestsAsRequester: many(WebhookAccessRequests, {
+    relationName: 'requester',
+  }),
+  webhookAccessRequestsAsResponder: many(WebhookAccessRequests, {
+    relationName: 'responder',
+  }),
   webhooks: many(Webhooks),
 }));
 
@@ -131,14 +141,19 @@ export const updateOrgSchema = createInsertSchema(Orgs).omit({
 });
 
 export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
+  apiKeys: many(ApiKeys),
   authCodes: many(AuthCodes),
   connections: many(Connections),
   createdByUser: one(Users, {
     fields: [Orgs.createdByUserId],
     references: [Users.id],
   }),
+  forwardingDestinations: many(ForwardingDestinations),
+  forwardingExecutions: many(ForwardingExecutions),
+  forwardingRules: many(ForwardingRules),
   orgMembers: many(OrgMembers),
   requests: many(Requests),
+  webhookAccessRequests: many(WebhookAccessRequests),
   webhooks: many(Webhooks),
 }));
 
@@ -289,12 +304,13 @@ export const WebhooksRelations = relations(Webhooks, ({ one, many }) => ({
   accessRequests: many(WebhookAccessRequests),
   connections: many(Connections),
   events: many(Events),
-  org: one(Orgs, {
+  forwardingRules: many(ForwardingRules),
+  orgId: one(Orgs, {
     fields: [Webhooks.orgId],
     references: [Orgs.id],
   }),
   requests: many(Requests),
-  user: one(Users, {
+  userId: one(Users, {
     fields: [Webhooks.userId],
     references: [Users.id],
   }),
@@ -409,6 +425,7 @@ export const UpdateEventTypeSchema = createUpdateSchema(Events).omit({
 });
 
 export const EventsRelations = relations(Events, ({ one, many }) => ({
+  forwardingExecutions: many(ForwardingExecutions),
   org: one(Orgs, {
     fields: [Events.orgId],
     references: [Orgs.id],
@@ -675,13 +692,15 @@ export const WebhookAccessRequests = pgTable(
       .references(() => Orgs.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
     requesterEmail: text('requesterEmail').notNull(),
     requesterId: varchar('requesterId')
       .references(() => Users.id, {
         onDelete: 'cascade',
       })
-      .notNull(),
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
     requesterMessage: text('requesterMessage'),
     respondedAt: timestamp('respondedAt', {
       mode: 'date',
@@ -821,6 +840,95 @@ export const AuthCodesRelations = relations(AuthCodes, ({ one }) => ({
   }),
 }));
 
+// API Keys Table
+export const ApiKeys = pgTable('apiKeys', {
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  expiresAt: timestamp('expiresAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'ak' }))
+    .notNull()
+    .primaryKey(),
+  isActive: boolean('isActive').notNull().default(true),
+  key: text('key')
+    .notNull()
+    .unique()
+    .$defaultFn(() => createId({ prefix: 'usk', prefixSeparator: '-live-' })),
+  lastUsedAt: timestamp('lastUsedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
+  name: text('name').notNull(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
+  permissions: json('permissions')
+    .$type<{
+      read?: boolean;
+      write?: boolean;
+      delete?: boolean;
+      admin?: boolean;
+      webhookIds?: string[]; // Specific webhooks this key can access
+    }>()
+    .notNull()
+    .default({
+      admin: false,
+      delete: false,
+      read: true,
+      write: false,
+    }),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+  userId: varchar('userId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'sub'`),
+});
+
+export type ApiKeyType = typeof ApiKeys.$inferSelect;
+
+export const CreateApiKeySchema = createInsertSchema(ApiKeys).omit({
+  createdAt: true,
+  id: true,
+  lastUsedAt: true,
+  orgId: true,
+  updatedAt: true,
+  userId: true,
+});
+
+export const UpdateApiKeySchema = createUpdateSchema(ApiKeys).omit({
+  createdAt: true,
+  id: true,
+  orgId: true,
+  updatedAt: true,
+  userId: true,
+});
+
+export const ApiKeysRelations = relations(ApiKeys, ({ one }) => ({
+  org: one(Orgs, {
+    fields: [ApiKeys.orgId],
+    references: [Orgs.id],
+  }),
+  user: one(Users, {
+    fields: [ApiKeys.userId],
+    references: [Users.id],
+  }),
+}));
+
 // Forwarding Destination Types
 export const destinationTypeEnum = pgEnum('destinationType', [
   'slack',
@@ -876,6 +984,12 @@ export const ForwardingDestinations = pgTable('forwardingDestinations', {
     mode: 'date',
     withTimezone: true,
   }).$onUpdateFn(() => new Date()),
+  userId: varchar('userId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'sub'`),
 });
 
 export type ForwardingDestinationType =
@@ -888,6 +1002,10 @@ export const ForwardingDestinationsRelations = relations(
     org: one(Orgs, {
       fields: [ForwardingDestinations.orgId],
       references: [Orgs.id],
+    }),
+    user: one(Users, {
+      fields: [ForwardingDestinations.userId],
+      references: [Users.id],
     }),
   }),
 );
@@ -970,6 +1088,12 @@ export const ForwardingRules = pgTable(
       mode: 'date',
       withTimezone: true,
     }).$onUpdateFn(() => new Date()),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
     webhookId: varchar('webhookId', { length: 128 })
       .references(() => Webhooks.id, {
         onDelete: 'cascade',
@@ -1005,6 +1129,10 @@ export const ForwardingRulesRelations = relations(
       fields: [ForwardingRules.orgId],
       references: [Orgs.id],
     }),
+    user: one(Users, {
+      fields: [ForwardingRules.userId],
+      references: [Users.id],
+    }),
     webhook: one(Webhooks, {
       fields: [ForwardingRules.webhookId],
       references: [Webhooks.id],
@@ -1039,6 +1167,12 @@ export const ForwardingExecutions = pgTable(
       .$defaultFn(() => createId({ prefix: 'fexec' }))
       .notNull()
       .primaryKey(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'org_id'`),
     // Original payload before transformation
     originalPayload: json('originalPayload').notNull(),
     ruleId: varchar('ruleId', { length: 128 })
@@ -1049,6 +1183,12 @@ export const ForwardingExecutions = pgTable(
     success: boolean('success').notNull(),
     // Transformed payload after JavaScript execution
     transformedPayload: json('transformedPayload'),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(sql`auth.jwt()->>'sub'`),
   },
   (table) => [
     // Index for finding executions by rule
@@ -1069,9 +1209,17 @@ export const ForwardingExecutionsRelations = relations(
       fields: [ForwardingExecutions.eventId],
       references: [Events.id],
     }),
+    org: one(Orgs, {
+      fields: [ForwardingExecutions.orgId],
+      references: [Orgs.id],
+    }),
     rule: one(ForwardingRules, {
       fields: [ForwardingExecutions.ruleId],
       references: [ForwardingRules.id],
+    }),
+    user: one(Users, {
+      fields: [ForwardingExecutions.userId],
+      references: [Users.id],
     }),
   }),
 );

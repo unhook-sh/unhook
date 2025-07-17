@@ -1,10 +1,6 @@
 import Image from 'next/image';
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <main className="container grid min-h-screen place-items-center mx-auto">
       <div className="flex w-full max-w-md flex-col items-center gap-8">

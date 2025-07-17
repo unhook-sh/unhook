@@ -1,5 +1,6 @@
 'use client';
 
+import { api } from '@unhook/api/react';
 import { Button } from '@unhook/ui/components/button';
 import {
   Dialog,
@@ -15,28 +16,27 @@ import { Icons } from '@unhook/ui/custom/icons';
 import { useState } from 'react';
 
 export function CreateApiKeyDialog() {
+  const apiUtils = api.useUtils();
+
+  const createApiKey = api.apiKeys.create.useMutation({
+    onSuccess: () => {
+      apiUtils.apiKeys.all.invalidate();
+    },
+  });
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = async () => {
     if (!name.trim()) return;
 
-    setIsCreating(true);
     try {
-      // TODO: Implement actual API key creation
-      console.log('Creating API key:', name);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await createApiKey.mutateAsync({ name });
 
       // Reset form and close dialog
       setName('');
       setOpen(false);
     } catch (error) {
       console.error('Failed to create API key:', error);
-    } finally {
-      setIsCreating(false);
     }
   };
 
@@ -76,14 +76,17 @@ export function CreateApiKeyDialog() {
 
         <DialogFooter>
           <Button
-            disabled={isCreating}
+            disabled={createApiKey.isPending}
             onClick={handleCancel}
             variant="outline"
           >
             Cancel
           </Button>
-          <Button disabled={!name.trim() || isCreating} onClick={handleCreate}>
-            {isCreating ? (
+          <Button
+            disabled={!name.trim() || createApiKey.isPending}
+            onClick={handleCreate}
+          >
+            {createApiKey.isPending ? (
               <>
                 <Icons.Spinner className="animate-spin" size="sm" />
                 Creating...

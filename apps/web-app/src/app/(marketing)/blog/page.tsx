@@ -58,12 +58,14 @@ export const metadata = constructMetadata({
   title: 'Blog',
 });
 
-export default async function Blog() {
+async function getBlogArticles() {
+  'use cache';
   const allPosts = await getBlogPosts();
+  return allPosts.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+}
 
-  const articles = await Promise.all(
-    allPosts.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)),
-  );
+export default async function Blog() {
+  const articles = await getBlogArticles();
 
   return (
     <>

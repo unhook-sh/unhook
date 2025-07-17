@@ -1,4 +1,3 @@
-import { AnalyticsProviders } from '@unhook/analytics';
 import { ReactScan } from '@unhook/ui/custom/react-scan';
 import { ThemeProvider } from '@unhook/ui/custom/theme';
 import { cn } from '@unhook/ui/lib/utils';
@@ -11,8 +10,9 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import '@unhook/ui/globals.css';
 
 import { ClerkProvider } from '@clerk/nextjs';
-
+import { AnalyticsProviders } from '@unhook/analytics/providers';
 import { TRPCReactProvider } from '@unhook/api/react';
+import { Suspense } from 'react';
 import { env } from '~/env.server';
 
 export const metadata: Metadata = {
@@ -45,7 +45,7 @@ export const viewport: Viewport = {
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-export default async function RootLayout(props: { children: React.ReactNode }) {
+export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -58,18 +58,20 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         {isDevelopment && <ReactScan />}
         <NuqsAdapter>
           <TRPCReactProvider>
-            <ClerkProvider>
-              <AnalyticsProviders identifyUser>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="dark"
-                  enableSystem
-                >
-                  {props.children}
-                  <Toaster />
-                </ThemeProvider>
-              </AnalyticsProviders>
-            </ClerkProvider>
+            <Suspense>
+              <ClerkProvider>
+                <AnalyticsProviders identifyUser>
+                  <ThemeProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    enableSystem
+                  >
+                    {props.children}
+                    <Toaster />
+                  </ThemeProvider>
+                </AnalyticsProviders>
+              </ClerkProvider>
+            </Suspense>
           </TRPCReactProvider>
         </NuqsAdapter>
       </body>

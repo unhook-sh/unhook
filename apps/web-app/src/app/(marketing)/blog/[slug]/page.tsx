@@ -48,18 +48,19 @@ export async function generateMetadata({
   };
 }
 
-export default async function Blog({
-  params,
-}: {
-  params: Promise<{
-    slug: string;
-  }>;
-}) {
-  const { slug } = await params;
+async function getBlogPost(slug: string) {
+  'use cache';
   const post = await getPost(slug);
   if (!post) {
     notFound();
   }
+  return post;
+}
+
+async function BlogContent({ params }: { params: Promise<{ slug: string }> }) {
+  'use cache';
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
 
   return (
     <section id="blog">
@@ -104,13 +105,24 @@ export default async function Blog({
             </div>
           )}
         </Suspense>
-        <div className="flex flex-col">
-          <h1 className="title font-medium text-3xl tracking-tighter">
-            {post.metadata.title}
-          </h1>
-        </div>
-        <div className="flex justify-between items-center text-sm">
-          <Suspense fallback={<p className="h-5" />}>
+        <Suspense
+          fallback={
+            <div className="space-y-4">
+              <div className="h-8 bg-gray-200 animate-pulse rounded" />
+              <div className="h-4 bg-gray-200 animate-pulse rounded w-1/3" />
+              <div className="h-4 bg-gray-200 animate-pulse rounded w-1/4" />
+              <div className="prose prose-lg max-w-full">
+                <div className="h-64 bg-gray-200 animate-pulse rounded" />
+              </div>
+            </div>
+          }
+        >
+          <div className="flex flex-col">
+            <h1 className="title font-medium text-3xl tracking-tighter">
+              {post.metadata.title}
+            </h1>
+          </div>
+          <div className="flex justify-between items-center text-sm">
             <div className="flex items-center space-x-2">
               <time
                 className="text-sm text-gray-500"
@@ -119,22 +131,48 @@ export default async function Blog({
                 {formatDate(post.metadata.publishedAt)}
               </time>
             </div>
-          </Suspense>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Author
-            image={'/author.jpg'}
-            name={post.metadata.author}
-            twitterUsername={post.metadata.author}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Author
+              image={'/author.jpg'}
+              name={post.metadata.author}
+              twitterUsername={post.metadata.author}
+            />
+          </div>
+          <article
+            className="prose prose-lg dark:prose-invert mx-auto max-w-full prose-headings:font-semibold prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg prose-img:border prose-img:shadow-md"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: we're using a trusted source
+            dangerouslySetInnerHTML={{ __html: post.source }}
           />
-        </div>
-        <article
-          className="prose prose-lg dark:prose-invert mx-auto max-w-full prose-headings:font-semibold prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-lg prose-img:border prose-img:shadow-md"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: we're using a trusted source
-          dangerouslySetInnerHTML={{ __html: post.source }}
-        />
+        </Suspense>
       </div>
       <CTASection />
     </section>
+  );
+}
+export default async function Blog({
+  params,
+}: {
+  params: Promise<{
+    slug: string;
+  }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto w-full max-w-[800px] px-4 sm:px-6 lg:px-8 space-y-4 my-12">
+          <div className="space-y-4">
+            <div className="h-8 bg-gray-200 animate-pulse rounded" />
+            <div className="h-4 bg-gray-200 animate-pulse rounded w-1/3" />
+            <div className="h-4 bg-gray-200 animate-pulse rounded w-1/4" />
+            <div className="prose prose-lg max-w-full">
+              <div className="h-64 bg-gray-200 animate-pulse rounded" />
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <BlogContent params={params} />
+    </Suspense>
   );
 }

@@ -7,21 +7,24 @@ const nextConfig = {
     // Forward browser logs to the terminal for easier debugging
     browserDebugInfoInTerminal: true,
 
+    // cacheLife: true,
+
     // Activate new client-side router improvements
-    clientSegmentCache: true,
+    clientSegmentCache: true, // will be renamed to cacheComponents in Next.js 16
 
     // Explore route composition and segment overrides via DevTools
-    devtoolSegmentExplorer: true, // will be renamed to cacheComponents in Next.js 16
-
+    devtoolSegmentExplorer: true,
     // Enable new caching and pre-rendering behavior
-    // dynamicIO: true,
+    dynamicIO: true,
 
+    enablePrerenderSourceMaps: true,
     // Enable support for `global-not-found`, which allows you to more easily define a global 404 page.
     globalNotFound: true,
     scrollRestoration: true,
 
     // Enable persistent caching for the turbopack dev server and build.
     turbopackPersistentCaching: true,
+    useCache: true,
   },
   images: {
     remotePatterns: [

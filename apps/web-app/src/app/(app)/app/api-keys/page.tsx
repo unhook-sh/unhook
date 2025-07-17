@@ -3,6 +3,9 @@ import { ApiKeysTable } from './_components/api-keys-table';
 import { CreateApiKeyDialog } from './_components/create-api-key-dialog';
 
 export default function ApiKeysPage() {
+  // const api = await getApi();
+  // void api.apiKeys.all.prefetch();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

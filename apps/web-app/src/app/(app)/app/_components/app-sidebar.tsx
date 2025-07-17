@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  IconBrandGithub,
   IconCamera,
   IconChartBar,
   IconDashboard,
@@ -8,14 +9,10 @@ import {
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
-  IconHelp,
   IconInnerShadowTop,
   IconListDetails,
   IconReport,
-  IconSearch,
   IconSettings,
-  IconUsers,
 } from '@tabler/icons-react';
 import {
   Sidebar,
@@ -27,7 +24,6 @@ import {
   SidebarMenuItem,
 } from '@unhook/ui/sidebar';
 import type * as React from 'react';
-import { NavDocuments } from './nav-documents';
 import { NavMain } from './nav-main';
 import { NavSecondary } from './nav-secondary';
 import { NavUser } from './nav-user';
@@ -102,45 +98,46 @@ const data = {
     {
       icon: IconDashboard,
       title: 'Dashboard',
-      url: '#',
+      url: '/app/dashboard',
     },
     {
       icon: IconListDetails,
-      title: 'Lifecycle',
-      url: '#',
+      title: 'Webhooks',
+      url: '/app/webhooks',
     },
+
+    // {
+    //   icon: IconFolder,
+    //   title: 'Integrations',
+    //   url: '/app/integrations',
+    // },
     {
       icon: IconChartBar,
-      title: 'Analytics',
-      url: '#',
+      title: 'API Keys',
+      url: '/app/api-keys',
     },
     {
-      icon: IconFolder,
-      title: 'Projects',
-      url: '#',
-    },
-    {
-      icon: IconUsers,
-      title: 'Team',
-      url: '#',
+      icon: IconSettings,
+      title: 'Settings',
+      url: '/app/settings',
     },
   ],
   navSecondary: [
     {
-      icon: IconSettings,
-      title: 'Settings',
-      url: '#',
+      icon: IconBrandGithub,
+      title: 'GitHub',
+      url: 'https://github.com/unhook-sh/unhook',
     },
     {
-      icon: IconHelp,
-      title: 'Get Help',
+      icon: IconFileDescription,
+      title: 'Docs',
       url: '#',
     },
-    {
-      icon: IconSearch,
-      title: 'Search',
-      url: '#',
-    },
+    // {
+    //   icon: IconSearch,
+    //   title: 'Search',
+    //   url: '#',
+    // },
   ],
   user: {
     avatar: '/avatars/shadcn.jpg',
@@ -159,7 +156,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/">
+              <a href="/app/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
               </a>
@@ -169,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary className="mt-auto" items={data.navSecondary} />
       </SidebarContent>
       <SidebarFooter>

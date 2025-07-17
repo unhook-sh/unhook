@@ -23,6 +23,7 @@ interface BillingPageProps {
 }
 
 export default async function BillingPage({ searchParams }: BillingPageProps) {
+  'use cache';
   const { success, canceled } = await searchParams;
   const { orgId } = await auth();
 

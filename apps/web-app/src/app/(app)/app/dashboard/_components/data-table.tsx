@@ -400,7 +400,7 @@ export function DataTable({
       className="w-full flex-col justify-start gap-6"
       defaultValue="outline"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex items-center justify-between">
         <Label className="sr-only" htmlFor="view-selector">
           View
         </Label>
@@ -470,7 +470,7 @@ export function DataTable({
         </div>
       </div>
       <TabsContent
-        className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
+        className="relative flex flex-col gap-4 overflow-auto"
         value="outline"
       >
         <div className="overflow-hidden rounded-lg border">
@@ -524,7 +524,7 @@ export function DataTable({
             </Table>
           </DndContext>
         </div>
-        <div className="flex items-center justify-between px-4">
+        <div className="flex items-center justify-between">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
             {table.getFilteredSelectedRowModel().rows.length} of{' '}
             {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -602,19 +602,13 @@ export function DataTable({
           </div>
         </div>
       </TabsContent>
-      <TabsContent
-        className="flex flex-col px-4 lg:px-6"
-        value="past-performance"
-      >
+      <TabsContent className="flex flex-col" value="past-performance">
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed" />
       </TabsContent>
-      <TabsContent className="flex flex-col px-4 lg:px-6" value="key-personnel">
+      <TabsContent className="flex flex-col" value="key-personnel">
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed" />
       </TabsContent>
-      <TabsContent
-        className="flex flex-col px-4 lg:px-6"
-        value="focus-documents"
-      >
+      <TabsContent className="flex flex-col" value="focus-documents">
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed" />
       </TabsContent>
     </Tabs>
@@ -658,7 +652,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             Showing total visitors for the last 6 months
           </DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+        <div className="flex flex-col gap-4 overflow-y-auto text-sm">
           {!isMobile && (
             <>
               <ChartContainer config={chartConfig}>

@@ -1,3 +1,4 @@
+import { apiKeysRouter } from './router/api-keys';
 import { authRouter } from './router/auth';
 import { connectionsRouter } from './router/connections';
 import { eventsRouter } from './router/events';
@@ -8,6 +9,7 @@ import { webhooksRouter } from './router/webhooks';
 import { createTRPCRouter } from './trpc';
 
 export const appRouter = createTRPCRouter({
+  apiKeys: apiKeysRouter,
   auth: authRouter,
   connections: connectionsRouter,
   events: eventsRouter,

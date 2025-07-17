@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@unhook/ui/select';
 import { Suspense, useState } from 'react';
-import { CliLoginButton } from './cli-login-button';
+import { AuthCodeLoginButton } from './auth-code-login-button';
 
 export function WebhookSelector() {
   const [selectedWebhookId, setSelectedWebhookId] = useState<string>();
@@ -31,7 +31,7 @@ export function WebhookSelector() {
         </SelectContent>
       </Select>
 
-      {selectedWebhookId && <CliLoginButton />}
+      {selectedWebhookId && <AuthCodeLoginButton />}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@unhook/ui/card';
 import { Suspense } from 'react';
-import { CliTokenContent } from './_components/auth-code-content';
+import { AuthCodeContent } from './_components/auth-code-content';
 import { SignInDifferentAccountButton } from './_components/sign-in-different-account-button';
 
 export default function Page() {
@@ -21,7 +21,7 @@ export default function Page() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <CliTokenContent />
+          <AuthCodeContent />
         </CardContent>
       </Card>
       <Suspense>

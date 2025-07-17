@@ -1,11 +1,14 @@
 import { WebhookDetailView } from '~/app/(app)/app/_components/webhooks/webhook-detail-view';
 
 interface WebhookDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function WebhookDetailPage({ params }: WebhookDetailPageProps) {
-  return <WebhookDetailView id={params.id} />;
+export default async function WebhookDetailPage({
+  params,
+}: WebhookDetailPageProps) {
+  const id = (await params).id;
+  return <WebhookDetailView id={id} />;
 }

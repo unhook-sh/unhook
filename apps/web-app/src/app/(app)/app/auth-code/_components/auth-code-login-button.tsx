@@ -7,12 +7,13 @@ import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 import { createAuthCode } from '../actions';
 
-export function CliLoginButton() {
+export function AuthCodeLoginButton() {
   const [error, setError] = useState<string>();
   const posthog = usePostHog();
 
   const { executeAsync, status } = useAction(createAuthCode);
   const isPending = status === 'executing';
+  const hasSucceeded = status === 'hasSucceeded';
 
   const onLogin = useCallback(async () => {
     try {
@@ -91,6 +92,14 @@ export function CliLoginButton() {
         <span className="text-sm text-muted-foreground animate-in fade-in">
           You'll be redirected back shortly...
         </span>
+      )}
+      {hasSucceeded && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <Icons.CheckCircle2 size="sm" variant="primary" />
+            Login successful! You can close this window.
+          </div>
+        </div>
       )}
     </div>
   );

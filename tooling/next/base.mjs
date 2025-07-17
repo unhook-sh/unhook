@@ -14,7 +14,7 @@ const nextConfig = {
     devtoolSegmentExplorer: true, // will be renamed to cacheComponents in Next.js 16
 
     // Enable new caching and pre-rendering behavior
-    dynamicIO: true,
+    // dynamicIO: true,
 
     // Enable support for `global-not-found`, which allows you to more easily define a global 404 page.
     globalNotFound: true,

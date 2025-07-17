@@ -32,15 +32,17 @@ export function RequestView() {
   const [requests, { isLoading, refetch }] =
     api.requests.all.useSuspenseQuery();
 
-  const filteredRequests = requests.filter(
-    (request) =>
-      request.destination.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      request.request?.method
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()),
-  );
+  const filteredRequests = requests.filter((request) => {
+    const name = request.destination?.name?.toLowerCase();
+    const method = request.request?.method?.toLowerCase();
+    if (!name || !method) {
+      return false;
+    }
+    return (
+      name.includes(searchQuery.toLowerCase()) ||
+      method?.includes(searchQuery.toLowerCase())
+    );
+  });
 
   const handleRequestSelect = (request: RequestType) => {
     setSelectedRequest(request);

@@ -3,6 +3,7 @@
 import { ScriptCopyBtn } from '@unhook/ui/magicui/script-copy-btn';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { HeroTerminalSection } from '~/app/(marketing)/_components/sections/hero-terminal-section';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
@@ -124,7 +125,13 @@ export function HeroSection() {
         initial="hidden"
         variants={terminalVariants}
       >
-        <HeroTerminalSection />
+        <Suspense
+          fallback={
+            <div className="w-full h-[500px] bg-muted animate-pulse rounded-lg" />
+          }
+        >
+          <HeroTerminalSection />
+        </Suspense>
       </motion.div>
     </section>
   );

@@ -6,13 +6,13 @@ import { DestinationsList } from './destinations-list';
 import { ForwardingRulesList } from './forwarding-rules-list';
 
 interface ForwardingPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function ForwardingPage({ params }: ForwardingPageProps) {
-  const webhookId = params.id;
+export default async function ForwardingPage({ params }: ForwardingPageProps) {
+  const webhookId = (await params).id;
 
   return (
     <div className="container mx-auto py-8 space-y-8">

@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
-import { CliLoginButton } from './cli-login-button';
+import { AuthCodeLoginButton } from './auth-code-login-button';
 import { OrgSelectorProvider } from './org-selector';
 
-export function CliTokenContent() {
+export function AuthCodeContent() {
   const [selectedOrgId, setSelectedOrgId] = useState<string>();
 
   return (
@@ -13,7 +13,7 @@ export function CliTokenContent() {
           setSelectedOrgId(orgId);
         }}
       />
-      {selectedOrgId && <CliLoginButton />}
+      {selectedOrgId && <AuthCodeLoginButton />}
     </>
   );
 }

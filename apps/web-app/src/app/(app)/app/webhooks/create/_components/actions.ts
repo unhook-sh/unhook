@@ -14,18 +14,21 @@ export const createWebhook = action
   .inputSchema(
     z.object({
       isPrivate: z.boolean().optional().default(false),
+      orgId: z.string().optional(),
       orgName: z.string(),
     }),
   )
   .action(async ({ parsedInput }) => {
-    const { isPrivate, orgName } = parsedInput;
+    const { isPrivate, orgName, orgId } = parsedInput;
     const user = await auth();
 
     if (!user.userId) {
       throw new Error('User not found');
     }
 
-    if (!user.orgId) {
+    // Use provided orgId or fall back to user's orgId from auth context
+    const targetOrgId = orgId || user.orgId;
+    if (!targetOrgId) {
       throw new Error('Organization not found');
     }
 
@@ -67,9 +70,9 @@ export const createWebhook = action
     const [org] = await db
       .insert(Orgs)
       .values({
-        clerkOrgId: user.orgId,
+        clerkOrgId: targetOrgId,
         createdByUserId: user.userId,
-        id: user.orgId,
+        id: targetOrgId,
         name: orgName,
       })
       .onConflictDoUpdate({
@@ -111,7 +114,7 @@ export const createWebhook = action
       where: and(
         eq(Webhooks.name, 'Default'),
         eq(Webhooks.userId, user.userId),
-        eq(Webhooks.orgId, org.id),
+        eq(Webhooks.orgId, targetOrgId),
       ),
     });
 
@@ -128,7 +131,7 @@ export const createWebhook = action
       .values({
         isPrivate,
         name: 'Default',
-        orgId: org.id,
+        orgId: targetOrgId,
         userId: user.userId,
       })
       .returning();

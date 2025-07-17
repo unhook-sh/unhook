@@ -53,7 +53,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   }, [activeOrg?.id, onSelect]);
 
   const initializeWebhook = React.useCallback(
-    async ({ orgName }: { orgName: string }) => {
+    async ({ orgName, orgId }: { orgName: string; orgId?: string }) => {
       // Prevent multiple simultaneous initialization attempts
       if (isInitializing || isInitialized) {
         return;
@@ -74,6 +74,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
           }
 
           await executeCreateWebhook({
+            orgId,
             orgName,
           });
         } catch (error) {
@@ -163,6 +164,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
 
                         // Initialize webhook after organization creation
                         await initializeWebhook({
+                          orgId: clerkOrg.data.id,
                           orgName: clerkOrg.data.name,
                         });
 
@@ -205,6 +207,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
 
                     // Initialize webhook after organization selection
                     await initializeWebhook({
+                      orgId: membership.organization.id,
                       orgName: membership.organization.name,
                     });
 

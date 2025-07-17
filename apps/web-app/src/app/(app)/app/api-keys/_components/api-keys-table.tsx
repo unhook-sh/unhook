@@ -61,7 +61,7 @@ function SkeletonRow() {
 }
 
 export function ApiKeysTable() {
-  const apiKeys = api.apiKeys.all.useQuery();
+  const apiKeys = api.apiKeys.allWithLastUsage.useQuery();
   const apiUtils = api.useUtils();
   const deleteApiKey = api.apiKeys.delete.useMutation({
     onSettled: (_, __, variables) => {
@@ -72,7 +72,7 @@ export function ApiKeysTable() {
       });
     },
     onSuccess: () => {
-      apiUtils.apiKeys.all.invalidate();
+      apiUtils.apiKeys.allWithLastUsage.invalidate();
     },
   });
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
@@ -176,8 +176,11 @@ export function ApiKeysTable() {
                     {format(apiKey.createdAt, "MMMM d, yyyy 'at' h:mm a")}
                   </TableCell>
                   <TableCell>
-                    {apiKey.lastUsedAt
-                      ? format(apiKey.lastUsedAt, "MMMM d, yyyy 'at' h:mm a")
+                    {apiKey.lastUsage
+                      ? format(
+                          apiKey.lastUsage.createdAt,
+                          "MMMM d, yyyy 'at' h:mm a",
+                        )
                       : 'Never'}
                   </TableCell>
                   <TableCell>

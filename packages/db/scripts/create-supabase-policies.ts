@@ -101,6 +101,14 @@ const policyConfigs: Record<string, PolicyConfig> = {
     ],
     tableName: 'apiKeys',
   },
+  apiKeyUsage: {
+    policies: [
+      createUserOwnershipPolicy('SELECT', 'userId'),
+      createUserOwnershipPolicy('INSERT', 'userId'),
+      createOrgOwnershipPolicy('ALL', 'orgId'),
+    ],
+    tableName: 'apiKeyUsage',
+  },
   authCodes: {
     policies: [
       createUserOwnershipPolicy('SELECT', 'userId'),

@@ -46,6 +46,12 @@ export const stripeSubscriptionStatusEnum = pgEnum('stripeSubscriptionStatus', [
   'unpaid',
 ]);
 
+export const apiKeyUsageTypeEnum = pgEnum('apiKeyUsageType', [
+  'webhook-event',
+  'mcp-server',
+  'webhook-event-request',
+]);
+
 export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
 export const WebhookStatusType = z.enum(webhookStatusEnum.enumValues).Enum;
 export const LocalConnectionStatusType = z.enum(
@@ -56,6 +62,7 @@ export const RequestStatusType = z.enum(requestStatusEnum.enumValues).Enum;
 export const StripeSubscriptionStatusType = z.enum(
   stripeSubscriptionStatusEnum.enumValues,
 ).Enum;
+export const ApiKeyUsageTypeType = z.enum(apiKeyUsageTypeEnum.enumValues).Enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
@@ -78,6 +85,7 @@ export const Users = pgTable('user', {
 
 export const UsersRelations = relations(Users, ({ many }) => ({
   apiKeys: many(ApiKeys),
+  apiKeyUsage: many(ApiKeyUsage),
   authCodes: many(AuthCodes),
   connections: many(Connections),
   events: many(Events),
@@ -142,6 +150,7 @@ export const updateOrgSchema = createInsertSchema(Orgs).omit({
 
 export const OrgsRelations = relations(Orgs, ({ one, many }) => ({
   apiKeys: many(ApiKeys),
+  apiKeyUsage: many(ApiKeyUsage),
   authCodes: many(AuthCodes),
   connections: many(Connections),
   createdByUser: one(Users, {
@@ -236,10 +245,11 @@ export type WebhookConfig = {
 };
 
 export const Webhooks = pgTable('webhooks', {
-  apiKey: text('apiKey')
-    .$defaultFn(() => createId({ prefix: 'whsk' }))
-    .notNull()
-    .unique(),
+  apiKey: varchar('apiKey', { length: 128 })
+    .references(() => ApiKeys.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
   config: json('config')
     .$type<WebhookConfig>()
     .default({
@@ -302,6 +312,10 @@ export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
 
 export const WebhooksRelations = relations(Webhooks, ({ one, many }) => ({
   accessRequests: many(WebhookAccessRequests),
+  apiKey: one(ApiKeys, {
+    fields: [Webhooks.apiKey],
+    references: [ApiKeys.id],
+  }),
   connections: many(Connections),
   events: many(Events),
   forwardingRules: many(ForwardingRules),
@@ -903,13 +917,83 @@ export const UpdateApiKeySchema = createUpdateSchema(ApiKeys).omit({
   userId: true,
 });
 
-export const ApiKeysRelations = relations(ApiKeys, ({ one }) => ({
+export const ApiKeysRelations = relations(ApiKeys, ({ one, many }) => ({
   org: one(Orgs, {
     fields: [ApiKeys.orgId],
     references: [Orgs.id],
   }),
+  usage: many(ApiKeyUsage),
   user: one(Users, {
     fields: [ApiKeys.userId],
+    references: [Users.id],
+  }),
+  webhooks: many(Webhooks),
+}));
+
+// API Key Usage Table
+export const ApiKeyUsage = pgTable('apiKeyUsage', {
+  apiKeyId: varchar('apiKeyId', { length: 128 })
+    .references(() => ApiKeys.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  id: varchar('id', { length: 128 })
+    .$defaultFn(() => createId({ prefix: 'aku' }))
+    .notNull()
+    .primaryKey(),
+  // Generic metadata for different usage types
+  metadata: json('metadata').$type<{
+    webhookId?: string;
+    requestId?: string;
+    eventId?: string;
+    // Add more fields as needed for different usage types
+  }>(),
+  orgId: varchar('orgId')
+    .references(() => Orgs.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'org_id'`),
+  type: apiKeyUsageTypeEnum('type').notNull(),
+  updatedAt: timestamp('updatedAt', {
+    mode: 'date',
+    withTimezone: true,
+  }).$onUpdateFn(() => new Date()),
+  userId: varchar('userId')
+    .references(() => Users.id, {
+      onDelete: 'cascade',
+    })
+    .notNull()
+    .default(sql`auth.jwt()->>'sub'`),
+});
+
+export type ApiKeyUsageType = typeof ApiKeyUsage.$inferSelect;
+
+export const CreateApiKeyUsageSchema = createInsertSchema(ApiKeyUsage).omit({
+  createdAt: true,
+  id: true,
+  orgId: true,
+  updatedAt: true,
+  userId: true,
+});
+
+export const ApiKeyUsageRelations = relations(ApiKeyUsage, ({ one }) => ({
+  apiKey: one(ApiKeys, {
+    fields: [ApiKeyUsage.apiKeyId],
+    references: [ApiKeys.id],
+  }),
+  org: one(Orgs, {
+    fields: [ApiKeyUsage.orgId],
+    references: [Orgs.id],
+  }),
+  user: one(Users, {
+    fields: [ApiKeyUsage.userId],
     references: [Users.id],
   }),
 }));

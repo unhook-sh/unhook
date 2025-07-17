@@ -1,5 +1,6 @@
 import { posthog } from '@unhook/analytics/posthog/server';
 import { filterHeaders } from '@unhook/client/utils/headers';
+import { trackApiKeyUsage } from '@unhook/db';
 import { db } from '@unhook/db/client';
 import { Events, Orgs, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
@@ -108,6 +109,47 @@ export async function POST(
           docs: 'https://docs.unhook.sh',
           error: 'Invalid API key',
           help: 'The provided API key does not match the webhook configuration',
+        },
+        { status: 401 },
+      );
+    }
+  }
+
+  // Track API key usage if provided
+  if (apiKey) {
+    const dbApiKey = await trackApiKeyUsage({
+      apiKey,
+      metadata: {
+        webhookId: webhook.id,
+      },
+      orgId: webhook.orgId,
+      type: 'webhook-event',
+      userId: webhook.userId,
+    });
+
+    if (dbApiKey?.isActive) {
+      posthog.capture({
+        distinctId: userId,
+        event: 'api_key_usage',
+        properties: {
+          apiKey: dbApiKey.key,
+          webhookId,
+        },
+      });
+    } else if (dbApiKey?.isActive === false && webhook.isPrivate) {
+      posthog.capture({
+        distinctId: userId,
+        event: 'api_key_error',
+        properties: {
+          error: 'api_key_invalid',
+          webhookId,
+        },
+      });
+      return NextResponse.json(
+        {
+          docs: 'https://docs.unhook.sh',
+          error: 'Invalid API key',
+          help: 'The provided API key is invalid or has been deactivated',
         },
         { status: 401 },
       );

@@ -4,6 +4,7 @@ import { seed } from 'drizzle-seed';
 import { db } from './client';
 import {
   ApiKeys,
+  ApiKeyUsage,
   AuthCodes,
   Connections,
   Events,
@@ -32,10 +33,12 @@ await db.delete(WebhookAccessRequests);
 await db.delete(ForwardingDestinations);
 await db.delete(ForwardingExecutions);
 await db.delete(ForwardingRules);
+await db.delete(ApiKeyUsage);
 await db.delete(ApiKeys);
 
 await seed(db, {
   ApiKeys,
+  ApiKeyUsage,
   Connections,
   Events,
   ForwardingDestinations,
@@ -50,12 +53,39 @@ await seed(db, {
 }).refine((funcs) => ({
   ApiKeys: {
     columns: {
+      id: funcs.default({ defaultValue: 'ak_300nYp2JItCuoiHhaioQv82QHwo' }),
       key: funcs.default({
         defaultValue: 'usk-live-300nYp2JItCuoiHhaioQv82QHwo',
       }),
       orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
     },
     count: 1,
+  },
+  ApiKeyUsage: {
+    columns: {
+      apiKeyId: funcs.default({
+        defaultValue: 'ak_300nYp2JItCuoiHhaioQv82QHwo',
+      }),
+      createdAt: funcs.date({
+        maxDate: new Date(),
+        minDate: subDays(new Date(), 5),
+      }),
+      metadata: funcs.default({
+        defaultValue: {
+          eventId: 'evt_123',
+          requestId: 'req_123',
+          webhookId: 'wh_seawatts',
+        },
+      }),
+      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      type: funcs.valuesFromArray({
+        values: ['webhook-event', 'mcp-server', 'webhook-event-request'],
+      }),
+      userId: funcs.default({
+        defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+      }),
+    },
+    count: 10,
   },
   Connections: {
     columns: {

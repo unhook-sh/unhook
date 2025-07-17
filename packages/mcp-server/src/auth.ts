@@ -1,6 +1,10 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
+import { trackApiKeyUsage } from '@unhook/db';
+import { db } from '@unhook/db/client';
+import { ApiKeys } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
+import { eq } from 'drizzle-orm';
 
 const log = debug('unhook:mcp-server:auth');
 
@@ -23,6 +27,45 @@ export const verifyToken = async (
   if (!bearerToken) return undefined;
 
   try {
+    // First, check if this is an API key
+    const apiKeyRecord = await db.query.ApiKeys.findFirst({
+      where: eq(ApiKeys.key, bearerToken),
+    });
+
+    if (apiKeyRecord?.isActive) {
+      // This is a valid API key, track usage
+      await trackApiKeyUsage({
+        apiKey: bearerToken,
+        metadata: {},
+        orgId: apiKeyRecord.orgId,
+        type: 'mcp-server',
+        userId: apiKeyRecord.userId,
+      });
+
+      // Return auth info for API key
+      return {
+        clientId: apiKeyRecord.userId,
+        extra: {
+          email: undefined, // API keys don't have email info
+          firstName: undefined,
+          lastName: undefined,
+          orgId: apiKeyRecord.orgId,
+          permissions: [],
+          role: 'user',
+          sessionId: `api-key-${apiKeyRecord.id}`,
+          timestamp: new Date().toISOString(),
+          userId: apiKeyRecord.userId,
+        },
+        scopes: [
+          'read:webhooks',
+          'write:webhooks',
+          'read:events',
+          'write:events',
+        ],
+        token: bearerToken,
+      };
+    }
+
     // Create a mock request with the authorization header
     const mockHeaders = new Headers(req.headers);
     mockHeaders.set('Authorization', `Bearer ${bearerToken}`);

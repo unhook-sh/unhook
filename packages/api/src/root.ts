@@ -1,3 +1,4 @@
+import { apiKeyUsageRouter } from './router/api-key-usage';
 import { apiKeysRouter } from './router/api-keys';
 import { authRouter } from './router/auth';
 import { connectionsRouter } from './router/connections';
@@ -10,6 +11,7 @@ import { createTRPCRouter } from './trpc';
 
 export const appRouter = createTRPCRouter({
   apiKeys: apiKeysRouter,
+  apiKeyUsage: apiKeyUsageRouter,
   auth: authRouter,
   connections: connectionsRouter,
   events: eventsRouter,

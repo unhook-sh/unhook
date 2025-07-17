@@ -1,4 +1,4 @@
-import { ApiKeys, CreateApiKeySchema } from '@unhook/db/schema';
+import { ApiKeys, ApiKeyUsage, CreateApiKeySchema } from '@unhook/db/schema';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
@@ -14,6 +14,36 @@ export const apiKeysRouter = createTRPCRouter({
       .orderBy(desc(ApiKeys.updatedAt));
 
     return apiKeys;
+  }),
+
+  allWithLastUsage: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+    // Get all API keys
+    const apiKeys = await ctx.db
+      .select()
+      .from(ApiKeys)
+      .where(eq(ApiKeys.orgId, ctx.auth.orgId))
+      .orderBy(desc(ApiKeys.updatedAt));
+
+    // For each API key, get the most recent usage
+    const apiKeysWithLastUsage = await Promise.all(
+      apiKeys.map(async (apiKey) => {
+        const lastUsage = await ctx.db
+          .select()
+          .from(ApiKeyUsage)
+          .where(eq(ApiKeyUsage.apiKeyId, apiKey.id))
+          .orderBy(desc(ApiKeyUsage.createdAt))
+          .limit(1);
+
+        return {
+          ...apiKey,
+          lastUsage: lastUsage[0] || null,
+        };
+      }),
+    );
+
+    return apiKeysWithLastUsage;
   }),
 
   byId: protectedProcedure

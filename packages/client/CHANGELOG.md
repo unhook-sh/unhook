@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.5.10
+
+### Patch Changes
+
+- [`bfb3a6c`](https://github.com/unhook-sh/unhook/commit/bfb3a6c2d0bf09e6c5f096727ac1459ac286b8ff) Thanks [@seawatts](https://github.com/seawatts)! - Fix issues with init
+
 ## 0.5.9
 
 ### Patch Changes

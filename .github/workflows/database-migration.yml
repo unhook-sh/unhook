@@ -36,7 +36,7 @@ jobs:
         run: bun run build --filter=@unhook/db...
 
       - name: Run database migration
-        run: bun run db:migrate
+        run: cd packages/db && bun run migrate
         env:
           # Production database environment variables
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

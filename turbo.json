@@ -81,27 +81,62 @@
     },
     "gen-migration": {
       "cache": false,
-      "env": ["DATABASE_*", "POSTGRES_*"],
+      "env": [
+        "DATABASE_*",
+        "POSTGRES_*",
+        "SUPABASE_*",
+        "CLERK_*",
+        "STRIPE_*",
+        "NODE_ENV"
+      ],
       "interactive": true
     },
     "migrate": {
       "cache": false,
-      "env": ["DATABASE_*", "POSTGRES_*"],
+      "env": [
+        "DATABASE_*",
+        "POSTGRES_*",
+        "SUPABASE_*",
+        "CLERK_*",
+        "STRIPE_*",
+        "NODE_ENV"
+      ],
       "interactive": true
     },
     "push": {
       "cache": false,
-      "env": ["DATABASE_*", "POSTGRES_*"],
+      "env": [
+        "DATABASE_*",
+        "POSTGRES_*",
+        "SUPABASE_*",
+        "CLERK_*",
+        "STRIPE_*",
+        "NODE_ENV"
+      ],
       "interactive": true
     },
     "seed": {
       "cache": false,
-      "env": ["DATABASE_*", "POSTGRES_*", "SUPABASE_*"],
+      "env": [
+        "DATABASE_*",
+        "POSTGRES_*",
+        "SUPABASE_*",
+        "CLERK_*",
+        "STRIPE_*",
+        "NODE_ENV"
+      ],
       "interactive": true
     },
     "studio": {
       "cache": false,
-      "env": ["DATABASE_*", "POSTGRES_*"],
+      "env": [
+        "DATABASE_*",
+        "POSTGRES_*",
+        "SUPABASE_*",
+        "CLERK_*",
+        "STRIPE_*",
+        "NODE_ENV"
+      ],
       "persistent": true
     },
     "test": {

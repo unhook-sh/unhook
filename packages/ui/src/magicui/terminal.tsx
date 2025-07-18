@@ -1,10 +1,10 @@
 'use client';
 
-import { Badge } from '@unhook/ui/badge';
-import { cn } from '@unhook/ui/lib/utils';
 import { FileIcon } from 'lucide-react';
 import { type MotionProps, motion } from 'motion/react';
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { Badge } from '../components/badge';
+import { cn } from '../lib/utils';
 
 interface AnimatedSpanProps extends MotionProps {
   delay?: number;

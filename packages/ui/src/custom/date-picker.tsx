@@ -1,12 +1,11 @@
 'use client';
 
-import { cn } from '@unhook/ui/lib/utils';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
-
 import { Button } from '../components/button';
 import { Calendar } from '../components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/popover';
+import { cn } from '../lib/utils';
 
 export const DatePicker = function DatePickerCmp({
   date,

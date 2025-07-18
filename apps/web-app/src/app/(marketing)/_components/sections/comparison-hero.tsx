@@ -1,7 +1,7 @@
 'use client';
 
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
 import { AnimatedShinyText } from '@unhook/ui/magicui/animated-shiny-text';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { WordFadeIn } from '@unhook/ui/magicui/word-fade-in';

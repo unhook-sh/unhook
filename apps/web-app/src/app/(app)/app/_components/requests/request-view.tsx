@@ -2,14 +2,14 @@
 
 import { api } from '@unhook/api/react';
 import type { RequestType } from '@unhook/db/schema';
-import { Button } from '@unhook/ui/components/button';
-import { Input } from '@unhook/ui/components/input';
+import { Button } from '@unhook/ui/button';
+import { Input } from '@unhook/ui/input';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@unhook/ui/components/tooltip';
+} from '@unhook/ui/tooltip';
 import { Filter, RefreshCw, Search } from 'lucide-react';
 import { useState } from 'react';
 import { FilterArea } from '~/app/(app)/app/_components/requests/filter-area';

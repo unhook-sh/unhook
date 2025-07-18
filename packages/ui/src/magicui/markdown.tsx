@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { cn } from '@unhook/ui/lib/utils';
+
 import { marked } from 'marked';
 import { memo, type PropsWithChildren, useId, useMemo } from 'react';
 import ReactMarkdown, {
@@ -7,6 +7,7 @@ import ReactMarkdown, {
   type ExtraProps,
 } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { cn } from '../lib/utils';
 import { CodeBlock, CodeBlockCode } from './code-block';
 
 export type MarkdownProps = {

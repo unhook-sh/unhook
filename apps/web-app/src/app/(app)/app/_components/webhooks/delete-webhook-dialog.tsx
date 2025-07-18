@@ -8,8 +8,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@unhook/ui/components/alert-dialog';
-import { Button } from '@unhook/ui/components/button';
+} from '@unhook/ui/alert-dialog';
+import { Button } from '@unhook/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import type { Webhook } from '~/types/webhook';

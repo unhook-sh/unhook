@@ -1,13 +1,13 @@
 'use client';
 
-import { Badge } from '@unhook/ui/components/badge';
+import { Badge } from '@unhook/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@unhook/ui/components/card';
+} from '@unhook/ui/card';
 import { motion } from 'motion/react';
 
 interface Competitor {

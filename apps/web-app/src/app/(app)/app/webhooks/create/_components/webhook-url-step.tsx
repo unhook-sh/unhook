@@ -1,7 +1,7 @@
-import { Alert, AlertDescription } from '@unhook/ui/components/alert';
-import { Input } from '@unhook/ui/components/input';
-import { Label } from '@unhook/ui/components/label';
+import { Alert, AlertDescription } from '@unhook/ui/alert';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
+import { Input } from '@unhook/ui/input';
+import { Label } from '@unhook/ui/label';
 
 interface WebhookUrlStepProps {
   webhookUrl: string;

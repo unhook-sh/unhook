@@ -1,9 +1,9 @@
 'use client';
 
-import { cn } from '@unhook/ui/lib/utils';
 import { ChevronDownIcon } from 'lucide-react';
 import type React from 'react';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { cn } from '../lib/utils';
 import { Markdown } from './markdown';
 import { type Mode, useTextStream } from './response-stream';
 

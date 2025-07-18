@@ -1,8 +1,8 @@
-import { Button } from '@unhook/ui/components/button';
-import { Card } from '@unhook/ui/components/card';
-import { Label } from '@unhook/ui/components/label';
-import { Switch } from '@unhook/ui/components/switch';
+import { Button } from '@unhook/ui/button';
+import { Card } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
+import { Label } from '@unhook/ui/label';
+import { Switch } from '@unhook/ui/switch';
 
 interface PrivateStepProps {
   value: boolean;

@@ -4,7 +4,7 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "ui": "@unhook/ui/components",
+    "ui": "@unhook/ui",
     "utils": "@unhook/ui/lib/utils"
   },
   "iconLibrary": "lucide",

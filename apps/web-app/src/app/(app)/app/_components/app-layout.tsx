@@ -1,4 +1,4 @@
-import { SidebarInset, SidebarProvider } from '@unhook/ui/components/sidebar';
+import { SidebarInset, SidebarProvider } from '@unhook/ui/sidebar';
 import { cookies } from 'next/headers';
 import type { PropsWithChildren } from 'react';
 // import { AppSidebar } from '~/app/(app)/_components/app-sidebar';

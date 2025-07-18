@@ -1,6 +1,6 @@
-import { Input } from '@unhook/ui/components/input';
-import { Label } from '@unhook/ui/components/label';
 import { H4, P } from '@unhook/ui/custom/typography';
+import { Input } from '@unhook/ui/input';
+import { Label } from '@unhook/ui/label';
 
 interface ToStepProps {
   value: string;

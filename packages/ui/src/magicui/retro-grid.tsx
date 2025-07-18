@@ -1,4 +1,4 @@
-import { cn } from '@unhook/ui/lib/utils';
+import { cn } from '../lib/utils';
 
 export function RetroGrid({ className }: { className?: string }) {
   return (

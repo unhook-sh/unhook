@@ -1,15 +1,15 @@
 'use client';
 
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@unhook/ui/components/dropdown-menu';
-import { Skeleton } from '@unhook/ui/components/skeleton';
+} from '@unhook/ui/dropdown-menu';
+import { Skeleton } from '@unhook/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@unhook/ui/components/table';
+} from '@unhook/ui/table';
 import { formatDistanceToNow } from 'date-fns';
 import { MoreHorizontal, Play, Square, Trash2 } from 'lucide-react';
 import { useState } from 'react';

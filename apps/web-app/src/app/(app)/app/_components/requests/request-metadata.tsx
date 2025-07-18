@@ -1,16 +1,16 @@
 'use client';
 
 import type { RequestType } from '@unhook/db/schema';
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
-import { ScrollArea } from '@unhook/ui/components/scroll-area';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { cn } from '@unhook/ui/lib/utils';
+import { ScrollArea } from '@unhook/ui/scroll-area';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@unhook/ui/components/tooltip';
-import { cn } from '@unhook/ui/lib/utils';
+} from '@unhook/ui/tooltip';
 import { ArrowDown, ArrowUp, Copy, Shield, X } from 'lucide-react';
 import { useState } from 'react';
 

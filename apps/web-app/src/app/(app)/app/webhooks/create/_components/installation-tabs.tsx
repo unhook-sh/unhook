@@ -1,14 +1,9 @@
-import { Alert, AlertDescription } from '@unhook/ui/components/alert';
-import { Label } from '@unhook/ui/components/label';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@unhook/ui/components/tabs';
-import { Textarea } from '@unhook/ui/components/textarea';
+import { Alert, AlertDescription } from '@unhook/ui/alert';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
 import { Icons } from '@unhook/ui/custom/icons';
+import { Label } from '@unhook/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
+import { Textarea } from '@unhook/ui/textarea';
 
 interface InstallationTabsProps {
   authCode: string;

@@ -1,4 +1,4 @@
-import { cn } from '@unhook/ui/lib/utils';
+import { cn } from '../lib/utils';
 
 export const SphereMask = ({ reverse = false }: { reverse?: boolean }) => {
   return (

@@ -1,8 +1,8 @@
 'use client';
 
-import { cn } from '@unhook/ui/lib/utils';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { cn } from '../lib/utils';
 
 export type Mode = 'typewriter' | 'fade';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from '@unhook/ui/components/card';
+import { Card, CardContent } from '@unhook/ui/card';
 import type { Webhook } from '~/types/webhook';
 
 interface WebhookMetricsProps {

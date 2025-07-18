@@ -1,4 +1,4 @@
-import { Input } from '@unhook/ui/components/input';
+import { Input } from '@unhook/ui/input';
 
 interface NameStepProps {
   value: string;

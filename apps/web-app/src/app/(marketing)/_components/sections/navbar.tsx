@@ -1,8 +1,11 @@
 'use client';
 
 import { SignedIn, SignedOut } from '@clerk/nextjs';
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { GitHubStarsButtonWrapper } from '@unhook/ui/custom/github-stars-button/button-wrapper';
+import { ThemeToggle } from '@unhook/ui/custom/theme';
+import { cn } from '@unhook/ui/lib/utils';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,10 +13,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@unhook/ui/components/navigation-menu';
-import { GitHubStarsButtonWrapper } from '@unhook/ui/custom/github-stars-button/button-wrapper';
-import { ThemeToggle } from '@unhook/ui/custom/theme';
-import { cn } from '@unhook/ui/lib/utils';
+} from '@unhook/ui/navigation-menu';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion, useScroll } from 'motion/react';
 import Link from 'next/link';

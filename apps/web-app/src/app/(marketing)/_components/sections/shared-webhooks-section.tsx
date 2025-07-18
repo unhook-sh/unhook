@@ -1,7 +1,7 @@
 'use client';
 
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { CodeBlock, CodeBlockCode } from '@unhook/ui/magicui/code-block';
 import { File, Folder, Tree } from '@unhook/ui/magicui/file-tree';

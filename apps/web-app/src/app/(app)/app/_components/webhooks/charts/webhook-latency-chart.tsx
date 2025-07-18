@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartContainer } from '@unhook/ui/components/chart';
+import { ChartContainer } from '@unhook/ui/chart';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Area,

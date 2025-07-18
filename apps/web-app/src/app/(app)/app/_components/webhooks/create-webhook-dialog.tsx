@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
+import { Button } from '@unhook/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@unhook/ui/components/dialog';
-import { Input } from '@unhook/ui/components/input';
-import { Label } from '@unhook/ui/components/label';
+} from '@unhook/ui/dialog';
+import { Input } from '@unhook/ui/input';
+import { Label } from '@unhook/ui/label';
 import { Loader2 } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';

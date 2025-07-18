@@ -1,5 +1,5 @@
 'use client';
-import { Button } from '@unhook/ui/components/button';
+import { Button } from '@unhook/ui/button';
 
 export function CloseWindowButton() {
   return (

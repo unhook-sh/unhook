@@ -2,7 +2,6 @@
 
 import { useUser } from '@clerk/nextjs/client';
 import { useApi } from '@unhook/api/client';
-import { Skeleton } from '@unhook/ui/components/skeleton';
 import { Icons } from '@unhook/ui/custom/icons';
 import {
   DropdownMenu,
@@ -16,6 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@unhook/ui/sidebar';
+import { Skeleton } from '@unhook/ui/skeleton';
 import { ChevronDown, FolderKanban } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';

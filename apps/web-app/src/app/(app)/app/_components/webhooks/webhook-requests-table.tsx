@@ -2,8 +2,8 @@
 
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { RequestType } from '@unhook/db/schema';
-import { Badge } from '@unhook/ui/components/badge';
-import { Skeleton } from '@unhook/ui/components/skeleton';
+import { Badge } from '@unhook/ui/badge';
+import { Skeleton } from '@unhook/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@unhook/ui/components/table';
+} from '@unhook/ui/table';
 import { format } from 'date-fns';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';

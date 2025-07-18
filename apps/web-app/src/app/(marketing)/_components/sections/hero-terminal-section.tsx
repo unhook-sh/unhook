@@ -1,16 +1,16 @@
 import {
+  AnimatedSpan,
+  Terminal,
+  TypingAnimation,
+} from '@unhook/ui/magicui/terminal';
+import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@unhook/ui/components/table';
-import {
-  AnimatedSpan,
-  Terminal,
-  TypingAnimation,
-} from '@unhook/ui/magicui/terminal';
+} from '@unhook/ui/table';
 import { Clock, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

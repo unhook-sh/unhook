@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
+import { Button } from '@unhook/ui/button';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 export function CTASection() {

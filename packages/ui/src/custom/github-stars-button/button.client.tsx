@@ -1,7 +1,7 @@
 'use client';
 
-import { Icons } from '@unhook/ui/custom/icons';
-import { cn } from '@unhook/ui/lib/utils';
+import { cn } from '../../lib/utils';
+import { Icons } from '../icons';
 
 export function GitHubStarsButtonClient({
   className,

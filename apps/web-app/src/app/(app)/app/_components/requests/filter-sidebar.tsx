@@ -1,13 +1,13 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
-import { Checkbox } from '@unhook/ui/components/checkbox';
+import { Button } from '@unhook/ui/button';
+import { Checkbox } from '@unhook/ui/checkbox';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@unhook/ui/components/collapsible';
-import { Input } from '@unhook/ui/components/input';
+} from '@unhook/ui/collapsible';
+import { Input } from '@unhook/ui/input';
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +15,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-} from '@unhook/ui/components/sidebar';
+} from '@unhook/ui/sidebar';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { useState } from 'react';
 

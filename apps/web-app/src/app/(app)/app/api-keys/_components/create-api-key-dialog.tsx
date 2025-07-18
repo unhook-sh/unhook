@@ -1,7 +1,8 @@
 'use client';
 
 import { api } from '@unhook/api/react';
-import { Button } from '@unhook/ui/components/button';
+import { Button } from '@unhook/ui/button';
+import { Icons } from '@unhook/ui/custom/icons';
 import {
   Dialog,
   DialogContent,
@@ -10,9 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@unhook/ui/components/dialog';
-import { Input } from '@unhook/ui/components/input';
-import { Icons } from '@unhook/ui/custom/icons';
+} from '@unhook/ui/dialog';
+import { Input } from '@unhook/ui/input';
 import { useState } from 'react';
 
 export function CreateApiKeyDialog() {

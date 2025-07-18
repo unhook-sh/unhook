@@ -1,7 +1,6 @@
 'use client';
 
 import { CalendarIcon } from '@radix-ui/react-icons';
-import { cn } from '@unhook/ui/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
 import { addDays, format } from 'date-fns';
 import { useSearchParams } from 'next/navigation';
@@ -10,6 +9,7 @@ import type { DateRange } from 'react-day-picker';
 import { Button, type buttonVariants } from '../components/button';
 import { Calendar } from '../components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/popover';
+import { cn } from '../lib/utils';
 
 interface DateRangePickerProps
   extends React.ComponentPropsWithoutRef<typeof PopoverContent> {

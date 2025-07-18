@@ -1,20 +1,20 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
+import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@unhook/ui/components/card';
+} from '@unhook/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@unhook/ui/components/dropdown-menu';
-import { Tabs, TabsContent } from '@unhook/ui/components/tabs';
+} from '@unhook/ui/dropdown-menu';
+import { Tabs, TabsContent } from '@unhook/ui/tabs';
 import { Calendar, Clock, Download, Filter } from 'lucide-react';
 import { useState } from 'react';
 import { WebhookConnectionsChart } from '~/app/(app)/app/_components/webhooks/charts/webhook-connections-chart';

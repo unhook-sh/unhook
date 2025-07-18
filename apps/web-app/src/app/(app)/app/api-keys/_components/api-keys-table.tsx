@@ -85,7 +85,7 @@ export function ApiKeysTable() {
   return (
     <div className="rounded-lg border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted sticky top-0 z-10">
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>API Key</TableHead>

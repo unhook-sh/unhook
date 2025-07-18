@@ -1,7 +1,7 @@
 'use client';
 
-import { cn } from '@unhook/ui/lib/utils';
 import { motion, type Variants } from 'motion/react';
+import { cn } from '../lib/utils';
 
 interface WordFadeInProps {
   words: string;

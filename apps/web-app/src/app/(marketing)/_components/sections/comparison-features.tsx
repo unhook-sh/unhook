@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@unhook/ui/components/card';
+} from '@unhook/ui/card';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { Check, X } from 'lucide-react';

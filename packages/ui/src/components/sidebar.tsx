@@ -1,28 +1,28 @@
 'use client';
 
 import { Slot } from '@radix-ui/react-slot';
-import { Button } from '@unhook/ui/components/button';
-import { Input } from '@unhook/ui/components/input';
-import { Separator } from '@unhook/ui/components/separator';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { PanelLeftIcon } from 'lucide-react';
+import * as React from 'react';
+import { useIsMobile } from '../hooks/use-mobile';
+import { cn } from '../lib/utils';
+import { Button } from './button';
+import { Input } from './input';
+import { Separator } from './separator';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@unhook/ui/components/sheet';
-import { Skeleton } from '@unhook/ui/components/skeleton';
+} from './sheet';
+import { Skeleton } from './skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@unhook/ui/components/tooltip';
-import { useIsMobile } from '@unhook/ui/hooks/use-mobile';
-import { cn } from '@unhook/ui/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { PanelLeftIcon } from 'lucide-react';
-import * as React from 'react';
+} from './tooltip';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

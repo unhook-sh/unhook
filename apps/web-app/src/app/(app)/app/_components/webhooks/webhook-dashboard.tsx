@@ -1,13 +1,8 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
-import { Input } from '@unhook/ui/components/input';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@unhook/ui/components/tabs';
+import { Button } from '@unhook/ui/button';
+import { Input } from '@unhook/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
 import { Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { CreateWebhookDialog } from '~/app/(app)/app/_components/webhooks/create-webhook-dialog';

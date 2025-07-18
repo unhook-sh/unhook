@@ -3,7 +3,6 @@
 import { useRefreshAuth, useUser } from '@clerk/nextjs/client';
 import { Button } from '@unhook/ui/button';
 import { Checkbox } from '@unhook/ui/checkbox';
-import { Label } from '@unhook/ui/components/label';
 import { Icons } from '@unhook/ui/custom/icons';
 import { P } from '@unhook/ui/custom/typography';
 import {
@@ -15,6 +14,7 @@ import {
   DialogTitle,
 } from '@unhook/ui/dialog';
 import { Input } from '@unhook/ui/input';
+import { Label } from '@unhook/ui/label';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';

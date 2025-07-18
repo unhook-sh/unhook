@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
+import { Button } from '@unhook/ui/button';
 import { NeonGradientCard } from '@unhook/ui/magicui/neon-gradient-card';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { WordFadeIn } from '@unhook/ui/magicui/word-fade-in';

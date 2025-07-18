@@ -1,5 +1,5 @@
-import { Input } from '@unhook/ui/components/input';
-import { Label } from '@unhook/ui/components/label';
+import { Input } from '@unhook/ui/input';
+import { Label } from '@unhook/ui/label';
 
 interface FromStepProps {
   value: string;

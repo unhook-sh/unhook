@@ -1,35 +1,30 @@
 'use client';
 
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@unhook/ui/components/card';
+} from '@unhook/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@unhook/ui/components/dropdown-menu';
-import { Input } from '@unhook/ui/components/input';
-import { Skeleton } from '@unhook/ui/components/skeleton';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@unhook/ui/components/tabs';
+} from '@unhook/ui/dropdown-menu';
+import { Input } from '@unhook/ui/input';
+import { Skeleton } from '@unhook/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@unhook/ui/components/tooltip';
+} from '@unhook/ui/tooltip';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
   ArrowLeft,

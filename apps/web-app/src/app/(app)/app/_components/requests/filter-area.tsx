@@ -1,21 +1,21 @@
 'use client';
 
-import { Button } from '@unhook/ui/components/button';
-import { Checkbox } from '@unhook/ui/components/checkbox';
+import { Button } from '@unhook/ui/button';
+import { Checkbox } from '@unhook/ui/checkbox';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@unhook/ui/components/collapsible';
-import { Input } from '@unhook/ui/components/input';
+} from '@unhook/ui/collapsible';
+import { Input } from '@unhook/ui/input';
+import { cn } from '@unhook/ui/lib/utils';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@unhook/ui/components/select';
-import { cn } from '@unhook/ui/lib/utils';
+} from '@unhook/ui/select';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { useState } from 'react';
 

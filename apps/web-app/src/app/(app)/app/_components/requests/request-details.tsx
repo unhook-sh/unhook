@@ -1,15 +1,10 @@
 'use client';
 
 import type { RequestType } from '@unhook/db/schema';
-import { Button } from '@unhook/ui/components/button';
-import { ScrollArea } from '@unhook/ui/components/scroll-area';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@unhook/ui/components/tabs';
+import { Button } from '@unhook/ui/button';
 import { cn } from '@unhook/ui/lib/utils';
+import { ScrollArea } from '@unhook/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
 import { ChevronDown, ChevronUp, Copy, X } from 'lucide-react';
 import { useState } from 'react';
 

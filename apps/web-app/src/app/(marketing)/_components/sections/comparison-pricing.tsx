@@ -1,13 +1,8 @@
 'use client';
 
-import { Badge } from '@unhook/ui/components/badge';
-import { Button } from '@unhook/ui/components/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@unhook/ui/components/card';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { NeonGradientCard } from '@unhook/ui/magicui/neon-gradient-card';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';

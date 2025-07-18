@@ -6,10 +6,6 @@
     "rootDir": "src",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "types": ["node", "vscode", "bun", "vitest/globals"]
-    // "baseUrl": ".",
-    // "paths": {
-    //   "~/*": ["src/*"]
-    // }
   },
   "exclude": ["node_modules", "dist"],
   "extends": "@unhook/tsconfig/react-library.json",

@@ -1,12 +1,12 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
   "aliases": {
-    "components": "@unhook/ui/components",
-    "hooks": "@unhook/ui/hooks",
-    "lib": "@unhook/ui/lib",
-    "magicui": "@unhook/ui/magicui",
-    "ui": "@unhook/ui/components",
-    "utils": "@unhook/ui/lib/utils"
+    "components": "../components",
+    "hooks": "../hooks",
+    "lib": "../lib",
+    "magicui": "../magicui",
+    "ui": "../components",
+    "utils": "../lib/utils"
   },
   "iconLibrary": "lucide",
   "rsc": true,

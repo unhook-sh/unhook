@@ -134,14 +134,25 @@ export async function getOrCreateCustomer({
   name?: string;
   metadata?: Record<string, string>;
 }) {
-  // First, try to find existing customer by email
-  const existingCustomers = await stripe.customers.list({
-    email,
-    limit: 1,
+  // Use Stripe's customer search to find existing customers by email
+  const existingCustomers = await stripe.customers.search({
+    limit: 100,
+    query: `email:'${email}'`, // Get more results to check metadata
   });
 
-  if (existingCustomers.data.length > 0) {
-    return existingCustomers.data[0];
+  // Look for a customer with matching metadata (e.g., same org context)
+  // This allows multiple customers with same email but different orgs
+  if (existingCustomers.data.length > 0 && metadata?.orgId) {
+    const matchingCustomer = existingCustomers.data.find(
+      (customer) => customer.metadata?.orgId === metadata.orgId,
+    );
+    if (matchingCustomer) {
+      // Update the existing customer with any new metadata
+      return stripe.customers.update(matchingCustomer.id, {
+        metadata: { ...matchingCustomer.metadata, ...metadata },
+        name,
+      });
+    }
   }
 
   // Create new customer
@@ -150,4 +161,72 @@ export async function getOrCreateCustomer({
     metadata,
     name,
   });
+}
+
+// Alternative: More explicit upsert by org ID
+export async function upsertCustomerByOrg({
+  email,
+  name,
+  orgId,
+  additionalMetadata = {},
+}: {
+  email: string;
+  name?: string;
+  orgId: string;
+  additionalMetadata?: Record<string, string>;
+}) {
+  const metadata = {
+    orgId,
+    ...additionalMetadata,
+  };
+
+  // Search for existing customer with this org ID
+  const existingCustomers = await stripe.customers.search({
+    limit: 1,
+    query: `metadata['orgId']:'${orgId}'`,
+  });
+
+  if (existingCustomers.data.length > 0) {
+    const existingCustomer = existingCustomers.data[0];
+    if (!existingCustomer) {
+      throw new Error('Failed to retrieve existing customer');
+    }
+    // Update existing customer
+    return stripe.customers.update(existingCustomer.id, {
+      email,
+      metadata: { ...existingCustomer.metadata, ...metadata },
+      name,
+    });
+  }
+
+  // Create new customer
+  return stripe.customers.create({
+    email,
+    metadata,
+    name,
+  });
+}
+
+// Alternative: Use Stripe's idempotency keys for true upsert behavior
+export async function upsertCustomerWithIdempotency({
+  email,
+  name,
+  metadata,
+  idempotencyKey,
+}: {
+  email: string;
+  name?: string;
+  metadata?: Record<string, string>;
+  idempotencyKey: string;
+}) {
+  return stripe.customers.create(
+    {
+      email,
+      metadata,
+      name,
+    },
+    {
+      idempotencyKey,
+    },
+  );
 }

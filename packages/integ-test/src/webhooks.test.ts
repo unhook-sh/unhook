@@ -31,7 +31,7 @@ describe('Webhook Lifecycle Integration Tests', () => {
       expect(webhook.name).toBe('Test Webhook');
       expect(webhook.status).toBe('active');
       expect(webhook.isPrivate).toBe(false);
-      expect(webhook.apiKey).toMatch(/^whsk_/);
+      expect(webhook.apiKeyId).toMatch(/^whsk_/);
     });
 
     it('should create a private webhook', async () => {
@@ -281,7 +281,7 @@ describe('Webhook Lifecycle Integration Tests', () => {
           }),
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKey,
+            'X-API-Key': webhook.apiKeyId,
           },
           method: 'POST',
         },
@@ -311,7 +311,7 @@ describe('Webhook Lifecycle Integration Tests', () => {
           body: JSON.stringify({ test: true }),
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKey,
+            'X-API-Key': webhook.apiKeyId,
             ...customHeaders,
           },
           method: 'POST',
@@ -351,7 +351,7 @@ describe('Webhook Lifecycle Integration Tests', () => {
           body: JSON.stringify(largePayload),
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKey,
+            'X-API-Key': webhook.apiKeyId,
           },
           method: 'POST',
         },

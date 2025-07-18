@@ -245,7 +245,7 @@ export type WebhookConfig = {
 };
 
 export const Webhooks = pgTable('webhooks', {
-  apiKey: varchar('apiKey', { length: 128 })
+  apiKeyId: varchar('apiKeyId', { length: 128 })
     .references(() => ApiKeys.id, {
       onDelete: 'cascade',
     })
@@ -297,7 +297,6 @@ export const Webhooks = pgTable('webhooks', {
 export type WebhookType = typeof Webhooks.$inferSelect;
 
 export const CreateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
-  apiKey: true,
   createdAt: true,
   orgId: true,
   updatedAt: true,
@@ -314,7 +313,7 @@ export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
 export const WebhooksRelations = relations(Webhooks, ({ one, many }) => ({
   accessRequests: many(WebhookAccessRequests),
   apiKey: one(ApiKeys, {
-    fields: [Webhooks.apiKey],
+    fields: [Webhooks.apiKeyId],
     references: [ApiKeys.id],
   }),
   connections: many(Connections),
@@ -355,7 +354,11 @@ export type ResponsePayload = z.infer<typeof ResponsePayloadSchema>;
 export const Events = pgTable(
   'events',
   {
-    apiKey: text('apiKey'),
+    apiKeyId: varchar('apiKeyId', { length: 128 })
+      .references(() => ApiKeys.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
     createdAt: timestamp('createdAt', {
       mode: 'date',
       withTimezone: true,
@@ -440,6 +443,10 @@ export const UpdateEventTypeSchema = createUpdateSchema(Events).omit({
 });
 
 export const EventsRelations = relations(Events, ({ one, many }) => ({
+  apiKey: one(ApiKeys, {
+    fields: [Events.apiKeyId],
+    references: [ApiKeys.id],
+  }),
   forwardingExecutions: many(ForwardingExecutions),
   org: one(Orgs, {
     fields: [Events.orgId],
@@ -459,7 +466,11 @@ export const EventsRelations = relations(Events, ({ one, many }) => ({
 export const Requests = pgTable(
   'requests',
   {
-    apiKey: text('apiKey'),
+    apiKeyId: varchar('apiKeyId', { length: 128 })
+      .references(() => ApiKeys.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
     completedAt: timestamp('completedAt', {
       mode: 'date',
       withTimezone: true,
@@ -551,6 +562,10 @@ export const CreateRequestTypeSchema = createInsertSchema(Requests).omit({
 });
 
 export const RequestsRelations = relations(Requests, ({ one }) => ({
+  apiKey: one(ApiKeys, {
+    fields: [Requests.apiKeyId],
+    references: [ApiKeys.id],
+  }),
   connection: one(Connections, {
     fields: [Requests.connectionId],
     references: [Connections.id],
@@ -919,10 +934,12 @@ export const UpdateApiKeySchema = createUpdateSchema(ApiKeys).omit({
 });
 
 export const ApiKeysRelations = relations(ApiKeys, ({ one, many }) => ({
+  events: many(Events),
   org: one(Orgs, {
     fields: [ApiKeys.orgId],
     references: [Orgs.id],
   }),
+  requests: many(Requests),
   usage: many(ApiKeyUsage),
   user: one(Users, {
     fields: [ApiKeys.userId],

@@ -126,7 +126,7 @@ export async function validateTransformation(
 ): Promise<{ valid: boolean; error?: string; output?: unknown }> {
   const mockContext: ForwardingContext = {
     event: {
-      apiKey: null,
+      apiKeyId: 'apiKeyId',
       createdAt: new Date(),
       failedReason: null,
       id: 'evt_sample',

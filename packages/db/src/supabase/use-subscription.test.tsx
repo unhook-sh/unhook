@@ -93,7 +93,7 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
 
     // Create a test event
     testEvent = {
-      apiKey: 'test-api-key',
+      apiKeyId: 'test-api-key',
       createdAt: new Date(),
       failedReason: null,
       id: createId({ prefix: 'e' }),
@@ -184,7 +184,7 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
 
     // Insert a new event
     const newEvent: EventType = {
-      apiKey: 'test-api-key',
+      apiKeyId: 'test-api-key',
       createdAt: new Date(),
       failedReason: null,
       id: createId({ prefix: 'e' }),

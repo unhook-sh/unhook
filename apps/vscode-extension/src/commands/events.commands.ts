@@ -275,7 +275,7 @@ export function registerEventCommands(
 
           // Create a new request with the same data
           const newRequest = await api.requests.create.mutate({
-            apiKey: item.request.apiKey ?? undefined,
+            apiKeyId: item.request.apiKeyId ?? undefined,
             destination: item.request.destination,
             eventId: item.request.eventId,
             request: item.request.request,

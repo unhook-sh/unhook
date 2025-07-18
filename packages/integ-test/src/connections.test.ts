@@ -47,7 +47,7 @@ describe('WebSocket Connections Integration Tests', () => {
       // Send authentication message
       ws.send(
         JSON.stringify({
-          apiKey: testSetup.webhook.apiKey,
+          apiKey: testSetup.webhook.apiKeyId,
           clientId: `test-client-${Date.now()}`,
           type: 'auth',
         }),
@@ -142,7 +142,7 @@ describe('WebSocket Connections Integration Tests', () => {
           body: JSON.stringify({ test: 'real-time' }),
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': testSetup.webhook.apiKey,
+            'X-API-Key': testSetup.webhook.apiKeyId,
           },
           method: 'POST',
         },

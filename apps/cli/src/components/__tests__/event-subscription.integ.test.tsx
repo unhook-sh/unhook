@@ -23,7 +23,7 @@ type ChannelPayload = RealtimePostgresInsertPayload<Tables<'events'>>;
 // Helper functions
 function createTestEvent({ webhookId }: { webhookId: string }): TestEvent {
   return {
-    apiKey: null,
+    apiKeyId: 'apiKeyId',
     createdAt: new Date(),
     failedReason: null,
     id: createId({ prefix: 'evt' }),

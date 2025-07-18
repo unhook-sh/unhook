@@ -152,7 +152,7 @@ export function WebhookWizard() {
     const url = new URL(`${baseUrl}/${webhook.id}`);
     url.searchParams.set('source', source);
     if (webhook.isPrivate) {
-      url.searchParams.set('key', webhook.apiKey);
+      url.searchParams.set('key', webhook.apiKeyId);
     }
     return url.toString();
   })();

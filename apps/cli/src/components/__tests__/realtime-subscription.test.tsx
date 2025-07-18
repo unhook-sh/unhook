@@ -168,7 +168,7 @@ describe.skip('RealtimeSubscription', () => {
       await db
         .insert(Webhooks)
         .values({
-          apiKey: createId({ prefix: 'whsk' }),
+          apiKeyId: createId({ prefix: 'whsk' }),
           config: {
             headers: {},
             requests: {},
@@ -201,7 +201,7 @@ describe.skip('RealtimeSubscription', () => {
       // Create test event
       console.log('[test] Creating test event...');
       const testEvent: EventType = {
-        apiKey: null,
+        apiKeyId: 'apiKeyId',
         createdAt: new Date(),
         failedReason: null,
         id: createId({ prefix: 'evt' }),

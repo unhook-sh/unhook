@@ -52,7 +52,7 @@ export const mockOrg = {
 
 // Mock webhook data
 export const mockWebhook = {
-  apiKey: createId({ prefix: 'whsk' }),
+  apiKeyId: createId({ prefix: 'whsk' }),
   config: {
     headers: {},
     requests: {},
@@ -77,7 +77,7 @@ export const mockWebhook = {
 export async function createTestWebhook(overrides: Partial<WebhookType> = {}) {
   const webhook = {
     ...mockWebhook,
-    apiKey: createId({ prefix: 'whsk' }),
+    apiKeyId: createId({ prefix: 'whsk' }),
     id: createId({ prefix: 'wh' }),
     userId: mockUser.id,
     ...overrides,

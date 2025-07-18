@@ -79,7 +79,7 @@ export function WebhookRequestsTable({
               mockEvents[Math.floor(Math.random() * mockEvents.length)];
 
             return {
-              apiKey: 'pk_test_123',
+              apiKeyId: 'pk_test_123',
               completedAt: status === 'completed' ? new Date() : null,
               connectionId: null,
               createdAt: timestamp,

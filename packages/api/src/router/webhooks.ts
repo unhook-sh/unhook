@@ -45,9 +45,16 @@ export const webhooksRouter = createTRPCRouter({
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
       if (!ctx.auth.userId) throw new Error('User ID is required');
 
-      const apiKey = await ctx.db.query.ApiKeys.findFirst({
-        where: and(eq(ApiKeys.orgId, ctx.auth.orgId)),
-      });
+      const apiKey = input.apiKeyId
+        ? await ctx.db.query.ApiKeys.findFirst({
+            where: and(
+              eq(ApiKeys.key, input.apiKeyId),
+              eq(ApiKeys.orgId, ctx.auth.orgId),
+            ),
+          })
+        : await ctx.db.query.ApiKeys.findFirst({
+            where: and(eq(ApiKeys.orgId, ctx.auth.orgId)),
+          });
 
       if (!apiKey) throw new Error('API key not found');
 
@@ -55,7 +62,7 @@ export const webhooksRouter = createTRPCRouter({
         .insert(Webhooks)
         .values({
           ...input,
-          apiKey: apiKey.id,
+          apiKeyId: apiKey.id,
           orgId: ctx.auth.orgId,
           userId: ctx.auth.userId,
         })

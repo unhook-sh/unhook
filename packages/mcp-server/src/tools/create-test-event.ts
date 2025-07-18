@@ -419,7 +419,7 @@ export function registerCreateTestEventTool(
 
         // Create the event
         const event = await caller.events.create({
-          apiKey: webhook.apiKey,
+          apiKeyId: webhook.apiKeyId,
           maxRetries: 3,
           originRequest: requestPayload,
           retryCount: 0,

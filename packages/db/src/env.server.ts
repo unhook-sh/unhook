@@ -6,6 +6,7 @@ export const env = createEnv({
   extends: [vercel()],
   runtimeEnv: process.env,
   server: {
+    CLERK_SECRET_KEY: z.string(),
     POSTGRES_URL: z.string().url(),
   },
   skipValidation: !!process.env.CI,

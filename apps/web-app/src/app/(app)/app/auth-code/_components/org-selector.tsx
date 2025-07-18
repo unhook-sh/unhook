@@ -20,7 +20,7 @@ import { ChevronsUpDown, Plus } from 'lucide-react';
 import { useAction } from 'next-safe-action/hooks';
 import * as React from 'react';
 import { createWebhook } from '~/app/(app)/app/webhooks/create/_components/actions';
-import { upsertOrg } from '../actions';
+import { upsertOrgAction } from '../actions';
 
 interface OrgSelectorProps {
   onSelect?: (orgId: string) => void;
@@ -153,7 +153,9 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                   if (input.trim()) {
                     setIsCreating(true);
                     try {
-                      const clerkOrg = await upsertOrg({ name: input.trim() });
+                      const clerkOrg = await upsertOrgAction({
+                        name: input.trim(),
+                      });
 
                       if (clerkOrg?.data?.id && setActive) {
                         setActive({ organization: clerkOrg.data.id });
@@ -200,7 +202,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                       setActive({ organization: membership.organization });
                     }
                     onSelect?.(membership.organization.id);
-                    await upsertOrg({
+                    await upsertOrgAction({
                       clerkOrgId: membership.organization.id,
                       name: membership.organization.name,
                     });

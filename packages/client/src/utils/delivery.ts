@@ -134,7 +134,7 @@ export async function createRequestsForEventToAllDestinations({
       },
     });
     const request = await api.requests.create.mutate({
-      apiKey: event.apiKey ?? undefined,
+      apiKeyId: event.apiKeyId ?? undefined,
       connectionId: connectionId ?? undefined,
       destination: {
         name: dest.name,
@@ -292,7 +292,7 @@ export async function handlePendingRequest({
               status: 'processing',
             });
             await api.requests.create.mutate({
-              apiKey: request.apiKey ?? undefined,
+              apiKeyId: request.apiKeyId ?? undefined,
               destination: {
                 name: dest.destination,
                 url: dest.url,

@@ -95,7 +95,7 @@ export async function POST(
       );
     }
 
-    if (apiKey !== webhook.apiKey) {
+    if (apiKey !== webhook.apiKeyId) {
       posthog.capture({
         distinctId: userId,
         event: 'webhook_error',
@@ -310,6 +310,7 @@ export async function POST(
     const [event] = await db
       .insert(Events)
       .values({
+        apiKeyId: webhook.apiKeyId,
         maxRetries: config.requests.maxRetries ?? 3,
         orgId: webhook.orgId,
         originRequest: request,

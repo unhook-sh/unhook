@@ -89,8 +89,12 @@ const store = createStore<WebhookStore>()((set, get) => ({
     }
 
     const { api } = useApiStore.getState();
+    const [apiKey] = await api.apiKeys.all.query();
+
+    if (!apiKey) throw new Error('No API key found');
 
     const webhook = await api.webhooks.create.mutate({
+      apiKeyId: apiKey.id,
       config: {
         headers: {},
         requests: {},

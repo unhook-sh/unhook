@@ -28,6 +28,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const formSchema = z.object({
+  apiKeyId: z.string(),
   config: z.object({
     headers: z.object({}),
     requests: z.object({}),
@@ -108,6 +109,19 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="my-app" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="apiKeyId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>API Key</FormLabel>
+                  <FormControl>
+                    <Input placeholder="pk_test_123" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

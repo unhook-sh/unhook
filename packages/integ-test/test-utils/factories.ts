@@ -81,7 +81,7 @@ export class TestFactories {
     overrides?: Partial<schema.WebhookType>,
   ): Promise<schema.WebhookType> {
     const webhook = {
-      apiKey: createId({ prefix: 'whsk' }),
+      apiKeyId: createId({ prefix: 'whsk' }),
       config: {
         headers: {},
         requests: {},
@@ -121,6 +121,7 @@ export class TestFactories {
     overrides?: Partial<schema.EventType>,
   ): Promise<schema.EventType> {
     const event = {
+      apiKeyId: 'apiKeyId',
       createdAt: new Date(),
       id: createId({ prefix: 'evt' }),
       maxRetries: 3,
@@ -164,6 +165,7 @@ export class TestFactories {
     overrides?: Partial<schema.RequestType>,
   ): Promise<schema.RequestType> {
     const request = {
+      apiKeyId: 'apiKeyId',
       createdAt: new Date(),
       destination: {
         name: 'Test Destination',

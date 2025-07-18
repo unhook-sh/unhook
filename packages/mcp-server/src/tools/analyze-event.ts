@@ -115,5 +115,5 @@ Retry Information:
 - Max Retries: ${event.maxRetries}
 ${event.failedReason ? `- Failed Reason: ${event.failedReason}` : ''}
 
-API Key: ${event.apiKey ? `***${event.apiKey.slice(-4)}` : 'Not provided'}`;
+API Key: ${event.apiKeyId ? `***${event.apiKeyId.slice(-4)}` : 'Not provided'}`;
 }

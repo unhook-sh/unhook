@@ -1,8 +1,9 @@
 'use server';
 
 import { auth, currentUser } from '@clerk/nextjs/server';
+import { upsertOrg } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { ApiKeys, OrgMembers, Orgs, Users, Webhooks } from '@unhook/db/schema';
+import { Users, Webhooks } from '@unhook/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
@@ -66,48 +67,13 @@ export const createWebhook = action
       throw new Error('Failed to create/update user');
     }
 
-    // Upsert organization
-    const [org] = await db
-      .insert(Orgs)
-      .values({
-        clerkOrgId: targetOrgId,
-        createdByUserId: user.userId,
-        id: targetOrgId,
-        name: orgName,
-      })
-      .onConflictDoUpdate({
-        set: {
-          name: orgName,
-          updatedAt: new Date(),
-        },
-        target: Orgs.clerkOrgId,
-      })
-      .returning();
-
-    if (!org) {
-      throw new Error('Failed to create/update organization');
-    }
-
-    // Upsert organization member
-    const [orgMember] = await db
-      .insert(OrgMembers)
-      .values({
-        orgId: org.id,
-        role: 'admin',
-        userId: user.userId,
-      })
-      .onConflictDoUpdate({
-        set: {
-          role: 'admin',
-          updatedAt: new Date(),
-        },
-        target: [OrgMembers.userId, OrgMembers.orgId],
-      })
-      .returning();
-
-    if (!orgMember) {
-      throw new Error('Failed to create/update organization member');
-    }
+    // Use the upsertOrg utility function
+    const { apiKey } = await upsertOrg({
+      clerkOrgId: targetOrgId,
+      name: orgName,
+      userEmail: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+      userId: user.userId,
+    });
 
     // First check if a "Default" webhook exists for this user
     const existingWebhook = await db.query.Webhooks.findFirst({
@@ -125,19 +91,11 @@ export const createWebhook = action
       };
     }
 
-    const apiKey = await db.query.ApiKeys.findFirst({
-      where: and(eq(ApiKeys.orgId, targetOrgId)),
-    });
-
-    if (!apiKey) {
-      throw new Error('API key not found');
-    }
-
     // If no default webhook exists, create a new one
     const [webhook] = await db
       .insert(Webhooks)
       .values({
-        apiKey: apiKey.id,
+        apiKeyId: apiKey.id,
         isPrivate,
         name: 'Default',
         orgId: targetOrgId,

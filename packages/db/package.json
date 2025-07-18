@@ -6,6 +6,7 @@
     "@t3-oss/env-core": "0.13.8",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
+    "@unhook/stripe": "workspace:*",
     "@unhook/zustand": "workspace:*",
     "@vercel/postgres": "0.10.0",
     "date-fns": "4.1.0",

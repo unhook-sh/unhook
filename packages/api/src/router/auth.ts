@@ -1,7 +1,8 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import type { TRPCRouterRecord } from '@trpc/server';
+import { upsertOrg } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { AuthCodes, OrgMembers, Orgs, Users } from '@unhook/db/schema';
+import { AuthCodes, Users } from '@unhook/db/schema';
 import { and, eq, gte, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 import { protectedProcedure, publicProcedure } from '../trpc';
@@ -88,48 +89,13 @@ export const authRouter = {
         throw new Error('Failed to create/update user');
       }
 
-      // Upsert organization
-      const [org] = await db
-        .insert(Orgs)
-        .values({
-          clerkOrgId: authCode.orgId,
-          createdByUserId: authCode.userId,
-          id: authCode.orgId,
-          name: organization.name,
-        })
-        .onConflictDoUpdate({
-          set: {
-            name: organization.name,
-            updatedAt: new Date(),
-          },
-          target: Orgs.clerkOrgId,
-        })
-        .returning();
-
-      if (!org) {
-        throw new Error('Failed to create/update organization');
-      }
-
-      // Upsert organization member
-      const [orgMember] = await db
-        .insert(OrgMembers)
-        .values({
-          orgId: org.id,
-          role: 'admin',
-          userId: authCode.userId,
-        })
-        .onConflictDoUpdate({
-          set: {
-            role: 'admin',
-            updatedAt: new Date(),
-          },
-          target: [OrgMembers.userId, OrgMembers.orgId],
-        })
-        .returning();
-
-      if (!orgMember) {
-        throw new Error('Failed to create/update organization member');
-      }
+      // Use the upsertOrg utility function
+      await upsertOrg({
+        clerkOrgId: authCode.orgId,
+        name: organization.name,
+        userEmail: emailAddress?.emailAddress ?? '',
+        userId: authCode.userId,
+      });
 
       const response = {
         authToken: sessionToken.jwt,
@@ -191,48 +157,13 @@ export const authRouter = {
         throw new Error('Failed to create/update user');
       }
 
-      // Upsert organization
-      const [org] = await db
-        .insert(Orgs)
-        .values({
-          clerkOrgId: session.lastActiveOrganizationId,
-          createdByUserId: ctx.auth.userId,
-          id: session.lastActiveOrganizationId,
-          name: organization.name,
-        })
-        .onConflictDoUpdate({
-          set: {
-            name: organization.name,
-            updatedAt: new Date(),
-          },
-          target: Orgs.clerkOrgId,
-        })
-        .returning();
-
-      if (!org) {
-        throw new Error('Failed to create/update organization');
-      }
-
-      // Upsert organization member
-      const [orgMember] = await db
-        .insert(OrgMembers)
-        .values({
-          orgId: org.id,
-          role: 'admin',
-          userId: ctx.auth.userId,
-        })
-        .onConflictDoUpdate({
-          set: {
-            role: 'admin',
-            updatedAt: new Date(),
-          },
-          target: [OrgMembers.userId, OrgMembers.orgId],
-        })
-        .returning();
-
-      if (!orgMember) {
-        throw new Error('Failed to create/update organization member');
-      }
+      // Use the upsertOrg utility function
+      await upsertOrg({
+        clerkOrgId: session.lastActiveOrganizationId,
+        name: organization.name,
+        userEmail: emailAddress?.emailAddress ?? '',
+        userId: ctx.auth.userId,
+      });
 
       return {
         orgId: session.lastActiveOrganizationId,

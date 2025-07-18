@@ -49,7 +49,7 @@ describe('CLI Integration Tests', () => {
           path.join(__dirname, '../../cli/src/index.ts'),
           'init',
           '--api-key',
-          testSetup.webhook.apiKey,
+          testSetup.webhook.apiKeyId,
           '--api-url',
           testApiServer.getUrl(),
         ],
@@ -74,7 +74,7 @@ describe('CLI Integration Tests', () => {
 
       // Verify config content
       const config = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-      expect(config.apiKey).toBe(testSetup.webhook.apiKey);
+      expect(config.apiKey).toBe(testSetup.webhook.apiKeyId);
       expect(config.apiUrl).toBe(testApiServer.getUrl());
     });
 
@@ -111,7 +111,7 @@ describe('CLI Integration Tests', () => {
           path.join(__dirname, '../../cli/src/index.ts'),
           'init',
           '--api-key',
-          testSetup.webhook.apiKey,
+          testSetup.webhook.apiKeyId,
           '--api-url',
           testApiServer.getUrl(),
         ],
@@ -261,7 +261,7 @@ describe('CLI Integration Tests', () => {
           path.join(__dirname, '../../cli/src/index.ts'),
           'init',
           '--api-key',
-          testSetup.webhook.apiKey,
+          testSetup.webhook.apiKeyId,
           '--api-url',
           testApiServer.getUrl(),
         ],
@@ -344,7 +344,7 @@ describe('CLI Integration Tests', () => {
           }),
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': testSetup.webhook.apiKey,
+            'X-API-Key': testSetup.webhook.apiKeyId,
             'X-Test-Header': 'test-value',
           },
           method: 'POST',
@@ -400,7 +400,7 @@ describe('CLI Integration Tests', () => {
           body: JSON.stringify({ test: true }),
           headers: {
             'Content-Type': 'application/json',
-            'X-API-Key': testSetup.webhook.apiKey,
+            'X-API-Key': testSetup.webhook.apiKeyId,
           },
           method: 'POST',
         },
@@ -426,7 +426,7 @@ describe('CLI Integration Tests', () => {
           path.join(__dirname, '../../cli/src/index.ts'),
           'init',
           '--api-key',
-          testSetup.webhook.apiKey,
+          testSetup.webhook.apiKeyId,
           '--api-url',
           testApiServer.getUrl(),
         ],

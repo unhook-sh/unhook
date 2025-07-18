@@ -3,8 +3,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { upsertOrg } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { Users, Webhooks } from '@unhook/db/schema';
-import { and, eq } from 'drizzle-orm';
+import { Users } from '@unhook/db/schema';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -20,7 +19,7 @@ export const createWebhook = action
     }),
   )
   .action(async ({ parsedInput }) => {
-    const { isPrivate, orgName, orgId } = parsedInput;
+    const { orgName, orgId } = parsedInput;
     const user = await auth();
 
     if (!user.userId) {
@@ -68,46 +67,12 @@ export const createWebhook = action
     }
 
     // Use the upsertOrg utility function
-    const { apiKey } = await upsertOrg({
+    const { webhook } = await upsertOrg({
       name: orgName,
       orgId: targetOrgId,
       userId: user.userId,
     });
-
-    // First check if a "Default" webhook exists for this user
-    const existingWebhook = await db.query.Webhooks.findFirst({
-      where: and(
-        eq(Webhooks.name, 'Default'),
-        eq(Webhooks.userId, user.userId),
-        eq(Webhooks.orgId, targetOrgId),
-      ),
-    });
-
-    if (existingWebhook) {
-      return {
-        isNew: false,
-        webhook: existingWebhook,
-      };
-    }
-
-    // If no default webhook exists, create a new one
-    const [webhook] = await db
-      .insert(Webhooks)
-      .values({
-        apiKeyId: apiKey.id,
-        isPrivate,
-        name: 'Default',
-        orgId: targetOrgId,
-        userId: user.userId,
-      })
-      .returning();
-
-    if (!webhook) {
-      throw new Error('Failed to create webhook');
-    }
-
     return {
-      isNew: true,
       webhook,
     };
   });

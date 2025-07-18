@@ -3,7 +3,7 @@ import { generateRandomName } from '@unhook/id';
 import { upsertCustomerByOrg } from '@unhook/stripe';
 import { eq } from 'drizzle-orm';
 import { db } from '../client';
-import { ApiKeys, OrgMembers, Orgs } from '../schema';
+import { ApiKeys, OrgMembers, Orgs, Webhooks } from '../schema';
 
 type UpsertOrgParams = {
   orgId?: string;
@@ -12,6 +12,15 @@ type UpsertOrgParams = {
 };
 
 type UpsertOrgResult = {
+  webhook: {
+    id: string;
+    name: string;
+    orgId: string;
+    userId: string;
+    isNew: boolean;
+    apiKeyId: string;
+    isPrivate: boolean;
+  };
   org: {
     id: string;
     name: string;
@@ -23,6 +32,46 @@ type UpsertOrgResult = {
     name: string;
   };
 };
+
+async function ensureWebhook({
+  orgId,
+  apiKeyId,
+  userId,
+}: {
+  orgId: string;
+  userId: string;
+  apiKeyId: string;
+}) {
+  const existingWebhook = await db.query.Webhooks.findFirst({
+    where: (webhooks, { eq }) => eq(webhooks.orgId, orgId),
+  });
+
+  if (existingWebhook) {
+    return {
+      isNew: false,
+      webhook: existingWebhook,
+    };
+  }
+
+  const [webhook] = await db
+    .insert(Webhooks)
+    .values({
+      apiKeyId,
+      name: 'Default',
+      orgId,
+      userId,
+    })
+    .returning();
+
+  if (!webhook) {
+    throw new Error('Failed to create webhook');
+  }
+
+  return {
+    isNew: true,
+    webhook,
+  };
+}
 
 // Helper function to create or update org membership
 async function ensureOrgMembership({
@@ -183,6 +232,11 @@ async function handleExistingOrgByName({
 
   await ensureOrgMembership({ orgId: existingOrg.id, userId });
   const apiKey = await ensureDefaultApiKey({ orgId: existingOrg.id, userId });
+  const webhook = await ensureWebhook({
+    apiKeyId: apiKey.id,
+    orgId: existingOrg.id,
+    userId,
+  });
 
   return {
     apiKey: {
@@ -194,6 +248,15 @@ async function handleExistingOrgByName({
       id: existingOrg.id,
       name: existingOrg.name,
       stripeCustomerId: stripeCustomer.id,
+    },
+    webhook: {
+      apiKeyId: webhook.webhook.apiKeyId,
+      id: webhook.webhook.id,
+      isNew: webhook.isNew,
+      isPrivate: webhook.webhook.isPrivate,
+      name: webhook.webhook.name,
+      orgId: webhook.webhook.orgId,
+      userId: webhook.webhook.userId,
     },
   };
 }
@@ -259,6 +322,11 @@ export async function upsertOrg({
 
     await ensureOrgMembership({ orgId: org.id, userId });
     const apiKey = await ensureDefaultApiKey({ orgId: org.id, userId });
+    const webhook = await ensureWebhook({
+      apiKeyId: apiKey.id,
+      orgId: org.id,
+      userId,
+    });
 
     return {
       apiKey: {
@@ -270,6 +338,15 @@ export async function upsertOrg({
         id: clerkOrg.id,
         name: clerkOrg.name,
         stripeCustomerId: stripeCustomer.id,
+      },
+      webhook: {
+        apiKeyId: webhook.webhook.apiKeyId,
+        id: webhook.webhook.id,
+        isNew: webhook.isNew,
+        isPrivate: webhook.webhook.isPrivate,
+        name: webhook.webhook.name,
+        orgId: webhook.webhook.orgId,
+        userId: webhook.webhook.userId,
       },
     };
   }
@@ -325,6 +402,11 @@ export async function upsertOrg({
 
     await ensureOrgMembership({ orgId: org.id, userId });
     const apiKey = await ensureDefaultApiKey({ orgId: org.id, userId });
+    const webhook = await ensureWebhook({
+      apiKeyId: apiKey.id,
+      orgId: org.id,
+      userId,
+    });
 
     return {
       apiKey: {
@@ -336,6 +418,15 @@ export async function upsertOrg({
         id: clerkOrg.id,
         name: clerkOrg.name,
         stripeCustomerId: stripeCustomer.id,
+      },
+      webhook: {
+        apiKeyId: webhook.webhook.apiKeyId,
+        id: webhook.webhook.id,
+        isNew: webhook.isNew,
+        isPrivate: webhook.webhook.isPrivate,
+        name: webhook.webhook.name,
+        orgId: webhook.webhook.orgId,
+        userId: webhook.webhook.userId,
       },
     };
   } catch (error) {

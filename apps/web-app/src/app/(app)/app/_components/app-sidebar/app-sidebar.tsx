@@ -9,7 +9,6 @@ import {
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconInnerShadowTop,
   IconKey,
   IconPlayerPlay,
   IconReport,
@@ -25,7 +24,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@unhook/ui/sidebar';
+import Link from 'next/link';
 import type * as React from 'react';
+import { Icons } from '~/app/(marketing)/_components/icons';
 import { NavMain } from './nav-main';
 import { NavSecondary } from './nav-secondary';
 import { NavUser } from './nav-user';
@@ -158,10 +159,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/app/dashboard">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
+              <Link href="/app/dashboard">
+                <Icons.logo className="size-10" />
+                <span className="text-base font-semibold">Unhook AI</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

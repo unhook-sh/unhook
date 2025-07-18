@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
-import type { AuthCodeType, WebhookType } from '@unhook/db/schema';
+import type { AuthCodeType } from '@unhook/db/schema';
 import { generateRandomName } from '@unhook/id';
 import {
   Card,
@@ -28,7 +28,15 @@ const STEP_DESCRIPTION =
 
 export function WebhookWizard() {
   const [source, setSource] = useState('');
-  const [webhook, setWebhook] = useState<WebhookType | null>(null);
+  const [webhook, setWebhook] = useState<{
+    id: string;
+    name: string;
+    orgId: string;
+    userId: string;
+    isPrivate: boolean;
+    apiKeyId: string;
+    isNew: boolean;
+  } | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
   const [hasReceivedFirstEvent, setHasReceivedFirstEvent] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -102,7 +110,7 @@ export function WebhookWizard() {
             });
           } else {
             setAuthCode(authResult.data.authCode);
-            if (result.data.isNew) {
+            if (result.data.webhook.isNew) {
               toast.success('Webhook created', {
                 description: 'The webhook has been created successfully.',
               });

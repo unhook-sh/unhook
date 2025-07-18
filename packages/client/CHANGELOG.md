@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.5.11
+
+### Patch Changes
+
+- [`0cf3d2a`](https://github.com/unhook-sh/unhook/commit/0cf3d2a4bada3538ea33ae15bff26920b6666368) Thanks [@seawatts](https://github.com/seawatts)! - Add new database tables
+
 ## 0.5.10
 
 ### Patch Changes

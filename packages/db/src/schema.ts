@@ -128,7 +128,7 @@ export const Orgs = pgTable('orgs', {
     .primaryKey(),
   name: text('name').notNull(),
   // Stripe fields
-  stripeCustomerId: text('stripeCustomerId').unique().notNull(),
+  stripeCustomerId: text('stripeCustomerId'),
   stripeSubscriptionId: text('stripeSubscriptionId'),
   stripeSubscriptionStatus: stripeSubscriptionStatusEnum(
     'stripeSubscriptionStatus',

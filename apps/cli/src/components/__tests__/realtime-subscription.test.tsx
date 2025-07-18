@@ -153,6 +153,9 @@ describe.skip('RealtimeSubscription', () => {
           createdByUserId: createdClerkUser.id,
           id: orgId,
           name: 'Test Organization',
+          stripeCustomerId: createId({ prefix: 'cus' }),
+          stripeSubscriptionId: createId({ prefix: 'sub' }),
+          stripeSubscriptionStatus: 'active',
           updatedAt: new Date(),
         })
         .onConflictDoUpdate({

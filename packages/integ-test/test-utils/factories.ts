@@ -42,6 +42,9 @@ export class TestFactories {
       createdByUserId: user.id,
       id: createId({ prefix: 'org' }),
       name: faker.company.name(),
+      stripeCustomerId: faker.string.alphanumeric(20),
+      stripeSubscriptionId: faker.string.alphanumeric(20),
+      stripeSubscriptionStatus: 'active' as const,
       ...overrides,
     };
 

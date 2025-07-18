@@ -20,6 +20,7 @@ import {
 } from '@unhook/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
 import { useState } from 'react';
+import { maskApiKey } from '~/lib/mask-api-key';
 import { DeleteApiKeyDialog } from './delete-api-key-dialog';
 
 function SkeletonRow() {
@@ -63,13 +64,6 @@ export function ApiKeysTable() {
       ...prev,
       [id]: !prev[id],
     }));
-  };
-
-  const maskApiKey = (key: string) => {
-    const prefixLength = 10;
-    const postfixLength = 4;
-    const fillLength = key.length - prefixLength - postfixLength;
-    return `${key.slice(0, prefixLength)}${'*'.repeat(fillLength)}${key.slice(-postfixLength)}`;
   };
 
   const handleUpdateApiKeyName = ({

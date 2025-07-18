@@ -82,7 +82,7 @@ describe.skip('SubscriptionProvider and useSubscription Integration', () => {
     // Create test webhook
     await supabase.from('webhooks').insert([
       {
-        apiKey: 'test-api-key',
+        apiKeyId: 'test-api-key',
         id: webhookId,
         name: 'test-webhook',
         orgId,

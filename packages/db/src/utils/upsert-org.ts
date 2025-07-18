@@ -2,7 +2,6 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { generateRandomName } from '@unhook/id';
 import { upsertCustomerByOrg } from '@unhook/stripe';
 import { eq } from 'drizzle-orm';
-import type Stripe from 'stripe';
 import { db } from '../client';
 import { ApiKeys, OrgMembers, Orgs } from '../schema';
 
@@ -98,7 +97,7 @@ async function createOrgInDatabase({
   clerkOrgId: string;
   name: string;
   userId: string;
-  stripeCustomerId: string;
+  stripeCustomerId?: string;
 }) {
   const [org] = await db
     .insert(Orgs)
@@ -126,15 +125,32 @@ async function createOrgInDatabase({
   return org;
 }
 
+// Helper function to update org with Stripe customer ID
+async function updateOrgWithStripeCustomerId({
+  orgId,
+  stripeCustomerId,
+}: {
+  orgId: string;
+  stripeCustomerId: string;
+}) {
+  await db
+    .update(Orgs)
+    .set({
+      stripeCustomerId,
+      updatedAt: new Date(),
+    })
+    .where(eq(Orgs.id, orgId));
+}
+
 // Helper function to handle existing org found by name
 async function handleExistingOrgByName({
   name,
   userId,
-  stripeCustomer,
+  userEmail,
 }: {
   name: string;
   userId: string;
-  stripeCustomer: Stripe.Customer;
+  userEmail: string;
 }): Promise<UpsertOrgResult> {
   const existingOrg = await db.query.Orgs.findFirst({
     where: (orgs, { eq, and }) =>
@@ -145,16 +161,26 @@ async function handleExistingOrgByName({
     throw new Error('No existing organization found');
   }
 
-  // Update existing org with Stripe customer ID if not set
-  if (!existingOrg.stripeCustomerId) {
-    await db
-      .update(Orgs)
-      .set({
-        stripeCustomerId: stripeCustomer.id,
-        updatedAt: new Date(),
-      })
-      .where(eq(Orgs.id, existingOrg.id));
+  // Create Stripe customer for existing org
+  const stripeCustomer = await upsertCustomerByOrg({
+    additionalMetadata: {
+      orgName: name,
+      userId,
+    },
+    email: userEmail,
+    name,
+    orgId: existingOrg.id,
+  });
+
+  if (!stripeCustomer) {
+    throw new Error('Failed to create or get Stripe customer');
   }
+
+  // Update existing org with Stripe customer ID
+  await updateOrgWithStripeCustomerId({
+    orgId: existingOrg.id,
+    stripeCustomerId: stripeCustomer.id,
+  });
 
   await ensureOrgMembership({ orgId: existingOrg.id, userId });
   const apiKey = await ensureDefaultApiKey({ orgId: existingOrg.id, userId });
@@ -168,7 +194,7 @@ async function handleExistingOrgByName({
     org: {
       id: existingOrg.id,
       name: existingOrg.name,
-      stripeCustomerId: existingOrg.stripeCustomerId || stripeCustomer.id,
+      stripeCustomerId: stripeCustomer.id,
     },
   };
 }
@@ -181,40 +207,50 @@ export async function upsertOrg({
 }: UpsertOrgParams): Promise<UpsertOrgResult> {
   const client = await clerkClient();
 
-  // Create or get Stripe customer using org-based upsert
-  const stripeCustomer = await upsertCustomerByOrg({
-    additionalMetadata: {
-      orgName: name,
-      userId,
-    },
-    email: userEmail,
-    name, // Use temp ID if no clerkOrgId yet
-    orgId: clerkOrgId || `temp-${userId}-${Date.now()}`,
-  });
-
-  if (!stripeCustomer) {
-    throw new Error('Failed to create or get Stripe customer');
-  }
-
   // If clerkOrgId is provided, update existing org
   if (clerkOrgId) {
-    // Update org in Clerk
+    // Update org in Clerk first
     const clerkOrg = await client.organizations.updateOrganization(clerkOrgId, {
       name,
-      privateMetadata: {
-        stripeCustomerId: stripeCustomer.id,
-      },
     });
 
     if (!clerkOrg) {
       throw new Error('Failed to update organization in Clerk');
     }
 
+    // Create org in database without Stripe customer ID initially
     const org = await createOrgInDatabase({
       clerkOrgId: clerkOrg.id,
       name,
-      stripeCustomerId: stripeCustomer.id,
       userId,
+    });
+
+    // Create Stripe customer after org is created
+    const stripeCustomer = await upsertCustomerByOrg({
+      additionalMetadata: {
+        orgName: name,
+        userId,
+      },
+      email: userEmail,
+      name,
+      orgId: org.id,
+    });
+
+    if (!stripeCustomer) {
+      throw new Error('Failed to create or get Stripe customer');
+    }
+
+    // Update org in database with Stripe customer ID
+    await updateOrgWithStripeCustomerId({
+      orgId: org.id,
+      stripeCustomerId: stripeCustomer.id,
+    });
+
+    // Update org in Clerk with Stripe customer ID
+    await client.organizations.updateOrganization(clerkOrg.id, {
+      privateMetadata: {
+        stripeCustomerId: stripeCustomer.id,
+      },
     });
 
     await ensureOrgMembership({ orgId: org.id, userId });
@@ -248,11 +284,39 @@ export async function upsertOrg({
       throw new Error('Failed to create organization in Clerk');
     }
 
+    // Create org in database without Stripe customer ID initially
     const org = await createOrgInDatabase({
       clerkOrgId: clerkOrg.id,
       name,
-      stripeCustomerId: stripeCustomer.id,
       userId,
+    });
+
+    // Create Stripe customer after org is created
+    const stripeCustomer = await upsertCustomerByOrg({
+      additionalMetadata: {
+        orgName: name,
+        userId,
+      },
+      email: userEmail,
+      name,
+      orgId: org.id,
+    });
+
+    if (!stripeCustomer) {
+      throw new Error('Failed to create or get Stripe customer');
+    }
+
+    // Update org in database with Stripe customer ID
+    await updateOrgWithStripeCustomerId({
+      orgId: org.id,
+      stripeCustomerId: stripeCustomer.id,
+    });
+
+    // Update org in Clerk with Stripe customer ID
+    await client.organizations.updateOrganization(clerkOrg.id, {
+      privateMetadata: {
+        stripeCustomerId: stripeCustomer.id,
+      },
     });
 
     await ensureOrgMembership({ orgId: org.id, userId });
@@ -278,7 +342,7 @@ export async function upsertOrg({
         errorMessage.indexOf('slug') !== -1 ||
         errorMessage.indexOf('already exists') !== -1
       ) {
-        return handleExistingOrgByName({ name, stripeCustomer, userId });
+        return handleExistingOrgByName({ name, userEmail, userId });
       }
     }
 

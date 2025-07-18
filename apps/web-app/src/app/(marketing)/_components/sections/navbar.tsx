@@ -61,7 +61,7 @@ const drawerMenuVariants = {
 };
 
 // Logo component
-function Logo({ hasScrolled }: { hasScrolled: boolean }) {
+function Logo() {
   return (
     <Link className="flex items-center gap-1" href="/">
       <Icons.logo className="size-12" />
@@ -336,7 +336,7 @@ function NavbarHeader({
           )}
         >
           <div className="flex h-[56px] items-center justify-between pl-1 md:pl-2 pr-4">
-            <Logo hasScrolled={hasScrolled} />
+            <Logo />
             <NavigationMenuSection />
             <RightSideControls
               isDrawerOpen={isDrawerOpen}

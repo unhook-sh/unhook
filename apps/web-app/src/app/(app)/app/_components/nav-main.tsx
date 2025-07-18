@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
 } from '@unhook/ui/sidebar';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function NavMain({
   items,
@@ -18,8 +19,11 @@ export function NavMain({
     title: string;
     url: string;
     icon?: Icon;
+    isActive?: boolean;
   }[];
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -29,6 +33,7 @@ export function NavMain({
               <SidebarMenuButton
                 asChild
                 className="data-[slot=sidebar-menu-button]:!p-1.5"
+                isActive={pathname === item.url}
               >
                 <Link href={item.url}>
                   {item.icon && <item.icon />}

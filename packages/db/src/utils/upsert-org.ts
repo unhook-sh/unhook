@@ -27,7 +27,13 @@ type UpsertOrgResult = {
 };
 
 // Helper function to create or update org membership
-async function ensureOrgMembership(orgId: string, userId: string) {
+async function ensureOrgMembership({
+  orgId,
+  userId,
+}: {
+  orgId: string;
+  userId: string;
+}) {
   await db
     .insert(OrgMembers)
     .values({
@@ -45,11 +51,25 @@ async function ensureOrgMembership(orgId: string, userId: string) {
 }
 
 // Helper function to create or get default API key
-async function ensureDefaultApiKey(orgId: string, userId: string) {
+async function ensureDefaultApiKey({
+  orgId,
+  userId,
+}: {
+  orgId: string;
+  userId: string;
+}) {
+  const existingApiKey = await db.query.ApiKeys.findFirst({
+    where: (apiKeys, { eq }) => eq(apiKeys.orgId, orgId),
+  });
+
+  if (existingApiKey) {
+    return existingApiKey;
+  }
+
   const [apiKey] = await db
     .insert(ApiKeys)
     .values({
-      name: 'Default API Key',
+      name: 'Default',
       orgId,
       userId,
     })
@@ -69,12 +89,17 @@ async function ensureDefaultApiKey(orgId: string, userId: string) {
 }
 
 // Helper function to create org in database
-async function createOrgInDatabase(
-  clerkOrgId: string,
-  name: string,
-  userId: string,
-  stripeCustomerId: string,
-) {
+async function createOrgInDatabase({
+  clerkOrgId,
+  name,
+  userId,
+  stripeCustomerId,
+}: {
+  clerkOrgId: string;
+  name: string;
+  userId: string;
+  stripeCustomerId: string;
+}) {
   const [org] = await db
     .insert(Orgs)
     .values({
@@ -102,11 +127,15 @@ async function createOrgInDatabase(
 }
 
 // Helper function to handle existing org found by name
-async function handleExistingOrgByName(
-  name: string,
-  userId: string,
-  stripeCustomer: Stripe.Customer,
-): Promise<UpsertOrgResult> {
+async function handleExistingOrgByName({
+  name,
+  userId,
+  stripeCustomer,
+}: {
+  name: string;
+  userId: string;
+  stripeCustomer: Stripe.Customer;
+}): Promise<UpsertOrgResult> {
   const existingOrg = await db.query.Orgs.findFirst({
     where: (orgs, { eq, and }) =>
       and(eq(orgs.name, name), eq(orgs.createdByUserId, userId)),
@@ -127,8 +156,8 @@ async function handleExistingOrgByName(
       .where(eq(Orgs.id, existingOrg.id));
   }
 
-  await ensureOrgMembership(existingOrg.id, userId);
-  const apiKey = await ensureDefaultApiKey(existingOrg.id, userId);
+  await ensureOrgMembership({ orgId: existingOrg.id, userId });
+  const apiKey = await ensureDefaultApiKey({ orgId: existingOrg.id, userId });
 
   return {
     apiKey: {
@@ -181,15 +210,15 @@ export async function upsertOrg({
       throw new Error('Failed to update organization in Clerk');
     }
 
-    const org = await createOrgInDatabase(
-      clerkOrg.id,
+    const org = await createOrgInDatabase({
+      clerkOrgId: clerkOrg.id,
       name,
+      stripeCustomerId: stripeCustomer.id,
       userId,
-      stripeCustomer.id,
-    );
+    });
 
-    await ensureOrgMembership(org.id, userId);
-    const apiKey = await ensureDefaultApiKey(org.id, userId);
+    await ensureOrgMembership({ orgId: org.id, userId });
+    const apiKey = await ensureDefaultApiKey({ orgId: org.id, userId });
 
     return {
       apiKey: {
@@ -219,15 +248,15 @@ export async function upsertOrg({
       throw new Error('Failed to create organization in Clerk');
     }
 
-    const org = await createOrgInDatabase(
-      clerkOrg.id,
+    const org = await createOrgInDatabase({
+      clerkOrgId: clerkOrg.id,
       name,
+      stripeCustomerId: stripeCustomer.id,
       userId,
-      stripeCustomer.id,
-    );
+    });
 
-    await ensureOrgMembership(org.id, userId);
-    const apiKey = await ensureDefaultApiKey(org.id, userId);
+    await ensureOrgMembership({ orgId: org.id, userId });
+    const apiKey = await ensureDefaultApiKey({ orgId: org.id, userId });
 
     return {
       apiKey: {
@@ -249,7 +278,7 @@ export async function upsertOrg({
         errorMessage.indexOf('slug') !== -1 ||
         errorMessage.indexOf('already exists') !== -1
       ) {
-        return handleExistingOrgByName(name, userId, stripeCustomer);
+        return handleExistingOrgByName({ name, stripeCustomer, userId });
       }
     }
 

@@ -1,25 +1,10 @@
 'use client';
 
-import {
-  IconEye,
-  IconEyeOff,
-  IconLoader2,
-  IconTrash,
-} from '@tabler/icons-react';
+import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { api } from '@unhook/api/react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@unhook/ui/alert-dialog';
 import { Button } from '@unhook/ui/button';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
+import { TimeDisplay } from '@unhook/ui/custom/time-display';
 import { Input } from '@unhook/ui/input';
 import { Skeleton } from '@unhook/ui/skeleton';
 import {
@@ -30,9 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from '@unhook/ui/table';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
-import { format } from 'date-fns';
 import { useState } from 'react';
+import { DeleteApiKeyDialog } from './delete-api-key-dialog';
+import { EditApiKeyDialog } from './edit-api-key-dialog';
 
 function SkeletonRow() {
   return (
@@ -62,22 +47,7 @@ function SkeletonRow() {
 
 export function ApiKeysTable() {
   const apiKeys = api.apiKeys.allWithLastUsage.useQuery();
-  const apiUtils = api.useUtils();
-  const deleteApiKey = api.apiKeys.delete.useMutation({
-    onSettled: (_, __, variables) => {
-      setDeletingKeys((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(variables.id);
-        return newSet;
-      });
-    },
-    onSuccess: () => {
-      apiUtils.apiKeys.allWithLastUsage.invalidate();
-    },
-  });
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
-  const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
-  const [deletingKeys, setDeletingKeys] = useState<Set<string>>(new Set());
 
   const toggleKeyVisibility = (id: string) => {
     setShowKeys((prev) => ({
@@ -91,26 +61,6 @@ export function ApiKeysTable() {
     const postfixLength = 4;
     const fillLength = key.length - prefixLength - postfixLength;
     return `${key.slice(0, prefixLength)}${'*'.repeat(fillLength)}${key.slice(-postfixLength)}`;
-  };
-
-  const handleDeleteClick = (id: string) => {
-    setKeyToDelete(id);
-  };
-
-  const handleConfirmDelete = () => {
-    if (keyToDelete) {
-      setDeletingKeys((prev) => new Set(prev).add(keyToDelete));
-      deleteApiKey.mutate({ id: keyToDelete });
-      setKeyToDelete(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setKeyToDelete(null);
-  };
-
-  const getApiKeyName = (id: string) => {
-    return apiKeys.data?.find((key) => key.id === id)?.name || 'this API key';
   };
 
   return (
@@ -135,10 +85,10 @@ export function ApiKeysTable() {
               apiKeys.data?.map((apiKey) => (
                 <TableRow key={apiKey.id}>
                   <TableCell className="font-medium truncate max-w-40">
-                    <Tooltip>
-                      <TooltipTrigger>{apiKey.name}</TooltipTrigger>
-                      <TooltipContent>{apiKey.name}</TooltipContent>
-                    </Tooltip>
+                    <EditApiKeyDialog
+                      apiKeyId={apiKey.id}
+                      currentName={apiKey.name}
+                    />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -173,70 +123,20 @@ export function ApiKeysTable() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {format(apiKey.createdAt, "MMMM d, yyyy 'at' h:mm a")}
+                    <TimeDisplay date={apiKey.createdAt} />
                   </TableCell>
                   <TableCell>
-                    {apiKey.lastUsage
-                      ? format(
-                          apiKey.lastUsage.createdAt,
-                          "MMMM d, yyyy 'at' h:mm a",
-                        )
-                      : 'Never'}
+                    {apiKey.lastUsage ? (
+                      <TimeDisplay date={apiKey.lastUsage.createdAt} />
+                    ) : (
+                      'Never'
+                    )}
                   </TableCell>
                   <TableCell>
-                    <AlertDialog
-                      onOpenChange={(open) => !open && setKeyToDelete(null)}
-                      open={keyToDelete === apiKey.id}
-                    >
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          disabled={deletingKeys.has(apiKey.id)}
-                          onClick={() => handleDeleteClick(apiKey.id)}
-                          size="sm"
-                          variant="ghost"
-                        >
-                          {deletingKeys.has(apiKey.id) ? (
-                            <IconLoader2 className="animate-spin" size="sm" />
-                          ) : (
-                            <IconTrash size="sm" />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete API Key</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "
-                            {getApiKeyName(apiKey.id)}"? This action cannot be
-                            undone and will immediately revoke access for any
-                            applications using this key.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel onClick={handleCancelDelete}>
-                            Cancel
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            disabled={deletingKeys.has(apiKey.id)}
-                            onClick={handleConfirmDelete}
-                          >
-                            {deletingKeys.has(apiKey.id) ? (
-                              <>
-                                <IconLoader2
-                                  className="mr-2 animate-spin"
-                                  size="sm"
-                                />
-                                Deleting...
-                              </>
-                            ) : (
-                              'Delete API Key'
-                            )}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <DeleteApiKeyDialog
+                      apiKeyId={apiKey.id}
+                      apiKeyName={apiKey.name}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

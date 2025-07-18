@@ -1,103 +1,55 @@
 # Unhook Scripts
 
-This directory contains utility scripts for maintaining and cleaning up the Unhook database and user resources.
+This directory contains utility scripts for managing the Unhook platform.
 
-## Available Scripts
+## Scripts
 
-### Organization Cleanup (`cleanup-orgs.ts`)
+### `ensure-user-resources.ts`
 
-Removes duplicate organizations for users who have multiple organizations, keeping only the oldest one.
+Ensures that all users in the database have the necessary resources for a complete Unhook experience.
 
-**Usage:**
-```bash
-# Dry run to see what would be cleaned up
-bun run cleanup:orgs:dry-run
+#### What it does
 
-# Actually perform the cleanup
-bun run cleanup:orgs
-```
+This script checks for and creates missing resources for users:
 
-### Webhook Cleanup (`cleanup-webhooks.ts`)
+1. **Users in Clerk** - Ensures users exist in the authentication system
+2. **Users in Database** - Ensures user records exist in the local database
+3. **Organizations** - Creates organizations in both Clerk and database
+4. **Stripe Customers** - Creates billing customers in Stripe
+5. **API Keys** - Creates API keys for webhook access
+6. **Webhooks** - Creates default webhooks for receiving events
 
-Removes organizations that have no webhooks and organizations with multiple webhooks (keeping the oldest webhook).
-
-**Usage:**
-```bash
-# Dry run to see what would be cleaned up
-bun run cleanup:webhooks:dry-run
-
-# Actually perform the cleanup
-bun run cleanup:webhooks
-```
-
-### User Resource Creation (`ensure-user-resources.ts`)
-
-Ensures that every user has at least one organization and one webhook. Creates missing resources in both Clerk and the database.
-
-**Usage:**
-```bash
-# Dry run to see what would be created
-bun run ensure:user-resources:dry-run
-
-# Actually create missing resources
-bun run ensure:user-resources
-```
-
-## What Each Script Does
-
-### Organization Cleanup
-- Finds users with multiple organizations
-- Keeps the oldest organization (based on creation date)
-- Deletes duplicate organizations from both Clerk and the database
-- Removes associated org memberships
-
-### Webhook Cleanup
-- Finds organizations without any webhooks and deletes them
-- Finds organizations with multiple webhooks and keeps only the oldest one
-- Deletes organizations from both Clerk and the database
-- Removes associated org memberships
-
-### User Resource Creation
-- Finds users without any organizations and creates one for each
-- Finds users with organizations but no webhooks and creates a "Default" webhook
-- Creates organizations in Clerk with appropriate names (e.g., "Chris's Team")
-- Creates organizations in the database with proper relationships
-- Creates org memberships with admin role
-- Creates webhooks with default configuration
-
-## Safety Features
-
-All scripts include:
-- **Dry run mode**: Use `--dry-run` flag to see what would happen without making changes
-- **Error handling**: Graceful handling of API failures and database errors
-- **Validation**: Post-execution validation to confirm changes were successful
-- **Detailed logging**: Clear output showing what actions are being taken
-
-## Prerequisites
-
-- Environment variables must be set up (CLERK_SECRET_KEY, POSTGRES_URL)
-- Database connection must be available
-- Clerk API access must be configured
-
-## Running Scripts
-
-All scripts can be run using the npm scripts defined in the root `package.json`:
+#### Usage
 
 ```bash
-# Using infisical for environment variables
-infisical run -- bun run <script-name>
+# Run in dry-run mode (recommended first)
+bun run scripts/ensure-user-resources.ts --dry-run
 
-# Examples:
-infisical run -- bun run cleanup:orgs:dry-run
-infisical run -- bun run ensure:user-resources
+# Run to actually create resources
+bun run scripts/ensure-user-resources.ts
 ```
 
-## Script Order
+#### Environment Variables
 
-When running multiple scripts, consider this order:
+The script requires the following environment variables:
 
-1. **User Resource Creation** - Ensure all users have basic resources
-2. **Organization Cleanup** - Remove duplicate organizations
-3. **Webhook Cleanup** - Remove organizations without webhooks
+- `CLERK_SECRET_KEY` - Clerk secret key for user management
+- `POSTGRES_URL` - Database connection string
+- `STRIPE_SECRET_KEY` - Stripe secret key for customer creation
 
-This ensures that users have the minimum required resources before cleaning up duplicates.
+#### When to use
+
+- After database migrations that might leave users without resources
+- When setting up a new environment
+- When troubleshooting missing user resources
+- As part of deployment scripts to ensure data consistency
+
+#### Safety
+
+- Always run with `--dry-run` first to see what would be created
+- The script is idempotent - it won't create duplicate resources
+- It uses upsert operations to handle existing data gracefully
+
+### Other Scripts
+
+Additional scripts may be added to this directory for other maintenance tasks.

@@ -67,7 +67,9 @@ export function TimeDisplay({
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Button variant="link">{timeDisplay}</Button>
+        <Button className="p-0" variant="link">
+          {timeDisplay}
+        </Button>
       </HoverCardTrigger>
       <HoverCardContent className="min-w-fit flex flex-col gap-4">
         <div className="text-sm font-medium border-b border-border pb-2">

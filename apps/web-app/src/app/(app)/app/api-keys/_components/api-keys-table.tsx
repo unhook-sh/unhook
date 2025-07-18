@@ -4,9 +4,12 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { api } from '@unhook/api/react';
 import { Button } from '@unhook/ui/button';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
+import { Icons } from '@unhook/ui/custom/icons';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import * as Editable from '@unhook/ui/diceui/editable-input';
 import { Input } from '@unhook/ui/input';
 import { Skeleton } from '@unhook/ui/skeleton';
+import { toast } from '@unhook/ui/sonner';
 import {
   Table,
   TableBody,
@@ -15,9 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from '@unhook/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
 import { useState } from 'react';
 import { DeleteApiKeyDialog } from './delete-api-key-dialog';
-import { EditApiKeyDialog } from './edit-api-key-dialog';
 
 function SkeletonRow() {
   return (
@@ -47,6 +50,12 @@ function SkeletonRow() {
 
 export function ApiKeysTable() {
   const apiKeys = api.apiKeys.allWithLastUsage.useQuery();
+  const apiUtils = api.useUtils();
+  const updateApiKey = api.apiKeys.update.useMutation({
+    onSuccess: () => {
+      apiUtils.apiKeys.allWithLastUsage.invalidate();
+    },
+  });
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
 
   const toggleKeyVisibility = (id: string) => {
@@ -61,6 +70,22 @@ export function ApiKeysTable() {
     const postfixLength = 4;
     const fillLength = key.length - prefixLength - postfixLength;
     return `${key.slice(0, prefixLength)}${'*'.repeat(fillLength)}${key.slice(-postfixLength)}`;
+  };
+
+  const handleUpdateApiKeyName = ({
+    apiKeyId,
+    oldName,
+    newName,
+  }: {
+    apiKeyId: string;
+    oldName: string;
+    newName: string;
+  }) => {
+    const trimmedName = newName.trim();
+    if (trimmedName && trimmedName !== '' && trimmedName !== oldName) {
+      updateApiKey.mutate({ id: apiKeyId, name: trimmedName });
+      toast.success('API key name updated');
+    }
   };
 
   return (
@@ -85,10 +110,32 @@ export function ApiKeysTable() {
               apiKeys.data?.map((apiKey) => (
                 <TableRow key={apiKey.id}>
                   <TableCell className="font-medium truncate max-w-40">
-                    <EditApiKeyDialog
-                      apiKeyId={apiKey.id}
-                      currentName={apiKey.name}
-                    />
+                    <Editable.Root
+                      className="flex flex-row items-center gap-1.5"
+                      defaultValue={apiKey.name}
+                      onSubmit={(value) =>
+                        handleUpdateApiKeyName({
+                          apiKeyId: apiKey.id,
+                          newName: value,
+                          oldName: apiKey.name,
+                        })
+                      }
+                    >
+                      <Editable.Area className="flex-1">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Editable.Preview className="w-full rounded-md px-1.5 py-1" />
+                          </TooltipTrigger>
+                          <TooltipContent>{apiKey.name}</TooltipContent>
+                        </Tooltip>
+                        <Editable.Input className="px-1.5 py-1" />
+                      </Editable.Area>
+                      <Editable.Trigger asChild>
+                        <Button className="size-7" size="icon" variant="ghost">
+                          <Icons.Pencil size="sm" />
+                        </Button>
+                      </Editable.Trigger>
+                    </Editable.Root>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

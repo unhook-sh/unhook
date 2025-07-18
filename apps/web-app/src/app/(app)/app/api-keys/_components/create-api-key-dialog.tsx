@@ -20,7 +20,7 @@ export function CreateApiKeyDialog() {
 
   const createApiKey = api.apiKeys.create.useMutation({
     onSuccess: () => {
-      apiUtils.apiKeys.all.invalidate();
+      apiUtils.apiKeys.allWithLastUsage.invalidate();
     },
   });
   const [open, setOpen] = useState(false);

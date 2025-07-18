@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
+import { CopyButton } from '@unhook/ui/custom/copy-button';
 
 export function SectionCards() {
   return (
@@ -95,6 +96,48 @@ export function SectionCards() {
             Steady performance increase <IconTrendingUp className="size-4" />
           </div>
           <div className="text-muted-foreground">Meets growth projections</div>
+        </CardFooter>
+      </Card>
+      <Card className="@container/card col-span-1">
+        <CardHeader>
+          <CardDescription>API Key</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl flex items-center gap-2">
+            <span className="font-mono text-base select-all">
+              fc-0**********************9ffd
+            </span>
+            <span className="ml-2">
+              <CopyButton
+                size="sm"
+                text="fc-0**********************9ffd"
+                variant="outline"
+              />
+            </span>
+          </CardTitle>
+          <CardAction>
+            <a
+              className="text-xs underline text-primary hover:text-primary-darker"
+              href="/app/api-keys"
+            >
+              Manage API Keys
+            </a>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="flex flex-col gap-1 w-full">
+            <div className="flex items-center gap-2">
+              <span className="font-mono bg-muted px-2 py-1 rounded text-xs select-all">
+                env FIRECRAWL_API_KEY=••• npx -y firecrawl-mcp
+              </span>
+              <CopyButton
+                size="sm"
+                text="env FIRECRAWL_API_KEY=••• npx -y firecrawl-mcp"
+                variant="outline"
+              />
+            </div>
+            <div className="text-muted-foreground text-xs mt-1">
+              Use this command to set up MCP server integration in Cursor.
+            </div>
+          </div>
         </CardFooter>
       </Card>
     </div>

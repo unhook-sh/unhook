@@ -77,6 +77,7 @@
   "exports": {
     "./*": "./src/components/*.tsx",
     "./custom/*": "./src/custom/*.tsx",
+    "./diceui/*": "./src/diceui/*.tsx",
     "./globals.css": "./src/styles/globals.css",
     "./hooks/*": "./src/hooks/*.tsx",
     "./lib/*": "./src/lib/*.tsx",

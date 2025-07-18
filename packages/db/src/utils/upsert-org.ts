@@ -6,10 +6,9 @@ import { db } from '../client';
 import { ApiKeys, OrgMembers, Orgs } from '../schema';
 
 type UpsertOrgParams = {
-  clerkOrgId: string;
+  orgId?: string;
   name: string;
   userId: string;
-  userEmail: string;
 };
 
 type UpsertOrgResult = {
@@ -200,17 +199,21 @@ async function handleExistingOrgByName({
 }
 
 export async function upsertOrg({
-  clerkOrgId,
+  orgId,
   name,
   userId,
-  userEmail,
 }: UpsertOrgParams): Promise<UpsertOrgResult> {
   const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  const userEmail = user.primaryEmailAddress?.emailAddress;
+  if (!userEmail) {
+    throw new Error('User email not found');
+  }
 
   // If clerkOrgId is provided, update existing org
-  if (clerkOrgId) {
+  if (orgId) {
     // Update org in Clerk first
-    const clerkOrg = await client.organizations.updateOrganization(clerkOrgId, {
+    const clerkOrg = await client.organizations.updateOrganization(orgId, {
       name,
     });
 
@@ -248,6 +251,7 @@ export async function upsertOrg({
 
     // Update org in Clerk with Stripe customer ID
     await client.organizations.updateOrganization(clerkOrg.id, {
+      name,
       privateMetadata: {
         stripeCustomerId: stripeCustomer.id,
       },

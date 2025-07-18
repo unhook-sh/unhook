@@ -62,9 +62,8 @@ export const createAuthCode = action.action(async () => {
 
   // Use the upsertOrg utility function
   await upsertOrg({
-    clerkOrgId: user.orgId,
     name: clerkOrg.name,
-    userEmail: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+    orgId: user.orgId,
     userId: user.userId,
   });
 
@@ -129,9 +128,8 @@ export const upsertOrgAction = action
 
     // Use the upsertOrg utility function
     const result = await upsertOrg({
-      clerkOrgId: clerkOrgId || '',
       name,
-      userEmail: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+      orgId: clerkOrgId || '',
       userId: user.userId,
     });
 

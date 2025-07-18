@@ -91,9 +91,8 @@ export const authRouter = {
 
       // Use the upsertOrg utility function
       await upsertOrg({
-        clerkOrgId: authCode.orgId,
         name: organization.name,
-        userEmail: emailAddress?.emailAddress ?? '',
+        orgId: authCode.orgId,
         userId: authCode.userId,
       });
 
@@ -159,9 +158,8 @@ export const authRouter = {
 
       // Use the upsertOrg utility function
       await upsertOrg({
-        clerkOrgId: session.lastActiveOrganizationId,
         name: organization.name,
-        userEmail: emailAddress?.emailAddress ?? '',
+        orgId: session.lastActiveOrganizationId,
         userId: ctx.auth.userId,
       });
 

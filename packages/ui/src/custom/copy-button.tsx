@@ -1,12 +1,12 @@
 'use client';
 
+import { IconCheck, IconCopy, IconLoader2 } from '@tabler/icons-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 import { useState } from 'react';
 import { Button } from '../components/button';
 import { toast } from '../components/sonner';
 import { cn } from '../lib/utils';
-import { Icons } from './icons';
 
 export type CopyState = 'idle' | 'copying' | 'copied';
 
@@ -82,20 +82,19 @@ export function CopyButton({
       {...props}
     >
       {copyState === 'copying' ? (
-        <Icons.Spinner
-          className="animate-spin"
+        <IconLoader2
+          className="text-muted-foreground animate-spin"
           size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
-          variant="muted"
         />
       ) : copyState === 'copied' ? (
-        <Icons.Check
+        <IconCheck
+          className="text-primary"
           size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
-          variant="primary"
         />
       ) : (
-        <Icons.Copy
+        <IconCopy
+          className="text-muted-foreground"
           size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
-          variant="muted"
         />
       )}
     </Button>

@@ -69,9 +69,8 @@ export const createWebhook = action
 
     // Use the upsertOrg utility function
     const { apiKey } = await upsertOrg({
-      clerkOrgId: targetOrgId,
       name: orgName,
-      userEmail: clerkUser.emailAddresses[0]?.emailAddress ?? '',
+      orgId: targetOrgId,
       userId: user.userId,
     });
 

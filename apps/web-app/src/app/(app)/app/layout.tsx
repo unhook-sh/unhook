@@ -1,5 +1,5 @@
 import { SidebarInset, SidebarProvider } from '@unhook/ui/sidebar';
-import { AppSidebar } from './_components/app-sidebar';
+import { AppSidebar } from './_components/app-sidebar/app-sidebar';
 import { SiteHeader } from './_components/site-header';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

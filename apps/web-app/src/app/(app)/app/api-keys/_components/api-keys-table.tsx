@@ -1,10 +1,9 @@
 'use client';
 
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconPencil } from '@tabler/icons-react';
 import { api } from '@unhook/api/react';
 import { Button } from '@unhook/ui/button';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
-import { Icons } from '@unhook/ui/custom/icons';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
 import * as Editable from '@unhook/ui/diceui/editable-input';
 import { Input } from '@unhook/ui/input';
@@ -126,7 +125,7 @@ export function ApiKeysTable() {
                       </Editable.Area>
                       <Editable.Trigger asChild>
                         <Button className="size-7" size="icon" variant="ghost">
-                          <Icons.Pencil size="sm" />
+                          <IconPencil />
                         </Button>
                       </Editable.Trigger>
                     </Editable.Root>

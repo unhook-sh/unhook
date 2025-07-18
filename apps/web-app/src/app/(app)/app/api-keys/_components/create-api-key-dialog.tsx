@@ -1,5 +1,6 @@
 'use client';
 
+import { IconPlus } from '@tabler/icons-react';
 import { api } from '@unhook/api/react';
 import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
@@ -49,7 +50,7 @@ export function CreateApiKeyDialog() {
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button>
-          <Icons.Plus size="sm" />
+          <IconPlus />
           Create API Key
         </Button>
       </DialogTrigger>

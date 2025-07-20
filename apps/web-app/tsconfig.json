@@ -4,6 +4,7 @@
     "incremental": true,
     "paths": {
       "@unhook/analytics/*": ["../../packages/analytics/src/*"],
+      "@unhook/stripe/*": ["../../packages/stripe/src/*"],
       "@unhook/ui/*": ["../../packages/ui/src/*"],
       "@unhook/zustand/*": ["../../packages/zustand/src/*"],
       "~/*": ["./src/*"]

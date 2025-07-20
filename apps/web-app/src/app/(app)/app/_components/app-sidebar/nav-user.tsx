@@ -59,7 +59,7 @@ export function NavUser() {
     await setActive({
       organization: orgId,
     });
-    apiUtils.invalidate();
+    await apiUtils.invalidate();
   };
 
   if (!user) {

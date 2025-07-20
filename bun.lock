@@ -464,6 +464,7 @@
       "name": "@unhook/stripe",
       "version": "0.1.0",
       "dependencies": {
+        "next": "15.4.2-canary.4",
         "stripe": "18.3.0",
       },
       "devDependencies": {

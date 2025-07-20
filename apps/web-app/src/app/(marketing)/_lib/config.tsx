@@ -490,7 +490,7 @@ export const siteConfig = {
         yearlyPrice: '$0',
       },
       {
-        betaFree: true,
+        betaFree: false,
         buttonColor: 'bg-secondary text-white',
         buttonText: 'Start Trial',
         description: 'Ideal for development teams',

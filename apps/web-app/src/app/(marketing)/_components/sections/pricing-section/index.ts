@@ -1,3 +1,4 @@
+export { createCheckoutSessionAction } from './actions';
 export { PricingCard } from './pricing-card';
 export { PricingSection } from './pricing-section';
 export { PricingTabs } from './pricing-tabs';

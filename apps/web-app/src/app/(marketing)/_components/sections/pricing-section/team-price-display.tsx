@@ -42,7 +42,7 @@ export const TeamPriceDisplay = memo(function TeamPriceDisplay({
           /{billingCycle === 'yearly' ? 'month' : 'month'}
         </span>
       </div>
-      <div className="mt-2 text-sm text-muted-foreground">
+      <div className="mt-2 text-sm text-muted-foreground self-start">
         for {seats} {seats === 1 ? 'seat' : 'seats'}
       </div>
     </div>

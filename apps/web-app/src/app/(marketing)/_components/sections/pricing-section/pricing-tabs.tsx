@@ -54,7 +54,7 @@ export function PricingTabs({
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
             {tab === 'yearly' && (
-              <span className="ml-2 text-xs font-semibold bg-secondary text-primary-foreground py-0.5 w-[calc(100%+1rem)] px-1 rounded-full">
+              <span className="ml-2 text-xs font-semibold bg-secondary text-primary py-0.5 w-[calc(100%+1rem)] px-1 rounded-full">
                 2 months free
               </span>
             )}

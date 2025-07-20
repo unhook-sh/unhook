@@ -11,6 +11,7 @@ const nextConfig = {
     '@unhook/ui',
     '@unhook/client',
     '@unhook/logger',
+    '@unhook/stripe',
   ],
 };
 

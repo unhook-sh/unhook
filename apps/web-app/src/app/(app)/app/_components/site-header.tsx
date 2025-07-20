@@ -1,4 +1,3 @@
-import { Button } from '@unhook/ui/button';
 import { Separator } from '@unhook/ui/separator';
 import { SidebarTrigger } from '@unhook/ui/sidebar';
 
@@ -11,8 +10,8 @@ export function SiteHeader() {
           className="mx-2 data-[orientation=vertical]:h-4"
           orientation="vertical"
         />
-        <h1 className="text-base font-medium">Documents</h1>
-        <div className="ml-auto flex items-center gap-2">
+        {/* <h1 className="text-base font-medium">Documents</h1> */}
+        {/* <div className="ml-auto flex items-center gap-2">
           <Button asChild className="hidden sm:flex" size="sm" variant="ghost">
             <a
               className="dark:text-foreground"
@@ -23,7 +22,7 @@ export function SiteHeader() {
               GitHub
             </a>
           </Button>
-        </div>
+        </div> */}
       </div>
     </header>
   );

@@ -79,6 +79,18 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      case 'customer.subscription.trial_will_end': {
+        const subscription = event.data.object;
+
+        // Log trial ending for monitoring
+        if (subscription.metadata?.orgId) {
+          console.log(
+            `Trial ending for organization ${subscription.metadata.orgId} on subscription ${subscription.id}`,
+          );
+        }
+        break;
+      }
+
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice & {
           subscription?: string | Stripe.Subscription | null;
@@ -132,6 +144,22 @@ export async function POST(req: NextRequest) {
               .where(eq(Orgs.id, org.id));
           }
         }
+        break;
+      }
+
+      case 'customer.updated': {
+        const customer = event.data.object;
+
+        // Log customer updates for monitoring
+        console.log(`Customer ${customer.id} updated`);
+        break;
+      }
+
+      case 'customer.deleted': {
+        const customer = event.data.object;
+
+        // Log customer deletion for monitoring
+        console.log(`Customer ${customer.id} deleted`);
         break;
       }
 

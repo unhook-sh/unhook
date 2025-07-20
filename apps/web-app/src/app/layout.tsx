@@ -12,6 +12,7 @@ import '@unhook/ui/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { AnalyticsProviders } from '@unhook/analytics/providers';
 import { TRPCReactProvider } from '@unhook/api/react';
+import { StripeProvider } from '@unhook/stripe/guards/client';
 import { Suspense } from 'react';
 import { env } from '~/env.server';
 
@@ -66,8 +67,10 @@ export default function RootLayout(props: { children: React.ReactNode }) {
                     defaultTheme="dark"
                     enableSystem
                   >
-                    {props.children}
-                    <Toaster />
+                    <StripeProvider>
+                      {props.children}
+                      <Toaster />
+                    </StripeProvider>
                   </ThemeProvider>
                 </AnalyticsProviders>
               </ClerkProvider>

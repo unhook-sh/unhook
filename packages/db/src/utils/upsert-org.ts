@@ -1,6 +1,12 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { generateRandomName } from '@unhook/id';
-import { upsertCustomerByOrg } from '@unhook/stripe';
+import {
+  BILLING_INTERVALS,
+  createSubscription,
+  getFreePlanPriceId,
+  PLAN_TYPES,
+  upsertCustomerByOrg,
+} from '@unhook/stripe';
 import { eq } from 'drizzle-orm';
 import { db } from '../client';
 import { ApiKeys, OrgMembers, Orgs, Webhooks } from '../schema';
@@ -261,6 +267,46 @@ async function handleExistingOrgByName({
   };
 }
 
+// Helper function to auto-subscribe org to free plan
+async function autoSubscribeToFreePlan({
+  customerId,
+  orgId,
+}: {
+  customerId: string;
+  orgId: string;
+}) {
+  try {
+    // Get the free plan price ID
+    const freePriceId = await getFreePlanPriceId();
+
+    // Create subscription to free plan
+    const subscription = await createSubscription({
+      billingInterval: BILLING_INTERVALS.MONTHLY,
+      customerId,
+      orgId,
+      planType: PLAN_TYPES.FREE,
+      priceId: freePriceId,
+    });
+
+    // Update org with subscription info
+    await db
+      .update(Orgs)
+      .set({
+        stripeSubscriptionId: subscription.id,
+        stripeSubscriptionStatus: subscription.status,
+        updatedAt: new Date(),
+      })
+      .where(eq(Orgs.id, orgId));
+
+    console.log(`Auto-subscribed org ${orgId} to free plan`);
+    return subscription;
+  } catch (error) {
+    console.error('Failed to auto-subscribe to free plan:', error);
+    // Don't throw error - org creation should still succeed
+    return null;
+  }
+}
+
 export async function upsertOrg({
   orgId,
   name,
@@ -310,6 +356,12 @@ export async function upsertOrg({
     await updateOrgWithStripeCustomerId({
       orgId: org.id,
       stripeCustomerId: stripeCustomer.id,
+    });
+
+    // Auto-subscribe to free plan
+    await autoSubscribeToFreePlan({
+      customerId: stripeCustomer.id,
+      orgId: org.id,
     });
 
     // Update org in Clerk with Stripe customer ID
@@ -391,6 +443,12 @@ export async function upsertOrg({
     await updateOrgWithStripeCustomerId({
       orgId: org.id,
       stripeCustomerId: stripeCustomer.id,
+    });
+
+    // Auto-subscribe to free plan
+    await autoSubscribeToFreePlan({
+      customerId: stripeCustomer.id,
+      orgId: org.id,
     });
 
     // Update org in Clerk with Stripe customer ID

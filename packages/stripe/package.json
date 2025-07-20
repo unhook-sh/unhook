@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "next": "15.4.2-canary.4",
     "stripe": "18.3.0"
   },
   "devDependencies": {
@@ -7,15 +8,20 @@
     "typescript": "5.8.3"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./entitlements": "./src/entitlements.ts",
+    "./guards/client": "./src/guards/client.tsx",
+    "./guards/server": "./src/guards/server.ts"
   },
   "license": "MIT",
   "name": "@unhook/stripe",
   "private": true,
   "scripts": {
+    "build": "bun run ./scripts/generate-billing-types.ts",
     "clean": "git clean -xdf .turbo node_modules dist",
-    "create-stripe-entities": "tsx src/create-stripe-entities.ts",
-    "dev": "tsc --watch",
+    "create-stripe-entities": "bun run ./src/create-stripe-entities.ts",
+    "dev": "bun run build && tsc --watch",
+    "generate-billing-types": "bun run ./scripts/generate-billing-types.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

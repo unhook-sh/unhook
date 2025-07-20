@@ -30,6 +30,7 @@ import { Icons } from '~/app/(marketing)/_components/icons';
 import { NavMain } from './nav-main';
 import { NavSecondary } from './nav-secondary';
 import { NavUser } from './nav-user';
+import { UsageCard } from './usage-card';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const data = {
@@ -123,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         icon: IconSettings,
         title: 'Settings',
-        url: '/app/settings',
+        url: '/app/settings/organization',
       },
     ],
     navSecondary: [
@@ -170,7 +171,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         {/* <NavDocuments items={data.documents} /> */}
-        <NavSecondary className="mt-auto" items={data.navSecondary} />
+        <div className="mt-auto">
+          <UsageCard />
+          <NavSecondary items={data.navSecondary} />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

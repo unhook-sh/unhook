@@ -1,11 +1,21 @@
 'use client';
 
-import { Icons } from '@unhook/ui/custom/icons';
+import { SignedIn, SignedOut, useOrganization } from '@clerk/nextjs';
+import { IconCheck } from '@tabler/icons-react';
+import {
+  SubscriptionActive,
+  SubscriptionPastDue,
+  useHasActiveSubscription,
+  useHasPastDueSubscription,
+} from '@unhook/stripe/guards/client';
 import { cn } from '@unhook/ui/lib/utils';
 import { motion } from 'motion/react';
+import Link from 'next/link';
+import { useAction } from 'next-safe-action/hooks';
 import { memo, useMemo, useState } from 'react';
 import type { siteConfig } from '~/app/(marketing)/_lib/config';
 import { TEAM_PRICING } from '~/app/(marketing)/_lib/config';
+import { createCheckoutSessionAction } from './actions';
 import { TeamPriceDisplay } from './team-price-display';
 import { TeamSeatsSlider } from './team-seats-slider';
 
@@ -21,6 +31,18 @@ export const PricingCard = memo(function PricingCard({
   const [teamSeats, setTeamSeats] = useState<number>(
     TEAM_PRICING.DEFAULT_SEATS,
   );
+
+  const { organization } = useOrganization();
+
+  // Safe action for checkout
+  const { executeAsync: executeCreateCheckout, status: checkoutStatus } =
+    useAction(createCheckoutSessionAction);
+
+  // Subscription status hooks - must be called at top level
+  const hasActiveSubscription = useHasActiveSubscription();
+  const hasPastDueSubscription = useHasPastDueSubscription();
+
+  const isSubscribing = checkoutStatus === 'executing';
 
   // Calculate team price
   const teamPrice = useMemo(() => {
@@ -40,6 +62,20 @@ export const PricingCard = memo(function PricingCard({
         : TEAM_PRICING.PRICE_PER_SEAT_MONTHLY;
     return basePrice + additionalSeats * perSeatPrice;
   }, [teamSeats, billingCycle, tier.name]);
+
+  const handleSubscribe = async () => {
+    if (!organization?.id) return;
+
+    try {
+      await executeCreateCheckout({
+        billingInterval: billingCycle,
+        orgId: organization.id,
+        planType: tier.name === 'Team' ? 'team' : 'free',
+      });
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+    }
+  };
 
   const PriceDisplay = () => {
     if (tier.name === 'Team') {
@@ -91,6 +127,123 @@ export const PricingCard = memo(function PricingCard({
     );
   };
 
+  const renderButton = () => {
+    // For signed out users, show "Create Webhook URL" with link
+    return (
+      <>
+        <SignedOut>
+          <Link
+            className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+              tier.isPopular
+                ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+            }`}
+            href="/app/webhooks/create"
+          >
+            Create Webhook URL
+          </Link>
+        </SignedOut>
+
+        {/* For signed in users */}
+        <SignedIn>
+          {tier.name === 'Team' ? (
+            // Team plan logic
+            <>
+              <SubscriptionActive>
+                <button
+                  className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+                    tier.isPopular
+                      ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                      : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+                  }`}
+                  disabled={isSubscribing}
+                  onClick={handleSubscribe}
+                  type="button"
+                >
+                  {isSubscribing ? 'Redirecting...' : 'Downgrade'}
+                </button>
+              </SubscriptionActive>
+              <SubscriptionPastDue>
+                <button
+                  className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+                    tier.isPopular
+                      ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                      : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+                  }`}
+                  disabled={isSubscribing}
+                  onClick={handleSubscribe}
+                  type="button"
+                >
+                  {isSubscribing ? 'Redirecting...' : 'Update Payment'}
+                </button>
+              </SubscriptionPastDue>
+              {!hasActiveSubscription && !hasPastDueSubscription && (
+                <button
+                  className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+                    tier.isPopular
+                      ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                      : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+                  }`}
+                  disabled={isSubscribing}
+                  onClick={handleSubscribe}
+                  type="button"
+                >
+                  {isSubscribing
+                    ? 'Redirecting...'
+                    : tier.betaFree
+                      ? 'Create Webhook URL'
+                      : 'Upgrade'}
+                </button>
+              )}
+            </>
+          ) : (
+            // Free plan logic
+            <>
+              <SubscriptionActive>
+                <Link
+                  className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+                    tier.isPopular
+                      ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                      : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+                  }`}
+                  href="/app/webhooks/create"
+                >
+                  Create Webhook URL
+                </Link>
+              </SubscriptionActive>
+              <SubscriptionPastDue>
+                <button
+                  className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+                    tier.isPopular
+                      ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                      : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+                  }`}
+                  disabled={isSubscribing}
+                  onClick={handleSubscribe}
+                  type="button"
+                >
+                  {isSubscribing ? 'Redirecting...' : 'Update Payment'}
+                </button>
+              </SubscriptionPastDue>
+              {!hasActiveSubscription && !hasPastDueSubscription && (
+                <Link
+                  className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
+                    tier.isPopular
+                      ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
+                      : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
+                  }`}
+                  href="/app/webhooks/create"
+                >
+                  Create Webhook URL
+                </Link>
+              )}
+            </>
+          )}
+        </SignedIn>
+      </>
+    );
+  };
+
   return (
     <div
       className={cn(
@@ -127,18 +280,7 @@ export const PricingCard = memo(function PricingCard({
         )}
       </div>
 
-      <div className="flex flex-col gap-2 p-4">
-        <button
-          className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
-            tier.isPopular
-              ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
-              : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
-          }`}
-          type="button"
-        >
-          {tier.betaFree ? 'Create Webhook URL' : tier.buttonText}
-        </button>
-      </div>
+      <div className="flex flex-col gap-2 p-4">{renderButton()}</div>
       <hr className="border-border dark:border-white/20" />
       <div className="p-4">
         {tier.name !== 'Basic' && tier.name !== 'Free' && (
@@ -169,7 +311,7 @@ export const PricingCard = memo(function PricingCard({
                     : undefined
                 }
               >
-                <Icons.Check size="sm" variant="muted" />
+                <IconCheck className="size-4 text-muted-foreground" />
               </div>
               <span className="text-sm">{feature}</span>
             </li>

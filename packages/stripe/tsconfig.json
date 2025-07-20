@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "dist",
+    "rootDir": ".",
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "exclude": ["node_modules"],
-  "extends": "@unhook/tsconfig/node.json",
-  "include": ["*.ts", "src"]
+  "extends": "@unhook/tsconfig/react-library.json",
+  "include": ["*.ts", "src", "scripts/billing-types.template.ts"]
 }

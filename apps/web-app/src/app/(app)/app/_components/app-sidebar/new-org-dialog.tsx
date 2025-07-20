@@ -3,6 +3,11 @@
 import { useOrganizationList, useUser } from '@clerk/nextjs';
 import { IconLoader2 } from '@tabler/icons-react';
 import { api } from '@unhook/api/react';
+import {
+  Entitled,
+  NotEntitled,
+  useIsEntitled,
+} from '@unhook/stripe/guards/client';
 import { Button } from '@unhook/ui/button';
 import { P } from '@unhook/ui/custom/typography';
 import {
@@ -15,6 +20,7 @@ import {
 } from '@unhook/ui/dialog';
 import { Input } from '@unhook/ui/input';
 import { Label } from '@unhook/ui/label';
+import Link from 'next/link';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { createOrgAction } from './actions';
@@ -35,6 +41,7 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
     useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const { user } = useUser();
+  const isEntitled = useIsEntitled('unlimited_developers');
 
   const apiUtils = api.useUtils();
 
@@ -113,6 +120,7 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
             </Label>
             <Input
               autoFocus
+              disabled={isLoading || !isEntitled}
               id="org-name"
               onChange={(e) => setName(e.target.value)}
               placeholder="Acme Inc"
@@ -165,12 +173,21 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
                 Cancel
               </Button>
             </DialogClose>
-            <Button disabled={isLoading || !name} type="submit">
-              {isLoading && (
-                <IconLoader2 className="text-secondary" size="sm" />
-              )}
-              Create
-            </Button>
+            <Entitled entitlement="unlimited_developers">
+              <Button disabled={isLoading || !name} type="submit">
+                {isLoading && (
+                  <IconLoader2 className="text-secondary" size="sm" />
+                )}
+                Create
+              </Button>
+            </Entitled>
+            <NotEntitled entitlement="unlimited_developers">
+              <Button asChild>
+                <Link href="/app/settings/billing">
+                  Upgrade to create organizations
+                </Link>
+              </Button>
+            </NotEntitled>
           </DialogFooter>
         </form>
       </DialogContent>

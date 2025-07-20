@@ -33,7 +33,7 @@ export function NavMain({
               <SidebarMenuButton
                 asChild
                 className="data-[slot=sidebar-menu-button]:!p-1.5"
-                isActive={pathname === item.url}
+                isActive={pathname.includes(item.url)}
               >
                 <Link href={item.url}>
                   {item.icon && <item.icon />}

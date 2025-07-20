@@ -82,7 +82,7 @@ export function ApiKeysTable() {
   };
 
   return (
-    <div className="rounded-lg border">
+    <div className="rounded border">
       <Table>
         <TableHeader className="bg-muted sticky top-0 z-10">
           <TableRow>

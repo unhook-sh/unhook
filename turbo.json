@@ -156,7 +156,6 @@
       "persistent": true
     },
     "typecheck": {
-      "dependsOn": ["^build"],
       "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     },
     "ui-add": {

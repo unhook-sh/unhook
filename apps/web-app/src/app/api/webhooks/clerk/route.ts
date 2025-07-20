@@ -5,7 +5,9 @@ import { Webhook } from 'svix';
 
 import { env } from '~/env.server';
 import { handleOrganizationCreated } from './organization-created';
+import { handleOrganizationInvitationAccepted } from './organization-invitation-accepted';
 import { handleOrganizationMembershipCreated } from './organization-membership-created';
+import { handleOrganizationMembershipDeleted } from './organization-membership-deleted';
 import { handleOrganizationMembershipUpdated } from './organization-membership-updated';
 import { handleOrganizationUpdated } from './organization-updated';
 import { handleSessionCreated } from './session-created';
@@ -86,6 +88,12 @@ export async function POST(request: Request) {
       break;
     case 'organizationMembership.updated':
       response = await handleOrganizationMembershipUpdated(event);
+      break;
+    case 'organizationMembership.deleted':
+      response = await handleOrganizationMembershipDeleted(event);
+      break;
+    case 'organizationInvitation.accepted':
+      response = await handleOrganizationInvitationAccepted(event);
       break;
     default:
       response = undefined;

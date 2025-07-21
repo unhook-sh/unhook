@@ -7,5 +7,5 @@
   },
   "exclude": ["node_modules"],
   "extends": "@unhook/tsconfig/react-library.json",
-  "include": ["*.ts", "src", "scripts/billing-types.template.ts"]
+  "include": ["*.ts", "src", "scripts"]
 }

@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Stripe from 'stripe';
 import { env } from '../src/env.server';
-import { PRICE_LOOKUP_KEYS } from './billing-types.template';
+import { PRICE_LOOKUP_KEYS } from './billing-ids.template';
 
 // Initialize Stripe
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
@@ -76,12 +76,12 @@ function generateBillingTypesFile(
   productIds: Record<string, string>,
   priceIds: Record<string, string>,
 ) {
-  console.log('📝 Generating billing-types.ts file...');
+  console.log('📝 Generating billing-ids.ts file...');
 
-  const templatePath = join(import.meta.dir, 'billing-types.template.ts');
+  const templatePath = join(import.meta.dir, 'billing-ids.template.ts');
   const outputPath = join(
     import.meta.dir,
-    '../src/guards/billing-types.generated.ts',
+    '../src/guards/billing-ids.generated.ts',
   );
 
   let template = readFileSync(templatePath, 'utf-8');
@@ -122,12 +122,12 @@ function generateBillingTypesFile(
   );
 
   writeFileSync(outputPath, template);
-  console.log('✅ Generated billing-types.generated.ts successfully!');
+  console.log('✅ Generated billing-ids.generated.ts successfully!');
 }
 
 async function main() {
   try {
-    console.log('🚀 Starting billing types generation...');
+    console.log('🚀 Starting billing ids generation...');
 
     const { productIds, priceIds } = await fetchStripeIds();
 
@@ -137,9 +137,9 @@ async function main() {
 
     generateBillingTypesFile(productIds, priceIds);
 
-    console.log('🎉 Billing types generation completed!');
+    console.log('🎉 Billing ids generation completed!');
   } catch (error) {
-    console.error('❌ Error generating billing types:', error);
+    console.error('❌ Error generating billing ids:', error);
     process.exit(1);
   }
 }

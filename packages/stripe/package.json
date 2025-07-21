@@ -17,11 +17,11 @@
   "name": "@unhook/stripe",
   "private": true,
   "scripts": {
-    "build": "bun run ./scripts/generate-billing-types.ts",
+    "build": "bun run populate-ids",
     "clean": "git clean -xdf .turbo node_modules dist",
-    "create-stripe-entities": "bun run ./src/create-stripe-entities.ts",
     "dev": "bun run build && tsc --watch",
-    "generate-billing-types": "bun run ./scripts/generate-billing-types.ts",
+    "populate-ids": "bun run ./scripts/populate-ids.ts",
+    "push": "bun run ./src/create-stripe-entities.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

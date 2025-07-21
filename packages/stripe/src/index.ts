@@ -11,7 +11,7 @@ import {
   type PriceId,
   type PriceLookupKey,
   type ProductId,
-} from './guards/billing-types.generated';
+} from './guards/billing-ids.generated';
 
 // Initialize Stripe with the secret key
 export const stripe = new Stripe(env.STRIPE_SECRET_KEY, {

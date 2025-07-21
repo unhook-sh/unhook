@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   findUpConfig,
   loadConfig,
@@ -35,11 +37,15 @@ export class EventsProvider
   private previousEvents: EventTypeWithRequest[] = [];
   public authStore: AuthStore | null = null;
   private pollInterval: NodeJS.Timeout | null = null;
-  private readonly POLL_INTERVAL_MS = 2000; // Changed from 10000 to 2000 for more responsive updates
+  private readonly POLL_INTERVAL_MS = 5000; // Increased from 2000 to 5000 to reduce API calls
   private config: WebhookConfig | null = null;
+  private configPath: string | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
   private authorizationService: WebhookAuthorizationService;
   private analyticsService: AnalyticsService | null = null;
+  private isFetching = false;
+  private lastAuthorizationSuccessTime = 0;
+  private readonly AUTHORIZATION_SUCCESS_DEBOUNCE_MS = 1000; // 1 second debounce
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
@@ -131,7 +137,10 @@ export class EventsProvider
 
   public refreshAndFetchEvents(): void {
     log('Refreshing and fetching events');
-    this.fetchAndUpdateEvents();
+    // Add a small delay to prevent rapid successive calls
+    setTimeout(() => {
+      this.fetchAndUpdateEvents();
+    }, 100);
   }
 
   public updateEvents(events: EventTypeWithRequest[]): void {
@@ -285,23 +294,102 @@ export class EventsProvider
   }
 
   public async getConfig(): Promise<WebhookConfig | null> {
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    const workspaceFolder = workspaceFolders?.[0]?.uri.fsPath;
     const settings = SettingsService.getInstance().getSettings();
     const configFilePath = settings.configFilePath;
-    log('Getting config', { configFilePath, workspaceFolder });
-    if (this.config) return this.config;
-    let configPath: string | null = null;
-    if (configFilePath && configFilePath.trim() !== '') {
-      configPath = configFilePath;
-    } else {
-      configPath = await findUpConfig({ cwd: workspaceFolder });
+    log('Getting config', {
+      cachedConfigPath: this.configPath,
+      configFilePath,
+      workspaceFolder,
+      workspaceFolders: workspaceFolders?.map((f) => f.name),
+      workspaceFoldersCount: workspaceFolders?.length || 0,
+    });
+
+    // Return cached config if available
+    if (this.config) {
+      log('Returning cached config');
+      return this.config;
     }
-    log('Config path', { configPath });
-    if (!configPath) return null;
+
+    let configPath: string | null = null;
+
+    // First check if we have a cached config path
+    if (this.configPath && existsSync(this.configPath)) {
+      configPath = this.configPath;
+      log('Using cached config path', { configPath });
+    } else if (configFilePath && configFilePath.trim() !== '') {
+      configPath = configFilePath;
+      log('Using config path from settings', { configPath });
+    } else {
+      log('No config path in settings, searching for config file');
+      if (!workspaceFolder) {
+        log('No workspace folder found, cannot search for config');
+        return null;
+      }
+
+      // Try to find config in the first workspace folder
+      configPath = await findUpConfig({ cwd: workspaceFolder });
+      log('Found config path via findUpConfig', {
+        configPath,
+        workspaceFolder,
+      });
+
+      // If not found in first folder, try all workspace folders
+      if (!configPath && workspaceFolders && workspaceFolders.length > 1) {
+        log(
+          'Config not found in first folder, searching all workspace folders',
+        );
+        for (const folder of workspaceFolders) {
+          const foundPath = await findUpConfig({ cwd: folder.uri.fsPath });
+          if (foundPath) {
+            configPath = foundPath;
+            log('Found config in workspace folder', {
+              configPath,
+              folderName: folder.name,
+            });
+            break;
+          }
+        }
+      }
+
+      // If still not found, try direct file check in workspace root
+      if (!configPath && workspaceFolder) {
+        log('Trying direct file check in workspace root');
+        const possibleConfigFiles = [
+          'unhook.yml',
+          'unhook.yaml',
+          'unhook.json',
+          'unhook.config.yml',
+          'unhook.config.yaml',
+          'unhook.config.json',
+        ];
+
+        for (const configFile of possibleConfigFiles) {
+          const fullPath = join(workspaceFolder, configFile);
+          if (existsSync(fullPath)) {
+            configPath = fullPath;
+            log('Found config file via direct check', { configPath });
+            break;
+          }
+        }
+      }
+    }
+
+    if (!configPath) {
+      log('No config path found');
+      return null;
+    }
+
+    // Cache the config path for future use
+    this.configPath = configPath;
+    log('Cached config path', { configPath });
+
     // Set up file watcher if not already set
     this.setupConfigWatcher(configPath);
-    log('Loading config', { configPath });
+    log('Loading config from path', { configPath });
     this.config = await loadConfig(configPath);
+    log('Config loaded successfully', { webhookId: this.config.webhookId });
     return this.config;
   }
 
@@ -320,12 +408,26 @@ export class EventsProvider
   private onConfigFileChanged() {
     log('Config file changed, reloading config and events');
     this.config = null;
-    this.fetchAndUpdateEvents();
+    this.configPath = null; // Clear cached config path
+    // Clear the config watcher so it gets recreated with the new path
+    if (this.configWatcher) {
+      this.configWatcher.dispose();
+      this.configWatcher = null;
+    }
+    // Only call handlePolling which will handle the initial fetch
     this.handlePolling();
   }
 
   private async fetchAndUpdateEvents() {
     if (!this.authStore || !this.authStore.isSignedIn) return;
+
+    // Prevent multiple simultaneous calls
+    if (this.isFetching) {
+      log('Already fetching events, skipping');
+      return;
+    }
+
+    this.isFetching = true;
     try {
       // Get config and webhookId
       const config = await this.getConfig();
@@ -339,8 +441,29 @@ export class EventsProvider
         webhookId,
       });
       this.updateEvents(events);
-      // If we successfully fetched events, notify authorization service
-      this.authorizationService.handleAuthorizationSuccess();
+      // Only notify authorization service if we were previously unauthorized
+      const authState = this.authorizationService.getState();
+      if (authState.isUnauthorized) {
+        const now = Date.now();
+        if (
+          now - this.lastAuthorizationSuccessTime >
+          this.AUTHORIZATION_SUCCESS_DEBOUNCE_MS
+        ) {
+          log(
+            'Authorization state was unauthorized, calling handleAuthorizationSuccess',
+          );
+          this.authorizationService.handleAuthorizationSuccess();
+          this.lastAuthorizationSuccessTime = now;
+        } else {
+          log(
+            'Authorization success called too recently, skipping to prevent spam',
+          );
+        }
+      } else {
+        log(
+          'Authorization state is already authorized, skipping handleAuthorizationSuccess',
+        );
+      }
     } catch (error) {
       log('Failed to fetch events', { error });
       // Check if it's an authorization error
@@ -359,6 +482,8 @@ export class EventsProvider
           );
         }
       }
+    } finally {
+      this.isFetching = false;
     }
   }
 
@@ -482,7 +607,33 @@ export class EventsProvider
       }
     }
 
-    // Refresh events after processing
-    this.fetchAndUpdateEvents();
+    // Refresh events after processing, but don't trigger authorization success
+    // since this is just a refresh after delivery
+    if (!this.authStore || !this.authStore.isSignedIn) return;
+
+    // Prevent multiple simultaneous calls
+    if (this.isFetching) {
+      log('Already fetching events, skipping refresh after delivery');
+      return;
+    }
+
+    this.isFetching = true;
+    try {
+      const config = await this.getConfig();
+      const webhookId = config?.webhookId;
+      if (!webhookId) {
+        log('No webhookId found in config');
+        return;
+      }
+      const events = await this.authStore.api.events.byWebhookId.query({
+        webhookId,
+      });
+      this.updateEvents(events);
+      // Don't call handleAuthorizationSuccess here as this is just a refresh
+    } catch (error) {
+      log('Failed to refresh events after delivery', { error });
+    } finally {
+      this.isFetching = false;
+    }
   }
 }

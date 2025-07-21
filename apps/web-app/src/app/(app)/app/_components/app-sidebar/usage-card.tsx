@@ -90,7 +90,7 @@ export function UsageCard() {
     if (!organization?.id) return;
 
     try {
-      await executeCreateCheckout({ orgId: organization.id });
+      await executeCreateCheckout();
     } catch (error) {
       console.error('Failed to create checkout session:', error);
     }

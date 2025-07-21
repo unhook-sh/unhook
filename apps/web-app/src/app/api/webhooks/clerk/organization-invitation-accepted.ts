@@ -5,8 +5,7 @@ import type {
 import { posthog } from '@unhook/analytics/posthog/server';
 import { db } from '@unhook/db/client';
 import { Orgs } from '@unhook/db/schema';
-import { stripe } from '@unhook/stripe';
-import { PLAN_TYPES } from '@unhook/stripe/guards/billing-types.generated';
+import { PLAN_TYPES, stripe } from '@unhook/stripe';
 import { eq } from 'drizzle-orm';
 
 export async function handleOrganizationInvitationAccepted(

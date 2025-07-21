@@ -79,3 +79,5 @@ deploy/kubernetes/secret-*.yaml
 deploy/kubernetes/*.yaml.bak
 backup*.sql
 docker-compose.override.yml
+
+*.vsix

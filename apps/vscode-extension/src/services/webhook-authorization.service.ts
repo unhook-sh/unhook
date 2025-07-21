@@ -128,6 +128,7 @@ export class WebhookAuthorizationService implements vscode.Disposable {
         vscode.window.showInformationMessage(
           'You already have access to this webhook. Refreshing...',
         );
+        log('Firing onAccessAlreadyGranted event');
         this._onAccessAlreadyGranted.fire();
       } else {
         throw error;

@@ -259,6 +259,7 @@
         "@unhook/db": "workspace:*",
         "@unhook/email": "workspace:*",
         "@unhook/logger": "workspace:*",
+        "@unhook/stripe": "workspace:*",
         "@vercel/kv": "3.0.0",
         "drizzle-orm": "0.44.3",
         "next": "15.4.2-canary.4",

@@ -246,7 +246,7 @@
           "Unhook JSON",
           "unhook-json"
         ],
-        "configuration": "./language-configuration.json",
+        "configuration": "./language-configuration-json.json",
         "extensions": [],
         "filenames": [
           "unhook.json"

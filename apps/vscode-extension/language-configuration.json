@@ -16,6 +16,7 @@
       "start": "^\\s*#\\s*region\\b"
     }
   },
+  "language": "yaml",
   "surroundingPairs": [
     ["{", "}"],
     ["[", "]"],

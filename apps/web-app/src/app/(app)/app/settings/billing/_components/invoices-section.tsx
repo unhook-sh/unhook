@@ -1,5 +1,7 @@
 'use client';
 
+import { api } from '@unhook/api/react';
+import { useHasActiveSubscription } from '@unhook/stripe/guards/client';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import {
@@ -12,55 +14,21 @@ import {
 import { Icons } from '@unhook/ui/custom/icons';
 import { P } from '@unhook/ui/custom/typography';
 import { Skeleton } from '@unhook/ui/skeleton';
-import { useAction } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
-import { getInvoicesAction } from '../actions';
 
-interface Invoice {
-  id: string;
-  amount: number;
-  currency: string;
-  status: string;
-  created: number;
-  invoicePdf?: string;
-  hostedInvoiceUrl?: string;
-}
+export function InvoicesSection() {
+  const hasActiveSubscription = useHasActiveSubscription();
 
-interface InvoicesSectionProps {
-  org: {
-    id: string;
-    stripeCustomerId?: string | null;
-    stripeSubscriptionStatus?: string | null;
-  };
-}
-
-export function InvoicesSection({ org }: InvoicesSectionProps) {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [hasLoaded, setHasLoaded] = useState(false);
-
-  const { executeAsync: executeGetInvoices, status: getInvoicesStatus } =
-    useAction(getInvoicesAction);
-
-  const isLoading = getInvoicesStatus === 'executing';
-
-  useEffect(() => {
-    const loadInvoices = async () => {
-      if (!org.stripeCustomerId) return;
-
-      try {
-        const result = await executeGetInvoices({ orgId: org.id });
-        if (result?.data) {
-          setInvoices(result.data as Invoice[]);
-          setHasLoaded(true);
-        }
-      } catch (error) {
-        console.error('Failed to load invoices:', error);
-        setHasLoaded(true); // Mark as loaded even on error to show error state
-      }
-    };
-
-    loadInvoices();
-  }, [org.stripeCustomerId, org.id, executeGetInvoices]);
+  // Use tRPC to fetch invoices
+  const {
+    data: invoices,
+    isLoading,
+    error,
+  } = api.billing.getInvoices.useQuery(
+    { limit: 20 },
+    {
+      enabled: hasActiveSubscription, // Only fetch if user has an active subscription
+    },
+  );
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
@@ -77,7 +45,9 @@ export function InvoicesSection({ org }: InvoicesSectionProps) {
     });
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string | null) => {
+    if (!status) return <Badge variant="outline">Unknown</Badge>;
+
     switch (status) {
       case 'paid':
         return <Badge variant="default">Paid</Badge>;
@@ -92,7 +62,7 @@ export function InvoicesSection({ org }: InvoicesSectionProps) {
     }
   };
 
-  const handleDownloadInvoice = (invoice: Invoice) => {
+  const handleDownloadInvoice = (invoice: NonNullable<typeof invoices>[0]) => {
     if (invoice.invoicePdf) {
       window.open(invoice.invoicePdf, '_blank');
     } else if (invoice.hostedInvoiceUrl) {
@@ -100,7 +70,7 @@ export function InvoicesSection({ org }: InvoicesSectionProps) {
     }
   };
 
-  const handleViewInvoice = (invoice: Invoice) => {
+  const handleViewInvoice = (invoice: NonNullable<typeof invoices>[0]) => {
     if (invoice.hostedInvoiceUrl) {
       window.open(invoice.hostedInvoiceUrl, '_blank');
     }
@@ -115,15 +85,15 @@ export function InvoicesSection({ org }: InvoicesSectionProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!org.stripeCustomerId && (
+        {!hasActiveSubscription && (
           <div className="text-center py-6">
             <P className="text-sm text-muted-foreground">
-              No billing history available.
+              No billing history available. Subscribe to see your invoices.
             </P>
           </div>
         )}
 
-        {org.stripeCustomerId && isLoading && (
+        {hasActiveSubscription && isLoading && (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div className="flex items-center justify-between" key={i}>
@@ -141,51 +111,61 @@ export function InvoicesSection({ org }: InvoicesSectionProps) {
           </div>
         )}
 
-        {hasLoaded && invoices.length > 0 && (
-          <div className="space-y-4">
-            {invoices.map((invoice) => (
-              <div
-                className="flex items-center justify-between"
-                key={invoice.id}
-              >
-                <div className="flex items-center gap-3">
-                  <P className="text-sm font-mono">{invoice.id}</P>
-                  <P className="text-sm">
-                    {formatCurrency(invoice.amount, invoice.currency)}
-                  </P>
-                  <P className="text-xs text-muted-foreground">
-                    {formatDate(invoice.created)}
-                  </P>
-                  {getStatusBadge(invoice.status)}
-                </div>
-                <div className="flex items-center gap-2">
-                  {invoice.hostedInvoiceUrl && (
-                    <Button
-                      onClick={() => handleViewInvoice(invoice)}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Icons.ExternalLink className="mr-2 size-3" />
-                      View
-                    </Button>
-                  )}
-                  {invoice.invoicePdf && (
-                    <Button
-                      onClick={() => handleDownloadInvoice(invoice)}
-                      size="sm"
-                      variant="outline"
-                    >
-                      <Icons.Download className="mr-2 size-3" />
-                      Download
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
+        {error && (
+          <div className="text-center py-6">
+            <P className="text-sm text-destructive">
+              Failed to load invoices. Please try again later.
+            </P>
           </div>
         )}
 
-        {hasLoaded && invoices.length === 0 && org.stripeCustomerId && (
+        {invoices && invoices.length > 0 && (
+          <div className="space-y-4">
+            {invoices
+              .filter((invoice) => invoice.id && invoice.status) // Filter out invoices with missing required fields
+              .map((invoice) => (
+                <div
+                  className="flex items-center justify-between"
+                  key={invoice.id}
+                >
+                  <div className="flex items-center gap-3">
+                    <P className="text-sm font-mono">{invoice.id}</P>
+                    <P className="text-sm">
+                      {formatCurrency(invoice.amount, invoice.currency)}
+                    </P>
+                    <P className="text-xs text-muted-foreground">
+                      {formatDate(invoice.created)}
+                    </P>
+                    {getStatusBadge(invoice.status)}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {invoice.hostedInvoiceUrl && (
+                      <Button
+                        onClick={() => handleViewInvoice(invoice)}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <Icons.ExternalLink className="mr-2 size-3" />
+                        View
+                      </Button>
+                    )}
+                    {invoice.invoicePdf && (
+                      <Button
+                        onClick={() => handleDownloadInvoice(invoice)}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <Icons.Download className="mr-2 size-3" />
+                        Download
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
+
+        {invoices && invoices.length === 0 && hasActiveSubscription && (
           <div className="text-center py-6">
             <P className="text-sm text-muted-foreground">
               No invoices found for this account.

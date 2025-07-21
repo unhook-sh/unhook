@@ -60,9 +60,8 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // Register analytics provider
-  const { provider: _analyticsProvider, disposable: analyticsDisposable } =
+  const { provider: analyticsProvider, disposable: analyticsDisposable } =
     AnalyticsProvider.register(context, authStore);
-  analyticsProvider = _analyticsProvider;
   context.subscriptions.push(analyticsDisposable);
 
   // Track extension activation
@@ -129,6 +128,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Listen for when user already has access and needs to refresh
   authorizationService.onAccessAlreadyGranted(() => {
+    log('Access already granted event received, refreshing events');
     eventsProvider.refreshAndFetchEvents();
   });
 

@@ -3,16 +3,13 @@
 import { Card, CardContent } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
 import { P } from '@unhook/ui/custom/typography';
+import { useSearchParams } from 'next/navigation';
 
-interface BillingNotificationsProps {
-  success?: string;
-  canceled?: string;
-}
+export function BillingNotifications() {
+  const searchParams = useSearchParams();
+  const success = searchParams.get('success');
+  const canceled = searchParams.get('canceled');
 
-export function BillingNotifications({
-  success,
-  canceled,
-}: BillingNotificationsProps) {
   if (!success && !canceled) {
     return null;
   }

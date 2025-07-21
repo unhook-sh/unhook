@@ -30,13 +30,6 @@ import {
   createCheckoutSessionAction,
 } from '../actions';
 
-interface SubscriptionStatusSectionProps {
-  org: {
-    id: string;
-    stripeSubscriptionStatus?: string | null;
-  };
-}
-
 // Usage data hook that fetches real data from the API
 function useWebhookUsage() {
   const hasActiveSubscription = useHasActiveSubscription();
@@ -83,9 +76,7 @@ function useWebhookUsage() {
   }, [hasActiveSubscription, usageStats]);
 }
 
-export function SubscriptionStatusSection({
-  org,
-}: SubscriptionStatusSectionProps) {
+export function SubscriptionStatusSection() {
   // Safe actions
   const {
     executeAsync: executeCreateBillingPortal,
@@ -93,6 +84,7 @@ export function SubscriptionStatusSection({
   } = useAction(createBillingPortalSessionAction);
   const { executeAsync: executeCreateCheckout, status: checkoutStatus } =
     useAction(createCheckoutSessionAction);
+  const subscriptionStatus = api.billing.getSubscriptionStatus.useQuery();
 
   // Subscription status hooks - must be called at top level
   const hasActiveSubscription = useHasActiveSubscription();
@@ -106,7 +98,7 @@ export function SubscriptionStatusSection({
 
   const handleManageBilling = async () => {
     try {
-      await executeCreateBillingPortal({ orgId: org.id });
+      await executeCreateBillingPortal();
     } catch (error) {
       console.error('Failed to open billing portal:', error);
     }
@@ -114,7 +106,7 @@ export function SubscriptionStatusSection({
 
   const handleSubscribe = async () => {
     try {
-      await executeCreateCheckout({ orgId: org.id });
+      await executeCreateCheckout();
     } catch (error) {
       console.error('Failed to create checkout session:', error);
     }
@@ -139,9 +131,9 @@ export function SubscriptionStatusSection({
               </SubscriptionPastDue>
               {!hasActiveSubscription && !hasPastDueSubscription && (
                 <>
-                  {org.stripeSubscriptionStatus === 'canceled' &&
+                  {subscriptionStatus.data?.status === 'canceled' &&
                     'Subscription canceled'}
-                  {!org.stripeSubscriptionStatus && 'No active subscription'}
+                  {!subscriptionStatus.data?.status && 'No active subscription'}
                 </>
               )}
             </div>

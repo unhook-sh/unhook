@@ -576,32 +576,39 @@ async function main() {
           product: baseProduct.id,
         });
 
-        const yearlyPrice = await createOrUpdatePrice({
-          amount: calculateYearlyAmount(plan.baseFeeCents),
-          includedUsers: plan.baseUsers,
-          interval: 'year',
-          lookupKey: plan.lookup_keys.yearly!,
-          metadata: {
-            billing_period: 'yearly',
-            included_users: plan.baseUsers?.toString() ?? '0',
-            plan_id: plan.id,
-            price_per_user_cents:
-              calculateYearlyPerUserAmount(
-                plan.pricePerUserCents ?? 0,
-              ).toString() ?? '0',
-            type: 'per_seat',
-          },
-          pricePerUserCents: calculateYearlyPerUserAmount(
-            plan.pricePerUserCents ?? 0,
-          ),
-          product: baseProduct.id,
-        });
+        if (plan.lookup_keys.yearly) {
+          const yearlyPrice = await createOrUpdatePrice({
+            amount: calculateYearlyAmount(plan.baseFeeCents),
+            includedUsers: plan.baseUsers,
+            interval: 'year',
+            lookupKey: plan.lookup_keys.yearly,
+            metadata: {
+              billing_period: 'yearly',
+              included_users: plan.baseUsers?.toString() ?? '0',
+              plan_id: plan.id,
+              price_per_user_cents:
+                calculateYearlyPerUserAmount(
+                  plan.pricePerUserCents ?? 0,
+                ).toString() ?? '0',
+              type: 'per_seat',
+            },
+            pricePerUserCents: calculateYearlyPerUserAmount(
+              plan.pricePerUserCents ?? 0,
+            ),
+            product: baseProduct.id,
+          });
 
-        console.log(`Plan ${plan.id} provisioned (per-seat):`, {
-          baseProduct: baseProduct.id,
-          monthlyPrice: monthlyPrice.id,
-          yearlyPrice: yearlyPrice.id,
-        });
+          console.log(`Plan ${plan.id} provisioned (per-seat):`, {
+            baseProduct: baseProduct.id,
+            monthlyPrice: monthlyPrice.id,
+            yearlyPrice: yearlyPrice.id,
+          });
+        } else {
+          console.log(`Plan ${plan.id} provisioned (per-seat):`, {
+            baseProduct: baseProduct.id,
+            monthlyPrice: monthlyPrice.id,
+          });
+        }
       } else {
         console.log(`Creating free price for plan: ${plan.id}`);
         // Create a free price for the free plan to enable subscription management

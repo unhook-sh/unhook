@@ -193,7 +193,7 @@ export function HeroTerminalSection() {
             <TableBody>
               {mockRows.map((row, index) => (
                 <TableRow
-                  className="animate-[enterFromLeft_250ms_ease]"
+                  className="animate-[enterFromBottom_250ms_ease]"
                   key={`${row.from}-${row.to}-${row.url}`}
                   style={{
                     animationDelay: `${4000 + index * (delays[index] || 450)}ms`,

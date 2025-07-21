@@ -132,6 +132,8 @@
   --scaleOut: scaleOut 200ms ease;
   --fadeIn: fadeIn 200ms ease;
   --fadeOut: fadeOut 200ms ease;
+  --enterFromTop: enterFromTop 250ms ease;
+  --enterFromBottom: enterFromBottom 250ms ease;
   --enterFromLeft: enterFromLeft 250ms ease;
   --enterFromRight: enterFromRight 250ms ease;
   --exitToLeft: exitToLeft 250ms ease;
@@ -212,6 +214,28 @@
     to {
       opacity: 1;
       transform: translateX(0);
+    }
+  }
+
+  @keyframes enterFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-200px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes enterFromBottom {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 

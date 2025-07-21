@@ -10,6 +10,7 @@ import {
 } from '@unhook/ui/card';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
 import { Skeleton } from '@unhook/ui/skeleton';
+import { env } from '~/env.client';
 import { maskApiKey } from '~/lib/mask-api-key';
 
 export function SectionCards() {
@@ -61,7 +62,7 @@ delivery:
             {webhook && (
               <>
                 <span className="font-mono text-sm select-all tabular-nums bg-muted px-2 py-1 rounded w-full">
-                  {webhook?.id}
+                  {env.NEXT_PUBLIC_API_URL}/{webhook?.id}
                 </span>
                 <span className="ml-2">
                   <CopyButton

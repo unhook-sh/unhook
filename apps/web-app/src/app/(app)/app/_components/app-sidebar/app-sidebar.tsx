@@ -110,11 +110,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Webhooks',
         url: '/app/webhooks',
       },
-
+      {
+        icon: IconDatabase,
+        title: 'Events',
+        url: '/app/events',
+      },
       {
         icon: IconPlayerPlay,
         title: 'Playground',
-        url: '/app/webhooks',
+        url: '/app/playground',
       },
       {
         icon: IconKey,

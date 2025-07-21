@@ -173,7 +173,7 @@ export function NavUser() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={'/app/settings/members'}>
+                <Link href={'/app/settings/organization'}>
                   <Users className="mr-1 size-4" />
                   <span>Team</span>
                 </Link>

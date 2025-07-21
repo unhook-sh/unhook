@@ -16,6 +16,7 @@
   ],
   "tasks": {
     "@unhook/web-app#build": {
+      "dependsOn": ["@unhook/stripe#build"],
       "env": [
         "NEXT_PUBLIC_*",
         "CLERK_*",

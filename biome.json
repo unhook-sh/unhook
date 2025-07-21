@@ -52,7 +52,10 @@
       "correctness": {
         "noInvalidUseBeforeDeclaration": "off",
         "noUnusedImports": "error",
-        "noUnusedVariables": "warn",
+        "noUnusedVariables": {
+          "fix": "none",
+          "level": "warn"
+        },
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },

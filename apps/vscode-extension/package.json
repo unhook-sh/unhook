@@ -157,9 +157,24 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.promptAnalyticsConsent",
+        "command": "unhook.promptAnalticsConsent",
         "icon": "$(graph)",
         "title": "Analytics Consent"
+      },
+      {
+        "command": "unhook.config.refresh",
+        "icon": "$(refresh)",
+        "title": "Refresh Configuration"
+      },
+      {
+        "command": "unhook.copyConfigValue",
+        "icon": "$(copy)",
+        "title": "Copy Configuration Value"
+      },
+      {
+        "command": "unhook.openConfigFile",
+        "icon": "$(file)",
+        "title": "Open Configuration File"
       }
     ],
     "configuration": {
@@ -205,7 +220,7 @@
           "type": "number"
         },
         "unhook.events.pollIntervalMs": {
-          "default": 2000,
+          "default": 5000,
           "description": "How often to check for new events (in milliseconds). Lower values provide more real-time updates but may increase resource usage.",
           "type": "number"
         },
@@ -280,6 +295,16 @@
           "command": "unhook.replayRequest",
           "group": "inline",
           "when": "view == unhook.events && viewItem == unhook.request"
+        },
+        {
+          "command": "unhook.copyConfigValue",
+          "group": "inline",
+          "when": "view == unhook.config && viewItem == unhook.config.detail"
+        },
+        {
+          "command": "unhook.openConfigFile",
+          "group": "inline",
+          "when": "view == unhook.config"
         }
       ],
       "view/title": [
@@ -292,6 +317,11 @@
           "command": "unhook.events.filter",
           "group": "navigation@1",
           "when": "view == unhook.events"
+        },
+        {
+          "command": "unhook.config.refresh",
+          "group": "navigation",
+          "when": "view == unhook.config"
         }
       ]
     },
@@ -301,6 +331,11 @@
           "contextualTitle": "Events",
           "id": "unhook.events",
           "name": "Events"
+        },
+        {
+          "contextualTitle": "Configuration",
+          "id": "unhook.config",
+          "name": "Configuration"
         }
       ]
     },

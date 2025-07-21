@@ -22,13 +22,6 @@
       "type": "node-terminal"
     },
     {
-      "args": ["-p", "3000", "-k", "1234567890"],
-      "name": "Bun",
-      "program": "${workspaceFolder}/apps/cli/src/cli.ink.tsx",
-      "request": "launch",
-      "type": "bun"
-    },
-    {
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
@@ -36,7 +29,7 @@
       "cwd": "${workspaceFolder}/apps/vscode-extension",
       "name": "Run VSCode Extension",
       "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
-      // "preLaunchTask": "prepare-extension",
+      "preLaunchTask": "prepare-extension",
       "request": "launch",
       "type": "extensionHost"
     },

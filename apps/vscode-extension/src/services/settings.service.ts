@@ -68,7 +68,7 @@ export class SettingsService extends EventEmitter implements vscode.Disposable {
       events: {
         autoClear: config.get('events.autoClear') ?? false,
         maxHistory: config.get('events.maxHistory') ?? 100,
-        pollIntervalMs: config.get('events.pollIntervalMs') ?? 2000,
+        pollIntervalMs: config.get('events.pollIntervalMs') ?? 5000,
       },
       notifications: {
         showForNewEvents: config.get('notifications.showForNewEvents') ?? true,

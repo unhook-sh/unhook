@@ -19,6 +19,7 @@ import { SettingsService } from '../services/settings.service';
 import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 import { EventItem } from '../tree-items/event.item';
 import { RequestItem } from '../tree-items/request.item';
+import type { ConfigProvider } from './config.provider';
 
 const log = debug('unhook:vscode:events-provider');
 
@@ -46,6 +47,7 @@ export class EventsProvider
   private isFetching = false;
   private lastAuthorizationSuccessTime = 0;
   private readonly AUTHORIZATION_SUCCESS_DEBOUNCE_MS = 1000; // 1 second debounce
+  private configProvider: ConfigProvider | null = null;
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
@@ -64,6 +66,10 @@ export class EventsProvider
     });
     this.refresh();
     this.handlePolling();
+  }
+
+  public setConfigProvider(configProvider: ConfigProvider) {
+    this.configProvider = configProvider;
   }
 
   public getCurrentFilter(): string {
@@ -390,6 +396,12 @@ export class EventsProvider
     log('Loading config from path', { configPath });
     this.config = await loadConfig(configPath);
     log('Config loaded successfully', { webhookId: this.config.webhookId });
+
+    // Update config provider if available
+    if (this.configProvider && this.configPath) {
+      this.configProvider.setConfig(this.config, this.configPath);
+    }
+
     return this.config;
   }
 
@@ -414,6 +426,12 @@ export class EventsProvider
       this.configWatcher.dispose();
       this.configWatcher = null;
     }
+
+    // Clear config provider
+    if (this.configProvider) {
+      this.configProvider.setConfig(null, '');
+    }
+
     // Only call handlePolling which will handle the initial fetch
     this.handlePolling();
   }

@@ -3,6 +3,7 @@ import { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-outp
 import * as vscode from 'vscode';
 import { registerAuthCommands } from './commands/auth.commands';
 import { registerConfigCommands } from './commands/config.commands';
+import { registerConfigPanelCommands } from './commands/config-panel.commands';
 import { registerDeliveryCommands } from './commands/delivery.commands';
 import { registerEventCommands } from './commands/events.commands';
 import { registerOutputCommands } from './commands/output.commands';
@@ -12,11 +13,13 @@ import { registerWebhookAccessCommands } from './commands/webhook-access.command
 import { ConfigManager } from './config.manager';
 import { setupFirstTimeUserHandler } from './handlers/first-time-user.handler';
 import { AnalyticsProvider } from './providers/analytics.provider';
+import { ConfigProvider } from './providers/config.provider';
 import { EventsProvider } from './providers/events.provider';
 import { EventQuickPick } from './quick-pick';
 import { registerUriHandler } from './register-auth-uri-handler';
 import { RequestDetailsWebviewProvider } from './request-details-webview/request-details.webview';
 import { AuthStore } from './services/auth.service';
+import { DevInfoService } from './services/dev-info.service';
 import { FirstTimeUserService } from './services/first-time-user.service';
 import { SettingsService } from './services/settings.service';
 import { StatusBarService } from './services/status-bar.service';
@@ -126,6 +129,22 @@ export async function activate(context: vscode.ExtensionContext) {
   eventsProvider.setAuthStore(authStore);
   eventsProvider.setAnalyticsService(analyticsProvider.getAnalyticsService());
 
+  // Initialize config provider
+  const configProvider = new ConfigProvider(context);
+  eventsProvider.setConfigProvider(configProvider);
+
+  // Initialize dev info service
+  const devInfoService = new DevInfoService();
+  devInfoService.setConfigProvider(configProvider);
+  devInfoService.setAuthStore(authStore);
+
+  // Listen for auth changes to refresh dev info
+  authStore.onDidChangeAuth(() => {
+    if (process.env.NODE_ENV === 'development') {
+      devInfoService.fetchDevInfo();
+    }
+  });
+
   // Listen for when user already has access and needs to refresh
   authorizationService.onAccessAlreadyGranted(() => {
     log('Access already granted event received, refreshing events');
@@ -134,6 +153,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register webhook event commands
   registerEventCommands(context, eventsProvider);
+
+  // Register config panel commands
+  registerConfigPanelCommands(context, configProvider);
 
   // Set up quick pick
   const quickPick = EventQuickPick.getInstance();
@@ -169,13 +191,37 @@ export async function activate(context: vscode.ExtensionContext) {
     eventsProvider.refresh();
   });
 
+  // Register the config provider
+  const configTreeView = vscode.window.createTreeView('unhook.config', {
+    showCollapseAll: true,
+    treeDataProvider: configProvider,
+  });
+
+  configTreeView.onDidChangeVisibility(() => {
+    configProvider.refresh();
+  });
+
   // Initialize the request details webview provider
   requestDetailsWebviewProvider = new RequestDetailsWebviewProvider(
     context.extensionUri,
   );
   context.subscriptions.push(requestDetailsWebviewProvider);
 
-  context.subscriptions.push(eventsTreeView);
+  context.subscriptions.push(eventsTreeView, configTreeView);
+
+  // Fetch development information
+  devInfoService.fetchDevInfo();
+
+  // Set up periodic refresh for development info
+  if (process.env.NODE_ENV === 'development') {
+    const refreshInterval = setInterval(() => {
+      devInfoService.refresh();
+    }, 30000); // Refresh every 30 seconds
+
+    context.subscriptions.push({
+      dispose: () => clearInterval(refreshInterval),
+    });
+  }
 
   log('Unhook extension activation complete');
 }

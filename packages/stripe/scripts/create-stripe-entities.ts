@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { env } from './env.server';
+import { env } from '../src/env.server';
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   typescript: true,

@@ -1,5 +1,5 @@
 # Generated files
-src/guards/billing-ids.generated.ts
+src/billing-ids.generated.ts
 
 # Dependencies
 node_modules/

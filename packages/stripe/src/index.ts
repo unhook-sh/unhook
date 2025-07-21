@@ -1,5 +1,4 @@
 import Stripe from 'stripe';
-import { env } from './env.server';
 import {
   BILLING_INTERVALS,
   type BillingInterval,
@@ -11,7 +10,8 @@ import {
   type PriceId,
   type PriceLookupKey,
   type ProductId,
-} from './guards/billing-ids.generated';
+} from './billing-ids.generated';
+import { env } from './env.server';
 
 // Initialize Stripe with the secret key
 export const stripe = new Stripe(env.STRIPE_SECRET_KEY, {

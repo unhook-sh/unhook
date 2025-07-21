@@ -9,7 +9,6 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./entitlements": "./src/entitlements.ts",
     "./guards/client": "./src/guards/client.tsx",
     "./guards/server": "./src/guards/server.ts"
   },
@@ -21,7 +20,7 @@
     "clean": "git clean -xdf .turbo node_modules dist",
     "dev": "bun run build && tsc --watch",
     "populate-ids": "bun run ./scripts/populate-ids.ts",
-    "push": "bun run ./src/create-stripe-entities.ts",
+    "push": "bun run ./scripts/create-stripe-entities.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

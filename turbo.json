@@ -52,7 +52,8 @@
         ".vercel/output/**",
         "dist/**",
         "build/**",
-        "bin/**"
+        "bin/**",
+        "*.generated.ts"
       ]
     },
     "clean": {

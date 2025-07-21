@@ -79,10 +79,7 @@ function generateBillingTypesFile(
   console.log('📝 Generating billing-ids.ts file...');
 
   const templatePath = join(import.meta.dir, 'billing-ids.template.ts');
-  const outputPath = join(
-    import.meta.dir,
-    '../src/guards/billing-ids.generated.ts',
-  );
+  const outputPath = join(import.meta.dir, '../src/billing-ids.generated.ts');
 
   let template = readFileSync(templatePath, 'utf-8');
 

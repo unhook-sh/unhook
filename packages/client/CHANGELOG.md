@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.5.12
+
+### Patch Changes
+
+- [`b03408f`](https://github.com/unhook-sh/unhook/commit/b03408f042781953b4ae4fccdba57c091dbc907e) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with vscode onboarding
+
 ## 0.5.11
 
 ### Patch Changes

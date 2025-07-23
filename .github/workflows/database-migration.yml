@@ -34,6 +34,8 @@ jobs:
 
       - name: Build database package
         run: bun run build --filter=@unhook/db...
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Run database migration
         run: cd packages/db && bun run migrate

@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.12
+
+### Patch Changes
+
+- [`b03408f`](https://github.com/unhook-sh/unhook/commit/b03408f042781953b4ae4fccdba57c091dbc907e) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with vscode onboarding
+
+- Updated dependencies [[`b03408f`](https://github.com/unhook-sh/unhook/commit/b03408f042781953b4ae4fccdba57c091dbc907e)]:
+  - @unhook/client@0.5.12
+
 ## 0.13.11
 
 ### Patch Changes

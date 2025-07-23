@@ -33,7 +33,7 @@
   "scripts": {
     "build": "turbo run build",
     "bump-versions": "changeset version && bun install",
-    "clean": "git clean -xdf node_modules",
+    "clean": "git clean -xdf node_modules .turbo",
     "clean:ws": "turbo run clean",
     "cleanup:all": "bun run scripts/cleanup-all-resources.ts",
     "cleanup:all:dry-run": "bun run scripts/cleanup-all-resources.ts --dry-run",

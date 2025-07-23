@@ -1,65 +1,10 @@
 import * as vscode from 'vscode';
 import type { AuthStore } from '../services/auth.service';
-
-const DEFAULT_UNHOOK_CONFIG = `# Unhook Webhook Configuration
-# For more information, visit: https://docs.unhook.sh/configuration
-#
-# Schema:
-#   webhookId: string                    # Unique identifier for your webhook
-#   destination:                         # Array of destination endpoints
-#     - name: string                     # Name of the endpoint
-#       url: string|URL|RemotePattern    # URL to forward webhooks to
-#       ping?: boolean|string|URL        # Optional ping configuration
-#   delivery:                             # Array of delivery rules
-#     - source?: string                  # Optional source filter (default: "*")
-#       destination: string              # Name of the destination from 'destination' array
-#
-# RemotePattern:
-#   protocol?: "http"|"https"            # URL protocol
-#   hostname: string                     # URL hostname
-#   port?: string                        # URL port
-#   pathname?: string                    # URL pathname
-#   search?: string                      # URL search params
-
-webhookId: wh_example
-destination:
-  - name: local
-    url: http://localhost:3000/api/webhooks
-delivery:
-  - destination: local
-`;
-
-const SELF_HOSTED_CONFIG = `# Unhook Self-Hosted Configuration
-#
-# This configuration connects to a self-hosted Unhook instance
-
-# Your webhook ID from the self-hosted dashboard
-webhookId: wh_example
-
-# Server configuration for self-hosted deployment
-server:
-  # The API URL of your self-hosted Unhook instance
-  apiUrl: https://api.your-domain.com
-
-  # The dashboard URL (optional, defaults to apiUrl)
-  dashboardUrl: https://dashboard.your-domain.com
-
-# Destination configuration - where webhooks should be forwarded
-destination:
-  - name: local
-    url: http://localhost:3000/api/webhooks
-
-# Delivery rules - which webhooks go to which destination
-delivery:
-  - destination: local
-
-# Optional: Enable debug mode
-debug: false
-`;
+import { createConfigContentWithWebhookId } from '../utils/config-templates';
 
 export function registerConfigCommands(
   context: vscode.ExtensionContext,
-  _authStore?: AuthStore,
+  authStore?: AuthStore,
 ) {
   const createConfigCommand = vscode.commands.registerCommand(
     'unhook.createConfig',
@@ -70,30 +15,6 @@ export function registerConfigCommands(
         vscode.window.showErrorMessage(
           'Please open a workspace folder before creating an Unhook configuration file.',
         );
-        return;
-      }
-
-      // Ask user for configuration type
-      const configType = await vscode.window.showQuickPick(
-        [
-          {
-            description: 'Connect to Unhook cloud service (unhook.sh)',
-            label: 'Cloud Configuration',
-            value: 'cloud',
-          },
-          {
-            description: 'Connect to your own Unhook instance',
-            label: 'Self-Hosted Configuration',
-            value: 'self-hosted',
-          },
-        ],
-        {
-          placeHolder: 'Select configuration type',
-          title: 'Create Unhook Configuration',
-        },
-      );
-
-      if (!configType) {
         return;
       }
 
@@ -143,11 +64,8 @@ export function registerConfigCommands(
         // File doesn't exist, which is what we want
       }
 
-      // Write the configuration file
-      const configContent =
-        configType.value === 'self-hosted'
-          ? SELF_HOSTED_CONFIG
-          : DEFAULT_UNHOOK_CONFIG;
+      // Create the configuration content using the utility
+      const configContent = await createConfigContentWithWebhookId(authStore);
 
       try {
         const encoder = new TextEncoder();

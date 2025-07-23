@@ -1,47 +1,33 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { createConfigContentWithWebhookId } from '../utils/config-templates';
+import type { AuthStore } from './auth.service';
 
 const log = debug('unhook:vscode:first-time-user');
 
 const FIRST_TIME_USER_KEY = 'unhook.firstTimeUser';
 const ANALYTICS_CONSENT_KEY = 'unhook.analytics.consentAsked';
-const UNHOOK_YML_TEMPLATE = `# Unhook Configuration
-# Documentation: https://unhook.sh/docs/configuration
-
-# Your webhook ID (required)
-webhookId: "YOUR_WEBHOOK_ID"
-
-# Client ID to identify this environment (optional)
-# clientId: "development"
-
-# Debug mode (optional)
-# debug: false
-
-# Webhook destinations
-destination:
-  - name: local
-    url: http://localhost:3000
-    # Optional: Ping endpoint to check if service is running
-    # ping: http://localhost:3000/health
-
-# Delivery rules
-delivery:
-  - destination: local
-
-# Optional: Self-hosted server configuration
-# server:
-#   apiUrl: https://your-unhook-server.com
-#   dashboardUrl: https://your-unhook-dashboard.com
-`;
 
 export class FirstTimeUserService {
+  private authStore?: AuthStore;
+
   constructor(private readonly context: vscode.ExtensionContext) {}
+
+  setAuthStore(authStore: AuthStore): void {
+    this.authStore = authStore;
+  }
 
   async isFirstTimeUser(): Promise<boolean> {
     const isFirstTime =
       this.context.globalState.get<boolean>(FIRST_TIME_USER_KEY);
     // If the key doesn't exist, it's a first-time user
-    return isFirstTime === undefined || isFirstTime === true;
+    const result = isFirstTime === undefined || isFirstTime === true;
+    log('Checking if first-time user', {
+      isFirstTime: result,
+      key: FIRST_TIME_USER_KEY,
+      storedValue: isFirstTime,
+    });
+    return result;
   }
 
   async hasAskedForAnalyticsConsent(): Promise<boolean> {
@@ -60,6 +46,13 @@ export class FirstTimeUserService {
     log('Marked user as existing user');
   }
 
+  // Method for testing - reset first-time user state
+  async resetFirstTimeUserState(): Promise<void> {
+    await this.context.globalState.update(FIRST_TIME_USER_KEY, undefined);
+    await this.context.globalState.update(ANALYTICS_CONSENT_KEY, undefined);
+    log('Reset first-time user state for testing');
+  }
+
   async promptForAnalyticsConsent(): Promise<boolean> {
     // Check if VS Code telemetry is disabled - if so, don't ask for consent
     if (!vscode.env.isTelemetryEnabled) {
@@ -70,20 +63,20 @@ export class FirstTimeUserService {
 
     const result = await vscode.window.showInformationMessage(
       'Help improve Unhook by sharing anonymous usage data? This helps us understand how developers use webhooks and improve the extension. No personal information is collected.',
-      'Yes, Enable Analytics',
-      'No, Thanks',
+      'Yes',
+      'No',
       'Learn More',
     );
 
     let enabled = false;
 
     switch (result) {
-      case 'Yes, Enable Analytics':
+      case 'Yes':
         enabled = true;
         break;
       case 'Learn More':
         await vscode.env.openExternal(
-          vscode.Uri.parse('https://unhook.sh/docs/analytics'),
+          vscode.Uri.parse('https://docs.unhook.sh'),
         );
         // Ask again after they learn more
         return this.promptForAnalyticsConsent();
@@ -112,13 +105,13 @@ export class FirstTimeUserService {
   async promptForUnhookYmlCreation(): Promise<void> {
     const result = await vscode.window.showInformationMessage(
       'Welcome to Unhook! Would you like to create an unhook.yml configuration file to get started?',
-      'Yes, Create File',
-      'No, Thanks',
+      'Yes',
+      'No',
       'Learn More',
     );
 
     switch (result) {
-      case 'Yes, Create File':
+      case 'Yes':
         await this.createUnhookYml();
         break;
       case 'Learn More':
@@ -169,11 +162,16 @@ export class FirstTimeUserService {
         // File doesn't exist, which is what we want
       }
 
+      // Create the configuration content with the webhook ID fetched from the user's account
+      const configContent = await createConfigContentWithWebhookId(
+        this.authStore,
+      );
+
       // Write the template file
       const encoder = new TextEncoder();
       await vscode.workspace.fs.writeFile(
         configUri,
-        encoder.encode(UNHOOK_YML_TEMPLATE),
+        encoder.encode(configContent),
       );
 
       // Open the file in the editor
@@ -192,9 +190,7 @@ export class FirstTimeUserService {
         editor.revealRange(new vscode.Range(position, endPosition));
       }
 
-      vscode.window.showInformationMessage(
-        'Created unhook.yml. Please replace YOUR_WEBHOOK_ID with your actual webhook ID from the Unhook dashboard.',
-      );
+      vscode.window.showInformationMessage('Created unhook.yml.');
 
       log('Created unhook.yml configuration file');
     } catch (error) {

@@ -58,13 +58,24 @@ export class AuthStore implements vscode.Disposable {
   async exchangeAuthCode({ code }: { code: string }) {
     const { authToken, sessionId, user } =
       await this._api.auth.exchangeAuthCode.mutate({ code });
-    await this.setAuthToken({ token: authToken });
-    await this.setSessionId({ sessionId });
-    this.setUser(user);
+
+    // Set all auth data without firing events
+    await this.setAuthTokenInternal({ token: authToken });
+    await this.setSessionIdInternal({ sessionId });
+    this.setUserInternal(user);
+
+    // Fire one auth change event after everything is set
+    this._onDidChangeAuth.fire();
+
     return { authToken, sessionId, user };
   }
 
   async setAuthToken({ token }: { token: string | null }) {
+    await this.setAuthTokenInternal({ token });
+    this._onDidChangeAuth.fire();
+  }
+
+  private async setAuthTokenInternal({ token }: { token: string | null }) {
     log('Setting auth token', { hasToken: !!token });
     if (token) {
       await this.context.secrets.store(TOKEN_KEY, token);
@@ -79,11 +90,19 @@ export class AuthStore implements vscode.Disposable {
       authToken: token ?? undefined,
       baseUrl: this._configManager.getApiUrl(),
     });
-    this._onDidChangeAuth.fire();
     log('Auth token updated', { isSignedIn: this._isSignedIn });
   }
 
   async setSessionId({ sessionId }: { sessionId: string | null }) {
+    await this.setSessionIdInternal({ sessionId });
+    this._onDidChangeAuth.fire();
+  }
+
+  private async setSessionIdInternal({
+    sessionId,
+  }: {
+    sessionId: string | null;
+  }) {
     log('Setting session ID', { hasSessionId: !!sessionId });
     if (sessionId) {
       await this.context.secrets.store(SESSION_ID_KEY, sessionId);
@@ -92,14 +111,17 @@ export class AuthStore implements vscode.Disposable {
     }
 
     this._sessionId = sessionId;
-    this._onDidChangeAuth.fire();
     log('Session ID updated');
   }
 
   setUser(user: AuthUser | null) {
+    this.setUserInternal(user);
+    this._onDidChangeAuth.fire();
+  }
+
+  private setUserInternal(user: AuthUser | null) {
     log('Setting user', { hasUser: !!user, userId: user?.id });
     this._user = user;
-    this._onDidChangeAuth.fire();
   }
 
   setValidatingSession(isValidating: boolean) {
@@ -110,9 +132,10 @@ export class AuthStore implements vscode.Disposable {
 
   async signOut() {
     log('Signing out user');
-    await this.setAuthToken({ token: null });
-    await this.setSessionId({ sessionId: null });
-    this.setUser(null);
+    await this.setAuthTokenInternal({ token: null });
+    await this.setSessionIdInternal({ sessionId: null });
+    this.setUserInternal(null);
+    this._onDidChangeAuth.fire();
     log('User signed out');
   }
 
@@ -133,7 +156,7 @@ export class AuthStore implements vscode.Disposable {
         sessionId: this._sessionId,
       });
 
-      this.setUser(user);
+      this.setUserInternal(user);
       log('Session validated successfully', { userId: user.id });
       return true;
     } catch (error) {
@@ -158,16 +181,20 @@ export class AuthStore implements vscode.Disposable {
     });
 
     if (token) {
-      await this.setAuthToken({ token });
+      await this.setAuthTokenInternal({ token });
     }
     if (sessionId) {
-      await this.setSessionId({ sessionId });
+      await this.setSessionIdInternal({ sessionId });
     }
 
     // Validate session if we have both token and sessionId
     if (token && sessionId) {
       await this.validateSession();
     }
+
+    // Fire one auth change event after initialization
+    this._onDidChangeAuth.fire();
+
     log('Auth store initialization complete');
   }
 

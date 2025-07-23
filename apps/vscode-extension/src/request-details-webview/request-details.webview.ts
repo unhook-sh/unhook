@@ -5,6 +5,7 @@ import { debug } from '@unhook/logger';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 
 const log = debug('unhook:vscode:request-details-webview');
 
@@ -23,7 +24,7 @@ export class RequestDetailsWebviewProvider {
 
   constructor(private readonly _extensionUri: vscode.Uri) {
     // In development mode, set up file watching
-    if (process.env.NODE_ENV === 'development') {
+    if (ConfigManager.getInstance().isDevelopment()) {
       this._devServerUrl = 'http://localhost:5173';
     }
   }
@@ -121,7 +122,7 @@ export class RequestDetailsWebviewProvider {
     log('Getting HTML for webview');
 
     // In development mode, load from Vite dev server
-    if (process.env.NODE_ENV === 'development' && this._devServerUrl) {
+    if (ConfigManager.getInstance().isDevelopment() && this._devServerUrl) {
       log('Using development mode with Vite dev server');
 
       // Create a simple HTML that loads from the Vite dev server
@@ -130,10 +131,10 @@ export class RequestDetailsWebviewProvider {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; 
-    img-src ${webview.cspSource} https: http://localhost:5173; 
-    script-src 'unsafe-inline' 'unsafe-eval' ${webview.cspSource} http://localhost:5173; 
-    style-src 'unsafe-inline' ${webview.cspSource} http://localhost:5173; 
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none';
+    img-src ${webview.cspSource} https: http://localhost:5173;
+    script-src 'unsafe-inline' 'unsafe-eval' ${webview.cspSource} http://localhost:5173;
+    style-src 'unsafe-inline' ${webview.cspSource} http://localhost:5173;
     connect-src ${webview.cspSource} http://localhost:5173 ws://localhost:5173;
     font-src ${webview.cspSource} http://localhost:5173;">
   <title>Unhook</title>

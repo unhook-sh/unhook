@@ -6,6 +6,7 @@ import type {
   UserType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
+import { ConfigManager } from '../config.manager';
 import type { ConfigProvider } from '../providers/config.provider';
 import type { AuthStore } from './auth.service';
 
@@ -39,13 +40,9 @@ interface DevInfo {
 export class DevInfoService {
   private configProvider: ConfigProvider | null = null;
   private authStore: AuthStore | null = null;
-  private isDevelopmentMode = false;
 
   constructor() {
-    this.isDevelopmentMode = process.env.NODE_ENV === 'development';
-    log('DevInfoService initialized', {
-      isDevelopmentMode: this.isDevelopmentMode,
-    });
+    log('DevInfoService initialized');
   }
 
   public setConfigProvider(provider: ConfigProvider) {
@@ -57,7 +54,11 @@ export class DevInfoService {
   }
 
   public async fetchDevInfo(): Promise<void> {
-    if (!this.isDevelopmentMode || !this.configProvider || !this.authStore) {
+    if (
+      !ConfigManager.getInstance().isDevelopment() ||
+      !this.configProvider ||
+      !this.authStore
+    ) {
       return;
     }
 

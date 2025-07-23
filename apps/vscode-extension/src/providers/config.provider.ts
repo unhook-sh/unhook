@@ -7,6 +7,7 @@ import type {
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import { ConfigDetailItem, ConfigSectionItem } from '../tree-items/config.item';
 
 const log = debug('unhook:vscode:config-provider');
@@ -52,12 +53,9 @@ export class ConfigProvider
   private configWatcher: vscode.FileSystemWatcher | null = null;
   private validationErrors: string[] = [];
   private devInfo: DevInfo = {};
-  private isDevelopmentMode = false;
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing ConfigProvider');
-    // Check if we're in development mode
-    this.isDevelopmentMode = process.env.NODE_ENV === 'development';
   }
 
   public setConfig(config: WebhookConfig | null, configPath: string) {
@@ -105,8 +103,9 @@ export class ConfigProvider
       );
     }
 
+    const configManager = ConfigManager.getInstance();
     // Add development information in development mode
-    if (this.isDevelopmentMode) {
+    if (configManager.isDevelopment()) {
       if (this.devInfo.user) {
         sections.push(
           new ConfigSectionItem('user', this.devInfo.user, this.context),

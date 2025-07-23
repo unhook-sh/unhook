@@ -55,6 +55,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Initialize first-time user service
   const firstTimeUserService = new FirstTimeUserService(context);
+  firstTimeUserService.setAuthStore(authStore);
 
   // Register auth commands and provider
   const { authProvider, signInCommand, signOutCommand } = registerAuthCommands(
@@ -140,7 +141,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Listen for auth changes to refresh dev info
   authStore.onDidChangeAuth(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (ConfigManager.getInstance().isDevelopment()) {
       devInfoService.fetchDevInfo();
     }
   });
@@ -167,7 +168,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // Register commands
   registerOutputCommands(context, outputDestination);
   registerQuickPickCommand(context);
-  registerSettingsCommands(context);
+  registerSettingsCommands(context, authStore);
   registerDeliveryCommands(context);
   registerWebhookAccessCommands(context, authStore);
   registerConfigCommands(context, authStore);
@@ -214,7 +215,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // orgMembers will now be included in dev info for development mode
 
   // Set up periodic refresh for development info
-  if (process.env.NODE_ENV === 'development') {
+  if (configManager.isDevelopment()) {
     const refreshInterval = setInterval(() => {
       devInfoService.refresh();
     }, 30000); // Refresh every 30 seconds

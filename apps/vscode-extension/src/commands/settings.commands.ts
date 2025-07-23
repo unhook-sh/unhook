@@ -1,9 +1,13 @@
 import * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
 import { env } from '../env';
+import type { AuthStore } from '../services/auth.service';
 import { FirstTimeUserService } from '../services/first-time-user.service';
 
-export function registerSettingsCommands(context: vscode.ExtensionContext) {
+export function registerSettingsCommands(
+  context: vscode.ExtensionContext,
+  _authStore?: AuthStore,
+) {
   // Command to open settings
   const openSettingsCommand = vscode.commands.registerCommand(
     'unhook.openSettings',
@@ -21,6 +25,9 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
     'unhook.promptAnalyticsConsent',
     async () => {
       const firstTimeUserService = new FirstTimeUserService(context);
+      if (_authStore) {
+        firstTimeUserService.setAuthStore(_authStore);
+      }
       await firstTimeUserService.promptForAnalyticsConsent();
     },
   );
@@ -114,4 +121,23 @@ export function registerSettingsCommands(context: vscode.ExtensionContext) {
     },
   );
   context.subscriptions.push(toggleNotificationsCommand);
+
+  const configManager = ConfigManager.getInstance();
+  // Register test command for first-time user (development only)
+  if (configManager.isDevelopment()) {
+    const testFirstTimeUserCommand = vscode.commands.registerCommand(
+      'unhook.testFirstTimeUser',
+      async () => {
+        const firstTimeUserService = new FirstTimeUserService(context);
+        if (_authStore) {
+          firstTimeUserService.setAuthStore(_authStore);
+        }
+        await firstTimeUserService.resetFirstTimeUserState();
+        vscode.window.showInformationMessage(
+          'First-time user state reset. Sign out and sign back in to test.',
+        );
+      },
+    );
+    context.subscriptions.push(testFirstTimeUserCommand);
+  }
 }

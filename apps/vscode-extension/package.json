@@ -175,6 +175,12 @@
         "command": "unhook.openConfigFile",
         "icon": "$(file)",
         "title": "Open Configuration File"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.testFirstTimeUser",
+        "icon": "$(refresh)",
+        "title": "Test First-Time User (Development)"
       }
     ],
     "configuration": {

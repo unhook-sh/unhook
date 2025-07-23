@@ -467,7 +467,7 @@ export async function upsertOrg({
             errorMessage.indexOf('slug') !== -1 ||
             errorMessage.indexOf('already exists') !== -1
           ) {
-            return handleExistingOrgByName({ name, tx, userEmail, userId });
+            return handleExistingOrgByName({ name, tx, userId });
           }
         }
         throw error;

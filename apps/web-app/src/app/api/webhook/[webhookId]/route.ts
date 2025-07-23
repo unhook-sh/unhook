@@ -4,7 +4,6 @@ import { trackApiKeyUsage } from '@unhook/db';
 import { db } from '@unhook/db/client';
 import { Events, Orgs, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { createId } from '@unhook/id';
-import { recordUsage } from '@unhook/stripe';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -363,11 +362,11 @@ export async function POST(
 
       if (org?.stripeCustomerId && org?.stripeSubscriptionStatus === 'active') {
         // Record the webhook event usage to Stripe
-        await recordUsage({
-          customerId: org.stripeCustomerId,
-          idempotencyKey: event.id,
-          quantity: 1, // Use event ID for idempotency
-        });
+        // await recordUsage({
+        //   customerId: org.stripeCustomerId,
+        //   idempotencyKey: event.id,
+        //   quantity: 1, // Use event ID for idempotency
+        // });
       }
     } catch (error) {
       // Log error but don't fail the webhook request

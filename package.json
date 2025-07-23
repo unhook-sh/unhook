@@ -35,6 +35,8 @@
     "bump-versions": "changeset version && bun install",
     "clean": "git clean -xdf node_modules",
     "clean:ws": "turbo run clean",
+    "cleanup:all": "bun run scripts/cleanup-all-resources.ts",
+    "cleanup:all:dry-run": "bun run scripts/cleanup-all-resources.ts --dry-run",
     "cleanup:orgs": "bun run scripts/cleanup-orgs.ts",
     "cleanup:orgs:dry-run": "bun run scripts/cleanup-orgs.ts --dry-run",
     "cleanup:webhooks": "bun run scripts/cleanup-webhooks.ts",

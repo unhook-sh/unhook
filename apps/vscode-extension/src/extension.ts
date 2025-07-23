@@ -211,6 +211,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Fetch development information
   devInfoService.fetchDevInfo();
+  // orgMembers will now be included in dev info for development mode
 
   // Set up periodic refresh for development info
   if (process.env.NODE_ENV === 'development') {

@@ -3,10 +3,25 @@ import { z } from 'zod';
 
 export const env = createEnv({
   client: {
-    NEXT_PUBLIC_API_URL: z.string().default('https://unhook.sh'),
+    NEXT_PUBLIC_API_URL: z.string(),
+    NEXT_PUBLIC_APP_ENV: z.string(),
+    NEXT_PUBLIC_APP_URL: z.string(),
+    NEXT_PUBLIC_IS_SELF_HOSTED: z.string(),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string(),
+    NEXT_PUBLIC_POSTHOG_KEY: z.string(),
     NEXT_PUBLIC_VSCODE_EXTENSION_ID: z.string().default('unhook.unhook-vscode'),
   },
   clientPrefix: '',
-  runtimeEnv: process.env,
+  runtimeEnv: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_IS_SELF_HOSTED: process.env.NEXT_PUBLIC_IS_SELF_HOSTED,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_VSCODE_EXTENSION_ID:
+      process.env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+    NODE_ENV: process.env.NODE_ENV,
+  },
   skipValidation: !!process.env.CI,
 });

@@ -256,7 +256,7 @@ export async function getOrCreateCustomer({
 }
 
 // Alternative: More explicit upsert by org ID
-export async function upsertCustomerByOrg({
+export async function upsertStripeCustomer({
   email,
   name,
   orgId,
@@ -283,6 +283,10 @@ export async function upsertCustomerByOrg({
     if (!existingCustomer) {
       throw new Error('Failed to retrieve existing customer');
     }
+    console.log(
+      'Found existing stripe customer. Updating...',
+      existingCustomer,
+    );
     // Update existing customer
     return stripe.customers.update(existingCustomer.id, {
       email,
@@ -290,6 +294,8 @@ export async function upsertCustomerByOrg({
       name,
     });
   }
+
+  console.log('No existing stripe customer found. Creating new one...');
 
   // Create new customer
   return stripe.customers.create({

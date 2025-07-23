@@ -23,6 +23,11 @@ export const userRouter = {
     .mutation(({ ctx, input }) => {
       return ctx.db.insert(Users).values({ ...input, id: crypto.randomUUID() });
     }),
+  current: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.query.Users.findFirst({
+      where: eq(Users.id, ctx.auth.userId),
+    });
+  }),
   delete: publicProcedure.input(z.string()).mutation(({ input, ctx }) => {
     return ctx.db.delete(Users).where(eq(Users.id, input));
   }),

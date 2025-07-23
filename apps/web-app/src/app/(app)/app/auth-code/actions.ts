@@ -1,11 +1,9 @@
 'use server';
 
-import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
-import { upsertOrg } from '@unhook/db';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { db } from '@unhook/db/client';
-import { AuthCodes, Users } from '@unhook/db/schema';
+import { AuthCodes } from '@unhook/db/schema';
 import { createSafeActionClient } from 'next-safe-action';
-import { z } from 'zod';
 
 // Create the action client
 const action = createSafeActionClient();
@@ -26,46 +24,7 @@ export const createAuthCode = action.action(async () => {
     throw new Error('User details not found');
   }
 
-  // Upsert user
-  const [dbUser] = await db
-    .insert(Users)
-    .values({
-      avatarUrl: clerkUser.imageUrl ?? null,
-      clerkId: user.userId,
-      email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
-      firstName: clerkUser.firstName ?? null,
-      id: user.userId,
-      lastLoggedInAt: new Date(),
-      lastName: clerkUser.lastName ?? null,
-    })
-    .onConflictDoUpdate({
-      set: {
-        avatarUrl: clerkUser.imageUrl ?? null,
-        email: clerkUser.emailAddresses[0]?.emailAddress ?? '',
-        firstName: clerkUser.firstName ?? null,
-        lastLoggedInAt: new Date(),
-        lastName: clerkUser.lastName ?? null,
-        updatedAt: new Date(),
-      },
-      target: Users.clerkId,
-    })
-    .returning();
-
-  if (!dbUser) {
-    throw new Error('Failed to create/update user');
-  }
-
-  const clerk = await clerkClient();
-  const clerkOrg = await clerk.organizations.getOrganization({
-    organizationId: user.orgId,
-  });
-
-  // Use the upsertOrg utility function
-  await upsertOrg({
-    name: clerkOrg.name,
-    orgId: user.orgId,
-    userId: user.userId,
-  });
+  // Use the upsertOrg utility function (now handles user creation automatically)
 
   // First check for an existing unused and non-expired auth code
   const existingAuthCode = await db.query.AuthCodes.findFirst({
@@ -105,38 +64,3 @@ export const createAuthCode = action.action(async () => {
     isNew: true,
   };
 });
-
-export const upsertOrgAction = action
-  .inputSchema(
-    z.object({
-      clerkOrgId: z.string().optional(),
-      name: z.string().min(1),
-    }),
-  )
-  .action(async ({ parsedInput }) => {
-    const { name, clerkOrgId } = parsedInput;
-    const user = await auth();
-
-    if (!user.userId) {
-      throw new Error('User not found');
-    }
-
-    const clerkUser = await currentUser();
-    if (!clerkUser) {
-      throw new Error('User details not found');
-    }
-
-    // Use the upsertOrg utility function
-    const result = await upsertOrg({
-      name,
-      orgId: clerkOrgId || '',
-      userId: user.userId,
-    });
-
-    return {
-      apiKey: result.apiKey,
-      id: result.org.id,
-      name: result.org.name,
-      stripeCustomerId: result.org.stripeCustomerId,
-    };
-  });

@@ -31,10 +31,15 @@ function useWebhookUsage() {
   const hasActiveSubscription = useHasActiveSubscription();
 
   // Fetch usage statistics for the last 30 days (for monthly) or 1 day (for daily)
-  const { data: usageStats } = api.apiKeyUsage.stats.useQuery({
-    days: hasActiveSubscription ? 30 : 1, // Monthly for team, daily for free
-    type: 'webhook-event',
-  });
+  const { data: usageStats } = api.apiKeyUsage.stats.useQuery(
+    {
+      days: hasActiveSubscription ? 30 : 1, // Monthly for team, daily for free
+      type: 'webhook-event',
+    },
+    {
+      enabled: hasActiveSubscription,
+    },
+  );
 
   return useMemo(() => {
     // Calculate total webhook events from the stats

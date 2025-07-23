@@ -1,8 +1,7 @@
 import { clerkClient } from '@clerk/nextjs/server';
-import type { TRPCRouterRecord } from '@trpc/server';
 import { upsertOrg } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { AuthCodes, Users } from '@unhook/db/schema';
+import { AuthCodes } from '@unhook/db/schema';
 import { and, eq, gte, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 import { protectedProcedure, publicProcedure } from '../trpc';
@@ -60,36 +59,7 @@ export const authRouter = {
         organizationId: authCode.orgId,
       });
 
-      // Upsert user
-      const [dbUser] = await db
-        .insert(Users)
-        .values({
-          avatarUrl: user.imageUrl ?? null,
-          clerkId: authCode.userId,
-          email: emailAddress?.emailAddress ?? '',
-          firstName: user.firstName ?? null,
-          id: authCode.userId,
-          lastLoggedInAt: new Date(),
-          lastName: user.lastName ?? null,
-        })
-        .onConflictDoUpdate({
-          set: {
-            avatarUrl: user.imageUrl ?? null,
-            email: emailAddress?.emailAddress ?? '',
-            firstName: user.firstName ?? null,
-            lastLoggedInAt: new Date(),
-            lastName: user.lastName ?? null,
-            updatedAt: new Date(),
-          },
-          target: Users.clerkId,
-        })
-        .returning();
-
-      if (!dbUser) {
-        throw new Error('Failed to create/update user');
-      }
-
-      // Use the upsertOrg utility function
+      // Use the upsertOrg utility function (now handles user creation automatically)
       await upsertOrg({
         name: organization.name,
         orgId: authCode.orgId,
@@ -127,36 +97,7 @@ export const authRouter = {
         organizationId: session.lastActiveOrganizationId,
       });
 
-      // Upsert user
-      const [dbUser] = await db
-        .insert(Users)
-        .values({
-          avatarUrl: user.imageUrl ?? null,
-          clerkId: ctx.auth.userId,
-          email: emailAddress?.emailAddress ?? '',
-          firstName: user.firstName ?? null,
-          id: ctx.auth.userId,
-          lastLoggedInAt: new Date(),
-          lastName: user.lastName ?? null,
-        })
-        .onConflictDoUpdate({
-          set: {
-            avatarUrl: user.imageUrl ?? null,
-            email: emailAddress?.emailAddress ?? '',
-            firstName: user.firstName ?? null,
-            lastLoggedInAt: new Date(),
-            lastName: user.lastName ?? null,
-            updatedAt: new Date(),
-          },
-          target: Users.clerkId,
-        })
-        .returning();
-
-      if (!dbUser) {
-        throw new Error('Failed to create/update user');
-      }
-
-      // Use the upsertOrg utility function
+      // Use the upsertOrg utility function (now handles user creation automatically)
       await upsertOrg({
         name: organization.name,
         orgId: session.lastActiveOrganizationId,
@@ -172,4 +113,4 @@ export const authRouter = {
         },
       };
     }),
-} satisfies TRPCRouterRecord;
+};

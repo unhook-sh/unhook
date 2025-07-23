@@ -1,8 +1,7 @@
 'use client';
 
-import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
+import { useOrganization, useOrganizationList } from '@clerk/nextjs';
 import { usePostHog } from '@unhook/analytics/posthog/client';
-import { api } from '@unhook/api/react';
 import { Button } from '@unhook/ui/button';
 import {
   Command,
@@ -15,34 +14,25 @@ import {
 import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@unhook/ui/popover';
-import { toast } from '@unhook/ui/sonner';
 import { ChevronsUpDown, Plus } from 'lucide-react';
-import { useAction } from 'next-safe-action/hooks';
-import * as React from 'react';
-import { createWebhook } from '~/app/(app)/app/webhooks/create/_components/actions';
-import { upsertOrgAction } from '../actions';
+import React from 'react';
+import { upsertOrgAction } from '../../actions';
 
 interface OrgSelectorProps {
   onSelect?: (orgId: string) => void;
 }
 
 export function OrgSelector({ onSelect }: OrgSelectorProps) {
-  const { user } = useUser();
   const { organization: activeOrg } = useOrganization();
-  const { setActive } = useOrganizationList();
-  const userMemberships = user?.organizationMemberships ?? [];
+  const { setActive, userMemberships } = useOrganizationList({
+    userMemberships: true,
+  });
 
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<string>(activeOrg?.id || '');
   const [input, setInput] = React.useState('');
   const [isCreating, setIsCreating] = React.useState(false);
-  const [isInitialized, setIsInitialized] = React.useState(false);
-  const [isInitializing, setIsInitializing] = React.useState(false);
-  const initializationRef = React.useRef<Promise<void> | null>(null);
   const posthog = usePostHog();
-
-  const { executeAsync: executeCreateWebhook } = useAction(createWebhook);
-  const apiUtils = api.useUtils();
 
   // Update value when activeOrg changes
   React.useEffect(() => {
@@ -52,61 +42,29 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
     }
   }, [activeOrg?.id, onSelect]);
 
-  const initializeWebhook = React.useCallback(
-    async ({ orgName, orgId }: { orgName: string; orgId?: string }) => {
-      // Prevent multiple simultaneous initialization attempts
-      if (isInitializing || isInitialized) {
-        return;
-      }
-
-      // If there's already an initialization in progress, wait for it
-      if (initializationRef.current) {
-        await initializationRef.current;
-        return;
-      }
-
-      const initPromise = (async () => {
-        try {
-          setIsInitializing(true);
-          const webhooks = await apiUtils.webhooks.all.fetch();
-          if (webhooks.length > 0) {
-            return;
-          }
-
-          await executeCreateWebhook({
-            orgId,
-            orgName,
-          });
-        } catch (error) {
-          console.error('Failed to create webhook', error);
-          toast.error('Failed to create webhook', {
-            description: 'Please try again.',
-          });
-        } finally {
-          setIsInitializing(false);
-          setIsInitialized(true);
+  // Auto-select the first org if there is only one and none is selected
+  React.useEffect(() => {
+    if (userMemberships?.data && userMemberships.data.length === 1 && !value) {
+      const firstOrg = userMemberships.data[0]?.organization;
+      if (firstOrg) {
+        setValue(firstOrg.id);
+        if (setActive) {
+          setActive({ organization: firstOrg.id });
         }
-      })();
-
-      initializationRef.current = initPromise;
-      await initPromise;
-      initializationRef.current = null;
-    },
-    [
-      executeCreateWebhook,
-      isInitializing,
-      isInitialized,
-      apiUtils.webhooks.all.fetch,
-    ],
-  );
+      }
+      if (firstOrg?.id) {
+        onSelect?.(firstOrg.id);
+      }
+    }
+  }, [userMemberships?.data, value, setActive, onSelect]);
 
   const filteredOrgs = input
-    ? userMemberships.filter((membership) =>
+    ? userMemberships?.data?.filter((membership) =>
         membership.organization.name
           .toLowerCase()
           .includes(input.toLowerCase()),
       )
-    : userMemberships;
+    : userMemberships?.data;
 
   // Popover width logic
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -129,8 +87,9 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
           variant="outline"
         >
           {value
-            ? userMemberships.find((org) => org.organization.id === value)
-                ?.organization.name
+            ? userMemberships?.data?.find(
+                (org) => org.organization.id === value,
+              )?.organization.name
             : 'Select or create an organization...'}
           <ChevronsUpDown className="opacity-50 ml-2" size="sm" />
         </Button>
@@ -164,12 +123,6 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                         setInput('');
                         setOpen(false);
 
-                        // Initialize webhook after organization creation
-                        await initializeWebhook({
-                          orgId: clerkOrg.data.id,
-                          orgName: clerkOrg.data.name,
-                        });
-
                         posthog?.capture('cli_org_created', {
                           orgId: clerkOrg.data.id,
                           orgName: clerkOrg.data.name,
@@ -190,7 +143,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
               </Button>
             </CommandEmpty>
             <CommandGroup>
-              {filteredOrgs.map((membership) => (
+              {filteredOrgs?.map((membership) => (
                 <CommandItem
                   key={membership.organization.id}
                   keywords={[membership.organization.name]}
@@ -202,16 +155,6 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                       setActive({ organization: membership.organization });
                     }
                     onSelect?.(membership.organization.id);
-                    await upsertOrgAction({
-                      clerkOrgId: membership.organization.id,
-                      name: membership.organization.name,
-                    });
-
-                    // Initialize webhook after organization selection
-                    await initializeWebhook({
-                      orgId: membership.organization.id,
-                      orgName: membership.organization.name,
-                    });
 
                     posthog?.capture('cli_org_selected', {
                       orgId: membership.organization.id,

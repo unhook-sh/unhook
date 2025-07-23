@@ -1,4 +1,10 @@
 import type { WebhookConfig } from '@unhook/client/config';
+import type {
+  ApiKeyType,
+  ConnectionType,
+  OrgType,
+  UserType,
+} from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { ConfigDetailItem, ConfigSectionItem } from '../tree-items/config.item';
@@ -6,16 +12,8 @@ import { ConfigDetailItem, ConfigSectionItem } from '../tree-items/config.item';
 const log = debug('unhook:vscode:config-provider');
 
 interface DevInfo {
-  user?: {
-    id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  org?: {
-    id: string;
-    name: string;
-  };
+  user?: UserType;
+  org?: OrgType;
   subscription?: {
     status: string | null;
     customerId: string | null;
@@ -26,22 +24,8 @@ interface DevInfo {
     isCanceled: boolean;
     isPastDue: boolean;
   };
-  apiKeys?: Array<{
-    id: string;
-    name: string;
-    key: string;
-    isActive: boolean;
-    lastUsedAt?: string;
-  }>;
-  connections?: Array<{
-    id: string;
-    clientId: string;
-    clientHostname?: string;
-    clientOs?: string;
-    clientVersion?: string;
-    connectedAt: string;
-    isConnected: boolean;
-  }>;
+  apiKeys?: Array<ApiKeyType>;
+  connections?: Array<ConnectionType>;
   usage?: {
     dailyEvents: number;
     monthlyEvents: number;
@@ -430,7 +414,7 @@ export class ConfigProvider
           details.push(
             new ConfigDetailItem(
               `${index}.isConnected`,
-              conn.isConnected,
+              !conn.disconnectedAt,
               this.context,
             ),
           );

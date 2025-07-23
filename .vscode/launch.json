@@ -27,9 +27,13 @@
         "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
       ],
       "cwd": "${workspaceFolder}/apps/vscode-extension",
+      "env": {
+        "DEBUG": "*",
+        "NODE_ENV": "development" // "VSCODE_DEV": "true"
+      },
       "name": "Run VSCode Extension",
       "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
-      "preLaunchTask": "prepare-extension",
+      // "preLaunchTask": "prepare-extension",
       "request": "launch",
       "type": "extensionHost"
     },

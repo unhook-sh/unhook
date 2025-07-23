@@ -6,8 +6,8 @@ import { env } from './env';
 export class ConfigManager {
   private static instance: ConfigManager;
   private config: WebhookConfig | null = null;
-  private apiUrl = 'https://unhook.sh';
-  private dashboardUrl = 'https://unhook.sh';
+  private apiUrl: string;
+  private dashboardUrl: string;
   private context: vscode.ExtensionContext | undefined;
 
   private constructor() {
@@ -26,6 +26,7 @@ export class ConfigManager {
     if (!ConfigManager.instance) {
       ConfigManager.instance = new ConfigManager();
     }
+    console.log('ConfigManager.getInstance', ConfigManager.instance);
     // Store context if provided
     if (context) {
       ConfigManager.instance.context = context;
@@ -60,7 +61,7 @@ export class ConfigManager {
 
     // Check environment variables
     if (
-      // process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'development' ||
       process.env.VSCODE_DEV === 'true'
     ) {
       return true;
@@ -82,34 +83,44 @@ export class ConfigManager {
 
   async loadConfiguration(workspacePath?: string): Promise<void> {
     try {
-      // First check VS Code settings for server URLs
+      // First check for config file
+      const configPath = await this.findConfigPath(workspacePath);
+      let configApiUrl: string | undefined;
+      let configDashboardUrl: string | undefined;
+      if (configPath) {
+        this.config = await loadConfig(configPath);
+        if (this.config.server?.apiUrl && this.isDevelopment()) {
+          console.log(
+            'Using dev server apiUrl from config file',
+            this.config.server.apiUrl,
+          );
+          configApiUrl = this.config.server.apiUrl;
+        }
+        if (this.config.server?.dashboardUrl && this.isDevelopment()) {
+          console.log(
+            'Using dev server dashboardUrl from config file',
+            this.config.server.dashboardUrl,
+          );
+          configDashboardUrl = this.config.server.dashboardUrl;
+        } else if (this.config.server?.apiUrl && this.isDevelopment()) {
+          console.log(
+            'Using dev server apiUrl for dashboardUrl from config file',
+            this.config.server.apiUrl,
+          );
+          // Default dashboard URL to API URL if not specified
+          configDashboardUrl = this.config.server.apiUrl;
+        }
+      }
+
+      // Then check VS Code settings for server URLs
       const vscodeConfig = vscode.workspace.getConfiguration('unhook');
       const settingsApiUrl = vscodeConfig.get<string>('apiUrl');
       const settingsDashboardUrl = vscodeConfig.get<string>('dashboardUrl');
 
-      if (settingsApiUrl) {
-        this.apiUrl = settingsApiUrl;
-        this.dashboardUrl = settingsDashboardUrl || settingsApiUrl;
-        console.log('Using server URLs from VS Code settings');
-        return;
-      }
-
-      // Then check for config file
-      const configPath = await this.findConfigPath(workspacePath);
-      if (configPath) {
-        this.config = await loadConfig(configPath);
-
-        // Update URLs from config (but don't override environment variable in production)
-        if (this.config.server?.apiUrl && this.isDevelopment()) {
-          this.apiUrl = this.config.server.apiUrl;
-        }
-        if (this.config.server?.dashboardUrl && this.isDevelopment()) {
-          this.dashboardUrl = this.config.server.dashboardUrl;
-        } else if (this.config.server?.apiUrl && this.isDevelopment()) {
-          // Default dashboard URL to API URL if not specified
-          this.dashboardUrl = this.config.server.apiUrl;
-        }
-      }
+      // Precedence: config file > VS Code settings > defaults
+      this.apiUrl = configApiUrl || settingsApiUrl || this.apiUrl;
+      this.dashboardUrl =
+        configDashboardUrl || settingsDashboardUrl || this.apiUrl;
 
       // Log current configuration
       console.log('Unhook Config Manager:', {

@@ -1,3 +1,10 @@
+import type {
+  ApiKeyType,
+  ConnectionType,
+  OrgMembersType,
+  OrgType,
+  UserType,
+} from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import type { ConfigProvider } from '../providers/config.provider';
 import type { AuthStore } from './auth.service';
@@ -5,16 +12,8 @@ import type { AuthStore } from './auth.service';
 const log = debug('unhook:vscode:dev-info-service');
 
 interface DevInfo {
-  user?: {
-    id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  org?: {
-    id: string;
-    name: string;
-  };
+  user?: UserType;
+  org?: OrgType;
   subscription?: {
     status: string | null;
     customerId: string | null;
@@ -25,22 +24,8 @@ interface DevInfo {
     isCanceled: boolean;
     isPastDue: boolean;
   };
-  apiKeys?: Array<{
-    id: string;
-    name: string;
-    key: string;
-    isActive: boolean;
-    lastUsedAt?: string;
-  }>;
-  connections?: Array<{
-    id: string;
-    clientId: string;
-    clientHostname?: string;
-    clientOs?: string;
-    clientVersion?: string;
-    connectedAt: string;
-    isConnected: boolean;
-  }>;
+  apiKeys?: Array<ApiKeyType & { lastUsedAt: Date | null }>;
+  connections?: Array<ConnectionType>;
   usage?: {
     dailyEvents: number;
     monthlyEvents: number;
@@ -48,6 +33,7 @@ interface DevInfo {
     limit: number;
     period: 'day' | 'month';
   };
+  orgMembers?: Array<OrgMembersType>;
 }
 
 export class DevInfoService {
@@ -90,8 +76,8 @@ export class DevInfoService {
     } catch (error) {
       log('Error fetching development information:', error);
       // Fall back to mock data if API fails
-      const mockDevInfo = await this.fetchMockDevInfo();
-      this.configProvider.setDevInfo(mockDevInfo);
+      // const mockDevInfo = await this.fetchMockDevInfo();
+      // this.configProvider.setDevInfo(mockDevInfo);
     }
   }
 
@@ -103,34 +89,39 @@ export class DevInfoService {
     const api = this.authStore.api;
 
     // Fetch all data in parallel
-    const [userInfo, subscriptionStatus, apiKeys, connections, usageStats] =
-      await Promise.allSettled([
-        // Get user info from session verification
-        api.auth.verifySessionToken.query({
-          sessionId: this.authStore.sessionId || '',
-        }),
-        // Get subscription status
-        api.billing.getSubscriptionStatus.query(),
-        // Get API keys with last usage
-        api.apiKeys.allWithLastUsage.query(),
-        // Get connections
-        api.connections.all.query(),
-        // Get usage statistics for the last 30 days
-        api.apiKeyUsage.stats.query({ days: 30, type: 'webhook-event' }),
-      ]);
+    const [
+      userInfo,
+      orgInfo,
+      subscriptionStatus,
+      apiKeys,
+      connections,
+      usageStats,
+      orgMembers,
+    ] = await Promise.allSettled([
+      // Get user info from session verification
+      api.user.current.query(),
+      api.org.current.query(),
+      // Get subscription status
+      api.billing.getSubscriptionStatus.query(),
+      // Get API keys with last usage
+      api.apiKeys.allWithLastUsage.query(),
+      // Get connections
+      api.connections.all.query(),
+      // Get usage statistics for the last 30 days
+      api.apiKeyUsage.stats.query({ days: 30, type: 'webhook-event' }),
+      // Get org members
+      api.orgMembers.all.query(),
+    ]);
 
     const devInfo: DevInfo = {};
 
     // Set user info
     if (userInfo.status === 'fulfilled') {
-      const apiUser = userInfo.value.user;
-      devInfo.user = {
-        email: apiUser.email || 'unknown@example.com',
-        firstName: apiUser.fullName?.split(' ')[0] || undefined, // Provide fallback for undefined email
-        id: apiUser.id,
-        lastName: apiUser.fullName?.split(' ').slice(1).join(' ') || undefined,
-      };
-      devInfo.org = { id: userInfo.value.orgId, name: 'Unknown' }; // Org name not in response
+      devInfo.user = userInfo.value;
+    }
+
+    if (orgInfo.status === 'fulfilled') {
+      devInfo.org = orgInfo.value;
     }
 
     // Set subscription info
@@ -141,24 +132,17 @@ export class DevInfoService {
     // Set API keys
     if (apiKeys.status === 'fulfilled') {
       devInfo.apiKeys = apiKeys.value.map((key) => ({
-        id: key.id,
-        isActive: key.isActive,
-        key: key.key,
-        lastUsedAt: key.lastUsedAt?.toISOString(),
-        name: key.name,
+        ...key,
+        lastUsedAt: key.lastUsedAt || null,
       }));
     }
 
     // Set connections
     if (connections.status === 'fulfilled') {
       devInfo.connections = connections.value.map((conn) => ({
-        clientHostname: conn.clientHostname || undefined,
-        clientId: conn.clientId,
-        clientOs: conn.clientOs || undefined,
-        clientVersion: conn.clientVersion || undefined,
-        connectedAt: conn.connectedAt.toISOString(),
-        id: conn.id,
-        isConnected: !conn.disconnectedAt, // Connection is active if not disconnected
+        ...conn,
+        connectedAt: conn.connectedAt || null,
+        disconnectedAt: conn.disconnectedAt || null,
       }));
     }
 
@@ -196,76 +180,12 @@ export class DevInfoService {
       };
     }
 
-    return devInfo;
-  }
+    // Add org members
+    if (orgMembers.status === 'fulfilled') {
+      devInfo.orgMembers = orgMembers.value;
+    }
 
-  private async fetchMockDevInfo(): Promise<DevInfo> {
-    // Mock data for development - in a real implementation, this would fetch from the API
-    return {
-      apiKeys: [
-        {
-          id: 'ak_123456789',
-          isActive: true,
-          key: 'usk-live-123456789',
-          lastUsedAt: new Date().toISOString(),
-          name: 'Development API Key',
-        },
-        {
-          id: 'ak_987654321',
-          isActive: true,
-          key: 'usk-live-987654321',
-          lastUsedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          name: 'Production API Key', // 1 day ago
-        },
-      ],
-      connections: [
-        {
-          clientHostname: 'dev-machine.local',
-          clientId: 'cli_123456789',
-          clientOs: 'macOS',
-          clientVersion: '0.2.14',
-          connectedAt: new Date().toISOString(),
-          id: 'c_123456789',
-          isConnected: true,
-        },
-        {
-          clientHostname: 'prod-server.company.com',
-          clientId: 'cli_987654321',
-          clientOs: 'Linux',
-          clientVersion: '0.2.13',
-          connectedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          id: 'c_987654321', // 2 hours ago
-          isConnected: false,
-        },
-      ],
-      org: {
-        id: 'org_987654321',
-        name: 'Acme Corp',
-      },
-      subscription: {
-        customerId: 'cus_123456789',
-        isActive: true,
-        isCanceled: false,
-        isPaid: true,
-        isPastDue: false,
-        isTrialing: false,
-        status: 'active',
-        subscriptionId: 'sub_987654321',
-      },
-      usage: {
-        dailyEvents: 15,
-        isUnlimited: true,
-        limit: -1,
-        monthlyEvents: 450,
-        period: 'month',
-      },
-      user: {
-        email: 'developer@example.com',
-        firstName: 'John',
-        id: 'user_123456789',
-        lastName: 'Doe',
-      },
-    };
+    return devInfo;
   }
 
   public async refresh(): Promise<void> {

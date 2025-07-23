@@ -4,6 +4,8 @@ import { authRouter } from './router/auth';
 import { billingRouter } from './router/billing';
 import { connectionsRouter } from './router/connections';
 import { eventsRouter } from './router/events';
+import { orgRouter } from './router/org';
+import { orgMembersRouter } from './router/org-members';
 import { requestsRouter } from './router/requests';
 import { userRouter } from './router/user';
 import { webhookAccessRequestsRouter } from './router/webhook-access-requests';
@@ -17,6 +19,8 @@ export const appRouter = createTRPCRouter({
   billing: billingRouter,
   connections: connectionsRouter,
   events: eventsRouter,
+  org: orgRouter,
+  orgMembers: orgMembersRouter,
   requests: requestsRouter,
   user: userRouter,
   webhookAccessRequests: webhookAccessRequestsRouter,

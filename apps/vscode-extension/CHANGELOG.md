@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.17
+
+### Patch Changes
+
+- [`50dfa73`](https://github.com/unhook-sh/unhook/commit/50dfa739d8a81d1ce42399e2fc701924241bbc77) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with building stripe
+
+- Updated dependencies [[`50dfa73`](https://github.com/unhook-sh/unhook/commit/50dfa739d8a81d1ce42399e2fc701924241bbc77)]:
+  - @unhook/client@0.5.14
+
 ## 0.2.16
 
 ### Patch Changes

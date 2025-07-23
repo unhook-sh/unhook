@@ -356,7 +356,7 @@
     }
   },
   "dependencies": {
-    "@unhook/client": "0.5.12",
+    "@unhook/client": "0.5.13",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
@@ -434,7 +434,7 @@
     "url": "https://github.com/sponsors/seawatts"
   },
   "type": "commonjs",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "vsce": {
     "dependencies": false,
     "yarn": false

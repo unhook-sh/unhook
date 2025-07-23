@@ -15,6 +15,10 @@
     "VERCEL_TOKEN"
   ],
   "tasks": {
+    "@unhook/stripe#build": {
+      "cache": false,
+      "env": ["STRIPE_*"]
+    },
     "@unhook/web-app#build": {
       "dependsOn": ["@unhook/stripe#build"],
       "env": [

@@ -18,41 +18,6 @@ export const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   typescript: true,
 });
 
-/**
- * Record usage for a customer using Stripe Meter Events
- *
- * Before using this function, you must:
- * 1. Create a meter in your Stripe Dashboard
- * 2. Set the meter's event_name in STRIPE_METER_EVENT_NAME environment variable
- * 3. Associate the meter with a usage-based price
- *
- * @see https://docs.stripe.com/billing/subscriptions/usage-based/recording-usage-api
- */
-export async function recordUsage({
-  customerId,
-  quantity,
-  timestamp = Math.floor(Date.now() / 1000),
-  idempotencyKey,
-}: {
-  customerId: string;
-  quantity: number;
-  timestamp?: number;
-  idempotencyKey?: string;
-}) {
-  // Create a meter event to record usage
-  const meterEvent = await stripe.billing.meterEvents.create({
-    event_name: env.STRIPE_METER_EVENT_NAME,
-    identifier: idempotencyKey,
-    payload: {
-      stripe_customer_id: customerId,
-      value: quantity.toString(), // Meter events expect value as string
-    }, // Use Unix timestamp directly
-    timestamp: timestamp ? Math.floor(timestamp) : undefined,
-  });
-
-  return meterEvent;
-}
-
 // Create a checkout session for a new subscription
 export async function createCheckoutSession({
   orgId,

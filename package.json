@@ -64,6 +64,7 @@
     "test:integ:ci": "turbo run test:ci --filter=@unhook/integ-test",
     "test:integ:watch": "turbo run test:watch --filter=@unhook/integ-test",
     "typecheck": "turbo run typecheck",
+    "typecheck:ci": "turbo run build --filter @unhook/stripe && turbo run typecheck",
     "ui-add": "turbo run ui-add",
     "version": "changeset version && bun biome check --write",
     "with-env": "infisical run --"

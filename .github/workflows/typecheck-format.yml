@@ -53,4 +53,6 @@ jobs:
         uses: ./tooling/github/setup
 
       - name: Typecheck
-        run: bun typecheck
+        run: bun typecheck:ci
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}

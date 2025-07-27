@@ -9,7 +9,7 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 const CONSTANTS = {
   CENTS_MULTIPLIER: 100,
   DEFAULT_CURRENCY: 'usd' as const,
-  YEARLY_DISCOUNT_RATE: 0.8, // 20% discount for yearly plans (24/30 = 0.8)
+  YEARLY_DISCOUNT_RATE: 0.83333, // 20% discount for yearly plans (24/30 = 0.8)
 } as const;
 
 // Types
@@ -98,7 +98,7 @@ const PLANS: PlanConfig[] = [
     pricingModel: 'flat',
   },
   {
-    baseFeeCents: 30 * CONSTANTS.CENTS_MULTIPLIER,
+    baseFeeCents: 10 * CONSTANTS.CENTS_MULTIPLIER,
     baseUsers: 1,
     description: 'Ideal for development teams with unlimited webhook events',
     entitlements: [
@@ -218,7 +218,7 @@ const ADDONS: AddonConfig[] = [
 // Utility functions
 function calculateYearlyAmount(monthlyAmount: number): number {
   // Apply 20% discount to annual pricing: monthly * 12 * 0.8
-  // For Team plan: $30/month * 12 * 0.8 = $288/year
+  // For Team plan: $10/month * 12 * 0.8 = $96/year
   return Math.floor(monthlyAmount * 12 * CONSTANTS.YEARLY_DISCOUNT_RATE);
 }
 

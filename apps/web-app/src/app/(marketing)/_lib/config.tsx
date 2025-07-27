@@ -29,8 +29,8 @@ export const BLUR_FADE_DELAY = 0.15;
 
 // Team pricing constants
 export const TEAM_PRICING = {
-  BASE_PRICE_MONTHLY: 30,
-  BASE_PRICE_YEARLY: 24,
+  BASE_PRICE_MONTHLY: 10,
+  BASE_PRICE_YEARLY: 8,
   DEFAULT_SEATS: 1,
   INCLUDED_SEATS: 1,
   MAX_SEATS: 50,

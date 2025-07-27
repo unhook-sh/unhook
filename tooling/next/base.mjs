@@ -7,15 +7,14 @@ const nextConfig = {
   experimental: {
     // Forward browser logs to the terminal for easier debugging
     browserDebugInfoInTerminal: true,
+
+    // cacheLife: true,
+    cacheComponents: true,
     // Activate new client-side router improvements
     clientSegmentCache: true, // will be renamed to cacheComponents in Next.js 16
 
     // Explore route composition and segment overrides via DevTools
     devtoolSegmentExplorer: true,
-
-    // cacheLife: true,
-
-    dynamicIO: true,
     // Enable new caching and pre-rendering behavior
 
     enablePrerenderSourceMaps: true,

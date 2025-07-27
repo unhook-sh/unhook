@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.25.0",
+    "@clerk/nextjs": "6.27.1",
     "@supabase/ssr": "0.6.1",
-    "@supabase/supabase-js": "2.51.0",
+    "@supabase/supabase-js": "2.52.1",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
@@ -14,7 +14,7 @@
     "drizzle-seed": "0.3.1",
     "drizzle-zod": "0.8.2",
     "lodash-es": "4.17.21",
-    "next": "15.4.2-canary.4",
+    "next": "15.4.4",
     "pg": "8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -31,7 +31,7 @@
     "@unhook/tsconfig": "workspace:*",
     "chokidar": "4.0.3",
     "drizzle-kit": "0.31.4",
-    "supabase": "2.31.4",
+    "supabase": "2.31.8",
     "tsx": "4.20.3",
     "typescript": "5.8.3",
     "zx": "8.7.1"

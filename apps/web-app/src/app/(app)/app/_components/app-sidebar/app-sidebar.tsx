@@ -10,10 +10,8 @@ import {
   IconFileDescription,
   IconFileWord,
   IconKey,
-  IconPlayerPlay,
   IconReport,
   IconSettings,
-  IconWebhook,
 } from '@tabler/icons-react';
 import {
   Sidebar,
@@ -105,21 +103,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Dashboard',
         url: '/app/dashboard',
       },
-      {
-        icon: IconWebhook,
-        title: 'Webhooks',
-        url: '/app/webhooks',
-      },
+      // {
+      //   icon: IconWebhook,
+      //   title: 'Webhooks',
+      //   url: '/app/webhooks',
+      // },
       {
         icon: IconDatabase,
         title: 'Events',
         url: '/app/events',
       },
-      {
-        icon: IconPlayerPlay,
-        title: 'Playground',
-        url: '/app/playground',
-      },
+      // {
+      //   icon: IconPlayerPlay,
+      //   title: 'Playground',
+      //   url: '/app/playground',
+      // },
       {
         icon: IconKey,
         title: 'API Keys',

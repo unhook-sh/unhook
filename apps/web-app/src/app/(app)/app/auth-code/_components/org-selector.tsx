@@ -5,7 +5,6 @@ import { usePostHog } from '@unhook/analytics/posthog/client';
 import { Button } from '@unhook/ui/button';
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -14,9 +13,8 @@ import {
 import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@unhook/ui/popover';
-import { ChevronsUpDown, Plus } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
 import React from 'react';
-import { upsertOrgAction } from '../../actions';
 
 interface OrgSelectorProps {
   onSelect?: (orgId: string) => void;
@@ -31,7 +29,6 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<string>(activeOrg?.id || '');
   const [input, setInput] = React.useState('');
-  const [isCreating, setIsCreating] = React.useState(false);
   const posthog = usePostHog();
 
   // Update value when activeOrg changes
@@ -90,7 +87,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
             ? userMemberships?.data?.find(
                 (org) => org.organization.id === value,
               )?.organization.name
-            : 'Select or create an organization...'}
+            : 'Select an organization...'}
           <ChevronsUpDown className="opacity-50 ml-2" size="sm" />
         </Button>
       </PopoverTrigger>
@@ -101,11 +98,11 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
         <Command>
           <CommandInput
             onValueChange={setInput}
-            placeholder="Search or create organization..."
+            placeholder="Search organizations..."
             value={input}
           />
           <CommandList>
-            <CommandEmpty>
+            {/* <CommandEmpty>
               <Button
                 disabled={!input.trim() || isCreating}
                 onClick={async () => {
@@ -141,7 +138,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                 Create new organization:{' '}
                 <span className="font-semibold">{input}</span>
               </Button>
-            </CommandEmpty>
+            </CommandEmpty> */}
             <CommandGroup>
               {filteredOrgs?.map((membership) => (
                 <CommandItem

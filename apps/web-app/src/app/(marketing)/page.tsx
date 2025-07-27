@@ -2,15 +2,14 @@ import { BentoSection } from '~/app/(marketing)/_components/sections/bento-secti
 import { CTASection } from '~/app/(marketing)/_components/sections/cta-section';
 import { FAQSection } from '~/app/(marketing)/_components/sections/faq-section';
 import { FooterSection } from '~/app/(marketing)/_components/sections/footer-section';
-import { GrowthSection } from '~/app/(marketing)/_components/sections/growth-section';
 import { HeroSection } from '~/app/(marketing)/_components/sections/hero-section';
 import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
-import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
-import { AIMCPSection } from './_components/sections/ai-mcp-section';
+// import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
+// import { AIMCPSection } from './_components/sections/ai-mcp-section';
 import { FeatureSection } from './_components/sections/feature-section';
 import { PricingSection } from './_components/sections/pricing-section/pricing-section';
-import { QuoteSection } from './_components/sections/quote-section';
-import { VSCodeFeaturesSection } from './_components/sections/vscode-features-section';
+// import { QuoteSection } from './_components/sections/quote-section';
+// import { VSCodeFeaturesSection } from './_components/sections/vscode-features-section';
 
 export default function Home() {
   return (
@@ -22,12 +21,12 @@ export default function Home() {
         <HeroSection />
         {/* <CompanyShowcase /> */}
         <FeatureSection />
-        <SharedWebhooksSection />
-        <VSCodeFeaturesSection />
-        <AIMCPSection />
+        {/* <SharedWebhooksSection /> */}
+        {/* <VSCodeFeaturesSection /> */}
+        {/* <AIMCPSection /> */}
         <BentoSection />
-        <QuoteSection />
-        <GrowthSection />
+        {/* <QuoteSection /> */}
+        {/* <GrowthSection /> */}
         <PricingSection />
         {/* <TestimonialSection /> */}
         <FAQSection />

@@ -35,41 +35,41 @@ env:
   OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
 jobs:
-  check-version:
-    runs-on: ubuntu-latest
-    outputs:
-      is_version_bump: ${{ steps.check.outputs.is_version_bump }}
-      vscode_version_changed: ${{ steps.check-vscode.outputs.version_changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+  # check-version:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     is_version_bump: ${{ steps.check.outputs.is_version_bump }}
+  #     vscode_version_changed: ${{ steps.check-vscode.outputs.version_changed }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 2
 
-      - id: check
-        run: |
-          if [[ "${{ github.event.workflow_run.head_commit.message }}" =~ ^chore:\ version\ packages.*$ ]]; then
-            echo "is_version_bump=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_version_bump=false" >> $GITHUB_OUTPUT
-          fi
+  #     - id: check
+  #       run: |
+  #         if [[ "${{ github.event.workflow_run.head_commit.message }}" =~ ^chore:\ version\ packages.*$ ]]; then
+  #           echo "is_version_bump=true" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "is_version_bump=false" >> $GITHUB_OUTPUT
+  #         fi
 
-      - id: check-vscode
-        name: Check if VSCode extension version changed
-        run: |
-          # Check if the VSCode extension version was bumped in the last commit
-          if git diff HEAD~1 HEAD -- apps/vscode-extension/package.json | grep -q '"version"'; then
-            echo "version_changed=true" >> $GITHUB_OUTPUT
-            echo "VSCode extension version was changed"
-          else
-            echo "version_changed=false" >> $GITHUB_OUTPUT
-            echo "VSCode extension version was not changed"
-          fi
+  #     - id: check-vscode
+  #       name: Check if VSCode extension version changed
+  #       run: |
+  #         # Check if the VSCode extension version was bumped in the last commit
+  #         if git diff HEAD~1 HEAD -- apps/vscode-extension/package.json | grep -q '"version"'; then
+  #           echo "version_changed=true" >> $GITHUB_OUTPUT
+  #           echo "VSCode extension version was changed"
+  #         else
+  #           echo "version_changed=false" >> $GITHUB_OUTPUT
+  #           echo "VSCode extension version was not changed"
+  #         fi
 
   release:
     name: Release VSCode Extension
-    needs: check-version
+    # needs: check-version
     runs-on: ubuntu-latest
-    if: needs.check-version.outputs.is_version_bump == 'true' && needs.check-version.outputs.vscode_version_changed == 'true'
+    # if: needs.check-version.outputs.is_version_bump == 'true' && needs.check-version.outputs.vscode_version_changed == 'true'
     steps:
       - uses: actions/checkout@v4
         with:

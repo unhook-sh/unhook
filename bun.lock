@@ -23,7 +23,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.13.14",
+      "version": "0.13.15",
       "bin": {
         "unhook": "./bin/cli.js",
       },
@@ -92,7 +92,7 @@
     },
     "apps/jetbrains-extension": {
       "name": "unhook-jetbrains",
-      "version": "0.2.15",
+      "version": "0.2.16",
       "devDependencies": {
         "@types/node": "24.1.0",
       },
@@ -103,7 +103,7 @@
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.2.17",
+      "version": "0.2.19",
       "dependencies": {
         "@unhook/client": "workspace:*",
         "clsx": "2.1.1",
@@ -120,7 +120,7 @@
         "@types/node": "24.1.0",
         "@types/react": "19.1.8",
         "@types/react-dom": "19.1.6",
-        "@types/vscode": "1.102.0",
+        "@types/vscode": "1.96.0",
         "@vitejs/plugin-react": "4.7.0",
         "@vscode/test-cli": "0.0.11",
         "@vscode/test-electron": "2.5.2",
@@ -139,7 +139,7 @@
     },
     "apps/web-app": {
       "name": "@unhook/web-app",
-      "version": "0.1.21",
+      "version": "0.1.22",
       "dependencies": {
         "@clerk/elements": "0.23.46",
         "@clerk/nextjs": "6.27.1",
@@ -278,7 +278,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.5.14",
+      "version": "0.5.15",
       "dependencies": {
         "@supabase/supabase-js": "2.52.1",
         "@t3-oss/env-core": "0.13.8",
@@ -393,7 +393,7 @@
     },
     "packages/integ-test": {
       "name": "@unhook/integ-test",
-      "version": "0.0.9",
+      "version": "0.0.10",
       "dependencies": {
         "@supabase/supabase-js": "2.52.1",
         "@unhook/api": "workspace:*",
@@ -438,7 +438,7 @@
       "devDependencies": {
         "@types/bun": "1.2.19",
         "@types/debug": "4.1.12",
-        "@types/vscode": "1.102.0",
+        "@types/vscode": "1.96.0",
         "typescript": "5.8.3",
       },
     },

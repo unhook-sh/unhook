@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.18
+
+### Patch Changes
+
+- [`2809a8b`](https://github.com/unhook-sh/unhook/commit/2809a8b368c4a5a16354096bcb3f278c002eaccb) Thanks [@seawatts](https://github.com/seawatts)! - Fix up onboarding
+
+- Updated dependencies [[`2809a8b`](https://github.com/unhook-sh/unhook/commit/2809a8b368c4a5a16354096bcb3f278c002eaccb)]:
+  - @unhook/client@0.5.15
+
 ## 0.2.17
 
 ### Patch Changes

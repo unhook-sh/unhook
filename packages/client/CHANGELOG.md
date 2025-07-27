@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.5.15
+
+### Patch Changes
+
+- [`2809a8b`](https://github.com/unhook-sh/unhook/commit/2809a8b368c4a5a16354096bcb3f278c002eaccb) Thanks [@seawatts](https://github.com/seawatts)! - Fix up onboarding
+
 ## 0.5.14
 
 ### Patch Changes

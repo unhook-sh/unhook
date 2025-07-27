@@ -22,7 +22,7 @@ import { Icons } from '~/app/(marketing)/_components/icons';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 const INITIAL_WIDTH = '70rem';
-const MAX_WIDTH = '900px';
+const MAX_WIDTH = '980px';
 
 // Animation variants
 const overlayVariants = {

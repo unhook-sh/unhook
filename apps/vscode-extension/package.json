@@ -356,7 +356,7 @@
     }
   },
   "dependencies": {
-    "@unhook/client": "0.5.14",
+    "@unhook/client": "workspace:*",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "react": "19.1.0",
@@ -418,9 +418,9 @@
     "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
     "dev:extension": "NODE_ENV=development tsup --watch",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
-    "package": "bun run prepare && bun run build && bun run package:vsix",
+    "package": "bun run build && bun run package:vsix",
     "package:vsix": "bunx vsce package",
-    "prepare": "prepare-publish --vscode-extension --no-readme --no-install-update",
+    "prepublishOnly": "prepare-publish --vscode-extension --no-readme --no-install-update",
     "pretest": "bun run build:base",
     "publish": "bun run package && bun run publish:vscode && bun run publish:ovsx",
     "publish:ovsx": "infisical run --env prod -- bunx ovsx publish *.vsix",

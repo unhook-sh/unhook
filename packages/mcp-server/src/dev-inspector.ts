@@ -35,7 +35,7 @@ interface MCPResponse {
 
 class MCPInspector {
   private serverProcess: ChildProcess | null = null;
-  private requestId = 1;
+  requestId = 1;
 
   constructor() {
     this.serverProcess = null;

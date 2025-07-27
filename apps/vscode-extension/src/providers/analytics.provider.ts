@@ -8,10 +8,7 @@ export class AnalyticsProvider implements vscode.Disposable {
   private originalRegisterCommand: typeof vscode.commands.registerCommand =
     vscode.commands.registerCommand;
 
-  constructor(
-    private readonly context: vscode.ExtensionContext,
-    private readonly authStore: AuthStore,
-  ) {
+  constructor(context: vscode.ExtensionContext, authStore: AuthStore) {
     this.analyticsService = AnalyticsService.getInstance(context, authStore);
 
     // Register analytics integration

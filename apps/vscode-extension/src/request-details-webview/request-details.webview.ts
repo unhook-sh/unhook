@@ -18,7 +18,6 @@ function sanitizeHeaders(headers: Record<string, unknown>): unknown {
 export class RequestDetailsWebviewProvider {
   private _panel?: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
-  private _lastHtml?: string;
   private _devServerUrl?: string;
   private _currentRequestData: RequestType | null = null;
 

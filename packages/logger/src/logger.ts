@@ -159,6 +159,7 @@ export class UnhookLogger {
     return false;
   }
 
+  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: todo implement
   private interceptConsole(): void {
     const self = this;
 

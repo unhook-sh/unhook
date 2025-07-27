@@ -12,7 +12,7 @@ export class VSCodeOutputDestination implements LogDestination {
   private outputChannel: vscode.OutputChannel;
   private _autoShow: boolean;
 
-  constructor(private options: VSCodeOutputDestinationOptions) {
+  constructor(options: VSCodeOutputDestinationOptions) {
     this.outputChannel = options.vscode.window.createOutputChannel(
       options.name,
     );

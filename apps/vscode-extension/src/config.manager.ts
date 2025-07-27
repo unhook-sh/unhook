@@ -8,7 +8,7 @@ export class ConfigManager {
   private config: WebhookConfig | null = null;
   private apiUrl: string;
   private dashboardUrl: string;
-  private context: vscode.ExtensionContext | undefined;
+  context: vscode.ExtensionContext | undefined;
 
   private constructor() {
     // Set default URLs based on development mode and environment variables

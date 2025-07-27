@@ -338,6 +338,7 @@ export const siteConfig = {
         },
         // { id: 17, title: 'Blog', url: '/blog' },
         { id: 18, title: 'Docs', url: 'https://docs.unhook.sh' },
+        { id: 19, title: 'OSS Friends', url: '/oss-friends' },
       ],
       title: 'Resources',
     },

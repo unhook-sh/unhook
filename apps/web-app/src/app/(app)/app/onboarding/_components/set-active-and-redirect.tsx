@@ -56,7 +56,7 @@ export function SetActiveAndRedirect(props: {
         <WebhookWizard
           footer={
             <>
-              {props.source === 'extension' && (
+              {props.source && (
                 <AuthCodeLoginButton
                   loadingText="Redirecting..."
                   text="Complete Setup"

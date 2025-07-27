@@ -36,6 +36,17 @@ export default clerkMiddleware(async (auth, request) => {
       });
       const url = request.nextUrl.clone();
       url.pathname = '/app/onboarding';
+      const redirectTo = request.nextUrl.searchParams.get('redirectTo');
+      const source = request.nextUrl.searchParams.get('source');
+
+      if (redirectTo) {
+        url.searchParams.set('redirectTo', redirectTo);
+      }
+
+      if (source) {
+        url.searchParams.set('source', source);
+      }
+
       return NextResponse.redirect(url);
     }
   }

@@ -4,7 +4,7 @@ import { SignInDifferentAccountButton } from './_components/sign-in-different-ac
 
 export default function Page() {
   return (
-    <div className="flex flex-col gap-4 items-center justify-center">
+    <div className="flex flex-col gap-4 items-center justify-center w-full">
       <AuthCodeContent />
       <Suspense>
         <SignInDifferentAccountButton />

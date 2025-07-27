@@ -63,7 +63,7 @@ function MCPHeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-              href="/app/webhooks/create?utm_source=mcp-page&utm_medium=hero-cta"
+              href="/app/onboarding?utm_source=mcp-page&utm_medium=hero-cta"
             >
               Get Started with MCP
             </a>
@@ -452,7 +452,7 @@ function MCPCTASection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               className="inline-flex items-center justify-center px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-              href="/app/webhooks/create?utm_source=mcp-page&utm_medium=cta-button"
+              href="/app/onboarding?utm_source=mcp-page&utm_medium=cta-button"
             >
               Create Your First Webhook
             </a>

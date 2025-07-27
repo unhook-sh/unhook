@@ -30,7 +30,7 @@ export function CTASection() {
               size="lg"
               variant="secondary"
             >
-              <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=comparisons-cta">
+              <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=comparisons-cta">
                 Create Webhook URL
               </Link>
             </Button>

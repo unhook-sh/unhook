@@ -3,10 +3,7 @@
 import { useOrganization } from '@clerk/nextjs';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { api } from '@unhook/api/react';
-import {
-  useHasActiveSubscription,
-  useHasPastDueSubscription,
-} from '@unhook/stripe/guards/client';
+import { useIsEntitled } from '@unhook/stripe/guards/client';
 import { Button } from '@unhook/ui/button';
 import {
   Card,
@@ -15,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
+import { Icons } from '@unhook/ui/custom/icons';
 import { Progress } from '@unhook/ui/progress';
 import {
   Tooltip,
@@ -26,66 +24,149 @@ import { useAction } from 'next-safe-action/hooks';
 import { useMemo } from 'react';
 import { createCheckoutSessionAction } from '~/app/(app)/app/settings/billing/actions';
 
-// Usage data hook that fetches real data from the API
-function useWebhookUsage() {
-  const hasActiveSubscription = useHasActiveSubscription();
+// Types for usage data
+interface UsageData {
+  current: number;
+  description: string;
+  isLoading: boolean;
+  isUnlimited: boolean;
+  limit: number;
+  period: 'day' | 'month';
+  planName: string;
+}
 
-  // Fetch usage statistics for the last 30 days (for monthly) or 1 day (for daily)
-  const { data: usageStats } = api.apiKeyUsage.stats.useQuery(
-    {
-      days: hasActiveSubscription ? 30 : 1, // Monthly for team, daily for free
-      type: 'webhook-event',
-    },
-    {
-      enabled: hasActiveSubscription,
-    },
+// Common tooltip component
+function UsageTooltip() {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <IconInfoCircle className="size-3 text-muted-foreground" />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-xs text-xs">
+            Webhook events are counted when external services send data to your
+            webhook URLs.
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
+}
+
+// Common card header component
+function UsageCardHeader({
+  planName,
+  description,
+}: {
+  planName?: string;
+  description?: string;
+}) {
+  return (
+    <CardHeader>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-sm">Usage</CardTitle>
+          <UsageTooltip />
+        </div>
+        {planName && (
+          <span className="text-xs text-muted-foreground">{planName}</span>
+        )}
+      </div>
+      {description && (
+        <CardDescription className="text-xs">{description}</CardDescription>
+      )}
+    </CardHeader>
+  );
+}
+
+// Loading content component
+function LoadingContent() {
+  return (
+    <div className="flex items-center justify-center py-4">
+      <Icons.Spinner size="sm" variant="muted" />
+      <span className="ml-2 text-xs text-muted-foreground">
+        Loading usage...
+      </span>
+    </div>
+  );
+}
+
+// Usage display component
+function UsageDisplay({ usage }: { usage: UsageData }) {
+  if (usage.isUnlimited) {
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Events this month</span>
+          <span className="font-medium">{usage.current.toLocaleString()}</span>
+        </div>
+      </div>
+    );
+  }
+
+  const percentage = Math.round((usage.current / usage.limit) * 100);
+  const isApproachingLimit = usage.current >= usage.limit * 0.8;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">
+          Events this month ({usage.current} / {usage.limit})
+        </span>
+        <span className="font-medium">{percentage}%</span>
+      </div>
+      <Progress className="h-1.5" value={percentage} />
+      {isApproachingLimit && (
+        <div className="text-xs text-warning">Approaching limit</div>
+      )}
+    </div>
+  );
+}
+
+// Usage data hook that fetches real data from the API
+function useWebhookUsage(): UsageData {
+  const { data: usageStats, isLoading } = api.apiKeyUsage.stats.useQuery({
+    days: 30, // Always fetch 30 days for monthly usage
+    type: 'webhook-event',
+  });
 
   return useMemo(() => {
-    // Calculate total webhook events from the stats
-    const totalEvents =
-      usageStats?.reduce(
-        (sum: number, stat: { type: string; count: number }) => {
-          if (stat.type === 'webhook-event') {
-            return sum + stat.count;
-          }
-          return sum;
-        },
-        0,
-      ) ?? 0;
-
-    if (hasActiveSubscription) {
-      // Team plan has unlimited usage
+    if (isLoading) {
       return {
-        current: totalEvents,
-        description: 'Unlimited webhook events per month',
-        isUnlimited: true,
-        limit: -1,
-        period: 'month' as const,
-        planName: 'Team Plan',
+        current: 0,
+        description: '',
+        isLoading: true,
+        isUnlimited: false,
+        limit: 0,
+        period: 'month',
+        planName: '',
       };
     }
-    // Free plan has 50 events per day
+
+    const totalEvents =
+      usageStats?.reduce((sum, stat) => {
+        return stat.type === 'webhook-event' ? sum + stat.count : sum;
+      }, 0) ?? 0;
+
+    // Free plan: 50 webhook events per month
     return {
       current: totalEvents,
-      description: '50 webhook events per day',
+      description: '50 webhook events per month',
+      isLoading: false,
       isUnlimited: false,
       limit: 50,
-      period: 'day' as const,
+      period: 'month',
       planName: 'Free Plan',
     };
-  }, [hasActiveSubscription, usageStats]);
+  }, [usageStats, isLoading]);
 }
 
 export function UsageCard() {
   const { organization } = useOrganization();
-  const hasActiveSubscription = useHasActiveSubscription();
-  const hasPastDueSubscription = useHasPastDueSubscription();
-
-  // Usage data
+  const isEntitled = useIsEntitled('unlimited_webhook_events');
   const usage = useWebhookUsage();
 
-  // Checkout action
   const { executeAsync: executeCreateCheckout, status: checkoutStatus } =
     useAction(createCheckoutSessionAction);
 
@@ -101,81 +182,34 @@ export function UsageCard() {
     }
   };
 
-  // Don't show upgrade button if user already has an active subscription
-  if (hasActiveSubscription || hasPastDueSubscription) {
+  if (isEntitled) {
     return null;
   }
 
   return (
     <Card className="mx-2 border-border/50 bg-card/50 shadow-none">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-sm">Usage</CardTitle>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <IconInfoCircle className="size-3 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-xs">
-                    Webhook events are counted when external services send data
-                    to your webhook URLs.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <span className="text-xs text-muted-foreground">
-            {usage.planName}
-          </span>
-        </div>
-        <CardDescription className="text-xs">
-          {usage.description}
-        </CardDescription>
-      </CardHeader>
+      <UsageCardHeader
+        description={usage.isLoading ? undefined : usage.description}
+        planName={usage.isLoading ? undefined : usage.planName}
+      />
       <CardContent>
         <div className="space-y-3">
-          {/* Usage Display */}
-          {usage.isUnlimited ? (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Events this month</span>
-                <span className="font-medium">
-                  {usage.current.toLocaleString()}
-                </span>
-              </div>
-            </div>
+          {usage.isLoading ? (
+            <LoadingContent />
           ) : (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">
-                  Events today ({usage.current} / {usage.limit})
-                </span>
-                <span className="font-medium">
-                  {Math.round((usage.current / usage.limit) * 100)}%
-                </span>
-              </div>
-              <Progress
-                className="h-1.5"
-                value={(usage.current / usage.limit) * 100}
-              />
-              {usage.current >= usage.limit * 0.8 && (
-                <div className="text-xs text-warning">Approaching limit</div>
-              )}
-            </div>
+            <>
+              <UsageDisplay usage={usage} />
+              <Button
+                className="w-full"
+                disabled={isSubscribing}
+                onClick={handleUpgrade}
+                size="sm"
+                variant="secondary"
+              >
+                {isSubscribing ? 'Redirecting...' : 'Upgrade For Unlimited'}
+              </Button>
+            </>
           )}
-
-          {/* Upgrade Button */}
-          <Button
-            className="w-full"
-            disabled={isSubscribing}
-            onClick={handleUpgrade}
-            size="sm"
-            variant="secondary"
-          >
-            {isSubscribing ? 'Redirecting...' : 'Upgrade For Unlimited'}
-          </Button>
         </div>
       </CardContent>
     </Card>

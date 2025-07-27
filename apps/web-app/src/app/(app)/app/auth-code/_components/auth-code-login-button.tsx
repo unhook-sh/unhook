@@ -7,32 +7,39 @@ import { useAction } from 'next-safe-action/hooks';
 import { useCallback, useState } from 'react';
 import { createAuthCode } from '../actions';
 
-export function AuthCodeLoginButton() {
+export function AuthCodeLoginButton({
+  loadingText,
+  text,
+}: {
+  loadingText: string;
+  text: string;
+}) {
   const [error, setError] = useState<string>();
   const posthog = usePostHog();
 
   const { executeAsync, status } = useAction(createAuthCode);
   const isPending = status === 'executing';
-  const hasSucceeded = status === 'hasSucceeded';
+  // const hasSucceeded = status === 'hasSucceeded';
 
   const onLogin = useCallback(async () => {
     try {
       setError(undefined);
-      posthog?.capture('cli_login_started');
+      posthog?.capture('auth_code_login_started');
       const result = await executeAsync();
 
       if (!result?.data) {
         setError('Failed to generate token');
-        posthog?.capture('cli_login_failed', {
+        posthog?.capture('auth_code_login_failed', {
           error: 'no_token_generated',
         });
         return;
       }
 
       const currentUrl = new URL(window.location.href);
-      const redirectUri = currentUrl.searchParams.get('redirect_uri');
+      const redirectUri = currentUrl.searchParams.get('redirectTo');
+      const source = currentUrl.searchParams.get('source');
 
-      if (redirectUri) {
+      if (source === 'extension' && redirectUri) {
         // Handle VS Code OAuth flow
         const redirectUrl = new URL(redirectUri);
         redirectUrl.searchParams.set('code', result.data.authCode.id);
@@ -47,7 +54,7 @@ export function AuthCodeLoginButton() {
         window.location.href = redirectUrl.href;
       }
 
-      posthog?.capture('cli_login_success', {
+      posthog?.capture('auth_code_login_success', {
         hasCsrfToken: !!currentUrl.searchParams.get('csrf'),
         isVSCode: !!redirectUri,
         port: currentUrl.searchParams.get('port'),
@@ -66,19 +73,19 @@ export function AuthCodeLoginButton() {
           {isPending ? (
             <>
               <Icons.Spinner className="mr-2" size="sm" variant="muted" />
-              Authenticating...
+              {loadingText}
             </>
           ) : (
             <>
-              <Icons.LogIn className="mr-2" size="sm" />
-              Grant Access
+              {/* <Icons.LogIn className="mr-2" size="sm" /> */}
+              {text}
             </>
           )}
         </Button>
       )}
-      <span className="text-sm text-muted-foreground">
+      {/* <span className="text-sm text-muted-foreground">
         This will generate a secure token valid for 30 days.
-      </span>
+      </span> */}
       {error && (
         <div className="flex flex-col gap-2">
           <Button className="w-full" onClick={onLogin} variant="destructive">
@@ -88,19 +95,19 @@ export function AuthCodeLoginButton() {
           <span className="text-sm text-destructive">{error}</span>
         </div>
       )}
-      {isPending && (
+      {/* {isPending && (
         <span className="text-sm text-muted-foreground animate-in fade-in">
           You'll be redirected back shortly...
         </span>
-      )}
-      {hasSucceeded && (
+      )} */}
+      {/* {hasSucceeded && (
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-sm text-green-600">
-            <Icons.CheckCircle2 size="sm" variant="primary" />
-            Login successful! You can close this window.
+          <div className="flex items-center gap-2 text-sm">
+            <Icons.CheckCircle2 size="sm" />
+            Login successful!
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

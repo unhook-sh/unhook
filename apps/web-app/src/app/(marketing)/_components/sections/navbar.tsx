@@ -80,7 +80,7 @@ function DesktopActionButtons() {
       <SignedOut>
         <Link
           className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
-          href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+          href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
         >
           Create Webhook URL
         </Link>
@@ -102,7 +102,7 @@ function DesktopActionButtons() {
           className="hidden md:flex rounded-full"
           variant="outline"
         >
-          <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+          <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in">
             Sign In
           </Link>
         </Button>
@@ -252,7 +252,7 @@ function MobileMenuContent({
               <div className="flex flex-col gap-2">
                 <Link
                   className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
-                  href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+                  href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
                 >
                   Create Webhook URL
                 </Link>
@@ -265,7 +265,7 @@ function MobileMenuContent({
                 </SignedIn>
                 <SignedOut>
                   <Button asChild className="rounded-full" variant="outline">
-                    <Link href="/app/webhooks/create?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                    <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in">
                       Sign In
                     </Link>
                   </Button>
@@ -456,7 +456,7 @@ function NavigationMenuSection() {
                 <NavigationMenuLink asChild>
                   <Link
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/10 to-primary/5 p-6 no-underline outline-none focus:shadow-md"
-                    href="/app/webhooks/create"
+                    href="/app/onboarding"
                   >
                     <Icons.logo className="w-full h-full mb-2" />
                     <div className="mb-2 mt-4 text-lg font-medium">

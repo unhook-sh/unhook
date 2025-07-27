@@ -228,6 +228,7 @@ const store = createStore<AuthStore>()((set, get) => ({
       const authUrl = new URL('/app/auth-code', webAppUrl);
       authUrl.searchParams.set('port', port.toString());
       authUrl.searchParams.set('csrf', csrfToken);
+      authUrl.searchParams.set('source', 'cli');
 
       // Initialize auth server
       const authServer = new AuthServer();

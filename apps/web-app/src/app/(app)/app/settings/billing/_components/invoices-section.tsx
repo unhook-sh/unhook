@@ -129,7 +129,7 @@ export function InvoicesSection() {
                   key={invoice.id}
                 >
                   <div className="flex items-center gap-3">
-                    <P className="text-sm font-mono">{invoice.id}</P>
+                    {/* <P className="text-sm font-mono">{invoice.created}</P> */}
                     <P className="text-sm">
                       {formatCurrency(invoice.amount, invoice.currency)}
                     </P>

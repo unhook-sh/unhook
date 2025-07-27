@@ -138,7 +138,7 @@ export const PricingCard = memo(function PricingCard({
                 ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
                 : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
             }`}
-            href="/app/webhooks/create"
+            href="/app/onboarding"
           >
             Create Webhook URL
           </Link>
@@ -206,7 +206,7 @@ export const PricingCard = memo(function PricingCard({
                       ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
                       : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
                   }`}
-                  href="/app/webhooks/create"
+                  href="/app/onboarding"
                 >
                   Create Webhook URL
                 </Link>
@@ -232,7 +232,7 @@ export const PricingCard = memo(function PricingCard({
                       ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
                       : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
                   }`}
-                  href="/app/webhooks/create"
+                  href="/app/onboarding"
                 >
                   Create Webhook URL
                 </Link>

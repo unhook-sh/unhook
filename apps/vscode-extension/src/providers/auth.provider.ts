@@ -97,9 +97,10 @@ export class UnhookAuthProvider implements AuthenticationProvider {
       );
       const editorScheme = this.getEditorUriScheme();
       authUrl.searchParams.set(
-        'redirect_uri',
+        'redirectTo',
         `${editorScheme}://${env.NEXT_PUBLIC_VSCODE_EXTENSION_ID}`,
       );
+      authUrl.searchParams.set('source', 'extension');
 
       // Create a promise that will be resolved by the URI handler
       const authPromise = new Promise<vscode.AuthenticationSession>(

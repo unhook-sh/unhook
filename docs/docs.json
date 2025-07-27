@@ -47,7 +47,7 @@
       }
     ],
     "primary": {
-      "href": "https://unhook.sh/app/webhooks/create?utm_source=docs",
+      "href": "https://unhook.sh/app/onboarding?utm_source=docs",
       "label": "Create Webhook URL",
       "type": "button"
     }

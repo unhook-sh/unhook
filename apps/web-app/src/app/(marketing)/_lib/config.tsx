@@ -180,7 +180,7 @@ export const siteConfig = {
   ctaSection: {
     backgroundImage: '/agent-cta-background.png',
     button: {
-      href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=cta-button',
+      href: '/app/onboarding?utm_source=marketing-site&utm_medium=cta-button',
       text: 'Create Your Webhook URL Today',
     },
     id: 'cta',
@@ -409,10 +409,10 @@ export const siteConfig = {
     badgeIcon: <span>🔥</span>,
     badgeUrl:
       // 'https://marketplace.visualstudio.com/items?itemName=unhook.unhook-vscode',
-      'https://unhook.sh/app/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
+      'https://unhook.sh/app/onboarding?utm_source=marketing-site&utm_medium=hero-cta',
     cta: {
       primary: {
-        href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=hero-cta',
+        href: '/app/onboarding?utm_source=marketing-site&utm_medium=hero-cta',
         text: 'Create Webhook URL',
       },
       secondary: {
@@ -482,7 +482,7 @@ export const siteConfig = {
           'Public webhook URLs',
           'Community support',
         ],
-        href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-free',
+        href: '/app/onboarding?utm_source=marketing-site&utm_medium=pricing-cta-free',
         isPopular: false,
         name: 'Free',
         period: 'month',
@@ -511,7 +511,7 @@ export const siteConfig = {
           // 'Route to external integrations',
           // 'Priority support',
         ],
-        href: '/app/webhooks/create?utm_source=marketing-site&utm_medium=pricing-cta-team',
+        href: '/app/onboarding?utm_source=marketing-site&utm_medium=pricing-cta-team',
         isPopular: true,
         name: 'Team',
         period: 'month',

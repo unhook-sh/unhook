@@ -15,11 +15,11 @@ const settingsTabs = [
     label: 'Billing',
     value: 'billing',
   },
-  {
-    href: '/app/settings/referrals',
-    label: 'Referrals',
-    value: 'referrals',
-  },
+  // {
+  //   href: '/app/settings/referrals',
+  //   label: 'Referrals',
+  //   value: 'referrals',
+  // },
 ];
 
 export default function SettingsLayout({

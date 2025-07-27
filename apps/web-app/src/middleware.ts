@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server';
 const isPrivateRoute = createRouteMatcher([
   // Dashboard and app routes
   '/app(.*)',
-  '/onboarding(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
@@ -26,18 +25,17 @@ export default clerkMiddleware(async (auth, request) => {
     if (
       authResponse.userId &&
       !authResponse.orgId &&
-      !request.nextUrl.pathname.startsWith('/onboarding')
+      !request.nextUrl.pathname.startsWith('/app/onboarding')
     ) {
       console.log('Redirecting to onboarding', {
-        isOnboarding: request.nextUrl.pathname.startsWith('/onboarding'),
+        isOnboarding: request.nextUrl.pathname.startsWith('/app/onboarding'),
         orgId: authResponse.orgId,
         pathname: request.nextUrl.pathname,
         url: request.nextUrl,
         userId: authResponse.userId,
       });
       const url = request.nextUrl.clone();
-      url.pathname = '/onboarding';
-      url.searchParams.set('redirectTo', request.nextUrl.pathname);
+      url.pathname = '/app/onboarding';
       return NextResponse.redirect(url);
     }
   }
@@ -50,6 +48,5 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
     '/app(.*)',
-    '/onboarding(.*)',
   ],
 };

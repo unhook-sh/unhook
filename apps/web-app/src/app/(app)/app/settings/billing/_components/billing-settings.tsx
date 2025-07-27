@@ -11,8 +11,8 @@ export function BillingSettings() {
     <div className="space-y-6">
       <BillingNotifications />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-6">
+      <div className="flex flex-col gap-6">
+        <div className="space-y-6 w-1/2">
           <SubscriptionStatusSection />
           <SubscriptionManagementSection />
           <InvoicesSection />

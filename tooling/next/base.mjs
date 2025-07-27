@@ -2,6 +2,7 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  dynamicIO: true,
   eslint: { ignoreDuringBuilds: true },
   experimental: {
     // Forward browser logs to the terminal for easier debugging
@@ -15,15 +16,12 @@ const nextConfig = {
     // Explore route composition and segment overrides via DevTools
     devtoolSegmentExplorer: true,
     // Enable new caching and pre-rendering behavior
-    dynamicIO: true,
 
     enablePrerenderSourceMaps: true,
     // Enable support for `global-not-found`, which allows you to more easily define a global 404 page.
     globalNotFound: true,
     scrollRestoration: true,
 
-    // Enable persistent caching for the turbopack dev server and build.
-    turbopackPersistentCaching: true,
     useCache: true,
   },
   images: {
@@ -52,6 +50,7 @@ const nextConfig = {
   // removeConsole: true,
   // },
   reactStrictMode: true,
+  turbopackPersistentCaching: true,
   typescript: { ignoreBuildErrors: true },
 };
 

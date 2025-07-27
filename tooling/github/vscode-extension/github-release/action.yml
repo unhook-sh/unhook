@@ -20,6 +20,13 @@ runs:
     - name: Setup Environment
       uses: ./tooling/github/setup
 
+    - name: Build Stripe Generated Files
+      shell: bash
+      working-directory: packages/stripe
+      run: |
+        echo "Building Stripe generated files..."
+        bun run build
+
     - name: Package VSCode Extension
       shell: bash
       working-directory: apps/vscode-extension

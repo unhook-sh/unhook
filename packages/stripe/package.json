@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "next": "15.4.4",
+    "next": "15.4.2-canary.16",
     "stripe": "18.3.0"
   },
   "devDependencies": {

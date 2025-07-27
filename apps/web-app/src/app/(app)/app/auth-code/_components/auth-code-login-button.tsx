@@ -11,8 +11,8 @@ export function AuthCodeLoginButton({
   loadingText,
   text,
 }: {
-  loadingText: string;
-  text: string;
+  loadingText?: string;
+  text?: string;
 }) {
   const [error, setError] = useState<string>();
   const posthog = usePostHog();
@@ -78,7 +78,7 @@ export function AuthCodeLoginButton({
           ) : (
             <>
               {/* <Icons.LogIn className="mr-2" size="sm" /> */}
-              {text}
+              {text ?? 'Grant Access'}
             </>
           )}
         </Button>

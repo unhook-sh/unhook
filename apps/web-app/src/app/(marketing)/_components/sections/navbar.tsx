@@ -67,7 +67,9 @@ function Logo() {
       <Icons.logo className="size-12" />
       <div className="flex items-center gap-2">
         <p className="text-lg font-semibold text-primary">Unhook AI</p>
-        <Badge variant="secondary">Beta</Badge>
+        <Badge className="hidden md:block" variant="secondary">
+          Beta
+        </Badge>
       </div>
     </Link>
   );

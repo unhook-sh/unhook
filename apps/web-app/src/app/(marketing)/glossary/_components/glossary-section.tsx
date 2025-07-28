@@ -475,11 +475,11 @@ export function GlossarySection() {
         {/* Main Content with Sidebar */}
         <motion.div
           animate="visible"
-          className="relative z-10 w-full max-w-7xl mx-auto px-6"
+          className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6"
           initial="hidden"
           variants={staggerContainer}
         >
-          <div className="flex gap-8">
+          <div className="flex flex-col md:flex-row gap-8">
             {/* Left Sidebar */}
             <motion.div
               className="w-64 flex-shrink-0"

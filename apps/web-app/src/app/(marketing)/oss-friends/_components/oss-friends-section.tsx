@@ -275,7 +275,7 @@ const ossProjects = [
 export function OSSFriendsSection() {
   return (
     <section className="w-full relative py-24" id="oss-friends">
-      <div className="relative flex flex-col items-center w-full px-6">
+      <div className="relative flex flex-col items-center w-full px-4 md:px-6">
         <div className="absolute inset-0">
           <div className="absolute inset-0 -z-10 h-[600px] md:h-[800px] w-full [background:radial-gradient(125%_125%_at_50%_10%,var(--background)_40%,var(--secondary)_100%)] rounded-b-xl" />
         </div>
@@ -324,11 +324,11 @@ export function OSSFriendsSection() {
         {/* Projects Grid */}
         <motion.div
           animate="visible"
-          className="relative z-10 w-full max-w-7xl mx-auto"
+          className="relative z-10 w-full max-w-7xl mx-auto px-6"
           initial="hidden"
           variants={staggerContainer}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2/3 mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:max-w-2/3 mx-auto">
             {ossProjects.map((project) => (
               <motion.div
                 className="group"

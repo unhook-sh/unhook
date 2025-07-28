@@ -482,11 +482,13 @@ export function GlossarySection() {
           <div className="flex flex-col md:flex-row gap-8">
             {/* Left Sidebar */}
             <motion.div
-              className="w-64 flex-shrink-0"
+              className="w-full md:w-64 flex-shrink-0"
               variants={fadeInUpVariants}
             >
               <div className="sticky top-15">
-                <H2 className="text-lg font-semibold mb-4">Find a term</H2>
+                <H2 className="text-lg font-semibold mb-4 text-center md:text-left">
+                  Find a term
+                </H2>
                 <div className="relative mb-6">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -502,7 +504,7 @@ export function GlossarySection() {
                 <div className="flex flex-wrap gap-1">
                   {/* ALL button */}
                   <button
-                    className={`px-2 py-1 text-sm font-medium transition-all duration-200 ${
+                    className={`px-2 py-1 text-sm font-medium transition-all duration-200 rounded ${
                       selectedLetter === 'ALL'
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -520,7 +522,7 @@ export function GlossarySection() {
                         ?.length > 0;
                     return (
                       <button
-                        className={`px-2 py-1 text-sm font-medium transition-all duration-200 ${
+                        className={`px-2 py-1 rounded text-sm font-medium transition-all duration-200 ${
                           !hasTerms
                             ? 'text-muted-foreground/40 cursor-not-allowed'
                             : selectedLetter === letter
@@ -543,7 +545,7 @@ export function GlossarySection() {
             {/* Main Content */}
             <div className="flex-1">
               {/* Terms Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredTerms.map((term, index) => (
                   <motion.div
                     id={term.term}

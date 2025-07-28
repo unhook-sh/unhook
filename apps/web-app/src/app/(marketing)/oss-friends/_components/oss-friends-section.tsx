@@ -328,7 +328,7 @@ export function OSSFriendsSection() {
           initial="hidden"
           variants={staggerContainer}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:max-w-2/3 mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:max-w-2/3 mx-auto">
             {ossProjects.map((project) => (
               <motion.div
                 className="group"

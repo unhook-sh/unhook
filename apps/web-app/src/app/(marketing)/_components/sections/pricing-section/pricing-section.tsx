@@ -25,7 +25,7 @@ export function PricingSection() {
         </p>
       </SectionHeader>
       <div className="relative w-full h-full">
-        <div className="absolute -top-14 left-1/2 -translate-x-1/2">
+        <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-full">
           <PricingTabs
             activeTab={billingCycle}
             className="mx-auto"

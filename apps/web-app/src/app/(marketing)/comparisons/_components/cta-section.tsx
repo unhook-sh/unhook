@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@unhook/ui/button';
+import { MagicCard } from '@unhook/ui/magicui/magic-card';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 export function CTASection() {
@@ -9,40 +10,57 @@ export function CTASection() {
       <div className="container mx-auto px-6">
         <motion.div
           animate="visible"
-          className="bg-gradient-to-r from-primary/10 to-secondary/10 border rounded-lg p-12 text-center"
+          className="group"
           initial="hidden"
           variants={{
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
+          whileHover={{
+            scale: 1.01,
+            transition: { duration: 0.2, ease: 'easeOut' },
+            y: -2,
+          }}
         >
-          <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-balance text-center mb-4">
-            Ready to See the Difference?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
-            Join developers who've made the switch to better webhook testing
-            with team collaboration and VS Code integration.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              className="rounded-full"
-              size="lg"
-              variant="secondary"
-            >
-              <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=comparisons-cta">
-                Create Webhook URL
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="rounded-full"
-              size="lg"
-              variant="outline"
-            >
-              <Link href="https://cal.com/seawatts/30min">Schedule Demo</Link>
-            </Button>
-          </div>
+          <MagicCard
+            className="p-12 transition-all duration-300 group-hover:shadow-lg"
+            gradientColor="var(--muted)"
+            gradientFrom="var(--primary)"
+            gradientOpacity={0.6}
+            gradientTo="var(--secondary)"
+          >
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-balance text-center mb-4">
+                Ready to See the Difference?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-balance">
+                Join developers who've made the switch to better webhook testing
+                with team collaboration and VS Code integration.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  asChild
+                  className="rounded-full"
+                  size="lg"
+                  variant="secondary"
+                >
+                  <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=comparisons-cta">
+                    Create Webhook URL
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  className="rounded-full"
+                  size="lg"
+                  variant="outline"
+                >
+                  <Link href="https://cal.com/seawatts/30min">
+                    Schedule Demo
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </MagicCard>
         </motion.div>
       </div>
     </section>

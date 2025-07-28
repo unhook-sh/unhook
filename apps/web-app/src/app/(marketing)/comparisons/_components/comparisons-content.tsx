@@ -33,7 +33,7 @@ export function ComparisonsContent() {
 
           <motion.div
             animate="visible"
-            className="grid md:grid-cols-2 gap-8"
+            className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
             initial="hidden"
             variants={staggerContainer}
           >

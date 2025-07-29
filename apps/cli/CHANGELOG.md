@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.17
+
+### Patch Changes
+
+- [`d3ba1f1`](https://github.com/unhook-sh/unhook/commit/d3ba1f185ed7533e72b2c68f645a5d8b6b8115fc) Thanks [@seawatts](https://github.com/seawatts)! - Add sign in notification on vscode
+
+- Updated dependencies [[`d3ba1f1`](https://github.com/unhook-sh/unhook/commit/d3ba1f185ed7533e72b2c68f645a5d8b6b8115fc)]:
+  - @unhook/client@0.5.17
+
 ## 0.13.16
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.21
+
+### Patch Changes
+
+- [`c7c29d9`](https://github.com/unhook-sh/unhook/commit/c7c29d9f0c77a57c0e0ae2bd080bda6f578239d1) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with vscode delivery
+
+- Updated dependencies [[`c7c29d9`](https://github.com/unhook-sh/unhook/commit/c7c29d9f0c77a57c0e0ae2bd080bda6f578239d1)]:
+  - @unhook/client@0.5.16
+
 ## 0.2.20
 
 ### Patch Changes

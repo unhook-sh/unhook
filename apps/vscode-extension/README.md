@@ -48,6 +48,32 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 
 ---
 
+## Configuration
+
+Create an `unhook.yml` file in your workspace root:
+
+```yaml
+webhookId: your_webhook_id_here
+destination:
+  url: http://localhost:3000/webhook
+  name: Local Development Server
+delivery:
+  enabled: true
+```
+
+## Settings
+
+The following settings are available in VS Code:
+
+- `unhook.delivery.enabled`: Enable or disable automatic webhook delivery
+- `unhook.events.autoClear`: Automatically clear old events when max history is reached
+- `unhook.events.maxHistory`: Maximum number of events to keep in history
+- `unhook.notifications.showForNewEvents`: Show notifications for new webhook events
+- `unhook.output.autoShow`: Automatically show the output panel for new events
+- `unhook.output.maxLines`: Maximum number of lines in the output panel
+
+---
+
 ## Why Unhook?
 
 - **For Teams**: Share a single webhook endpoint while everyone tests locally
@@ -74,7 +100,7 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 
 The extension provides custom icons for Unhook configuration files:
 - `unhook.yaml` and `unhook.yml` - YAML configuration files
-- `unhook.json` - JSON configuration files  
+- `unhook.json` - JSON configuration files
 - `unhook.ts` - TypeScript configuration files
 
 To use the custom file icons, enable the "Unhook File Icons" icon theme in VS Code:

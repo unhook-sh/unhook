@@ -15,6 +15,7 @@ export function createClient(props: { authToken: string; url?: string }) {
 
   log('Creating Supabase realtime client with config:', {
     hasToken: !!authToken,
+    tokenLength: authToken?.length,
     url: supabaseUrl,
   });
 
@@ -22,13 +23,18 @@ export function createClient(props: { authToken: string; url?: string }) {
     supabaseUrl,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
-      accessToken: () => {
-        return Promise.resolve(authToken);
+      async accessToken() {
+        if (!authToken) {
+          log('No auth token available for accessToken');
+          return null;
+        }
+        return authToken;
       },
-      // auth: {
-      // persistSession: false,
-      // autoRefreshToken: false,
-      // },
+      auth: {
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        persistSession: false,
+      },
       realtime: {
         params: {
           eventsPerSecond: 10,

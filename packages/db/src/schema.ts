@@ -15,6 +15,12 @@ import {
 import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
+// Helper function to get user ID from Clerk JWT
+const requestingUserId = () => sql`requesting_user_id()`;
+
+// Helper function to get org ID from Clerk JWT
+const requestingOrgId = () => sql`requesting_org_id()`;
+
 export const userRoleEnum = pgEnum('userRole', ['admin', 'superAdmin', 'user']);
 export const webhookStatusEnum = pgEnum('webhookStatus', [
   'active',
@@ -183,7 +189,7 @@ export const OrgMembers = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     role: userRoleEnum('role').default('user').notNull(),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
@@ -194,7 +200,7 @@ export const OrgMembers = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
   },
   (table) => [
     // Add unique constraint for userId and orgId combination using the simpler syntax
@@ -279,7 +285,7 @@ export const Webhooks = pgTable('webhooks', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
+    .default(requestingOrgId()),
   requestCount: integer('requestCount').notNull().default(0),
   status: webhookStatusEnum('status').notNull().default('active'),
   updatedAt: timestamp('updatedAt', {
@@ -291,7 +297,7 @@ export const Webhooks = pgTable('webhooks', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'sub'`),
+    .default(requestingUserId()),
 });
 
 export type WebhookType = typeof Webhooks.$inferSelect;
@@ -378,7 +384,7 @@ export const Events = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     // Original request payload that created this event
     originRequest: json('originRequest').$type<RequestPayload>().notNull(),
     // Number of retry attempts made
@@ -399,7 +405,7 @@ export const Events = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
     webhookId: varchar('webhookId', { length: 128 })
       .references(() => Webhooks.id, {
         onDelete: 'cascade',
@@ -504,7 +510,7 @@ export const Requests = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     request: json('request').notNull().$type<RequestPayload>(),
     response: json('response').$type<ResponsePayload>(),
     responseTimeMs: integer('responseTimeMs').notNull().default(0),
@@ -519,7 +525,7 @@ export const Requests = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
     webhookId: varchar('webhookId', { length: 128 })
       .references(() => Webhooks.id, {
         onDelete: 'cascade',
@@ -627,7 +633,7 @@ export const Connections = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     updatedAt: timestamp('updatedAt', {
       mode: 'date',
       withTimezone: true,
@@ -637,7 +643,7 @@ export const Connections = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
     webhookId: varchar('webhookId', { length: 128 })
       .references(() => Webhooks.id, {
         onDelete: 'cascade',
@@ -723,14 +729,14 @@ export const WebhookAccessRequests = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     requesterEmail: text('requesterEmail').notNull(),
     requesterId: varchar('requesterId')
       .references(() => Users.id, {
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
     requesterMessage: text('requesterMessage'),
     respondedAt: timestamp('respondedAt', {
       mode: 'date',
@@ -839,7 +845,7 @@ export const AuthCodes = pgTable('authCodes', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
+    .default(requestingOrgId()),
   sessionId: text('sessionId').notNull(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
@@ -854,7 +860,7 @@ export const AuthCodes = pgTable('authCodes', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'sub'`),
+    .default(requestingUserId()),
 });
 
 export type AuthCodeType = typeof AuthCodes.$inferSelect;
@@ -901,7 +907,7 @@ export const ApiKeys = pgTable('apiKeys', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
+    .default(requestingOrgId()),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
     withTimezone: true,
@@ -911,7 +917,7 @@ export const ApiKeys = pgTable('apiKeys', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'sub'`),
+    .default(requestingUserId()),
 });
 
 export type ApiKeyType = typeof ApiKeys.$inferSelect;
@@ -977,7 +983,7 @@ export const ApiKeyUsage = pgTable('apiKeyUsage', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
+    .default(requestingOrgId()),
   type: apiKeyUsageTypeEnum('type').notNull(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
@@ -988,7 +994,7 @@ export const ApiKeyUsage = pgTable('apiKeyUsage', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'sub'`),
+    .default(requestingUserId()),
 });
 
 export type ApiKeyUsageType = typeof ApiKeyUsage.$inferSelect;
@@ -1065,7 +1071,7 @@ export const ForwardingDestinations = pgTable('forwardingDestinations', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'org_id'`),
+    .default(requestingOrgId()),
   type: destinationTypeEnum('type').notNull(),
   updatedAt: timestamp('updatedAt', {
     mode: 'date',
@@ -1076,7 +1082,7 @@ export const ForwardingDestinations = pgTable('forwardingDestinations', {
       onDelete: 'cascade',
     })
     .notNull()
-    .default(sql`auth.jwt()->>'sub'`),
+    .default(requestingUserId()),
 });
 
 export type ForwardingDestinationType =
@@ -1156,7 +1162,7 @@ export const ForwardingRules = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     // Rule execution order (lower numbers execute first)
     priority: integer('priority').notNull().default(0),
     // JavaScript transformation function (as string)
@@ -1180,7 +1186,7 @@ export const ForwardingRules = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
     webhookId: varchar('webhookId', { length: 128 })
       .references(() => Webhooks.id, {
         onDelete: 'cascade',
@@ -1259,7 +1265,7 @@ export const ForwardingExecutions = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'org_id'`),
+      .default(requestingOrgId()),
     // Original payload before transformation
     originalPayload: json('originalPayload').notNull(),
     ruleId: varchar('ruleId', { length: 128 })
@@ -1275,7 +1281,7 @@ export const ForwardingExecutions = pgTable(
         onDelete: 'cascade',
       })
       .notNull()
-      .default(sql`auth.jwt()->>'sub'`),
+      .default(requestingUserId()),
   },
   (table) => [
     // Index for finding executions by rule

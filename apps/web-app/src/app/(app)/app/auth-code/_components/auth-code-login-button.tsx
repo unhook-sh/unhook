@@ -8,9 +8,11 @@ import { useCallback, useState } from 'react';
 import { createAuthCode } from '../actions';
 
 export function AuthCodeLoginButton({
+  disabled,
   loadingText,
   text,
 }: {
+  disabled?: boolean;
   loadingText?: string;
   text?: string;
 }) {
@@ -69,7 +71,7 @@ export function AuthCodeLoginButton({
   return (
     <div className="flex flex-col gap-2">
       {!error && (
-        <Button autoFocus disabled={isPending} onClick={onLogin}>
+        <Button autoFocus disabled={isPending || disabled} onClick={onLogin}>
           {isPending ? (
             <>
               <Icons.Spinner className="mr-2" size="sm" variant="muted" />

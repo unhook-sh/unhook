@@ -225,11 +225,7 @@
           "description": "Maximum number of events to keep in history",
           "type": "number"
         },
-        "unhook.events.pollIntervalMs": {
-          "default": 5000,
-          "description": "How often to check for new events (in milliseconds). Lower values provide more real-time updates but may increase resource usage.",
-          "type": "number"
-        },
+
         "unhook.notifications.showForNewEvents": {
           "default": true,
           "description": "Show notifications when new webhook events are received",

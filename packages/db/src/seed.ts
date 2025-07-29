@@ -57,7 +57,7 @@ await seed(db, {
       key: funcs.default({
         defaultValue: 'usk-live-300nYp2JItCuoiHhaioQv82QHwo',
       }),
-      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
     },
     count: 1,
   },
@@ -77,19 +77,19 @@ await seed(db, {
           webhookId: 'wh_seawatts',
         },
       }),
-      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
       type: funcs.valuesFromArray({
         values: ['webhook-event', 'mcp-server', 'webhook-event-request'],
       }),
       userId: funcs.default({
-        defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+        defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH',
       }),
     },
     count: 10,
   },
   Connections: {
     columns: {
-      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
     },
     count: 1,
   },
@@ -122,9 +122,9 @@ await seed(db, {
   },
   OrgMembers: {
     columns: {
-      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
       userId: funcs.default({
-        defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+        defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH',
       }),
     },
     count: 1,
@@ -132,9 +132,9 @@ await seed(db, {
   Orgs: {
     columns: {
       clerkOrgId: funcs.default({
-        defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo',
+        defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX',
       }),
-      id: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      id: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
     },
     count: 1,
   },
@@ -153,7 +153,7 @@ await seed(db, {
           },
         ],
       }),
-      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
       request: funcs.default({
         defaultValue: {
           body: Buffer.from(
@@ -195,11 +195,11 @@ await seed(db, {
   Users: {
     columns: {
       clerkId: funcs.default({
-        defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT',
+        defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH',
       }),
       email: funcs.default({ defaultValue: 'chris.watts.t@gmail.com' }),
       firstName: funcs.default({ defaultValue: 'Chris' }),
-      id: funcs.default({ defaultValue: 'user_2vCQ1eiMB46gXpAUNeK8LvO7CwT' }),
+      id: funcs.default({ defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH' }),
       lastName: funcs.default({ defaultValue: 'Watts' }),
       online: funcs.boolean(),
     },
@@ -234,7 +234,7 @@ await seed(db, {
         },
       }),
       id: funcs.default({ defaultValue: 'wh_seawatts' }),
-      orgId: funcs.default({ defaultValue: 'org_300nYp2JItCuoiHhaioQv82QHwo' }),
+      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       requestCount: funcs.int({ maxValue: 1000, minValue: 0 }),
       status: funcs.default({ defaultValue: 'active' }),

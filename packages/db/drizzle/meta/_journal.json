@@ -7,6 +7,13 @@
       "tag": "0000_smart_patch",
       "version": "7",
       "when": 1752803175606
+    },
+    {
+      "breakpoints": true,
+      "idx": 1,
+      "tag": "0001_aspiring_viper",
+      "version": "7",
+      "when": 1753766669619
     }
   ],
   "version": "7"

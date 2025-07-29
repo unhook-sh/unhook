@@ -18,7 +18,7 @@ export const eventsRouter = createTRPCRouter({
       .select()
       .from(Events)
       .where(eq(Events.orgId, ctx.auth.orgId))
-      .orderBy(desc(Events.createdAt));
+      .orderBy(desc(Events.timestamp));
 
     return events;
   }),
@@ -37,6 +37,24 @@ export const eventsRouter = createTRPCRouter({
       if (!event.length) return null;
 
       return event[0];
+    }),
+
+  byIdWithRequests: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const event = await ctx.db.query.Events.findFirst({
+        orderBy: [desc(Events.timestamp)],
+        where: and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)),
+        with: {
+          requests: {
+            orderBy: [desc(Requests.createdAt)],
+          },
+        },
+      });
+
+      return event || null;
     }),
 
   byWebhookId: protectedProcedure

@@ -185,7 +185,7 @@ export const apiKeyUsageRouter = createTRPCRouter({
 
       const stats = await ctx.db
         .select({
-          count: sql<number>`count(*)`,
+          count: sql<number>`cast(count(*) as integer)`,
           type: ApiKeyUsage.type,
         })
         .from(ApiKeyUsage)

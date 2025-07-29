@@ -58,7 +58,7 @@
     "enable-supabase-realtime": "tsx scripts/enable-supabase-realtime.ts",
     "gen-migration": "drizzle-kit generate",
     "gen-supabase-types": "tsx ./scripts/generate-supabase-types.ts",
-    "migrate": "drizzle-kit migrate && bun gen-supabase-types",
+    "migrate": "drizzle-kit migrate && bun gen-supabase-types && bun create-supabase-policies && bun enable-supabase-realtime",
     "push": "drizzle-kit push && bun gen-supabase-types && bun create-supabase-policies && bun enable-supabase-realtime",
     "seed": "tsx src/seed.ts",
     "studio": "drizzle-kit studio",

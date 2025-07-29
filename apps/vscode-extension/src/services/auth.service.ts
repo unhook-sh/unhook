@@ -15,6 +15,7 @@ export class AuthStore implements vscode.Disposable {
 
   private _isSignedIn = false;
   private _authToken: string | null = null;
+  private _supabaseToken: string | null = null;
   private _sessionId: string | null = null;
   private _user: AuthUser | null = null;
   private _isValidatingSession = false;
@@ -37,6 +38,10 @@ export class AuthStore implements vscode.Disposable {
 
   get authToken() {
     return this._authToken;
+  }
+
+  get supabaseToken() {
+    return this._supabaseToken;
   }
 
   get sessionId() {
@@ -64,6 +69,18 @@ export class AuthStore implements vscode.Disposable {
     await this.setSessionIdInternal({ sessionId });
     this.setUserInternal(user);
 
+    // Get Supabase token for realtime connections
+    try {
+      const { authToken: supabaseToken } =
+        await this._api.auth.verifySessionToken.query({
+          sessionId,
+          sessionTemplate: 'supabase',
+        });
+      await this.setSupabaseTokenInternal({ token: supabaseToken });
+    } catch (error) {
+      log('Failed to get Supabase token during auth code exchange:', error);
+    }
+
     // Fire one auth change event after everything is set
     this._onDidChangeAuth.fire();
 
@@ -76,7 +93,6 @@ export class AuthStore implements vscode.Disposable {
   }
 
   private async setAuthTokenInternal({ token }: { token: string | null }) {
-    log('Setting auth token', { hasToken: !!token });
     if (token) {
       await this.context.secrets.store(TOKEN_KEY, token);
     } else {
@@ -93,6 +109,11 @@ export class AuthStore implements vscode.Disposable {
     log('Auth token updated', { isSignedIn: this._isSignedIn });
   }
 
+  private async setSupabaseTokenInternal({ token }: { token: string | null }) {
+    log('Setting Supabase token', { hasToken: !!token });
+    this._supabaseToken = token;
+  }
+
   async setSessionId({ sessionId }: { sessionId: string | null }) {
     await this.setSessionIdInternal({ sessionId });
     this._onDidChangeAuth.fire();
@@ -103,7 +124,6 @@ export class AuthStore implements vscode.Disposable {
   }: {
     sessionId: string | null;
   }) {
-    log('Setting session ID', { hasSessionId: !!sessionId });
     if (sessionId) {
       await this.context.secrets.store(SESSION_ID_KEY, sessionId);
     } else {
@@ -111,7 +131,6 @@ export class AuthStore implements vscode.Disposable {
     }
 
     this._sessionId = sessionId;
-    log('Session ID updated');
   }
 
   setUser(user: AuthUser | null) {
@@ -120,12 +139,10 @@ export class AuthStore implements vscode.Disposable {
   }
 
   private setUserInternal(user: AuthUser | null) {
-    log('Setting user', { hasUser: !!user, userId: user?.id });
     this._user = user;
   }
 
   setValidatingSession(isValidating: boolean) {
-    log('Setting validating session state', { isValidating });
     this._isValidatingSession = isValidating;
     this._onDidChangeAuth.fire();
   }
@@ -133,6 +150,7 @@ export class AuthStore implements vscode.Disposable {
   async signOut() {
     log('Signing out user');
     await this.setAuthTokenInternal({ token: null });
+    await this.setSupabaseTokenInternal({ token: null });
     await this.setSessionIdInternal({ sessionId: null });
     this.setUserInternal(null);
     this._onDidChangeAuth.fire();
@@ -152,9 +170,30 @@ export class AuthStore implements vscode.Disposable {
     this.setValidatingSession(true);
 
     try {
-      const { user } = await this._api.auth.verifySessionToken.query({
-        sessionId: this._sessionId,
-      });
+      // First, validate the regular session token for API calls
+      const { user, authToken } = await this._api.auth.verifySessionToken.query(
+        {
+          sessionId: this._sessionId,
+          sessionTemplate: 'cli',
+        },
+      );
+
+      // Update the auth token with the fresh one for API calls
+      if (authToken) {
+        await this.setAuthTokenInternal({ token: authToken });
+      }
+
+      // Then, get a separate Supabase token for realtime connections
+      const { authToken: supabaseToken } =
+        await this._api.auth.verifySessionToken.query({
+          sessionId: this._sessionId,
+          sessionTemplate: 'supabase',
+        });
+
+      // Store the Supabase token separately
+      if (supabaseToken) {
+        await this.setSupabaseTokenInternal({ token: supabaseToken });
+      }
 
       this.setUserInternal(user);
       log('Session validated successfully', { userId: user.id });
@@ -169,16 +208,10 @@ export class AuthStore implements vscode.Disposable {
   }
 
   async initialize() {
-    log('Initializing auth store');
     const [token, sessionId] = await Promise.all([
       this.context.secrets.get(TOKEN_KEY),
       this.context.secrets.get(SESSION_ID_KEY),
     ]);
-
-    log('Retrieved stored credentials', {
-      hasSessionId: !!sessionId,
-      hasToken: !!token,
-    });
 
     if (token) {
       await this.setAuthTokenInternal({ token });

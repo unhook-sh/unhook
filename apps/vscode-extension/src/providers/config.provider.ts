@@ -34,6 +34,12 @@ interface DevInfo {
     limit: number;
     period: 'day' | 'month';
   };
+  realtime?: {
+    isConnected: boolean;
+    webhookId: string | null;
+    eventsConnected: boolean;
+    requestsConnected: boolean;
+  };
 }
 
 export class ConfigProvider
@@ -55,7 +61,7 @@ export class ConfigProvider
   private devInfo: DevInfo = {};
 
   constructor(private context: vscode.ExtensionContext) {
-    log('Initializing ConfigProvider');
+    // ConfigProvider initialized
   }
 
   public setConfig(config: WebhookConfig | null, configPath: string) {
@@ -70,7 +76,6 @@ export class ConfigProvider
   }
 
   public setDevInfo(devInfo: DevInfo) {
-    log('Setting dev info', { hasOrg: !!devInfo.org, hasUser: !!devInfo.user });
     this.devInfo = devInfo;
     this.refresh();
   }
@@ -140,6 +145,15 @@ export class ConfigProvider
           new ConfigSectionItem(
             'connections',
             this.devInfo.connections,
+            this.context,
+          ),
+        );
+      }
+      if (this.devInfo.realtime) {
+        sections.push(
+          new ConfigSectionItem(
+            'realtime',
+            this.devInfo.realtime,
             this.context,
           ),
         );
@@ -452,6 +466,46 @@ export class ConfigProvider
       return details;
     }
 
+    if (
+      sectionName === 'realtime' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      // Show realtime connection details
+      const realtime = sectionData as DevInfo['realtime'];
+      if (realtime) {
+        details.push(
+          new ConfigDetailItem(
+            'isConnected',
+            realtime.isConnected ? 'Connected' : 'Disconnected',
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'webhookId',
+            realtime.webhookId || 'None',
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'eventsConnected',
+            realtime.eventsConnected ? 'Connected' : 'Disconnected',
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'requestsConnected',
+            realtime.requestsConnected ? 'Connected' : 'Disconnected',
+            this.context,
+          ),
+        );
+      }
+      return details;
+    }
+
     if (Array.isArray(sectionData)) {
       // For arrays, show each item with its index
       sectionData.forEach((item, index) => {
@@ -529,12 +583,11 @@ export class ConfigProvider
     }
 
     log('Config validation completed', {
-      errorCount: this.validationErrors.length,
+      errors: this.validationErrors,
     });
   }
 
   public refresh(): void {
-    log('Refreshing config tree data');
     this._onDidChangeTreeData.fire(undefined);
   }
 

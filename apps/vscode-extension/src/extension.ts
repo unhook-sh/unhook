@@ -139,10 +139,27 @@ export async function activate(context: vscode.ExtensionContext) {
   devInfoService.setConfigProvider(configProvider);
   devInfoService.setAuthStore(authStore);
 
+  // Connect realtime service to dev info service
+  const connectRealtimeToDevInfo = () => {
+    const realtimeService = eventsProvider.getRealtimeService();
+    if (realtimeService) {
+      devInfoService.setRealtimeService(realtimeService);
+    }
+  };
+
+  // Set up callback for realtime state changes
+  eventsProvider.setOnRealtimeStateChange(() => {
+    if (ConfigManager.getInstance().isDevelopment()) {
+      devInfoService.fetchDevInfo();
+    }
+  });
+
   // Listen for auth changes to refresh dev info
   authStore.onDidChangeAuth(() => {
     if (ConfigManager.getInstance().isDevelopment()) {
       devInfoService.fetchDevInfo();
+      // Try to connect realtime service after a short delay to ensure it's initialized
+      setTimeout(connectRealtimeToDevInfo, 1000);
     }
   });
 
@@ -150,6 +167,8 @@ export async function activate(context: vscode.ExtensionContext) {
   authorizationService.onAccessAlreadyGranted(() => {
     log('Access already granted event received, refreshing events');
     eventsProvider.refreshAndFetchEvents();
+    // Try to connect realtime service after events are refreshed
+    setTimeout(connectRealtimeToDevInfo, 1000);
   });
 
   // Register webhook event commands
@@ -213,6 +232,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // Fetch development information
   devInfoService.fetchDevInfo();
   // orgMembers will now be included in dev info for development mode
+
+  // Try to connect realtime service initially
+  setTimeout(connectRealtimeToDevInfo, 2000);
 
   // Set up periodic refresh for development info
   if (configManager.isDevelopment()) {

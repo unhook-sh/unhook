@@ -11,6 +11,7 @@ export const authRouter = {
     .input(
       z.object({
         code: z.string(),
+        sessionTemplate: z.enum(['cli', 'supabase']).default('cli'),
       }),
     )
     .mutation(async ({ input }) => {
@@ -46,7 +47,7 @@ export const authRouter = {
       const clerk = await clerkClient();
       const sessionToken = await clerk.sessions.getToken(
         authCode.sessionId,
-        'cli',
+        input.sessionTemplate,
       );
 
       const user = await clerk.users.getUser(authCode.userId);
@@ -79,7 +80,12 @@ export const authRouter = {
       return response;
     }),
   verifySessionToken: protectedProcedure
-    .input(z.object({ sessionId: z.string() }))
+    .input(
+      z.object({
+        sessionId: z.string(),
+        sessionTemplate: z.enum(['cli', 'supabase']).default('cli'),
+      }),
+    )
     .query(async ({ input, ctx }) => {
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(ctx.auth.userId);
@@ -104,7 +110,14 @@ export const authRouter = {
         userId: ctx.auth.userId,
       });
 
+      // Get a fresh Supabase JWT token for realtime connections
+      const sessionToken = await clerk.sessions.getToken(
+        input.sessionId,
+        input.sessionTemplate,
+      );
+
       return {
+        authToken: sessionToken.jwt,
         orgId: session.lastActiveOrganizationId,
         user: {
           email: emailAddress?.emailAddress,

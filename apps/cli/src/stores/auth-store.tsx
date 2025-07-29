@@ -334,13 +334,25 @@ const store = createStore<AuthStore>()((set, get) => ({
         },
       });
 
+      // Use the fresh auth token for Supabase realtime connections
+      const freshToken = token.authToken || storedToken;
+
       set({
-        authToken: storedToken,
+        authToken: freshToken,
         isSignedIn: true,
         isValidatingSession: false,
         orgId: token.orgId,
         user: token.user,
       });
+
+      // Update the API client with the fresh token
+      useApiStore.setState({
+        api: createClient({
+          authToken: freshToken,
+          sessionCookie: freshToken,
+        }),
+      });
+
       return true;
     } catch (error) {
       log('Error validating token: %O', error);

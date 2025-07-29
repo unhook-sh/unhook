@@ -15,17 +15,53 @@ interface PolicyConfig {
   policies: Policy[];
 }
 
-// Common policy conditions
+// Create the requesting_user_id function as per Clerk docs
+const createRequestingUserIdFunction = async () => {
+  console.log('Creating requesting_user_id function...');
+  await db.execute(sql`
+    CREATE OR REPLACE FUNCTION requesting_user_id()
+    RETURNS text
+    LANGUAGE sql
+    STABLE
+    AS $$
+      SELECT NULLIF(
+        current_setting('request.jwt.claims', true)::json->>'sub',
+        ''
+      )::text;
+    $$;
+  `);
+  console.log('requesting_user_id function created successfully');
+};
+
+// Create the requesting_org_id function for consistency
+const createRequestingOrgIdFunction = async () => {
+  console.log('Creating requesting_org_id function...');
+  await db.execute(sql`
+    CREATE OR REPLACE FUNCTION requesting_org_id()
+    RETURNS text
+    LANGUAGE sql
+    STABLE
+    AS $$
+      SELECT NULLIF(
+        current_setting('request.jwt.claims', true)::json->>'org_id',
+        ''
+      )::text;
+    $$;
+  `);
+  console.log('requesting_org_id function created successfully');
+};
+
+// Common policy conditions using the requesting_user_id function
 const policyConditions = {
-  eventOwnership: `EXISTS (
-    SELECT 1 FROM events
-    WHERE events.id = requests."eventId"
-    AND events."userId" = (SELECT auth.jwt()->>'sub')
-  )`,
   orgOwnership: (columnName = 'orgId') =>
-    `(SELECT auth.jwt()->>'org_id') = ("${columnName}")::text`,
+    `requesting_org_id() = ("${columnName}")::text`,
   userOwnership: (columnName = 'userId') =>
-    `(SELECT auth.jwt()->>'sub') = ("${columnName}")::text`,
+    `requesting_user_id() = ("${columnName}")::text`,
+  webhookOwnership: `EXISTS (
+    SELECT 1 FROM webhooks
+    WHERE webhooks.id = requests."webhookId"
+    AND webhooks."orgId" = requesting_org_id()
+  )`,
 } as const;
 
 // Helper to create a policy for user ownership
@@ -93,53 +129,42 @@ const enableRLS = async (tableName: string) => {
 const policyConfigs: Record<string, PolicyConfig> = {
   apiKeys: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
-      createUserOwnershipPolicy('DELETE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'apiKeys',
   },
   apiKeyUsage: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'apiKeyUsage',
   },
   authCodes: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'authCodes',
   },
   connections: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'connections',
   },
   events: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'events',
   },
   forwardingDestinations: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createUserOwnershipPolicy('DELETE', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
@@ -147,27 +172,21 @@ const policyConfigs: Record<string, PolicyConfig> = {
   },
   forwardingExecutions: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'forwardingExecutions',
   },
   forwardingRules: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
-      createUserOwnershipPolicy('DELETE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'forwardingRules',
   },
   orgMembers: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'orgMembers',
@@ -196,13 +215,22 @@ const policyConfigs: Record<string, PolicyConfig> = {
   },
   requests: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
       {
-        name: 'Users can access requests for their events',
+        name: 'Users can access requests for their webhooks',
         operation: 'SELECT',
-        using: policyConditions.eventOwnership,
+        using: policyConditions.webhookOwnership,
+      },
+      {
+        name: 'Users can delete requests for their webhooks',
+        operation: 'DELETE',
+        using: policyConditions.webhookOwnership,
+      },
+      {
+        name: 'Users can update requests for their webhooks',
+        operation: 'UPDATE',
+        using: policyConditions.webhookOwnership,
       },
     ],
     tableName: 'requests',
@@ -246,9 +274,7 @@ const policyConfigs: Record<string, PolicyConfig> = {
   },
   webhooks: {
     policies: [
-      createUserOwnershipPolicy('SELECT', 'userId'),
-      createUserOwnershipPolicy('INSERT', 'userId'),
-      createUserOwnershipPolicy('UPDATE', 'userId'),
+      createUserOwnershipPolicy('ALL', 'userId'),
       createOrgOwnershipPolicy('ALL', 'orgId'),
     ],
     tableName: 'webhooks',
@@ -300,6 +326,10 @@ async function dropTablePolicies(config: PolicyConfig) {
 async function setupAllPolicies() {
   return withErrorHandling(
     async () => {
+      // First create the requesting_user_id and requesting_org_id functions
+      await createRequestingUserIdFunction();
+      await createRequestingOrgIdFunction();
+
       // Process tables sequentially to avoid deadlocks
       for (const config of Object.values(policyConfigs)) {
         await setupTablePolicies(config);

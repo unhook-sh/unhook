@@ -9,6 +9,7 @@ import { debug } from '@unhook/logger';
 import { ConfigManager } from '../config.manager';
 import type { ConfigProvider } from '../providers/config.provider';
 import type { AuthStore } from './auth.service';
+import type { RealtimeService } from './realtime.service';
 
 const log = debug('unhook:vscode:dev-info-service');
 
@@ -35,11 +36,18 @@ interface DevInfo {
     period: 'day' | 'month';
   };
   orgMembers?: Array<OrgMembersType>;
+  realtime?: {
+    isConnected: boolean;
+    webhookId: string | null;
+    eventsConnected: boolean;
+    requestsConnected: boolean;
+  };
 }
 
 export class DevInfoService {
   private configProvider: ConfigProvider | null = null;
   private authStore: AuthStore | null = null;
+  private realtimeService: RealtimeService | null = null;
 
   constructor() {
     log('DevInfoService initialized');
@@ -51,6 +59,14 @@ export class DevInfoService {
 
   public setAuthStore(authStore: AuthStore) {
     this.authStore = authStore;
+  }
+
+  public setRealtimeService(realtimeService: RealtimeService) {
+    this.realtimeService = realtimeService;
+    // Refresh dev info when realtime connection state changes
+    if (ConfigManager.getInstance().isDevelopment()) {
+      this.fetchDevInfo();
+    }
   }
 
   public async fetchDevInfo(): Promise<void> {
@@ -68,12 +84,9 @@ export class DevInfoService {
     }
 
     try {
-      log('Fetching development information from API');
-
       const devInfo: DevInfo = await this.fetchRealDevInfo();
 
       this.configProvider.setDevInfo(devInfo);
-      log('Development information updated');
     } catch (error) {
       log('Error fetching development information:', error);
       // Fall back to mock data if API fails
@@ -184,6 +197,11 @@ export class DevInfoService {
     // Add org members
     if (orgMembers.status === 'fulfilled') {
       devInfo.orgMembers = orgMembers.value;
+    }
+
+    // Add realtime connection status
+    if (this.realtimeService) {
+      devInfo.realtime = this.realtimeService.getConnectionState();
     }
 
     return devInfo;

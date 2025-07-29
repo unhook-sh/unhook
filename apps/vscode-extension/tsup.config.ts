@@ -16,6 +16,9 @@ export default defineConfig({
       process.env.NEXT_PUBLIC_IS_SELF_HOSTED ?? 'false',
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? '',
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? '',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
     NEXT_PUBLIC_VSCODE_EXTENSION_ID:
       process.env.NEXT_PUBLIC_VSCODE_EXTENSION_ID ?? 'unhook.unhook-vscode',
     NODE_ENV: isDevBuild ? 'development' : 'production',

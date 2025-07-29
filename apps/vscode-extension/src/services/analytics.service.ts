@@ -166,7 +166,6 @@ export class AnalyticsService implements vscode.Disposable {
    */
   track(event: string, properties?: Record<string, unknown>) {
     if (!this._isInitialized) {
-      log('Analytics not initialized, skipping event:', event);
       return;
     }
 
@@ -186,7 +185,6 @@ export class AnalyticsService implements vscode.Disposable {
    */
   trackPageView(view: string, properties?: Record<string, unknown>) {
     if (!this._isInitialized) {
-      log('Analytics not initialized, skipping page view:', view);
       return;
     }
 
@@ -201,11 +199,6 @@ export class AnalyticsService implements vscode.Disposable {
    * Track an exception
    */
   trackException(error: Error, context?: Record<string, unknown>) {
-    if (!this._isInitialized) {
-      log('Analytics not initialized, skipping exception:', error.message);
-      return;
-    }
-
     captureException(error, {
       ...this.getVSCodeCommonProperties(),
       ...context,

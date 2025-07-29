@@ -9,12 +9,21 @@ import {
   createRequestsForEventToAllDestinations,
   handlePendingRequest,
 } from '@unhook/client/utils/delivery';
-import type { EventTypeWithRequest } from '@unhook/db/schema';
+import type {
+  EventTypeWithRequest,
+  RequestPayload,
+  ResponsePayload,
+} from '@unhook/db/schema';
+
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
 import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
+import {
+  type RealtimeEvent,
+  RealtimeService,
+} from '../services/realtime.service';
 import { SettingsService } from '../services/settings.service';
 import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 import { EventItem } from '../tree-items/event.item';
@@ -37,8 +46,7 @@ export class EventsProvider
   private events: EventTypeWithRequest[] = [];
   private previousEvents: EventTypeWithRequest[] = [];
   public authStore: AuthStore | null = null;
-  private pollInterval: NodeJS.Timeout | null = null;
-  private readonly POLL_INTERVAL_MS = 5000; // Increased from 2000 to 5000 to reduce API calls
+  private realtimeService: RealtimeService | null = null;
   private config: WebhookConfig | null = null;
   private configPath: string | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
@@ -48,10 +56,50 @@ export class EventsProvider
   private lastAuthorizationSuccessTime = 0;
   private readonly AUTHORIZATION_SUCCESS_DEBOUNCE_MS = 1000; // 1 second debounce
   private configProvider: ConfigProvider | null = null;
+  private onRealtimeStateChange: (() => void) | null = null;
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
     this.authorizationService = WebhookAuthorizationService.getInstance();
+  }
+
+  /**
+   * Sort events by timestamp time in descending order (newest first)
+   */
+  private sortEventsByTimestamp(
+    events: EventTypeWithRequest[],
+  ): EventTypeWithRequest[] {
+    return [...events].sort((a, b) => {
+      const dateA = new Date(a.timestamp).getTime();
+      const dateB = new Date(b.timestamp).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+  }
+
+  /**
+   * Sort requests by createdAt time in descending order (newest first)
+   */
+  private sortRequestsByCreatedAt(
+    requests: EventTypeWithRequest['requests'],
+  ): EventTypeWithRequest['requests'] {
+    if (!requests) return [];
+    return [...requests].sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+  }
+
+  /**
+   * Sort events and their requests by createdAt time
+   */
+  private sortEventsAndRequests(
+    events: EventTypeWithRequest[],
+  ): EventTypeWithRequest[] {
+    return this.sortEventsByTimestamp(events).map((event) => ({
+      ...event,
+      requests: this.sortRequestsByCreatedAt(event.requests ?? []),
+    }));
   }
 
   public setAnalyticsService(analyticsService: AnalyticsService) {
@@ -62,14 +110,22 @@ export class EventsProvider
     this.authStore = authStore;
     this.authStore.onDidChangeAuth(() => {
       this.refresh();
-      this.handlePolling();
+      this.handleRealtimeConnection();
     });
     this.refresh();
-    this.handlePolling();
+    this.handleRealtimeConnection();
   }
 
   public setConfigProvider(configProvider: ConfigProvider) {
     this.configProvider = configProvider;
+  }
+
+  public getRealtimeService(): RealtimeService | null {
+    return this.realtimeService;
+  }
+
+  public setOnRealtimeStateChange(callback: () => void) {
+    this.onRealtimeStateChange = callback;
   }
 
   public getCurrentFilter(): string {
@@ -141,17 +197,28 @@ export class EventsProvider
     this._onDidChangeTreeData.fire(undefined);
   }
 
+  public forceRefresh(): void {
+    log('Forcing immediate tree refresh');
+    // Fire the event multiple times to ensure the tree view updates
+    this._onDidChangeTreeData.fire(undefined);
+    // Add a small delay and fire again to ensure the update is processed
+    setTimeout(() => {
+      this._onDidChangeTreeData.fire(undefined);
+    }, 50);
+  }
+
   public refreshAndFetchEvents(): void {
     log('Refreshing and fetching events');
-    // Add a small delay to prevent rapid successive calls
+    // Force a refresh immediately to update the tree view
+    this.forceRefresh();
+
+    // Add a small delay to prevent rapid successive calls, then fetch fresh data
     setTimeout(() => {
       this.fetchAndUpdateEvents();
     }, 100);
   }
 
   public updateEvents(events: EventTypeWithRequest[]): void {
-    log('Updating events', { eventCount: events.length });
-
     // Check if notifications are enabled
     const settings = SettingsService.getInstance().getSettings();
     if (settings.notifications.showForNewEvents) {
@@ -165,15 +232,46 @@ export class EventsProvider
 
     // Store previous events for comparison
     this.previousEvents = [...this.events];
-    this.events = events;
+
+    // Debug: Log the first few events before sorting
+    if (events.length > 0) {
+      log(
+        'Before sorting - first 3 events:',
+        events.slice(0, 3).map((e) => ({
+          id: e.id,
+          requestsCount: e.requests?.length ?? 0,
+          timestamp: e.timestamp,
+        })),
+      );
+    }
+
+    // Sort events and their requests by timestamp time
+    this.events = this.sortEventsAndRequests(events);
+
+    // Debug: Log the first few events after sorting
+    if (this.events.length > 0) {
+      log(
+        'After sorting - first 3 events:',
+        this.events.slice(0, 3).map((e) => ({
+          id: e.id,
+          requestsCount: e.requests?.length ?? 0,
+          timestamp: e.timestamp,
+        })),
+      );
+    }
+
+    log('Events updated, refreshing tree view');
     this.refresh();
   }
 
   public dispose() {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-      this.pollInterval = null;
+    // Stop realtime service
+    if (this.realtimeService) {
+      this.realtimeService.dispose();
+      this.realtimeService = null;
     }
+
+    // Dispose config watcher
     if (this.configWatcher) {
       this.configWatcher.dispose();
       this.configWatcher = null;
@@ -276,26 +374,272 @@ export class EventsProvider
     }
   }
 
-  private handlePolling() {
-    // Stop any existing polling
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-      this.pollInterval = null;
+  private async handleRealtimeConnection() {
+    // Stop any existing realtime connection
+    if (this.realtimeService) {
+      this.realtimeService.disconnect();
+      this.realtimeService = null;
     }
 
     if (this.authStore?.isSignedIn) {
-      // Get polling interval from settings
-      const settings = SettingsService.getInstance().getSettings();
-      const pollIntervalMs =
-        settings.events.pollIntervalMs ?? this.POLL_INTERVAL_MS;
+      log('Starting realtime connection for events');
 
-      log(`Starting event polling with interval: ${pollIntervalMs}ms`);
+      // Create realtime service
+      this.realtimeService = new RealtimeService({
+        authStore: this.authStore,
+        onChannelStateChange: (channelType, connected) => {
+          log('Realtime channel state changed', { channelType, connected });
+          // Notify dev info service of state change
+          if (this.onRealtimeStateChange) {
+            this.onRealtimeStateChange();
+          }
+        },
+        onConnectionStateChange: (connected) => {
+          log('Realtime connection state changed', { connected });
+        },
+        onEventReceived: this.handleRealtimeEvent.bind(this),
+      });
 
-      // Immediately fetch events, then start polling
+      // Get config and connect to webhook
+      const config = await this.getConfig();
+      const webhookId = config?.webhookId;
+      if (webhookId) {
+        await this.realtimeService.connect(webhookId);
+      }
+
+      // Immediately fetch events to get current state
       this.fetchAndUpdateEvents();
-      this.pollInterval = setInterval(() => {
-        this.fetchAndUpdateEvents();
-      }, pollIntervalMs);
+    }
+  }
+
+  private handleRealtimeEvent(event: RealtimeEvent) {
+    log('Handling realtime event', {
+      recordId: event.record?.id,
+      table: event.table,
+      type: event.type,
+    });
+
+    // Handle the event based on its type and table
+    if (event.table === 'events') {
+      this.handleEventChange(event);
+    } else if (event.table === 'requests') {
+      this.handleRequestChange(event);
+    }
+  }
+
+  private handleEventChange(event: RealtimeEvent) {
+    const eventId = event.record?.id as string;
+    if (!eventId) {
+      log('No event ID in realtime event');
+      return;
+    }
+
+    try {
+      if (event.type === 'INSERT') {
+        // New event - construct from realtime data
+        const newEvent = this.constructEventFromRealtimeData(event.record);
+        if (newEvent) {
+          // Add the new event and sort by timestamp
+          this.events = this.sortEventsByTimestamp([newEvent, ...this.events]);
+          log('Added new event from realtime data', { eventId });
+        }
+      } else if (event.type === 'UPDATE') {
+        // Updated event - update existing event with new data
+        const updatedEvent = this.constructEventFromRealtimeData(event.record);
+        if (updatedEvent) {
+          // Replace the existing event
+          const eventIndex = this.events.findIndex((e) => e.id === eventId);
+          if (eventIndex !== -1) {
+            // Preserve existing requests when updating event
+            const existingRequests = this.events[eventIndex]?.requests ?? [];
+            this.events[eventIndex] = {
+              ...updatedEvent,
+              requests: this.sortRequestsByCreatedAt(existingRequests),
+            };
+            log('Updated existing event from realtime data', { eventId });
+          } else {
+            // Event not found in current list, add it and sort
+            this.events = this.sortEventsByTimestamp([
+              updatedEvent,
+              ...this.events,
+            ]);
+            log('Added missing event after update', { eventId });
+          }
+        }
+      } else if (event.type === 'DELETE') {
+        // Deleted event - remove from the list
+        this.events = this.events.filter((e) => e.id !== eventId);
+        log('Removed deleted event', { eventId });
+      }
+
+      // Update the events and refresh the tree view
+      this.updateEvents(this.events);
+    } catch (error) {
+      log('Failed to handle event change from realtime data', {
+        error,
+        eventId,
+      });
+      // Fallback to full refresh if realtime data processing fails
+      this.refreshAndFetchEvents();
+    }
+  }
+
+  private handleRequestChange(event: RealtimeEvent) {
+    const requestId = event.record?.id as string;
+    const eventId = event.record?.eventId as string;
+
+    if (!requestId || !eventId) {
+      log('No request ID or event ID in realtime event');
+      return;
+    }
+
+    try {
+      if (event.type === 'INSERT') {
+        // New request - construct from realtime data and add to event
+        const newRequest = this.constructRequestFromRealtimeData(event.record);
+        if (newRequest) {
+          // Find the event and add the new request
+          const eventIndex = this.events.findIndex((e) => e.id === eventId);
+          if (eventIndex !== -1 && this.events[eventIndex]) {
+            this.events[eventIndex].requests = this.sortRequestsByCreatedAt([
+              newRequest,
+              ...(this.events[eventIndex]?.requests ?? []),
+            ]);
+            log('Added new request to event from realtime data', {
+              eventId,
+              requestId,
+            });
+          } else {
+            // Event not found, we need to fetch it or wait for event to arrive
+            log(
+              'Event not found for new request, will be handled when event arrives',
+              { eventId, requestId },
+            );
+          }
+        }
+      } else if (event.type === 'UPDATE') {
+        // Updated request - update existing request in event
+        const updatedRequest = this.constructRequestFromRealtimeData(
+          event.record,
+        );
+        if (updatedRequest) {
+          // Find the event and update the request
+          const eventIndex = this.events.findIndex((e) => e.id === eventId);
+          if (eventIndex !== -1 && this.events[eventIndex]) {
+            const requestIndex = this.events[eventIndex]?.requests?.findIndex(
+              (r) => r.id === requestId,
+            );
+            if (
+              requestIndex !== -1 &&
+              requestIndex !== undefined &&
+              this.events[eventIndex].requests
+            ) {
+              this.events[eventIndex].requests[requestIndex] = updatedRequest;
+              log('Updated request in event from realtime data', {
+                eventId,
+                requestId,
+              });
+            } else {
+              // Request not found, add it and sort
+              this.events[eventIndex].requests = this.sortRequestsByCreatedAt([
+                updatedRequest,
+                ...(this.events[eventIndex]?.requests ?? []),
+              ]);
+              log('Added missing request after update', { eventId, requestId });
+            }
+          }
+        }
+      } else if (event.type === 'DELETE') {
+        // Deleted request - remove from event
+        const eventIndex = this.events.findIndex((e) => e.id === eventId);
+        if (eventIndex !== -1 && this.events[eventIndex]) {
+          this.events[eventIndex].requests = (
+            this.events[eventIndex]?.requests ?? []
+          ).filter((r) => r.id !== requestId);
+          log('Removed request from event', { eventId, requestId });
+        }
+      }
+
+      // Update the events and refresh the tree view
+      this.updateEvents(this.events);
+    } catch (error) {
+      log('Failed to handle request change from realtime data', {
+        error,
+        eventId,
+        requestId,
+      });
+      // Fallback to full refresh if realtime data processing fails
+      this.refreshAndFetchEvents();
+    }
+  }
+
+  private constructEventFromRealtimeData(
+    record: Record<string, unknown>,
+  ): EventTypeWithRequest | null {
+    try {
+      // Parse the realtime record into an EventTypeWithRequest
+      const event: EventTypeWithRequest = {
+        apiKeyId: record.apiKeyId as string,
+        createdAt: new Date(record.createdAt as string),
+        failedReason: record.failedReason as string | null,
+        id: record.id as string,
+        maxRetries: record.maxRetries as number,
+        orgId: record.orgId as string,
+        originRequest: record.originRequest as RequestPayload,
+        requests: [],
+        retryCount: record.retryCount as number,
+        source: record.source as string,
+        status: record.status as
+          | 'pending'
+          | 'processing'
+          | 'completed'
+          | 'failed',
+        timestamp: new Date(record.timestamp as string),
+        updatedAt: record.updatedAt
+          ? new Date(record.updatedAt as string)
+          : null,
+        userId: record.userId as string,
+        webhookId: record.webhookId as string,
+      };
+
+      return event;
+    } catch (error) {
+      log('Failed to construct event from realtime data', { error, record });
+      return null;
+    }
+  }
+
+  private constructRequestFromRealtimeData(
+    record: Record<string, unknown>,
+  ): EventTypeWithRequest['requests'][0] | null {
+    try {
+      // Parse the realtime record into a request with proper date conversion
+      const request: EventTypeWithRequest['requests'][0] = {
+        apiKeyId: record.apiKeyId as string,
+        completedAt: record.completedAt
+          ? new Date(record.completedAt as string)
+          : null,
+        connectionId: record.connectionId as string | null,
+        createdAt: new Date(record.createdAt as string),
+        destination: record.destination as { name: string; url: string },
+        eventId: record.eventId as string | null,
+        failedReason: record.failedReason as string | null,
+        id: record.id as string,
+        orgId: record.orgId as string,
+        request: record.request as RequestPayload,
+        response: record.response as ResponsePayload | null,
+        responseTimeMs: record.responseTimeMs as number,
+        source: record.source as string,
+        status: record.status as 'pending' | 'completed' | 'failed',
+        timestamp: new Date(record.timestamp as string),
+        userId: record.userId as string,
+        webhookId: record.webhookId as string,
+      };
+
+      return request;
+    } catch (error) {
+      log('Failed to construct request from realtime data', { error, record });
+      return null;
     }
   }
 
@@ -304,17 +648,9 @@ export class EventsProvider
     const workspaceFolder = workspaceFolders?.[0]?.uri.fsPath;
     const settings = SettingsService.getInstance().getSettings();
     const configFilePath = settings.configFilePath;
-    log('Getting config', {
-      cachedConfigPath: this.configPath,
-      configFilePath,
-      workspaceFolder,
-      workspaceFolders: workspaceFolders?.map((f) => f.name),
-      workspaceFoldersCount: workspaceFolders?.length || 0,
-    });
 
     // Return cached config if available
     if (this.config) {
-      log('Returning cached config');
       return this.config;
     }
 
@@ -323,37 +659,22 @@ export class EventsProvider
     // First check if we have a cached config path
     if (this.configPath && existsSync(this.configPath)) {
       configPath = this.configPath;
-      log('Using cached config path', { configPath });
     } else if (configFilePath && configFilePath.trim() !== '') {
       configPath = configFilePath;
-      log('Using config path from settings', { configPath });
     } else {
-      log('No config path in settings, searching for config file');
       if (!workspaceFolder) {
-        log('No workspace folder found, cannot search for config');
         return null;
       }
 
       // Try to find config in the first workspace folder
       configPath = await findUpConfig({ cwd: workspaceFolder });
-      log('Found config path via findUpConfig', {
-        configPath,
-        workspaceFolder,
-      });
 
       // If not found in first folder, try all workspace folders
       if (!configPath && workspaceFolders && workspaceFolders.length > 1) {
-        log(
-          'Config not found in first folder, searching all workspace folders',
-        );
         for (const folder of workspaceFolders) {
           const foundPath = await findUpConfig({ cwd: folder.uri.fsPath });
           if (foundPath) {
             configPath = foundPath;
-            log('Found config in workspace folder', {
-              configPath,
-              folderName: folder.name,
-            });
             break;
           }
         }
@@ -361,7 +682,6 @@ export class EventsProvider
 
       // If still not found, try direct file check in workspace root
       if (!configPath && workspaceFolder) {
-        log('Trying direct file check in workspace root');
         const possibleConfigFiles = [
           'unhook.yml',
           'unhook.yaml',
@@ -375,7 +695,6 @@ export class EventsProvider
           const fullPath = join(workspaceFolder, configFile);
           if (existsSync(fullPath)) {
             configPath = fullPath;
-            log('Found config file via direct check', { configPath });
             break;
           }
         }
@@ -383,19 +702,19 @@ export class EventsProvider
     }
 
     if (!configPath) {
-      log('No config path found');
       return null;
     }
 
     // Cache the config path for future use
     this.configPath = configPath;
-    log('Cached config path', { configPath });
 
     // Set up file watcher if not already set
     this.setupConfigWatcher(configPath);
-    log('Loading config from path', { configPath });
     this.config = await loadConfig(configPath);
-    log('Config loaded successfully', { webhookId: this.config.webhookId });
+    log('Config loaded successfully', {
+      configPath,
+      webhookId: this.config.webhookId,
+    });
 
     // Update config provider if available
     if (this.configProvider && this.configPath) {
@@ -432,8 +751,8 @@ export class EventsProvider
       this.configProvider.setConfig(null, '');
     }
 
-    // Only call handlePolling which will handle the initial fetch
-    this.handlePolling();
+    // Only call handleRealtimeConnection which will handle the initial fetch
+    this.handleRealtimeConnection();
   }
 
   private async fetchAndUpdateEvents() {
@@ -441,7 +760,6 @@ export class EventsProvider
 
     // Prevent multiple simultaneous calls
     if (this.isFetching) {
-      log('Already fetching events, skipping');
       return;
     }
 
@@ -467,20 +785,9 @@ export class EventsProvider
           now - this.lastAuthorizationSuccessTime >
           this.AUTHORIZATION_SUCCESS_DEBOUNCE_MS
         ) {
-          log(
-            'Authorization state was unauthorized, calling handleAuthorizationSuccess',
-          );
           this.authorizationService.handleAuthorizationSuccess();
           this.lastAuthorizationSuccessTime = now;
-        } else {
-          log(
-            'Authorization success called too recently, skipping to prevent spam',
-          );
         }
-      } else {
-        log(
-          'Authorization state is already authorized, skipping handleAuthorizationSuccess',
-        );
       }
     } catch (error) {
       log('Failed to fetch events', { error });
@@ -526,7 +833,6 @@ export class EventsProvider
 
     const config = await this.getConfig();
     if (!config) {
-      log('No config found, skipping automatic delivery');
       return;
     }
 
@@ -537,10 +843,6 @@ export class EventsProvider
     );
 
     if (newPendingEvents.length === 0) return;
-
-    log(
-      `Processing ${newPendingEvents.length} new pending events for delivery`,
-    );
 
     for (const event of newPendingEvents) {
       try {
@@ -631,7 +933,6 @@ export class EventsProvider
 
     // Prevent multiple simultaneous calls
     if (this.isFetching) {
-      log('Already fetching events, skipping refresh after delivery');
       return;
     }
 

@@ -248,10 +248,7 @@ export async function upsertStripeCustomer({
     if (!existingCustomer) {
       throw new Error('Failed to retrieve existing customer');
     }
-    console.log(
-      'Found existing stripe customer. Updating...',
-      existingCustomer,
-    );
+    console.log('Found existing stripe customer. Updating...');
     // Update existing customer
     return stripe.customers.update(existingCustomer.id, {
       email,

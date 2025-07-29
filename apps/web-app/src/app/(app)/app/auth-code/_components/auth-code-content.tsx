@@ -6,10 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
+import { useState } from 'react';
 import { AuthCodeLoginButton } from './auth-code-login-button';
 import { OrgSelectorProvider } from './org-selector';
 
 export function AuthCodeContent() {
+  const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1">
@@ -20,8 +23,8 @@ export function AuthCodeContent() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <OrgSelectorProvider />
-        <AuthCodeLoginButton />
+        <OrgSelectorProvider onSelect={setSelectedOrg} />
+        <AuthCodeLoginButton disabled={!selectedOrg} />
       </CardContent>
     </Card>
   );

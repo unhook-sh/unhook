@@ -9,6 +9,8 @@ export const env = createEnv({
     NEXT_PUBLIC_IS_SELF_HOSTED: z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+    NEXT_PUBLIC_SUPABASE_URL: z.string(),
     NEXT_PUBLIC_VSCODE_EXTENSION_ID: z.string().default('unhook.unhook-vscode'),
   },
   clientPrefix: '',
@@ -19,6 +21,8 @@ export const env = createEnv({
     NEXT_PUBLIC_IS_SELF_HOSTED: process.env.NEXT_PUBLIC_IS_SELF_HOSTED,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_VSCODE_EXTENSION_ID:
       process.env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
     NODE_ENV: process.env.NODE_ENV,

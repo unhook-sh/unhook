@@ -2,6 +2,7 @@ import {
   createRequestsForEventToAllDestinations,
   handlePendingRequest,
 } from '@unhook/client/utils/delivery';
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { eventsTreeView, requestDetailsWebviewProvider } from '../extension';
@@ -125,8 +126,9 @@ export function registerEventCommands(
           // Optionally, refetch events to update the UI
           provider.refresh();
 
+          const eventName = extractEventName(item.event.originRequest?.body);
           vscode.window.showInformationMessage(
-            `Event ${item.event.id} replayed successfully`,
+            `Event ${eventName} replayed successfully`,
           );
         } catch (error) {
           vscode.window.showErrorMessage(`Failed to replay event: ${error}`);
@@ -227,8 +229,57 @@ export function registerEventCommands(
 
           log('Opening request details', { requestId: item.request.id });
 
-          // Show the request details in a panel
-          await requestDetailsWebviewProvider.show(item.request);
+          // Fetch complete request data from API to ensure we have all fields
+          const authStore = provider.authStore;
+          if (authStore?.isSignedIn) {
+            try {
+              log('Fetching complete request data from API', {
+                requestId: item.request.id,
+              });
+              const completeRequest = await authStore.api.requests.byId.query({
+                id: item.request.id,
+              });
+
+              if (completeRequest) {
+                log('Successfully fetched complete request data', {
+                  hasRequest: !!completeRequest.request,
+                  hasResponse: !!completeRequest.response,
+                  requestBody: completeRequest.request?.body
+                    ? 'PRESENT'
+                    : 'MISSING',
+                  requestId: completeRequest.id,
+                  responseBody: completeRequest.response?.body
+                    ? 'PRESENT'
+                    : 'MISSING',
+                });
+
+                // Show the complete request details in a panel
+                await requestDetailsWebviewProvider.show(completeRequest);
+              } else {
+                log('No request found with ID, using existing data', {
+                  requestId: item.request.id,
+                });
+                // Fallback to existing data if API fetch fails
+                await requestDetailsWebviewProvider.show(item.request);
+              }
+            } catch (error) {
+              log(
+                'Failed to fetch complete request data from API, using existing data',
+                {
+                  error,
+                  requestId: item.request.id,
+                },
+              );
+              // Fallback to existing data if API fetch fails
+              await requestDetailsWebviewProvider.show(item.request);
+            }
+          } else {
+            log('Not authenticated, using existing request data', {
+              requestId: item.request.id,
+            });
+            // Show the existing request details in a panel
+            await requestDetailsWebviewProvider.show(item.request);
+          }
 
           log('Request details shown successfully', {
             requestId: item.request.id,
@@ -306,8 +357,9 @@ export function registerEventCommands(
           // Refresh the view to show the new request
           provider.refresh();
 
+          const eventName = extractEventName(item.request.request?.body);
           vscode.window.showInformationMessage(
-            `Request ${item.request.id} replayed successfully`,
+            `Request ${eventName} replayed successfully`,
           );
         } catch (error) {
           vscode.window.showErrorMessage(`Failed to replay request: ${error}`);

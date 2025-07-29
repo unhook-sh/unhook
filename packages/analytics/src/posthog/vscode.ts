@@ -80,11 +80,11 @@ export function capture(event: string, options: CaptureOptions = {}) {
   const isProduction = env.NEXT_PUBLIC_APP_ENV === 'production';
 
   if (!isProduction || !posthog || !analyticsEnabled) {
-    log('Analytics event (dev mode or disabled)', {
-      distinctId,
-      event,
-      properties: options.properties,
-    });
+    // log('Analytics event (dev mode or disabled)', {
+    //   distinctId,
+    //   event,
+    //   properties: options.properties,
+    // });
     return;
   }
 

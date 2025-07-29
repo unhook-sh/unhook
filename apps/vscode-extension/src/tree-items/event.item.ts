@@ -11,11 +11,23 @@ export class EventItem extends vscode.TreeItem {
   ) {
     // Use the shared extractEventName helper to get the event name from the base64 body
     const eventName =
-      extractEventName(event.originRequest.body) ||
+      (event.originRequest?.body &&
+        extractEventName(event.originRequest.body)) ||
       (() => {
         try {
-          const sourceUrl = new URL(event.originRequest.sourceUrl);
-          return sourceUrl.pathname.split('/').pop() || 'Unknown Event';
+          // Try to extract from source URL first
+          const sourceUrl = event.originRequest?.sourceUrl
+            ? new URL(event.originRequest.sourceUrl)
+            : null;
+
+          if (sourceUrl?.pathname) {
+            const pathPart = sourceUrl.pathname.split('/').pop();
+            if (pathPart && pathPart !== '') {
+              return pathPart;
+            }
+          }
+
+          return 'Unknown Event';
         } catch {
           return 'Unknown Event';
         }

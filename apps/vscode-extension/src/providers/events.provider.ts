@@ -9,12 +9,12 @@ import {
   createRequestsForEventToAllDestinations,
   handlePendingRequest,
 } from '@unhook/client/utils/delivery';
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type {
   EventTypeWithRequest,
   RequestPayload,
   ResponsePayload,
 } from '@unhook/db/schema';
-
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
@@ -148,7 +148,22 @@ export class EventsProvider
     if (element instanceof EventItem) {
       // Return requests for this event, or empty array if no requests
       const requests = element.event.requests ?? [];
-      return requests.map(
+      // Filter out invalid requests to prevent tree rendering errors
+      const validRequests = requests.filter((request) => {
+        if (!request || typeof request !== 'object') {
+          log('Filtering out invalid request:', request);
+          return false;
+        }
+        if (!request.id || !request.destination) {
+          log('Filtering out request with missing required fields:', {
+            hasDestination: !!request.destination,
+            id: request.id,
+          });
+          return false;
+        }
+        return true;
+      });
+      return validRequests.map(
         (request) => new RequestItem(request, element, this.context),
       );
     }
@@ -189,7 +204,20 @@ export class EventsProvider
         )
       : this.events;
 
-    return filteredEvents.map((event) => new EventItem(event, this.context));
+    // Filter out invalid events to prevent tree rendering errors
+    const validEvents = filteredEvents.filter((event) => {
+      if (!event || typeof event !== 'object') {
+        log('Filtering out invalid event:', event);
+        return false;
+      }
+      if (!event.id) {
+        log('Filtering out event with missing ID:', event);
+        return false;
+      }
+      return true;
+    });
+
+    return validEvents.map((event) => new EventItem(event, this.context));
   }
 
   public refresh(): void {
@@ -233,32 +261,8 @@ export class EventsProvider
     // Store previous events for comparison
     this.previousEvents = [...this.events];
 
-    // Debug: Log the first few events before sorting
-    if (events.length > 0) {
-      log(
-        'Before sorting - first 3 events:',
-        events.slice(0, 3).map((e) => ({
-          id: e.id,
-          requestsCount: e.requests?.length ?? 0,
-          timestamp: e.timestamp,
-        })),
-      );
-    }
-
     // Sort events and their requests by timestamp time
     this.events = this.sortEventsAndRequests(events);
-
-    // Debug: Log the first few events after sorting
-    if (this.events.length > 0) {
-      log(
-        'After sorting - first 3 events:',
-        this.events.slice(0, 3).map((e) => ({
-          id: e.id,
-          requestsCount: e.requests?.length ?? 0,
-          timestamp: e.timestamp,
-        })),
-      );
-    }
 
     log('Events updated, refreshing tree view');
     this.refresh();
@@ -321,6 +325,8 @@ export class EventsProvider
     // Check for status changes in existing events
     for (const event of newEvents) {
       const previousEvent = previousEventMap[event.id];
+      const eventName = extractEventName(event.originRequest?.body);
+
       if (previousEvent && previousEvent.status !== event.status) {
         // Track status change
         this.analyticsService?.trackWebhookEvent(
@@ -334,7 +340,7 @@ export class EventsProvider
         );
 
         vscode.window.showInformationMessage(
-          `Event ${event.id} status changed from ${previousEvent.status} to ${event.status}`,
+          `Event ${eventName} status changed from ${previousEvent.status} to ${event.status}`,
         );
       }
 
@@ -347,10 +353,10 @@ export class EventsProvider
         if (newRequests.length > 0) {
           const message =
             newRequests.length === 1
-              ? `New request for event ${event.id}: ${
+              ? `New request for event ${eventName}: ${
                   newRequests[0]?.status || 'Unknown'
                 }`
-              : `${newRequests.length} new requests for event ${event.id}`;
+              : `${newRequests.length} new requests for event ${eventName}`;
           vscode.window.showInformationMessage(message);
         }
 
@@ -366,7 +372,7 @@ export class EventsProvider
           const previousRequest = previousRequestMap[request.id];
           if (previousRequest && previousRequest.status !== request.status) {
             vscode.window.showInformationMessage(
-              `Request ${request.id} status changed from ${previousRequest.status} to ${request.status}`,
+              `Request ${eventName} status changed from ${previousRequest.status} to ${request.status}`,
             );
           }
         }
@@ -442,21 +448,35 @@ export class EventsProvider
           // Add the new event and sort by timestamp
           this.events = this.sortEventsByTimestamp([newEvent, ...this.events]);
           log('Added new event from realtime data', { eventId });
+
+          // Handle automatic delivery for new realtime events
+          if (isDeliveryEnabled()) {
+            this.handleRealtimeEventDelivery(newEvent);
+          }
         }
       } else if (event.type === 'UPDATE') {
-        // Updated event - update existing event with new data
+        // Updated event - update existing event with new data, but preserve originRequest
         const updatedEvent = this.constructEventFromRealtimeData(event.record);
         if (updatedEvent) {
           // Replace the existing event
           const eventIndex = this.events.findIndex((e) => e.id === eventId);
           if (eventIndex !== -1) {
-            // Preserve existing requests when updating event
-            const existingRequests = this.events[eventIndex]?.requests ?? [];
+            // Preserve existing originRequest and requests when updating event
+            const existingEvent = this.events[eventIndex];
+            if (!existingEvent) {
+              log('Existing event is undefined, skipping update', { eventId });
+              return;
+            }
+            const existingRequests = existingEvent.requests ?? [];
             this.events[eventIndex] = {
               ...updatedEvent,
+              originRequest: existingEvent.originRequest, // Preserve originRequest
               requests: this.sortRequestsByCreatedAt(existingRequests),
             };
-            log('Updated existing event from realtime data', { eventId });
+            log(
+              'Updated existing event from realtime data (preserving originRequest)',
+              { eventId },
+            );
           } else {
             // Event not found in current list, add it and sort
             this.events = this.sortEventsByTimestamp([
@@ -577,6 +597,18 @@ export class EventsProvider
     record: Record<string, unknown>,
   ): EventTypeWithRequest | null {
     try {
+      // Log the realtime record to see what we're getting
+      log('Constructing event from realtime data', {
+        hasOriginRequest: !!record.originRequest,
+        originRequestBody: record.originRequest
+          ? (record.originRequest as Record<string, unknown>)?.body
+          : 'NOT_FOUND',
+        originRequestKeys: record.originRequest
+          ? Object.keys(record.originRequest as object)
+          : [],
+        recordId: record.id,
+      });
+
       // Parse the realtime record into an EventTypeWithRequest
       const event: EventTypeWithRequest = {
         apiKeyId: record.apiKeyId as string,
@@ -613,6 +645,22 @@ export class EventsProvider
     record: Record<string, unknown>,
   ): EventTypeWithRequest['requests'][0] | null {
     try {
+      // Log the realtime record to see what we're getting
+      log('Constructing request from realtime data', {
+        hasRequest: !!record.request,
+        hasResponse: !!record.response,
+        recordId: record.id,
+        requestBody: record.request
+          ? (record.request as Record<string, unknown>)?.body
+          : 'NOT_FOUND',
+        requestKeys: record.request
+          ? Object.keys(record.request as Record<string, unknown>)
+          : [],
+        responseKeys: record.response
+          ? Object.keys(record.response as Record<string, unknown>)
+          : [],
+      });
+
       // Parse the realtime record into a request with proper date conversion
       const request: EventTypeWithRequest['requests'][0] = {
         apiKeyId: record.apiKeyId as string,
@@ -827,6 +875,89 @@ export class EventsProvider
     throw new Error(`Request ${requestId} not found`);
   }
 
+  private async handleRealtimeEventDelivery(event: EventTypeWithRequest) {
+    const authStore = this.authStore;
+    if (!authStore || !authStore.isSignedIn) return;
+
+    const config = await this.getConfig();
+    if (!config) {
+      return;
+    }
+
+    try {
+      log(`Delivering realtime event ${event.id}`);
+
+      // Create requests for all destinations
+      await createRequestsForEventToAllDestinations({
+        api: authStore.api,
+        delivery: config.delivery,
+        destination: config.destination,
+        event,
+        isEventRetry: false,
+        onRequestCreated: async (request) => {
+          log(`Created request ${request.id} for realtime event ${event.id}`);
+
+          // Handle the pending request immediately
+          await handlePendingRequest({
+            api: authStore.api,
+            delivery: config.delivery,
+            destination: config.destination,
+            request,
+            requestFn: async (url, options) => {
+              try {
+                const response = await fetch(url, options);
+                if (!response) {
+                  throw new Error('No response received from fetch');
+                }
+                const responseText = await response.text();
+                return {
+                  body: { text: () => Promise.resolve(responseText) },
+                  headers: Object.fromEntries(response.headers.entries()),
+                  statusCode: response.status,
+                };
+              } catch (error) {
+                log('Error in requestFn:', error);
+                throw error;
+              }
+            },
+          });
+
+          log(`Delivered request ${request.id} for realtime event ${event.id}`);
+        },
+        pingEnabledFn: (destination) => !!destination.ping,
+      });
+
+      // Track successful delivery
+      this.analyticsService?.trackWebhookEvent(
+        event.source,
+        'webhook_delivered',
+        {
+          auto_delivery: true,
+          destination_count: config.destination?.length ?? 0,
+          event_id: event.id,
+          realtime: true,
+        },
+      );
+
+      log(`Successfully delivered realtime event ${event.id}`);
+    } catch (error) {
+      log(`Failed to deliver realtime event ${event.id}:`, error);
+
+      // Track delivery failure
+      this.analyticsService?.trackWebhookEvent(
+        event.source,
+        'webhook_delivery_failed',
+        {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          event_id: event.id,
+          max_retries: event.maxRetries,
+          realtime: true,
+          retry_count: event.retryCount,
+        },
+      );
+    }
+  }
+
   private async handleNewEventsDelivery(newEvents: EventTypeWithRequest[]) {
     const authStore = this.authStore;
     if (!authStore || !authStore.isSignedIn) return;
@@ -865,13 +996,21 @@ export class EventsProvider
               destination: config.destination,
               request,
               requestFn: async (url, options) => {
-                const response = await fetch(url, options);
-                const responseText = await response.text();
-                return {
-                  body: { text: () => Promise.resolve(responseText) },
-                  headers: Object.fromEntries(response.headers.entries()),
-                  statusCode: response.status,
-                };
+                try {
+                  const response = await fetch(url, options);
+                  if (!response) {
+                    throw new Error('No response received from fetch');
+                  }
+                  const responseText = await response.text();
+                  return {
+                    body: { text: () => Promise.resolve(responseText) },
+                    headers: Object.fromEntries(response.headers.entries()),
+                    statusCode: response.status,
+                  };
+                } catch (error) {
+                  log('Error in requestFn:', error);
+                  throw error;
+                }
               },
             });
 

@@ -221,7 +221,12 @@ export async function handlePendingRequest({
             method: request.request.method,
           })
         : Promise.reject(new Error('No requestFn provided')));
-      const responseText = await response.body.text();
+
+      if (!response) {
+        throw new Error('No response received from requestFn');
+      }
+
+      const responseText = response.body ? await response.body.text() : '';
       const responseBodyBase64 = Buffer.from(responseText).toString('base64');
       const responseTimeMs = Date.now() - startTime;
       capture?.({

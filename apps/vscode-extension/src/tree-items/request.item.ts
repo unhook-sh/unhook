@@ -13,15 +13,15 @@ export function formatRequestDetails(request: RequestType): string {
 
   // Request Details
   lines.push('# Request Details');
-  lines.push(`Method: ${request.request.method}`);
-  lines.push(`URL: ${request.request.sourceUrl}`);
-  lines.push(`Content Type: ${request.request.contentType || 'N/A'}`);
-  lines.push(`Size: ${request.request.size} bytes`);
-  lines.push(`Client IP: ${request.request.clientIp || 'N/A'}`);
+  lines.push(`Method: ${request.request?.method || 'N/A'}`);
+  lines.push(`URL: ${request.request?.sourceUrl || 'N/A'}`);
+  lines.push(`Content Type: ${request.request?.contentType || 'N/A'}`);
+  lines.push(`Size: ${request.request?.size || 0} bytes`);
+  lines.push(`Client IP: ${request.request?.clientIp || 'N/A'}`);
   lines.push('');
 
   // Headers
-  if (request.request.headers) {
+  if (request.request?.headers) {
     lines.push('# Request Headers');
     for (const [key, value] of Object.entries(request.request.headers)) {
       lines.push(`${key}: ${value}`);
@@ -30,7 +30,7 @@ export function formatRequestDetails(request: RequestType): string {
   }
 
   // Request Body
-  if (request.request.body) {
+  if (request.request?.body) {
     lines.push('# Request Body');
     lines.push('```json');
     lines.push(extractBody(request.request.body) ?? '');
@@ -41,7 +41,7 @@ export function formatRequestDetails(request: RequestType): string {
   // Response Details
   if (request.response) {
     lines.push('# Response Details');
-    lines.push(`Status: ${request.response.status}`);
+    lines.push(`Status: ${request.response.status || 'N/A'}`);
     lines.push(`Response Time: ${request.responseTimeMs}ms`);
     lines.push('');
 
@@ -72,7 +72,10 @@ export class RequestItem extends vscode.TreeItem {
     public parent: EventItem,
     context: vscode.ExtensionContext,
   ) {
-    super(request.destination.name, vscode.TreeItemCollapsibleState.None);
+    super(
+      request.destination?.name || 'Unknown',
+      vscode.TreeItemCollapsibleState.None,
+    );
     this.description = formatDistance(request.timestamp, new Date(), {
       addSuffix: true,
     });
@@ -80,7 +83,7 @@ export class RequestItem extends vscode.TreeItem {
     this.contextValue = 'unhook.request';
     this.resourceUri = vscode.Uri.parse('unhook://request');
     this.tooltip = new vscode.MarkdownString(
-      `**${request.destination.name}**\n${request.destination.url}\n\nStatus: ${request.status}\n\nTime: ${formatDistance(request.timestamp, new Date(), { addSuffix: true })}`,
+      `**${request.destination?.name || 'Unknown'}**\n${request.destination?.url || 'N/A'}\n\nStatus: ${request.status}\n\nTime: ${formatDistance(request.timestamp, new Date(), { addSuffix: true })}`,
     );
     this.tooltip.isTrusted = true;
     this.tooltip.supportHtml = true;

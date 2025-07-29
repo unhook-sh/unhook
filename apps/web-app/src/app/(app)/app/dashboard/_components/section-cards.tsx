@@ -43,11 +43,11 @@ export function SectionCards() {
 
 webhookId: ${webhook?.id}
 destination:
-  - name: default
+  - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
   - source: '*'
-    destination: default
+    destination: localhost
   `;
 
   const webhookConfig = `
@@ -87,11 +87,11 @@ delivery:
               <span className="font-mono bg-muted p-3 rounded text-xs select-all w-full">
                 <pre>{`webhookId: ${webhook?.id}
 destination:
-  - name: default
+  - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
   - source: '*'
-    destination: default`}</pre>
+    destination: localhost`}</pre>
               </span>
               <CopyButton
                 className="self-start"

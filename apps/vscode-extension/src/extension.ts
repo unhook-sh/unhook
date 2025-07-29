@@ -9,6 +9,7 @@ import { registerEventCommands } from './commands/events.commands';
 import { registerOutputCommands } from './commands/output.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
+import { registerSignInNotificationCommands } from './commands/sign-in-notification.commands';
 import { registerWebhookAccessCommands } from './commands/webhook-access.commands';
 import { ConfigManager } from './config.manager';
 import { setupFirstTimeUserHandler } from './handlers/first-time-user.handler';
@@ -22,6 +23,7 @@ import { AuthStore } from './services/auth.service';
 import { DevInfoService } from './services/dev-info.service';
 import { FirstTimeUserService } from './services/first-time-user.service';
 import { SettingsService } from './services/settings.service';
+import { SignInNotificationService } from './services/sign-in-notification.service';
 import { StatusBarService } from './services/status-bar.service';
 import { WebhookAuthorizationService } from './services/webhook-authorization.service';
 import type { EventItem } from './tree-items/event.item';
@@ -84,6 +86,12 @@ export async function activate(context: vscode.ExtensionContext) {
   // Initialize status bar service
   const statusBarService = StatusBarService.getInstance();
   context.subscriptions.push(statusBarService);
+
+  // Initialize sign-in notification service
+  const signInNotificationService =
+    SignInNotificationService.getInstance(context);
+  signInNotificationService.setAuthStore(authStore);
+  context.subscriptions.push(signInNotificationService);
 
   // Add VS Code output destination to default logger
   // In production, always disable auto-show output regardless of user settings
@@ -161,6 +169,13 @@ export async function activate(context: vscode.ExtensionContext) {
       // Try to connect realtime service after a short delay to ensure it's initialized
       setTimeout(connectRealtimeToDevInfo, 1000);
     }
+
+    // Show sign-in notification if user signed out
+    if (!authStore.isSignedIn) {
+      setTimeout(async () => {
+        await signInNotificationService.showSignInNotification();
+      }, 1000);
+    }
   });
 
   // Listen for when user already has access and needs to refresh
@@ -191,6 +206,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerDeliveryCommands(context);
   registerWebhookAccessCommands(context, authStore);
   registerConfigCommands(context, authStore);
+  registerSignInNotificationCommands(context, signInNotificationService);
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(
@@ -235,6 +251,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Try to connect realtime service initially
   setTimeout(connectRealtimeToDevInfo, 2000);
+
+  // Show sign-in notification if user is not signed in (after a short delay)
+  setTimeout(async () => {
+    await signInNotificationService.showSignInNotification();
+  }, 3000);
 
   // Set up periodic refresh for development info
   if (configManager.isDevelopment()) {

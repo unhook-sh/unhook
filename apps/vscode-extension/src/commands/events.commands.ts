@@ -78,8 +78,9 @@ export function registerEventCommands(
             return;
           }
 
+          const eventName = extractEventName(item.event.originRequest?.body);
           vscode.window.showInformationMessage(
-            `Replaying event ${item.event.id}...`,
+            `Replaying event ${eventName}...`,
           );
 
           // Get the API and config from the provider
@@ -126,7 +127,6 @@ export function registerEventCommands(
           // Optionally, refetch events to update the UI
           provider.refresh();
 
-          const eventName = extractEventName(item.event.originRequest?.body);
           vscode.window.showInformationMessage(
             `Event ${eventName} replayed successfully`,
           );

@@ -181,6 +181,12 @@
         "command": "unhook.testFirstTimeUser",
         "icon": "$(refresh)",
         "title": "Test First-Time User (Development)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.resetSignInNotification",
+        "icon": "$(bell)",
+        "title": "Reset Sign-In Notification Preference"
       }
     ],
     "configuration": {

@@ -225,7 +225,6 @@
           "description": "Maximum number of events to keep in history",
           "type": "number"
         },
-
         "unhook.notifications.showForNewEvents": {
           "default": true,
           "description": "Show notifications when new webhook events are received",
@@ -430,7 +429,7 @@
     "url": "https://github.com/sponsors/seawatts"
   },
   "type": "commonjs",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "vsce": {
     "dependencies": false,
     "yarn": false

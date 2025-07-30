@@ -27,7 +27,7 @@ interface WebhookConfig {
     name: string;     // Name of the source
   }>;
   delivery: Array<{
-    source?: string;  // Source of the webhook (defaults to '*')
+    source?: string;  // Source of the webhook (defaults to *)
     destination: string; // Name of the destination to deliver to
   }>;
 }
@@ -38,20 +38,20 @@ interface WebhookConfig {
 Here's a basic configuration example:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookId: wh_your_webhook_id
 debug: false
 telemetry: true
 destination:
-  - name: "your-endpoint"
-    url: "http://localhost:3000/api/webhooks"
+  - name: your-endpoint
+    url: http://localhost:3000/api/webhooks
 source:
-  - name: "stripe"
-  - name: "github"
+  - name: stripe
+  - name: github
 delivery:
-  - source: "stripe"
-    destination: "your-endpoint"
-  - source: "github"
-    destination: "your-endpoint"
+  - source: stripe
+    destination: your-endpoint
+  - source: github
+    destination: your-endpoint
 ```
 
 ## Advanced Configuration
@@ -61,25 +61,25 @@ delivery:
 Configure multiple endpoints for different webhook types:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookId: wh_your_webhook_id
 destination:
-  - name: "stripe-endpoint"
-    url: "http://localhost:3000/api/webhooks/stripe"
-  - name: "github-endpoint"
-    url: "http://localhost:3000/api/webhooks/github"
-  - name: "clerk-endpoint"
-    url: "http://localhost:3000/api/webhooks/clerk"
+  - name: stripe-endpoint
+    url: http://localhost:3000/api/webhooks/stripe
+  - name: github-endpoint
+    url: http://localhost:3000/api/webhooks/github
+  - name: clerk-endpoint
+    url: http://localhost:3000/api/webhooks/clerk
 source:
-  - name: "stripe"
-  - name: "github"
-  - name: "clerk"
+  - name: stripe
+  - name: github
+  - name: clerk
 delivery:
-  - source: "stripe"
-    destination: "stripe-endpoint"
-  - source: "github"
-    destination: "github-endpoint"
-  - source: "clerk"
-    destination: "clerk-endpoint"
+  - source: stripe
+    destination: stripe-endpoint
+  - source: github
+    destination: github-endpoint
+  - source: clerk
+    destination: clerk-endpoint
 ```
 
 ### Health Checks
@@ -87,14 +87,14 @@ delivery:
 Configure health checks for your endpoints:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookId: wh_your_webhook_id
 destination:
-  - name: "your-endpoint"
-    url: "http://localhost:3000/api/webhooks"
+  - name: your-endpoint
+    url: http://localhost:3000/api/webhooks
     ping: true  # Enable default health check
-  - name: "custom-endpoint"
-    url: "http://localhost:3001/api/webhooks"
-    ping: "http://localhost:3001/health"  # Custom health check URL
+  - name: custom-endpoint
+    url: http://localhost:3001/api/webhooks
+    ping: http://localhost:3001/health  # Custom health check URL
 ```
 
 ### URL Configuration
@@ -102,17 +102,17 @@ destination:
 Configure URLs with different formats:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookId: wh_your_webhook_id
 destination:
-  - name: "simple-url"
-    url: "http://localhost:3000/api/webhooks"
-  - name: "detailed-url"
+  - name: simple-url
+    url: http://localhost:3000/api/webhooks
+  - name: detailed-url
     url:
-      protocol: "https"
-      hostname: "localhost"
-      port: "3000"
-      pathname: "/api/webhooks"
-      search: "?debug=true"
+      protocol: https
+      hostname: localhost
+      port: 3000
+      pathname: /api/webhooks
+      search: ?debug=true
 ```
 
 ## Environment Variables
@@ -146,17 +146,17 @@ WEBHOOK_DELIVERY_0_DESTINATION=your-endpoint
 Teams can share a single webhook configuration:
 
 ```yaml
-webhookId: "wh_team_webhook_id"
+webhookId: wh_team_webhook_id
 destination:
-  - name: "dev1"
-    url: "http://localhost:3000/api/webhooks"
+  - name: dev1
+    url: http://localhost:3000/api/webhooks
     ping: true
-  - name: "dev2"
-    url: "http://localhost:3001/api/webhooks"
+  - name: dev2
+    url: http://localhost:3001/api/webhooks
     ping: true
 source:
-  - name: "clerk"
-  - name: "stripe"
+  - name: clerk
+  - name: stripe
 delivery:
   - source: "clerk"
     destination: "dev1"
@@ -169,16 +169,16 @@ delivery:
 Each developer can have their own configuration:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
-clientId: "dev1"  # Unique client ID
+webhookId: wh_your_webhook_id
+clientId: dev1  # Unique client ID
 destination:
-  - name: "local"
-    url: "http://localhost:3000/api/webhooks"
+  - name: local
+    url: http://localhost:3000/api/webhooks
 source:
-  - name: "stripe"
+  - name: stripe
 delivery:
-  - source: "stripe"
-    destination: "local"
+  - source: stripe
+    destination: local
 ```
 
 ## Security Configuration
@@ -188,11 +188,11 @@ delivery:
 Configure API key authentication for private webhooks:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
-apiKey: "your_api_key"  # Required for private webhooks
+webhookId: wh_your_webhook_id
+apiKey: your_api_key  # Required for private webhooks
 destination:
-  - name: "secure-endpoint"
-    url: "http://localhost:3000/api/webhooks"
+  - name: secure-endpoint
+    url: http://localhost:3000/api/webhooks
 ```
 
 ### Method Restrictions
@@ -200,11 +200,11 @@ destination:
 Restrict allowed HTTP methods:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookId: wh_your_webhook_id
 methods: ["POST", "PUT"]  # Only allow POST and PUT requests
 destination:
-  - name: "restricted-endpoint"
-    url: "http://localhost:3000/api/webhooks"
+  - name: restricted-endpoint
+    url: http://localhost:3000/api/webhooks
 ```
 
 ### Source Restrictions
@@ -212,11 +212,11 @@ destination:
 Restrict allowed webhook sources:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookId: wh_your_webhook_id
 source:
-  - name: "stripe"
+  - name: stripe
     allowed: true
-  - name: "github"
+  - name: github
     allowed: false
 ```
 

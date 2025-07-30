@@ -70,7 +70,7 @@ export async function createConfigContentWithWebhookId(
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
 #       ping?: boolean|string|URL        # Optional ping configuration
 #   delivery:                             # Array of delivery rules
-#     - source?: string                  # Optional source filter (default: "*")
+#     - source?: string                  # Optional source filter (default: *)
 #       destination: string              # Name of the destination from 'destination' array
 
 webhookId: ${webhookId}
@@ -78,7 +78,7 @@ destination:
   - name: local
     url: http://localhost:3000/api/webhooks
 delivery:
-  - source: "*"
-  - destination: local
+  - source: *
+    destination: local
 `;
 }

@@ -153,7 +153,7 @@ interface WebhookConfig {
     name: string;     // Name of the source
   }>;
   delivery: Array<{
-    source?: string;  // Source of the webhook (defaults to '*')
+    source?: string;  // Source of the webhook (defaults to *)
     destination: string; // Name of the destination to deliver to
   }>;
 }

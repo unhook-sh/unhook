@@ -31,7 +31,7 @@ export function SectionCards() {
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
 #       ping?: boolean|string|URL        # Optional ping configuration
 #   delivery:                             # Array of delivery rules
-#     - source?: string                  # Optional source filter (default: "*")
+#     - source?: string                  # Optional source filter (default: *)
 #       destination: string              # Name of the destination from 'destination' array
 #
 # RemotePattern:
@@ -46,7 +46,7 @@ destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
-  - source: '*'
+  - source: *
     destination: localhost
   `;
 
@@ -90,7 +90,7 @@ destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
-  - source: '*'
+  - source: *
     destination: localhost`}</pre>
               </span>
               <CopyButton

@@ -12,8 +12,9 @@ export default defineConfig({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? '',
     NEXT_PUBLIC_APP_ENV: isDevBuild ? 'development' : 'production',
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? '',
-    NEXT_PUBLIC_IS_SELF_HOSTED:
-      process.env.NEXT_PUBLIC_IS_SELF_HOSTED ?? 'false',
+    NEXT_PUBLIC_IS_SELF_HOSTED: Boolean(
+      process.env.NEXT_PUBLIC_IS_SELF_HOSTED === 'false',
+    ).toString(),
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? '',
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? '',
     NEXT_PUBLIC_SUPABASE_ANON_KEY:

@@ -89,6 +89,13 @@ export function WebhookRequestsTable({
                 ] as string,
                 url: 'https://example.com',
               },
+              destinationName: [
+                '/api/data',
+                '/api/users',
+                '/api/auth',
+                '/api/webhook',
+              ][Math.floor(Math.random() * 4)] as string,
+              destinationUrl: 'https://example.com',
               eventId: null,
               failedReason: status === 'failed' ? 'Connection error' : null,
               id: `req_${i}_${Date.now()}`,

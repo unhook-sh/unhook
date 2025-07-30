@@ -1,0 +1,205 @@
+import type { EventTypeWithRequest } from '@unhook/db/schema';
+import { debug } from '@unhook/logger';
+import type { RealtimeEvent } from '../services/realtime.service';
+import { sortEventsByTimestamp, sortRequestsByCreatedAt } from './events.utils';
+import {
+  constructEventFromRealtimeData,
+  constructRequestFromRealtimeData,
+} from './events-data.constructors';
+
+const log = debug('unhook:vscode:events-realtime-handlers');
+
+export interface RealtimeHandlersDependencies {
+  events: EventTypeWithRequest[];
+  onEventsUpdate: (events: EventTypeWithRequest[]) => void;
+  onRefreshAndFetch: () => void;
+  onRealtimeEventDelivery?: (event: EventTypeWithRequest) => Promise<void>;
+}
+
+/**
+ * Handle realtime event changes
+ */
+export function handleEventChange(
+  event: RealtimeEvent,
+  deps: RealtimeHandlersDependencies,
+): void {
+  const eventId = event.record?.id as string;
+  if (!eventId) {
+    log('No event ID in realtime event');
+    return;
+  }
+
+  try {
+    if (event.type === 'INSERT') {
+      // New event - construct from realtime data
+      const newEvent = constructEventFromRealtimeData(event.record);
+      if (newEvent) {
+        // Add the new event and sort by timestamp
+        const updatedEvents = sortEventsByTimestamp([newEvent, ...deps.events]);
+        deps.onEventsUpdate(updatedEvents);
+        log('Added new event from realtime data', { eventId });
+
+        // Handle automatic delivery for new realtime events
+        if (deps.onRealtimeEventDelivery) {
+          deps.onRealtimeEventDelivery(newEvent);
+        }
+      }
+    } else if (event.type === 'UPDATE') {
+      // Updated event - update existing event with new data, but preserve originRequest
+      const updatedEvent = constructEventFromRealtimeData(event.record);
+      if (updatedEvent) {
+        // Replace the existing event
+        const eventIndex = deps.events.findIndex((e) => e.id === eventId);
+        if (eventIndex !== -1) {
+          // Preserve existing originRequest and requests when updating event
+          const existingEvent = deps.events[eventIndex];
+          if (!existingEvent) {
+            log('Existing event is undefined, skipping update', { eventId });
+            return;
+          }
+          const existingRequests = existingEvent.requests ?? [];
+          const updatedEvents = [...deps.events];
+          updatedEvents[eventIndex] = {
+            ...updatedEvent,
+            originRequest: existingEvent.originRequest, // Preserve originRequest
+            requests: sortRequestsByCreatedAt(existingRequests),
+          };
+          deps.onEventsUpdate(updatedEvents);
+          log(
+            'Updated existing event from realtime data (preserving originRequest)',
+            { eventId },
+          );
+        } else {
+          // Event not found in current list, add it and sort
+          const updatedEvents = sortEventsByTimestamp([
+            updatedEvent,
+            ...deps.events,
+          ]);
+          deps.onEventsUpdate(updatedEvents);
+          log('Added missing event after update', { eventId });
+        }
+      }
+    } else if (event.type === 'DELETE') {
+      // Deleted event - remove from the list
+      const updatedEvents = deps.events.filter((e) => e.id !== eventId);
+      deps.onEventsUpdate(updatedEvents);
+      log('Removed deleted event', { eventId });
+    }
+  } catch (error) {
+    log('Failed to handle event change from realtime data', {
+      error,
+      eventId,
+    });
+    // Fallback to full refresh if realtime data processing fails
+    deps.onRefreshAndFetch();
+  }
+}
+
+/**
+ * Handle realtime request changes
+ */
+export function handleRequestChange(
+  event: RealtimeEvent,
+  deps: RealtimeHandlersDependencies,
+): void {
+  const requestId = event.record?.id as string;
+  const eventId = event.record?.eventId as string;
+
+  if (!requestId || !eventId) {
+    log('No request ID or event ID in realtime event');
+    return;
+  }
+
+  try {
+    if (event.type === 'INSERT') {
+      // New request - construct from realtime data and add to event
+      const newRequest = constructRequestFromRealtimeData(event.record);
+      if (newRequest) {
+        // Find the event and add the new request
+        const eventIndex = deps.events.findIndex((e) => e.id === eventId);
+        if (eventIndex !== -1 && deps.events[eventIndex]) {
+          const updatedEvents = [...deps.events];
+          if (updatedEvents[eventIndex]) {
+            updatedEvents[eventIndex].requests = sortRequestsByCreatedAt([
+              newRequest,
+              ...(updatedEvents[eventIndex]?.requests ?? []),
+            ]);
+          }
+          deps.onEventsUpdate(updatedEvents);
+          log('Added new request to event from realtime data', {
+            eventId,
+            requestId,
+          });
+        } else {
+          // Event not found, we need to fetch it or wait for event to arrive
+          log(
+            'Event not found for new request, will be handled when event arrives',
+            { eventId, requestId },
+          );
+        }
+      }
+    } else if (event.type === 'UPDATE') {
+      // Updated request - update existing request in event
+      const updatedRequest = constructRequestFromRealtimeData(event.record);
+      if (updatedRequest) {
+        // Find the event and update the request
+        const eventIndex = deps.events.findIndex((e) => e.id === eventId);
+        if (eventIndex !== -1 && deps.events[eventIndex]) {
+          const currentEvent = deps.events[eventIndex];
+          if (!currentEvent) return;
+
+          const requestIndex = currentEvent.requests?.findIndex(
+            (r) => r.id === requestId,
+          );
+          if (
+            requestIndex !== -1 &&
+            requestIndex !== undefined &&
+            currentEvent.requests
+          ) {
+            const updatedEvents = [...deps.events];
+            if (updatedEvents[eventIndex]?.requests) {
+              updatedEvents[eventIndex].requests[requestIndex] = updatedRequest;
+            }
+            deps.onEventsUpdate(updatedEvents);
+            log('Updated request in event from realtime data', {
+              eventId,
+              requestId,
+            });
+          } else {
+            // Request not found, add it and sort
+            const updatedEvents = [...deps.events];
+            if (updatedEvents[eventIndex]) {
+              updatedEvents[eventIndex].requests = sortRequestsByCreatedAt([
+                updatedRequest,
+                ...(currentEvent.requests ?? []),
+              ]);
+            }
+            deps.onEventsUpdate(updatedEvents);
+            log('Added missing request after update', { eventId, requestId });
+          }
+        }
+      }
+    } else if (event.type === 'DELETE') {
+      // Deleted request - remove from event
+      const eventIndex = deps.events.findIndex((e) => e.id === eventId);
+      if (eventIndex !== -1 && deps.events[eventIndex]) {
+        const updatedEvents = [...deps.events];
+        if (updatedEvents[eventIndex]) {
+          updatedEvents[eventIndex].requests = (
+            updatedEvents[eventIndex]?.requests ?? []
+          ).filter((r) => r.id !== requestId);
+        }
+        deps.onEventsUpdate(updatedEvents);
+        log('Removed request from event', { eventId, requestId });
+      }
+    }
+  } catch (error) {
+    log('Failed to handle request change from realtime data', {
+      error,
+      eventId,
+      requestId,
+    });
+    // Fallback to full refresh if realtime data processing fails
+    deps.onRefreshAndFetch();
+  }
+}

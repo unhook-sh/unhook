@@ -1,5 +1,5 @@
+import { afterAll, describe, test } from 'bun:test';
 import * as assert from 'node:assert';
-import { suite, suiteTeardown, test } from 'mocha';
 
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
@@ -11,8 +11,8 @@ import {
 
 // import * as myExtension from '../extension';
 
-suite('Extension Test Suite', () => {
-  suiteTeardown(() => {
+describe('Extension Test Suite', () => {
+  afterAll(() => {
     vscode.window.showInformationMessage('All tests done!');
   });
 

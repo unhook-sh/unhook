@@ -328,6 +328,8 @@ export function registerEventCommands(
           const newRequest = await api.requests.create.mutate({
             apiKeyId: item.request.apiKeyId ?? undefined,
             destination: item.request.destination,
+            destinationName: item.request.destination.name,
+            destinationUrl: item.request.destination.url,
             eventId: item.request.eventId,
             request: item.request.request,
             responseTimeMs: 0,

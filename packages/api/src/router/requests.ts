@@ -21,6 +21,33 @@ export const requestsRouter = createTRPCRouter({
     return requests;
   }),
 
+  byEventIdAndDestination: protectedProcedure
+    .input(
+      z.object({
+        destinationName: z.string(),
+        destinationUrl: z.string(),
+        eventId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const requests = await ctx.db
+        .select()
+        .from(Requests)
+        .where(
+          and(
+            eq(Requests.eventId, input.eventId),
+            eq(Requests.orgId, ctx.auth.orgId),
+            eq(Requests.destinationName, input.destinationName),
+            eq(Requests.destinationUrl, input.destinationUrl),
+          ),
+        )
+        .limit(1);
+
+      return requests[0] || null;
+    }),
+
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {

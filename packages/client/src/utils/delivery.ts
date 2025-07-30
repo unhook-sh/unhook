@@ -91,6 +91,7 @@ export async function createRequestsForEventToAllDestinations({
   pingEnabledFn,
   capture,
   onRequestCreated,
+  preventDuplicates = false,
 }: {
   event: EventType;
   delivery: WebhookDelivery[];
@@ -101,6 +102,7 @@ export async function createRequestsForEventToAllDestinations({
   pingEnabledFn?: (destination: WebhookDestination) => boolean;
   capture?: DeliveryCaptureFn;
   onRequestCreated?: (request: RequestType) => Promise<void> | void;
+  preventDuplicates?: boolean;
 }) {
   const originRequest = event.originRequest;
   for (const deliveryRule of delivery) {
@@ -119,6 +121,41 @@ export async function createRequestsForEventToAllDestinations({
       continue;
     }
     const urlString = getUrlString(dest.url);
+
+    // Check if a request already exists for this event and destination to prevent duplicates
+    if (preventDuplicates) {
+      try {
+        const existingRequest =
+          await api.requests.byEventIdAndDestination.query({
+            destinationName: dest.name,
+            destinationUrl: urlString,
+            eventId: event.id,
+          });
+
+        if (existingRequest) {
+          // Request already exists, skip creation but still call onRequestCreated if provided
+          capture?.({
+            event: 'webhook_request_duplicate_skipped',
+            properties: {
+              destination: dest.name,
+              eventId: event.id,
+              existingRequestId: existingRequest.id,
+              source: event.source,
+              webhookId: event.webhookId,
+            },
+          });
+
+          // if (onRequestCreated) {
+          //   await onRequestCreated(existingRequest);
+          // }
+          continue;
+        }
+      } catch (error) {
+        // If we can't check for existing requests, log the error but continue with creation
+        console.warn('Failed to check for existing requests:', error);
+      }
+    }
+
     capture?.({
       event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_deliver',
       properties: {
@@ -140,6 +177,8 @@ export async function createRequestsForEventToAllDestinations({
         name: dest.name,
         url: urlString,
       },
+      destinationName: dest.name,
+      destinationUrl: urlString,
       eventId: event.id,
       request: originRequest,
       responseTimeMs: 0,
@@ -302,6 +341,8 @@ export async function handlePendingRequest({
                 name: dest.destination,
                 url: dest.url,
               },
+              destinationName: dest.destination,
+              destinationUrl: dest.url,
               eventId: event.id,
               request: event.originRequest,
               responseTimeMs: 0,

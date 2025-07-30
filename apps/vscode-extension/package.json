@@ -427,6 +427,7 @@
     "publish:ovsx": "infisical run --env prod -- bunx ovsx publish *.vsix",
     "publish:vscode": "infisical run --env prod -- bunx vsce publish",
     "test": "vscode-test",
+    "test:bun": "bun test",
     "test:ovsx": "infisical run --env prod -- bunx ovsx verify-pat",
     "test:vsce": "infisical run --env prod -- bunx vsce verify-pat",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

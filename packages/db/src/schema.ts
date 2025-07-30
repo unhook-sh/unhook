@@ -497,6 +497,8 @@ export const Requests = pgTable(
       name: string;
       url: string;
     }>(),
+    destinationName: text('destinationName').notNull(),
+    destinationUrl: text('destinationUrl').notNull(),
     eventId: varchar('eventId', { length: 128 }).references(() => Events.id, {
       onDelete: 'cascade',
     }),
@@ -554,6 +556,12 @@ export const Requests = pgTable(
     index('requests_pending_idx')
       .on(table.timestamp)
       .where(sql`${table.status} = 'pending'`),
+    // Unique constraint to prevent duplicate requests for the same event and destination
+    // unique('requests_event_destination_unique').on(
+    //   table.eventId,
+    //   table.destinationName,
+    //   table.destinationUrl,
+    // ),
   ],
 );
 

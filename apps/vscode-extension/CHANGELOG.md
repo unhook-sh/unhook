@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.23
+
+### Patch Changes
+
+- [`3fefb72`](https://github.com/unhook-sh/unhook/commit/3fefb72d53176ffba9585e90ef6f31e5910a6c3b) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with onboarding config
+
+- Updated dependencies [[`3fefb72`](https://github.com/unhook-sh/unhook/commit/3fefb72d53176ffba9585e90ef6f31e5910a6c3b)]:
+  - @unhook/client@0.5.18
+
 ## 0.2.22
 
 ### Patch Changes

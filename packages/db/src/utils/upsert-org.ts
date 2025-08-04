@@ -16,7 +16,15 @@ import {
 import { and, eq } from 'drizzle-orm';
 import type Stripe from 'stripe';
 import { db } from '../client';
-import { ApiKeys, OrgMembers, Orgs, Users, Webhooks } from '../schema';
+import {
+  ApiKeys,
+  Events,
+  OrgMembers,
+  Orgs,
+  Requests,
+  Users,
+  Webhooks,
+} from '../schema';
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -86,10 +94,124 @@ async function ensureWebhook({
     );
   }
 
+  // Create example event and request for new webhooks
+  try {
+    await createExampleEventAndRequest({
+      apiKeyId,
+      orgId,
+      tx,
+      userId,
+      webhookId: webhook.id,
+    });
+  } catch (error) {
+    console.error('Failed to create example event and request:', error);
+    // Don't fail the webhook creation if example data creation fails
+  }
+
   return {
     isNew: true,
     webhook,
   };
+}
+
+// Helper function to create example event and request for new webhooks
+async function createExampleEventAndRequest({
+  webhookId,
+  apiKeyId,
+  orgId,
+  userId,
+  tx,
+}: {
+  webhookId: string;
+  apiKeyId: string;
+  orgId: string;
+  userId: string;
+  tx: Transaction;
+}) {
+  const exampleTimestamp = new Date(Date.now() - 1000 * 60 * 5); // 5 minutes ago
+
+  // Create example event
+  const [exampleEvent] = await tx
+    .insert(Events)
+    .values({
+      apiKeyId,
+      orgId,
+      originRequest: {
+        body: JSON.stringify({
+          data: {
+            created_at: '2024-01-15T10:30:00Z',
+            email: 'john@example.com',
+            id: 'user_123',
+            name: 'John Doe',
+          },
+          event: 'user.created',
+        }),
+        clientIp: '192.168.1.100',
+        contentType: 'application/json',
+        headers: {
+          'content-type': 'application/json',
+          'user-agent': 'ExampleWebhookClient/1.0',
+          'x-webhook-signature': 'sha256=abc123...',
+        },
+        id: 'example-request-123',
+        method: 'POST',
+        size: 245,
+        sourceUrl: 'https://api.example.com/webhooks',
+      },
+      source: 'example',
+      status: 'completed',
+      timestamp: exampleTimestamp,
+      userId,
+      webhookId,
+    })
+    .returning();
+
+  if (!exampleEvent) {
+    throw new Error('Failed to create example event');
+  }
+
+  // Create example request
+  const [exampleRequest] = await tx
+    .insert(Requests)
+    .values({
+      apiKeyId,
+      completedAt: new Date(exampleTimestamp.getTime() + 125), // 125ms later
+      destination: {
+        name: 'Local Development Server',
+        url: 'http://localhost:3000/webhooks',
+      },
+      destinationName: 'Local Development Server',
+      destinationUrl: 'http://localhost:3000/webhooks',
+      eventId: exampleEvent.id,
+      orgId,
+      response: {
+        body: JSON.stringify({
+          message: 'Webhook received successfully',
+          processed_at: '2024-01-15T10:30:01Z',
+          success: true,
+        }),
+        headers: {
+          'content-type': 'application/json',
+          server: 'localhost:3000',
+        },
+        status: 200,
+      },
+      responseTimeMs: 125,
+      source: 'example',
+      status: 'completed',
+      timestamp: exampleTimestamp,
+      userId,
+      webhookId,
+    })
+    .returning();
+
+  if (!exampleRequest) {
+    throw new Error('Failed to create example request');
+  }
+
+  console.log(
+    `Created example event ${exampleEvent.id} and request ${exampleRequest.id} for webhook ${webhookId}`,
+  );
 }
 
 // Helper function to create or update org membership

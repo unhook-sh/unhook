@@ -2,6 +2,7 @@
 
 import { useOrganizationList } from '@clerk/nextjs';
 import { Button } from '@unhook/ui/components/button';
+import { cn } from '@unhook/ui/lib/utils';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { WebhookWizard } from '../../_components/webhook-wizzard/wizzard';
@@ -16,6 +17,7 @@ export function SetActiveAndRedirect(props: {
     userMemberships: true,
   });
   const [isFinished, setIsFinished] = useState(false);
+  const [isSetupComplete, setIsSetupComplete] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -58,19 +60,30 @@ export function SetActiveAndRedirect(props: {
             <>
               {props.source && (
                 <AuthCodeLoginButton
+                  disabled={!isSetupComplete}
                   loadingText="Redirecting..."
                   text="Complete Setup"
                 />
               )}
               {!props.source && (
-                <Button asChild variant="secondary">
+                <Button
+                  asChild
+                  className={cn(
+                    !isSetupComplete && 'opacity-50 pointer-events-none w-40',
+                  )}
+                  disabled={!isSetupComplete}
+                  variant="secondary"
+                >
                   <Link href={props.redirectTo ?? '/app/dashboard'}>
-                    Complete Setup
+                    {isSetupComplete
+                      ? 'Complete Setup'
+                      : 'Waiting for events...'}
                   </Link>
                 </Button>
               )}
             </>
           }
+          onSetupComplete={setIsSetupComplete}
           showInstallationTabs={false}
         />
       )}

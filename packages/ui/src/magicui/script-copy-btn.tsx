@@ -133,7 +133,7 @@ export function ScriptCopyBtn({
           >
             <span className="sr-only">{copied ? 'Copied' : 'Copy'}</span>
             <Copy
-              className={`h-4 w-4 transition-all duration-300 ${
+              className={`absolute inset-0 m-auto h-4 w-4 transition-all duration-300 ${
                 copied ? 'scale-0' : 'scale-100'
               }`}
             />

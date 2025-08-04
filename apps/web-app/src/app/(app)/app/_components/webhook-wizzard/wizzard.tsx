@@ -29,9 +29,11 @@ const STEP_DESCRIPTION =
 export function WebhookWizard({
   footer,
   showInstallationTabs,
+  onSetupComplete,
 }: {
   footer?: React.ReactNode;
   showInstallationTabs?: boolean;
+  onSetupComplete?: (isComplete: boolean) => void;
 }) {
   const [source, setSource] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
@@ -90,7 +92,9 @@ export function WebhookWizard({
   })();
 
   const handleFirstEventReceived = () => {
+    console.log('handleFirstEventReceived');
     setHasReceivedFirstEvent(true);
+    onSetupComplete?.(true);
     toast.success('🎉 Webhook setup complete!', {
       description: 'You successfully received your first webhook event.',
     });
@@ -103,11 +107,12 @@ export function WebhookWizard({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>{STEP_TITLE}</CardTitle>
-              <CardDescription>{STEP_DESCRIPTION}</CardDescription>
+              {webhook && authCode && !isLoading && !isCreatingAuthCode && (
+                <CardDescription>{STEP_DESCRIPTION}</CardDescription>
+              )}
             </div>
             {hasReceivedFirstEvent && (
               <div className="flex items-center gap-2 text-green-600">
-                <Icons.Check className="size-5" />
                 <span className="text-sm font-medium">Setup Complete!</span>
               </div>
             )}
@@ -115,9 +120,12 @@ export function WebhookWizard({
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="space-y-4">
-            {isLoading || isCreatingAuthCode ? (
-              <div className="flex items-center justify-center py-8">
+            {isLoading || isCreatingAuthCode || !webhook || !authCode ? (
+              <div className="flex items-center justify-center py-8 gap-2 flex-col">
                 <Icons.Spinner className="size-8 animate-spin text-muted-foreground" />
+                <span className="text-muted-foreground text-sm">
+                  Generating webhook URL...
+                </span>
               </div>
             ) : webhook && authCode ? (
               <>
@@ -134,12 +142,12 @@ export function WebhookWizard({
             ) : null}
           </div>
         </CardContent>
-        {webhook && footer && (
+        {webhook && authCode && !isLoading && !isCreatingAuthCode && footer && (
           <CardFooter className="flex justify-end">{footer}</CardFooter>
         )}
       </Card>
 
-      {webhook && (
+      {webhook && authCode && !isLoading && !isCreatingAuthCode && (
         <RealTimeEventStream
           onEventReceived={handleFirstEventReceived}
           webhookId={webhook.id}

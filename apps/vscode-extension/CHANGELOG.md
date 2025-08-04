@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.26
+
+### Patch Changes
+
+- [`1ed5e33`](https://github.com/unhook-sh/unhook/commit/1ed5e3336357a2b498360a2adb4de8c611fe601f) Thanks [@seawatts](https://github.com/seawatts)! - Fix isdevelopment
+
 ## 0.2.25
 
 ### Patch Changes

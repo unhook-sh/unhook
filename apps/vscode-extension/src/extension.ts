@@ -227,7 +227,12 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(requestDetailsWebviewProvider);
 
-  context.subscriptions.push(eventsTreeView, configTreeView);
+  context.subscriptions.push(
+    eventsTreeView,
+    configTreeView,
+    configProvider,
+    eventsProvider,
+  );
 
   // Fetch development information
   devInfoService.fetchDevInfo();

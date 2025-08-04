@@ -49,21 +49,15 @@ export function registerAuthCommands(
   const signOutCommand = vscode.commands.registerCommand(
     'unhook.signOut',
     async () => {
+      log('unhook.signOut command triggered');
       try {
-        const session = await vscode.authentication.getSession(
-          'unhook',
-          ['openid', 'email', 'profile'],
-          {
-            createIfNone: false,
-          },
+        // Always try to sign out, regardless of session state
+        await provider.removeSession('current');
+        vscode.window.showInformationMessage(
+          'Successfully signed out of Unhook',
         );
-        if (session) {
-          await provider.removeSession(session.id);
-          vscode.window.showInformationMessage(
-            'Successfully signed out of Unhook',
-          );
-        }
       } catch (error) {
+        log('Sign out command failed:', error);
         vscode.window.showErrorMessage(
           `Failed to sign out of Unhook: ${(error as Error).message}`,
         );

@@ -30,7 +30,7 @@ export function RealTimeEventStream({
   } = api.events.byWebhookId.useQuery(
     { webhookId },
     {
-      refetchInterval: 10000, // Poll every 2 seconds
+      refetchInterval: 10000, // Poll every 10 seconds
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: true,
     },
@@ -38,8 +38,13 @@ export function RealTimeEventStream({
 
   useEffect(() => {
     if (fetchedEvents) {
-      // Check if we have new events
-      const currentEventCount = fetchedEvents.length;
+      // Filter out events with source "example"
+      const filteredEvents = fetchedEvents.filter(
+        (event) => event.source !== 'example',
+      );
+
+      // Check if we have new events (excluding example events)
+      const currentEventCount = filteredEvents.length;
       if (
         currentEventCount > previousEventCountRef.current &&
         !hasReceivedEvent
@@ -50,7 +55,7 @@ export function RealTimeEventStream({
       previousEventCountRef.current = currentEventCount;
 
       // Keep only the latest 10 events
-      setEvents(fetchedEvents.slice(0, 10));
+      setEvents(filteredEvents.slice(0, 10));
     }
   }, [fetchedEvents, hasReceivedEvent, onEventReceived]);
 

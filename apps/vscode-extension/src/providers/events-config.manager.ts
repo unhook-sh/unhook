@@ -16,11 +16,13 @@ export class EventsConfigManager {
   private config: WebhookConfig | null = null;
   private configPath: string | null = null;
   private configWatcher: vscode.FileSystemWatcher | null = null;
+  private workspaceWatcher: vscode.FileSystemWatcher | null = null;
   private configProvider: ConfigProvider | null = null;
   private onConfigChanged: (() => void) | null = null;
 
   constructor(onConfigChanged?: () => void) {
     this.onConfigChanged = onConfigChanged || null;
+    this.setupWorkspaceWatcher();
   }
 
   public setConfigProvider(configProvider: ConfigProvider) {
@@ -36,6 +38,37 @@ export class EventsConfigManager {
     // Return cached config if available
     if (this.config) {
       return this.config;
+    }
+
+    // If config was cleared (e.g., due to file change), try to reload it
+    if (this.configPath && this.config === null) {
+      log('Config was cleared, attempting to reload from cached path', {
+        configPath: this.configPath,
+      });
+      try {
+        this.config = await loadConfig(this.configPath);
+        if (this.config) {
+          log('Successfully reloaded config from cached path', {
+            configPath: this.configPath,
+            webhookId: this.config.webhookId,
+          });
+
+          // Update config provider if available
+          if (this.configProvider && this.configPath) {
+            log('Updating config provider with reloaded config');
+            this.configProvider.setConfig(this.config, this.configPath);
+          }
+
+          return this.config;
+        }
+      } catch (error) {
+        log('Failed to reload config from cached path', {
+          configPath: this.configPath,
+          error,
+        });
+        // Clear the cached path if it's no longer valid
+        this.configPath = null;
+      }
     }
 
     let configPath: string | null = null;
@@ -123,7 +156,30 @@ export class EventsConfigManager {
   private onConfigFileChanged() {
     log('Config file changed, reloading config and events');
     this.config = null;
-    this.configPath = null; // Clear cached config path
+    // Don't clear configPath immediately - let getConfig() try to reload from the cached path first
+    // Clear the config watcher so it gets recreated with the new path
+    if (this.configWatcher) {
+      this.configWatcher.dispose();
+      this.configWatcher = null;
+    }
+
+    // Clear config provider
+    if (this.configProvider) {
+      log('Clearing config provider');
+      this.configProvider.setConfig(null, '');
+    }
+
+    // Notify that config has changed
+    if (this.onConfigChanged) {
+      log('Notifying config change callback');
+      this.onConfigChanged();
+    }
+  }
+
+  private onConfigFileDeleted() {
+    log('Config file deleted, clearing config and events');
+    this.config = null;
+    this.configPath = null; // Clear cached config path since file was deleted
     // Clear the config watcher so it gets recreated with the new path
     if (this.configWatcher) {
       this.configWatcher.dispose();
@@ -141,11 +197,73 @@ export class EventsConfigManager {
     }
   }
 
+  private setupWorkspaceWatcher() {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+      return;
+    }
+
+    // Watch for config files in the first workspace folder
+    const workspaceFolder = workspaceFolders[0];
+    if (!workspaceFolder) {
+      return;
+    }
+
+    const configPattern = new vscode.RelativePattern(
+      workspaceFolder,
+      'unhook.{yml,yaml,json,config.yml,config.yaml,config.json}',
+    );
+
+    log('Setting up workspace watcher for config files', {
+      pattern: configPattern.pattern,
+      workspaceFolder: workspaceFolder.uri.fsPath,
+    });
+
+    this.workspaceWatcher =
+      vscode.workspace.createFileSystemWatcher(configPattern);
+    this.workspaceWatcher.onDidCreate((uri) => {
+      log('Workspace watcher detected file creation', { uri: uri.fsPath });
+      this.onConfigFileChanged();
+    });
+    this.workspaceWatcher.onDidChange((uri) => {
+      log('Workspace watcher detected file change', { uri: uri.fsPath });
+      this.onConfigFileChanged();
+    });
+    this.workspaceWatcher.onDidDelete((uri) => {
+      log('Workspace watcher detected file deletion', { uri: uri.fsPath });
+      this.onConfigFileDeleted();
+    });
+  }
+
+  public forceReload(): void {
+    log('Force reloading configuration');
+    this.config = null;
+    this.configPath = null;
+
+    // Clear config provider
+    if (this.configProvider) {
+      log('Clearing config provider during force reload');
+      this.configProvider.setConfig(null, '');
+    }
+
+    // Notify that config has changed
+    if (this.onConfigChanged) {
+      log('Notifying config change callback during force reload');
+      this.onConfigChanged();
+    }
+  }
+
   public dispose() {
     // Dispose config watcher
     if (this.configWatcher) {
       this.configWatcher.dispose();
       this.configWatcher = null;
+    }
+
+    // Dispose workspace watcher
+    if (this.workspaceWatcher) {
+      this.workspaceWatcher.dispose();
+      this.workspaceWatcher = null;
     }
   }
 }

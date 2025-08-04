@@ -46,7 +46,7 @@ destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
-  - source: *
+  - source: '*'
     destination: localhost
   `;
 
@@ -90,7 +90,7 @@ destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
-  - source: *
+  - source: '*'
     destination: localhost`}</pre>
               </span>
               <CopyButton

@@ -36,6 +36,11 @@ await db.delete(ForwardingRules);
 await db.delete(ApiKeyUsage);
 await db.delete(ApiKeys);
 
+const userId = 'user_30TmyvIYguwWcSZPQiblG4KcWmH';
+const orgId = 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX';
+const apiKeyId = 'ak_300nYp2JItCuoiHhaioQv82QHwo';
+const webhookId = 'wh_seawatts';
+
 await seed(db, {
   ApiKeys,
   ApiKeyUsage,
@@ -53,18 +58,18 @@ await seed(db, {
 }).refine((funcs) => ({
   ApiKeys: {
     columns: {
-      id: funcs.default({ defaultValue: 'ak_300nYp2JItCuoiHhaioQv82QHwo' }),
+      id: funcs.default({ defaultValue: apiKeyId }),
       key: funcs.default({
         defaultValue: 'usk-live-300nYp2JItCuoiHhaioQv82QHwo',
       }),
-      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
+      orgId: funcs.default({ defaultValue: orgId }),
     },
     count: 1,
   },
   ApiKeyUsage: {
     columns: {
       apiKeyId: funcs.default({
-        defaultValue: 'ak_300nYp2JItCuoiHhaioQv82QHwo',
+        defaultValue: apiKeyId,
       }),
       createdAt: funcs.date({
         maxDate: new Date(),
@@ -74,22 +79,22 @@ await seed(db, {
         defaultValue: {
           eventId: 'evt_123',
           requestId: 'req_123',
-          webhookId: 'wh_seawatts',
+          webhookId: webhookId,
         },
       }),
-      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
+      orgId: funcs.default({ defaultValue: orgId }),
       type: funcs.valuesFromArray({
         values: ['webhook-event', 'mcp-server', 'webhook-event-request'],
       }),
       userId: funcs.default({
-        defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH',
+        defaultValue: userId,
       }),
     },
     count: 10,
   },
   Connections: {
     columns: {
-      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
+      orgId: funcs.default({ defaultValue: orgId }),
     },
     count: 1,
   },
@@ -122,9 +127,9 @@ await seed(db, {
   },
   OrgMembers: {
     columns: {
-      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
+      orgId: funcs.default({ defaultValue: orgId }),
       userId: funcs.default({
-        defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH',
+        defaultValue: userId,
       }),
     },
     count: 1,
@@ -132,15 +137,15 @@ await seed(db, {
   Orgs: {
     columns: {
       clerkOrgId: funcs.default({
-        defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX',
+        defaultValue: orgId,
       }),
-      id: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
+      id: funcs.default({ defaultValue: orgId }),
     },
     count: 1,
   },
   Requests: {
     columns: {
-      apiKey: funcs.default({ defaultValue: 'pk_123' }),
+      apiKey: funcs.default({ defaultValue: apiKeyId }),
       createdAt: funcs.date({
         maxDate: new Date(),
         minDate: subDays(new Date(), 5),
@@ -153,26 +158,7 @@ await seed(db, {
           },
         ],
       }),
-      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
-      request: funcs.default({
-        defaultValue: {
-          body: Buffer.from(
-            '{"type": "user.created", "data": {"id": "user_123"}}',
-          ).toString('base64'),
-          clientIp: '127.0.0.1',
-          contentType: 'application/json',
-          headers: {
-            'Content-Type': 'application/json',
-            'User-Agent':
-              'Stripe/1.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-          },
-          id: 'req_123',
-          method: 'POST',
-          size: 100,
-          sourceUrl: 'https://example.com/api/webhooks/clerk',
-          timestamp: Date.now(),
-        },
-      }),
+      orgId: funcs.default({ defaultValue: orgId }),
       response: funcs.default({
         defaultValue: {
           body: '{"message": "confirmed"}',
@@ -189,17 +175,21 @@ await seed(db, {
       status: funcs.valuesFromArray({
         values: ['pending', 'completed', 'failed'],
       }),
+      userId: funcs.default({
+        defaultValue: userId,
+      }),
+      webhookId: funcs.default({ defaultValue: webhookId }),
     },
-    count: 100,
+    count: 1,
   },
   Users: {
     columns: {
       clerkId: funcs.default({
-        defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH',
+        defaultValue: userId,
       }),
       email: funcs.default({ defaultValue: 'chris.watts.t@gmail.com' }),
       firstName: funcs.default({ defaultValue: 'Chris' }),
-      id: funcs.default({ defaultValue: 'user_30TmyvIYguwWcSZPQiblG4KcWmH' }),
+      id: funcs.default({ defaultValue: userId }),
       lastName: funcs.default({ defaultValue: 'Watts' }),
       online: funcs.boolean(),
     },
@@ -207,7 +197,7 @@ await seed(db, {
   },
   WebhookAccessRequests: {
     columns: {
-      webhookId: funcs.default({ defaultValue: 'wh_seawatts' }),
+      webhookId: funcs.default({ defaultValue: webhookId }),
     },
     count: 1,
   },
@@ -233,8 +223,8 @@ await seed(db, {
           },
         },
       }),
-      id: funcs.default({ defaultValue: 'wh_seawatts' }),
-      orgId: funcs.default({ defaultValue: 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX' }),
+      id: funcs.default({ defaultValue: webhookId }),
+      orgId: funcs.default({ defaultValue: orgId }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       requestCount: funcs.int({ maxValue: 1000, minValue: 0 }),
       status: funcs.default({ defaultValue: 'active' }),

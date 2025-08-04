@@ -216,14 +216,51 @@ export class UnhookAuthProvider implements AuthenticationProvider {
   }
 
   async removeSession(_sessionId: string): Promise<void> {
-    const session = await this.getSession(UnhookAuthProvider.SCOPES);
+    log('removeSession called');
+
+    // Always sign out from the auth store first
     await this.authStore.signOut();
+
+    // Try to get the session for notification purposes, but don't fail if we can't
+    let session: vscode.AuthenticationSession | undefined;
+    try {
+      session = await this.getSession(UnhookAuthProvider.SCOPES);
+    } catch (error) {
+      log(
+        'Failed to get session during sign out, but continuing with sign out',
+        { error },
+      );
+    }
+
+    // If we couldn't get the session from getSession, construct one from stored data
+    if (!session && this.authStore.sessionId) {
+      session = {
+        accessToken: this.authStore.authToken ?? '',
+        account: {
+          id: this.authStore.user?.id ?? '',
+          label: this.authStore.user?.email ?? '',
+        },
+        id: this.authStore.sessionId,
+        scopes: UnhookAuthProvider.SCOPES,
+      };
+    }
+
+    // Always fire the session change event to notify VS Code
     if (session) {
       this._onDidChangeSessions.fire({
         added: [],
         changed: [],
         removed: [session],
       });
+    } else {
+      // Even if we don't have a session object, fire the event to clear any cached sessions
+      this._onDidChangeSessions.fire({
+        added: [],
+        changed: [],
+        removed: [],
+      });
     }
+
+    log('Sign out completed');
   }
 }

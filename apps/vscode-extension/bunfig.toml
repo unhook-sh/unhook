@@ -1,0 +1,7 @@
+[test]
+# Use the test TypeScript configuration
+preload = ["./src/test/setup.ts"]
+
+# [module]
+# # Map vscode imports to our mock during testing
+# "vscode" = "./mocks/vscode.ts"

@@ -193,11 +193,45 @@ export class FirstTimeUserService {
       vscode.window.showInformationMessage('Created unhook.yml.');
 
       log('Created unhook.yml configuration file');
+
+      // Trigger configuration reload and events fetch after creating the file
+      await this.triggerConfigurationReload();
     } catch (error) {
       log('Failed to create unhook.yml', error);
       vscode.window.showErrorMessage(
         `Failed to create unhook.yml: ${(error as Error).message}`,
       );
+    }
+  }
+
+  private async triggerConfigurationReload(): Promise<void> {
+    try {
+      log('Triggering configuration reload after unhook.yml creation');
+
+      // Get the workspace folder path
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+      const workspacePath = workspaceFolders?.[0]?.uri.fsPath;
+
+      if (!workspacePath) {
+        log('No workspace path found for configuration reload');
+        return;
+      }
+
+      // Add a small delay to ensure the file system has settled
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      log('About to trigger events refresh command');
+
+      // Force the EventsConfigManager to reload configuration
+      // This will clear the cache and trigger a reload of the new file
+      log('About to trigger events refresh command');
+      vscode.commands.executeCommand('unhook.events.refresh');
+
+      log('Events refresh command triggered');
+
+      log('Configuration reload triggered successfully');
+    } catch (error) {
+      log('Failed to trigger configuration reload', error);
     }
   }
 }

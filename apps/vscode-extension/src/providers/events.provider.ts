@@ -172,6 +172,10 @@ export class EventsProvider
 
   public refreshAndFetchEvents(): void {
     log('Refreshing and fetching events');
+
+    // Force the config manager to reload configuration
+    this.configManager.forceReload();
+
     // Force a refresh immediately to update the tree view
     this.forceRefresh();
 
@@ -317,8 +321,13 @@ export class EventsProvider
 
     this.isFetching = true;
     try {
+      log('Fetching and updating events - getting config');
       // Get config and webhookId
       const config = await this.getConfig();
+      log('Config retrieved', {
+        hasConfig: !!config,
+        webhookId: config?.webhookId,
+      });
       const webhookId = config?.webhookId;
       if (!webhookId) {
         log('No webhookId found in config');

@@ -78,7 +78,7 @@ destination:
   - name: local
     url: http://localhost:3000/api/webhooks
 delivery:
-  - source: *
+  - source: '*'
     destination: local
 `;
 }

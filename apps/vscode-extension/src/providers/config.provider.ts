@@ -691,4 +691,11 @@ export class ConfigProvider
   public getValidationErrors(): string[] {
     return this.validationErrors;
   }
+
+  public dispose() {
+    if (this.configWatcher) {
+      this.configWatcher.dispose();
+      this.configWatcher = null;
+    }
+  }
 }

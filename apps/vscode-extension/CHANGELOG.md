@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.27
+
+### Patch Changes
+
+- [`2c126eb`](https://github.com/unhook-sh/unhook/commit/2c126eb336cace30c10c01997267c432166bcb67) Thanks [@seawatts](https://github.com/seawatts)! - fix issue with isdev
+
 ## 0.2.26
 
 ### Patch Changes

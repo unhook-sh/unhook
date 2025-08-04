@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.24
+
+### Patch Changes
+
+- [`741da3a`](https://github.com/unhook-sh/unhook/commit/741da3a2b15d3703f90522b80d9567c87f17eca8) Thanks [@seawatts](https://github.com/seawatts)! - Fix vscode subscription
+
+- Updated dependencies [[`741da3a`](https://github.com/unhook-sh/unhook/commit/741da3a2b15d3703f90522b80d9567c87f17eca8)]:
+  - @unhook/client@0.5.19
+
 ## 0.2.23
 
 ### Patch Changes

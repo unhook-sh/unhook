@@ -3,9 +3,9 @@ import { z } from 'zod';
 
 export const env = createEnv({
   client: {
-    NEXT_PUBLIC_API_URL: z.string(),
-    NEXT_PUBLIC_APP_ENV: z.string(),
-    NEXT_PUBLIC_APP_URL: z.string(),
+    NEXT_PUBLIC_API_URL: z.string().default('https://unhook.sh'),
+    NEXT_PUBLIC_APP_ENV: z.string().default('production'),
+    NEXT_PUBLIC_APP_URL: z.string().default('https://unhook.sh'),
     NEXT_PUBLIC_IS_SELF_HOSTED: z.boolean().optional().default(false),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),

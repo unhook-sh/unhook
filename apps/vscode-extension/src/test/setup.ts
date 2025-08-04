@@ -77,9 +77,20 @@ mock.module('vscode', () => {
         this.subscriptions.push(disposable);
       }
     },
+    ExtensionMode: {
+      Development: 1,
+      Production: 2,
+      Test: 3,
+    },
     env: {
       appName: 'Code',
       openExternal: mock(() => Promise.resolve(true)),
+    },
+    extensions: {
+      getExtension: mock(() => ({
+        extensionPath:
+          '/Users/user/.vscode/extensions/unhook.unhook-vscode-1.0.0',
+      })),
     },
     languages: {
       registerCompletionItemProvider: mock(() => ({ dispose: mock() })),

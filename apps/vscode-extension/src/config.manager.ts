@@ -18,7 +18,7 @@ export class ConfigManager {
     } else {
       // Use environment variable if available, otherwise default to production
       this.apiUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
-      this.dashboardUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+      this.dashboardUrl = env.NEXT_PUBLIC_APP_URL || 'https://unhook.sh';
     }
   }
 
@@ -39,7 +39,7 @@ export class ConfigManager {
         ConfigManager.instance.apiUrl =
           env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
         ConfigManager.instance.dashboardUrl =
-          env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+          env.NEXT_PUBLIC_APP_URL || 'https://unhook.sh';
       }
     }
     return ConfigManager.instance;
@@ -47,38 +47,38 @@ export class ConfigManager {
 
   public isDevelopment(): boolean {
     // Check ExtensionMode from context if available
-    // if (
-    //   this.context &&
-    //   this.context.extensionMode === vscode.ExtensionMode.Development
-    // ) {
-    //   return true;
-    // }
+    if (
+      this.context &&
+      this.context.extensionMode === vscode.ExtensionMode.Development
+    ) {
+      return true;
+    }
 
     // Check if running in Extension Development Host (most reliable for VS Code extensions)
-    // if (vscode.env.appName.includes('Extension Development Host')) {
-    //   return true;
-    // }
+    if (vscode.env.appName.includes('Extension Development Host')) {
+      return true;
+    }
 
     // Check environment variables
-    // if (
-    //   process.env.NODE_ENV === 'development' ||
-    //   process.env.VSCODE_DEV === 'true'
-    // ) {
-    //   return true;
-    // }
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.VSCODE_DEV === 'true'
+    ) {
+      return true;
+    }
 
     // Check if the extension is not installed from marketplace (development scenario)
-    // if (env.NEXT_PUBLIC_VSCODE_EXTENSION_ID) {
-    //   const extension = vscode.extensions.getExtension(
-    //     env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
-    //   );
-    //   if (
-    //     extension &&
-    //     extension.extensionPath.includes('.vscode/extensions') === false
-    //   ) {
-    //     return true;
-    //   }
-    // }
+    if (env.NEXT_PUBLIC_VSCODE_EXTENSION_ID) {
+      const extension = vscode.extensions.getExtension(
+        env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+      );
+      if (
+        extension &&
+        extension.extensionPath.includes('.vscode/extensions') === false
+      ) {
+        return true;
+      }
+    }
 
     return false;
   }
@@ -125,10 +125,17 @@ export class ConfigManager {
         const settingsApiUrl = vscodeConfig.get<string>('apiUrl');
         const settingsDashboardUrl = vscodeConfig.get<string>('dashboardUrl');
 
-        // Precedence: config file > VS Code settings > defaults
-        this.apiUrl = configApiUrl || settingsApiUrl || this.apiUrl;
+        // Precedence: environment variable > config file > VS Code settings > defaults
+        this.apiUrl =
+          env.NEXT_PUBLIC_API_URL ||
+          configApiUrl ||
+          settingsApiUrl ||
+          this.apiUrl;
         this.dashboardUrl =
-          configDashboardUrl || settingsDashboardUrl || this.apiUrl;
+          env.NEXT_PUBLIC_APP_URL ||
+          configDashboardUrl ||
+          settingsDashboardUrl ||
+          this.apiUrl;
       }
 
       // Log current configuration
@@ -137,7 +144,10 @@ export class ConfigManager {
         configFound: !!configPath,
         dashboardUrl: this.dashboardUrl,
         envApiUrl: env.NEXT_PUBLIC_API_URL,
+        envAppUrl: env.NEXT_PUBLIC_APP_URL,
         isDevelopment: this.isDevelopment(),
+        processEnvApiUrl: process.env.NEXT_PUBLIC_API_URL,
+        processEnvAppUrl: process.env.NEXT_PUBLIC_APP_URL,
       });
     } catch (error) {
       console.error('Failed to load Unhook configuration:', error);

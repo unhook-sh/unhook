@@ -24,7 +24,7 @@ export function registerAuthCommands(
           'unhook',
           ['openid', 'email', 'profile'],
           {
-            forceNewSession: true,
+            createIfNone: true,
           },
         );
         log('Authentication session result:', { hasSession: !!session });

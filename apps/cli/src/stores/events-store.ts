@@ -36,9 +36,21 @@ interface EventsActions {
     limit?: number;
     offset?: number;
   }) => Promise<EventTypeWithRequest[]>;
-  handlePendingRequest: (webhookRequest: RequestType) => Promise<void>;
+  handlePendingRequest: ({
+    request,
+    event,
+  }: {
+    request: RequestType;
+    event: EventType;
+  }) => Promise<void>;
   replayEvent: (event: EventType) => Promise<void>;
-  replayRequest: (request: RequestType) => Promise<void>;
+  replayRequest: ({
+    request,
+    event,
+  }: {
+    request: RequestType;
+    event: EventType;
+  }) => Promise<void>;
   deliverEvent: (event: EventType) => Promise<void>;
   reset: () => void;
 }
@@ -86,7 +98,7 @@ const store = createStore<EventStore>()((set, get) => ({
       event: normalizedEvent,
       isEventRetry: false,
       onRequestCreated: async (request) => {
-        await store.getState().handlePendingRequest(request);
+        await store.getState().handlePendingRequest({ event, request });
       },
     });
   },
@@ -129,7 +141,13 @@ const store = createStore<EventStore>()((set, get) => ({
       return [];
     }
   },
-  handlePendingRequest: async (request: RequestType) => {
+  handlePendingRequest: async ({
+    request,
+    event,
+  }: {
+    request: RequestType;
+    event: EventType;
+  }) => {
     const { delivery, destination } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     await handlePendingRequest({
@@ -137,8 +155,8 @@ const store = createStore<EventStore>()((set, get) => ({
       capture,
       delivery,
       destination,
+      event,
       request,
-
       requestFn: async (url, options) => {
         const { body, statusCode, headers } = await undiciRequest(url, options);
         // Remove undefined values from headers
@@ -190,12 +208,18 @@ const store = createStore<EventStore>()((set, get) => ({
       event: normalizedEvent,
       isEventRetry: true,
       onRequestCreated: async (request) => {
-        await store.getState().handlePendingRequest(request);
+        await store.getState().handlePendingRequest({ event, request });
       },
       pingEnabledFn: (destination) => !!destination.ping,
     });
   },
-  replayRequest: async (request: RequestType) => {
+  replayRequest: async ({
+    request,
+    event,
+  }: {
+    request: RequestType;
+    event: EventType;
+  }) => {
     log(`Replaying request: ${request.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
@@ -206,7 +230,7 @@ const store = createStore<EventStore>()((set, get) => ({
       properties: {
         connectionId,
         eventId: request.eventId,
-        method: request.request.method,
+        method: event.originRequest.method,
         originalEventId: request.eventId,
         pingEnabled: !!destination.find((t) => t.ping),
         source: request.source,

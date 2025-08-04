@@ -19,6 +19,7 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
         className,
       )}
       {...props}
+      // biome-ignore lint/style/noParameterAssign: not sure
       ref={forwardedRef}
     >
       {children}
@@ -41,6 +42,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
           className,
         )}
         {...props}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       >
         {children}
@@ -63,6 +65,7 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
         className,
       )}
       {...props}
+      // biome-ignore lint/style/noParameterAssign: not sure
       ref={forwardedRef}
     >
       <div className="p-3">{children}</div>

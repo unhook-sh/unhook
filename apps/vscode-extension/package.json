@@ -249,6 +249,56 @@
       },
       "title": "Unhook"
     },
+    "fileAssociations": [
+      {
+        "icon": "media/unhook-config-yaml.svg",
+        "pattern": "**/unhook.yaml"
+      },
+      {
+        "icon": "media/unhook-config-yaml.svg",
+        "pattern": "**/unhook.yml"
+      },
+      {
+        "icon": "media/unhook-config-yaml.svg",
+        "pattern": "**/unhook.config.yaml"
+      },
+      {
+        "icon": "media/unhook-config-yaml.svg",
+        "pattern": "**/unhook.config.yml"
+      },
+      {
+        "icon": "media/unhook-config-json.svg",
+        "pattern": "**/unhook.json"
+      },
+      {
+        "icon": "media/unhook-config-json.svg",
+        "pattern": "**/unhook.config.json"
+      },
+      {
+        "icon": "media/unhook-config-ts.svg",
+        "pattern": "**/unhook.ts"
+      },
+      {
+        "icon": "media/unhook-config-ts.svg",
+        "pattern": "**/unhook.config.ts"
+      },
+      {
+        "icon": "media/unhook-config-js.svg",
+        "pattern": "**/unhook.js"
+      },
+      {
+        "icon": "media/unhook-config-js.svg",
+        "pattern": "**/unhook.cjs"
+      },
+      {
+        "icon": "media/unhook-config-js.svg",
+        "pattern": "**/unhook.config.js"
+      },
+      {
+        "icon": "media/unhook-config-js.svg",
+        "pattern": "**/unhook.config.cjs"
+      }
+    ],
     "languages": [
       {
         "aliases": [
@@ -259,7 +309,9 @@
         "extensions": [],
         "filenames": [
           "unhook.yaml",
-          "unhook.yml"
+          "unhook.yml",
+          "unhook.config.yaml",
+          "unhook.config.yml"
         ],
         "id": "unhook-yaml"
       },
@@ -271,9 +323,38 @@
         "configuration": "./language-configuration-json.json",
         "extensions": [],
         "filenames": [
-          "unhook.json"
+          "unhook.json",
+          "unhook.config.json"
         ],
         "id": "unhook-json"
+      },
+      {
+        "aliases": [
+          "Unhook TypeScript",
+          "unhook-typescript"
+        ],
+        "configuration": "./language-configuration-ts.json",
+        "extensions": [],
+        "filenames": [
+          "unhook.ts",
+          "unhook.config.ts"
+        ],
+        "id": "unhook-typescript"
+      },
+      {
+        "aliases": [
+          "Unhook JavaScript",
+          "unhook-javascript"
+        ],
+        "configuration": "./language-configuration-js.json",
+        "extensions": [],
+        "filenames": [
+          "unhook.js",
+          "unhook.cjs",
+          "unhook.config.js",
+          "unhook.config.cjs"
+        ],
+        "id": "unhook-javascript"
       }
     ],
     "menus": {
@@ -360,8 +441,8 @@
     "@unhook/client": "workspace:*",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "tailwind-merge": "3.3.1",
     "ws": "8.18.3"
   },
@@ -371,23 +452,29 @@
     "@types/bun": "1.2.19",
     "@types/glob": "9.0.0",
     "@types/node": "24.1.0",
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
     "@types/vscode": "1.96.0",
+    "@unhook/db": "workspace:*",
+    "@unhook/test-utils": "workspace:*",
     "@vitejs/plugin-react": "4.7.0",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.6.0",
+    "bun": "1.2.19",
     "concurrently": "9.2.0",
     "glob": "11.0.3",
     "globals": "16.3.0",
     "mocha": "11.7.1",
+    "msw": "^2.10.4",
+    "msw-trpc": "^2.0.1",
     "ovsx": "0.10.5",
     "postcss": "8.5.6",
     "tailwindcss": "4.1.11",
     "tsup": "8.5.0",
-    "typescript": "5.8.3",
-    "vite": "7.0.6"
+    "typescript": "5.9.2",
+    "vite": "7.0.6",
+    "vitest": "3.2.4"
   },
   "displayName": "Unhook - Webhook Development",
   "engines": {
@@ -411,14 +498,15 @@
     "url": "https://github.com/unhook-sh/unhook"
   },
   "scripts": {
-    "build": "bun run typecheck && bun run build:webview && NODE_ENV=production tsup",
+    "build": "bun run typecheck && bun run build:webview && NODE_ENV=production bun run build:base",
     "build:base": "tsup",
     "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup",
+    "build:test": " concurrently \"tsup --config tsup.test.config.ts\" \"tsup\"",
     "build:webview": "vite build",
     "clean": "git clean -xdf .turbo node_modules dist *.vsix",
-    "dev": "concurrently \"bun run dev:webview\" \"bun run dev:extension\"",
     "dev:extension": "NODE_ENV=development tsup --watch",
     "dev:webview": "NODE_ENV=development vite --config vite.dev.config.ts",
+    "dev.skip": "concurrently --kill-others \"bun run dev:webview\" \"bun run dev:extension\"",
     "package": "bun run build && bun run package:vsix",
     "package:vsix": "bunx vsce package",
     "prepublishOnly": "prepare-publish --vscode-extension --no-readme --no-install-update",
@@ -426,8 +514,9 @@
     "publish": "bun run package && bun run publish:vscode && bun run publish:ovsx",
     "publish:ovsx": "infisical run --env prod -- bunx ovsx publish *.vsix",
     "publish:vscode": "infisical run --env prod -- bunx vsce publish",
-    "test": "vscode-test",
+    "test": "pnpm run build:test && vscode-test --extensionTestsPath=./dist/test/integ/utils/test-runner.js",
     "test:bun": "bun test",
+    "test:infisical": "bun run build && infisical run -- vscode-test",
     "test:ovsx": "infisical run --env prod -- bunx ovsx verify-pat",
     "test:vsce": "infisical run --env prod -- bunx vsce verify-pat",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

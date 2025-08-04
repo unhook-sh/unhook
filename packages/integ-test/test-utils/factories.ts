@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import * as schema from '@unhook/db/schema';
 import { createId } from '@unhook/id';
+import { eq } from 'drizzle-orm';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 export class TestFactories {
@@ -78,13 +79,46 @@ export class TestFactories {
     return created;
   }
 
+  async createApiKey(
+    userId: string,
+    orgId: string,
+    overrides?: Partial<schema.ApiKeyType>,
+  ): Promise<schema.ApiKeyType> {
+    const apiKey = {
+      createdAt: new Date(),
+      hashedKey: faker.string.alphanumeric(64),
+      id: createId({ prefix: 'whsk' }),
+      name: faker.lorem.words(2),
+      orgId,
+      prefix: 'whsk_',
+      userId,
+      ...overrides,
+    };
+
+    const [created] = await this.db
+      .insert(schema.ApiKeys)
+      .values(apiKey)
+      .returning();
+    if (!created) {
+      throw new Error('Failed to create API key');
+    }
+    return created;
+  }
+
   async createWebhook(
     userId: string,
     orgId: string,
     overrides?: Partial<schema.WebhookType>,
   ): Promise<schema.WebhookType> {
+    // Create API key first if not provided
+    let apiKeyId = overrides?.apiKeyId;
+    if (!apiKeyId) {
+      const apiKey = await this.createApiKey(userId, orgId);
+      apiKeyId = apiKey.id;
+    }
+
     const webhook = {
-      apiKeyId: createId({ prefix: 'whsk' }),
+      apiKeyId,
       config: {
         headers: {},
         requests: {},
@@ -123,8 +157,27 @@ export class TestFactories {
     orgId: string,
     overrides?: Partial<schema.EventType>,
   ): Promise<schema.EventType> {
+    // Get API key from webhook or create one if not provided
+    let apiKeyId = overrides?.apiKeyId;
+    if (!apiKeyId) {
+      // Try to get webhook's API key
+      const [webhook] = await this.db
+        .select({ apiKeyId: schema.Webhooks.apiKeyId })
+        .from(schema.Webhooks)
+        .where(eq(schema.Webhooks.id, webhookId))
+        .limit(1);
+
+      if (webhook?.apiKeyId) {
+        apiKeyId = webhook.apiKeyId;
+      } else {
+        // Create a new API key if webhook doesn't exist
+        const apiKey = await this.createApiKey(userId, orgId);
+        apiKeyId = apiKey.id;
+      }
+    }
+
     const event = {
-      apiKeyId: 'apiKeyId',
+      apiKeyId,
       createdAt: new Date(),
       id: createId({ prefix: 'evt' }),
       maxRetries: 3,
@@ -167,13 +220,34 @@ export class TestFactories {
     orgId: string,
     overrides?: Partial<schema.RequestType>,
   ): Promise<schema.RequestType> {
-    const request = {
-      apiKeyId: 'apiKeyId',
+    // Get API key from webhook or create one if not provided
+    let apiKeyId = overrides?.apiKeyId;
+    if (!apiKeyId) {
+      // Try to get webhook's API key
+      const [webhook] = await this.db
+        .select({ apiKeyId: schema.Webhooks.apiKeyId })
+        .from(schema.Webhooks)
+        .where(eq(schema.Webhooks.id, webhookId))
+        .limit(1);
+
+      if (webhook?.apiKeyId) {
+        apiKeyId = webhook.apiKeyId;
+      } else {
+        // Create a new API key if webhook doesn't exist
+        const apiKey = await this.createApiKey(userId, orgId);
+        apiKeyId = apiKey.id;
+      }
+    }
+
+    const requestData = {
+      apiKeyId,
       createdAt: new Date(),
       destination: {
         name: 'Test Destination',
         url: 'http://localhost:3000',
       },
+      destinationName: 'Test Destination',
+      destinationUrl: 'http://localhost:3000',
       id: createId({ prefix: 'req' }),
       orgId,
       request: {
@@ -206,7 +280,7 @@ export class TestFactories {
 
     const [created] = await this.db
       .insert(schema.Requests)
-      .values(request)
+      .values(requestData)
       .returning();
     if (!created) {
       throw new Error('Failed to create request');

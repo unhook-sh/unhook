@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { RequestType } from '@unhook/db/schema';
+import type { EventType, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
@@ -28,27 +28,33 @@ export class RequestDetailsWebviewProvider {
     }
   }
 
-  public async show(requestData: RequestType) {
-    log('Showing request details', { requestId: requestData.id });
+  public async show({
+    request,
+    event,
+  }: {
+    request: RequestType;
+    event: EventType;
+  }) {
+    log('Showing request details', { requestId: request.id });
 
     // Sanitize headers in request and response if present
     if (
-      requestData?.request?.headers &&
-      typeof requestData.request.headers === 'object'
+      event?.originRequest?.headers &&
+      typeof event.originRequest.headers === 'object'
     ) {
-      requestData.request.headers = sanitizeHeaders(
-        requestData.request.headers as Record<string, unknown>,
+      event.originRequest.headers = sanitizeHeaders(
+        event.originRequest.headers as Record<string, unknown>,
       ) as Record<string, string>;
     }
     if (
-      requestData?.response?.headers &&
-      typeof requestData.response.headers === 'object'
+      request?.response?.headers &&
+      typeof request.response.headers === 'object'
     ) {
-      requestData.response.headers = sanitizeHeaders(
-        requestData.response.headers as Record<string, unknown>,
+      request.response.headers = sanitizeHeaders(
+        request.response.headers as Record<string, unknown>,
       ) as Record<string, string>;
     }
-    this._currentRequestData = requestData;
+    this._currentRequestData = request;
 
     // If we already have a panel, show it
     if (this._panel) {

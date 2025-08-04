@@ -183,6 +183,14 @@
     "unhook-jetbrains#verify": {
       "dependsOn": ["build"],
       "outputs": ["build/reports/**"]
+    },
+    "unhook-vscode#dev:extension": {
+      "cache": false,
+      "persistent": true
+    },
+    "unhook-vscode#dev:webview": {
+      "cache": false,
+      "persistent": true
     }
   },
   "ui": "tui"

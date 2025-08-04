@@ -39,6 +39,18 @@ interface DevInfo {
     webhookId: string | null;
     eventsConnected: boolean;
     requestsConnected: boolean;
+    subscriptionClaims?: {
+      events?: {
+        found: boolean;
+        claimsRole: string | null;
+        isAuthenticated: boolean;
+      };
+      requests?: {
+        found: boolean;
+        claimsRole: string | null;
+        isAuthenticated: boolean;
+      };
+    };
   };
 }
 
@@ -502,6 +514,59 @@ export class ConfigProvider
             this.context,
           ),
         );
+
+        // Add subscription claims information if available
+        if (realtime.subscriptionClaims) {
+          if (realtime.subscriptionClaims.events) {
+            const eventsClaims = realtime.subscriptionClaims.events;
+            details.push(
+              new ConfigDetailItem(
+                'events.found',
+                eventsClaims.found ? 'Yes' : 'No',
+                this.context,
+              ),
+            );
+            details.push(
+              new ConfigDetailItem(
+                'events.claimsRole',
+                eventsClaims.claimsRole || 'None',
+                this.context,
+              ),
+            );
+            details.push(
+              new ConfigDetailItem(
+                'events.isAuthenticated',
+                eventsClaims.isAuthenticated ? 'Yes' : 'No',
+                this.context,
+              ),
+            );
+          }
+
+          if (realtime.subscriptionClaims.requests) {
+            const requestsClaims = realtime.subscriptionClaims.requests;
+            details.push(
+              new ConfigDetailItem(
+                'requests.found',
+                requestsClaims.found ? 'Yes' : 'No',
+                this.context,
+              ),
+            );
+            details.push(
+              new ConfigDetailItem(
+                'requests.claimsRole',
+                requestsClaims.claimsRole || 'None',
+                this.context,
+              ),
+            );
+            details.push(
+              new ConfigDetailItem(
+                'requests.isAuthenticated',
+                requestsClaims.isAuthenticated ? 'Yes' : 'No',
+                this.context,
+              ),
+            );
+          }
+        }
       }
       return details;
     }

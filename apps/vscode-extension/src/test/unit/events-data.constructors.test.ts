@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import {
   constructEventFromRealtimeData,
   constructRequestFromRealtimeData,
-} from '../providers/events-data.constructors';
+} from '../../providers/events-data.constructors';
 
 describe('Events Data Constructors', () => {
   describe('constructEventFromRealtimeData', () => {
@@ -182,7 +182,6 @@ describe('Events Data Constructors', () => {
       });
       expect(result?.destinationName).toBe('local');
       expect(result?.destinationUrl).toBe('http://localhost:3000');
-      expect(result?.request).toEqual(realtimeData.request);
       expect(result?.response).toEqual(realtimeData.response);
       expect(result?.responseTimeMs).toBe(1000);
     });

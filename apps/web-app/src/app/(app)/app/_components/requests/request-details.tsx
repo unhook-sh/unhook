@@ -1,6 +1,6 @@
 'use client';
 
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Button } from '@unhook/ui/button';
 import { cn } from '@unhook/ui/lib/utils';
 import { ScrollArea } from '@unhook/ui/scroll-area';
@@ -9,7 +9,7 @@ import { ChevronDown, ChevronUp, Copy, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface LogDetailsProps {
-  request: RequestType;
+  request: RequestTypeWithEventType;
   onClose: () => void;
 }
 
@@ -17,7 +17,7 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [_copied, setCopied] = useState(false);
 
-  const handleCopy = (data: RequestType) => {
+  const handleCopy = (data: RequestTypeWithEventType) => {
     navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -93,7 +93,7 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
         <ScrollArea className="h-[calc(100%-40px)]">
           <TabsContent className="m-0 p-4" value="request">
             <pre className="font-mono text-xs text-zinc-300">
-              {JSON.stringify(request.request, null, 2)}
+              {JSON.stringify(request.event?.originRequest, null, 2)}
             </pre>
           </TabsContent>
           <TabsContent className="m-0 p-4" value="response">
@@ -103,7 +103,7 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
           </TabsContent>
           <TabsContent className="m-0 p-4" value="headers">
             <pre className="font-mono text-xs text-zinc-300">
-              {JSON.stringify(request.request.headers, null, 2)}
+              {JSON.stringify(request.event?.originRequest?.headers, null, 2)}
             </pre>
           </TabsContent>
         </ScrollArea>

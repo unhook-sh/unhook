@@ -513,7 +513,6 @@ export const Requests = pgTable(
       })
       .notNull()
       .default(requestingOrgId()),
-    request: json('request').notNull().$type<RequestPayload>(),
     response: json('response').$type<ResponsePayload>(),
     responseTimeMs: integer('responseTimeMs').notNull().default(0),
     source: text('source').notNull().default('*'),
@@ -566,6 +565,10 @@ export const Requests = pgTable(
 );
 
 export type RequestType = typeof Requests.$inferSelect;
+
+export type RequestTypeWithEventType = RequestType & {
+  event: EventType | null;
+};
 
 export const CreateRequestTypeSchema = createInsertSchema(Requests).omit({
   completedAt: true,

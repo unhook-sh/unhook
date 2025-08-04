@@ -47,17 +47,17 @@ export class ConfigManager {
 
   public isDevelopment(): boolean {
     // Check ExtensionMode from context if available
-    // if (
-    //   this.context &&
-    //   this.context.extensionMode === vscode.ExtensionMode.Development
-    // ) {
-    //   return true;
-    // }
+    if (
+      this.context &&
+      this.context.extensionMode === vscode.ExtensionMode.Development
+    ) {
+      return true;
+    }
 
-    // // Check if running in Extension Development Host (most reliable for VS Code extensions)
-    // if (vscode.env.appName.includes('Extension Development Host')) {
-    //   return true;
-    // }
+    // Check if running in Extension Development Host (most reliable for VS Code extensions)
+    if (vscode.env.appName.includes('Extension Development Host')) {
+      return true;
+    }
 
     // Check environment variables
     if (
@@ -67,16 +67,18 @@ export class ConfigManager {
       return true;
     }
 
-    // // Check if the extension is not installed from marketplace (development scenario)
-    // const extension = vscode.extensions.getExtension(
-    //   env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
-    // );
-    // if (
-    //   extension &&
-    //   extension.extensionPath.includes('.vscode/extensions') === false
-    // ) {
-    //   return true;
-    // }
+    // Check if the extension is not installed from marketplace (development scenario)
+    if (env.NEXT_PUBLIC_VSCODE_EXTENSION_ID) {
+      const extension = vscode.extensions.getExtension(
+        env.NEXT_PUBLIC_VSCODE_EXTENSION_ID,
+      );
+      if (
+        extension &&
+        extension.extensionPath.includes('.vscode/extensions') === false
+      ) {
+        return true;
+      }
+    }
 
     return false;
   }
@@ -112,15 +114,22 @@ export class ConfigManager {
         }
       }
 
-      // Then check VS Code settings for server URLs
-      const vscodeConfig = vscode.workspace.getConfiguration('unhook');
-      const settingsApiUrl = vscodeConfig.get<string>('apiUrl');
-      const settingsDashboardUrl = vscodeConfig.get<string>('dashboardUrl');
+      // In development mode, skip VS Code settings and use localhost
+      if (this.isDevelopment()) {
+        // Use config file values if available, otherwise use localhost defaults
+        this.apiUrl = configApiUrl || 'http://localhost:3000';
+        this.dashboardUrl = configDashboardUrl || 'http://localhost:3000';
+      } else {
+        // In production, check VS Code settings for server URLs
+        const vscodeConfig = vscode.workspace.getConfiguration('unhook');
+        const settingsApiUrl = vscodeConfig.get<string>('apiUrl');
+        const settingsDashboardUrl = vscodeConfig.get<string>('dashboardUrl');
 
-      // Precedence: config file > VS Code settings > defaults
-      this.apiUrl = configApiUrl || settingsApiUrl || this.apiUrl;
-      this.dashboardUrl =
-        configDashboardUrl || settingsDashboardUrl || this.apiUrl;
+        // Precedence: config file > VS Code settings > defaults
+        this.apiUrl = configApiUrl || settingsApiUrl || this.apiUrl;
+        this.dashboardUrl =
+          configDashboardUrl || settingsDashboardUrl || this.apiUrl;
+      }
 
       // Log current configuration
       console.log('Unhook Config Manager:', {

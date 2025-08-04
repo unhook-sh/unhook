@@ -6,6 +6,7 @@ import { connectionsRouter } from './router/connections';
 import { eventsRouter } from './router/events';
 import { orgRouter } from './router/org';
 import { orgMembersRouter } from './router/org-members';
+import { realtimeSubscriptionsRouter } from './router/realtime-subscriptions';
 import { requestsRouter } from './router/requests';
 import { userRouter } from './router/user';
 import { webhookAccessRequestsRouter } from './router/webhook-access-requests';
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   events: eventsRouter,
   org: orgRouter,
   orgMembers: orgMembersRouter,
+  realtimeSubscriptions: realtimeSubscriptionsRouter,
   requests: requestsRouter,
   user: userRouter,
   webhookAccessRequests: webhookAccessRequestsRouter,

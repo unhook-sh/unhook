@@ -260,25 +260,6 @@ export async function upsertStripeCustomer({
   console.log('No existing stripe customer found. Creating new one...');
 
   // Create new customer
-  return stripe.customers.create({
-    email,
-    metadata,
-    name,
-  });
-}
-
-// Alternative: Use Stripe's idempotency keys for true upsert behavior
-export async function upsertCustomerWithIdempotency({
-  email,
-  name,
-  metadata,
-  idempotencyKey,
-}: {
-  email: string;
-  name?: string;
-  metadata?: Record<string, string>;
-  idempotencyKey: string;
-}) {
   return stripe.customers.create(
     {
       email,
@@ -286,7 +267,7 @@ export async function upsertCustomerWithIdempotency({
       name,
     },
     {
-      idempotencyKey,
+      idempotencyKey: orgId,
     },
   );
 }

@@ -1,18 +1,18 @@
 {
   "dependencies": {
-    "@supabase/supabase-js": "2.52.1",
+    "@supabase/supabase-js": "2.53.0",
     "@unhook/api": "workspace:*",
     "@unhook/client": "workspace:*",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "@unhook/utils": "workspace:*",
-    "drizzle-orm": "0.44.3",
+    "drizzle-orm": "0.44.4",
     "postgres": "3.4.7",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "@faker-js/faker": "9.9.0",
-    "@testcontainers/postgresql": "11.4.0",
+    "@testcontainers/postgresql": "11.5.0",
     "@types/express": "5.0.3",
     "@types/node": "24.1.0",
     "@types/ws": "8.18.1",
@@ -23,12 +23,12 @@
     "execa": "9.6.0",
     "express": "5.1.0",
     "node-fetch": "3.3.2",
-    "testcontainers": "11.4.0",
+    "testcontainers": "11.5.0",
     "tsup": "8.5.0",
     "tsx": "4.20.3",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "vitest": "3.2.4",
-    "wait-for-expect": "3.0.2",
+    "wait-for-expect": "4.0.0",
     "ws": "8.18.3"
   },
   "engines": {

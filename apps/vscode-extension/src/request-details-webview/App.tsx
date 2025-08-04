@@ -1,6 +1,8 @@
 // biome-ignore lint/style/useFilenamingConvention: rename to app.tsx
 
 import { extractBody } from '@unhook/client/utils/extract-body';
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
@@ -19,30 +21,6 @@ import { useEffect, useState } from 'react';
 const log = debug('unhook:vscode:request-details-webview');
 
 // Types
-interface RequestType {
-  id: string;
-  timestamp?: string;
-  request: {
-    method: string;
-    sourceUrl: string;
-    contentType: string;
-    size: number;
-    clientIp: string;
-    headers: Record<string, string>;
-    body?: string;
-  };
-  response?: {
-    status: number;
-    headers: Record<string, string>;
-    body?: string;
-  };
-  responseTimeMs?: number;
-  failedReason?: string;
-  eventName?: string;
-  source?: string;
-  service?: string;
-}
-
 // VSCode API type declaration
 declare global {
   interface Window {
@@ -63,7 +41,7 @@ const vscode = window.acquireVsCodeApi?.() || {
 };
 
 // Webhook Visualizer Component
-function WebhookVisualizer({ data }: { data: RequestType }) {
+function WebhookVisualizer({ data }: { data: RequestTypeWithEventType }) {
   const [isReplaying, setIsReplaying] = useState(false);
   const [headersOpen, setHeadersOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -96,9 +74,8 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
   };
 
   const status = data.response?.status || 0;
-  const eventName = data.eventName || 'Webhook Event';
+  const eventName = extractEventName(data.event?.originRequest.body);
   const source = data.source || 'Unknown';
-  const service = data.service || 'Unknown';
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -135,10 +112,6 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
               <div className="flex items-center gap-2">
                 <Icons.PanelLeft size="sm" />
                 <span>Source: {source}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Icons.Settings size="sm" />
-                <span>Service: {service}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Icons.Calendar size="sm" />
@@ -180,8 +153,8 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
               <TabsContent className="mt-4" value="request">
                 <div className="bg-muted rounded-lg p-4 border border-border">
                   <pre className="text-sm font-mono text-foreground overflow-x-auto">
-                    {data.request.body
-                      ? extractBody(data.request.body)
+                    {data.event?.originRequest.body
+                      ? extractBody(data.event.originRequest.body)
                       : 'No request body'}
                   </pre>
                 </div>
@@ -229,18 +202,18 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
                 <CardContent className="pt-0">
                   <div className="bg-muted rounded-lg p-4 border border-border">
                     <div className="space-y-2">
-                      {Object.entries(data.request.headers).map(
-                        ([key, value]) => (
-                          <div className="flex text-sm font-mono" key={key}>
-                            <span className="text-primary w-48 flex-shrink-0">
-                              {key}:
-                            </span>
-                            <span className="text-foreground break-all">
-                              {value}
-                            </span>
-                          </div>
-                        ),
-                      )}
+                      {Object.entries(
+                        data.event?.originRequest.headers ?? {},
+                      ).map(([key, value]) => (
+                        <div className="flex text-sm font-mono" key={key}>
+                          <span className="text-primary w-48 flex-shrink-0">
+                            {key}:
+                          </span>
+                          <span className="text-foreground break-all">
+                            {value as string}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
@@ -333,14 +306,11 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
                         <span className="text-muted-foreground">Source:</span>
                         <span className="text-foreground">{source}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Service:</span>
-                        <span className="text-foreground">{service}</span>
-                      </div>
+
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Method:</span>
                         <span className="text-foreground">
-                          {data.request.method}
+                          {data.event?.originRequest.method}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -348,7 +318,7 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
                           Content Type:
                         </span>
                         <span className="text-foreground">
-                          {data.request.contentType}
+                          {data.event?.originRequest.contentType}
                         </span>
                       </div>
                     </div>
@@ -374,7 +344,7 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
                           Request Size:
                         </span>
                         <span className="text-foreground">
-                          {data.request.size} bytes
+                          {data.event?.originRequest.size} bytes
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -382,13 +352,13 @@ function WebhookVisualizer({ data }: { data: RequestType }) {
                           Client IP:
                         </span>
                         <span className="text-foreground">
-                          {data.request.clientIp}
+                          {data.event?.originRequest.clientIp}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">URL:</span>
                         <span className="text-foreground break-all">
-                          {data.request.sourceUrl}
+                          {data.event?.originRequest.sourceUrl}
                         </span>
                       </div>
                     </div>
@@ -465,13 +435,19 @@ function ErrorState({ error }: { error: string }) {
 
 // Main App Component
 function App() {
-  const [requestData, setRequestData] = useState<RequestType | null>(null);
+  const [requestData, setRequestData] =
+    useState<RequestTypeWithEventType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('Setting up message handler');
     // Listen for messages from the extension
-    const messageHandler = (event: MessageEvent) => {
+    const messageHandler = (
+      event: MessageEvent<{
+        data: RequestTypeWithEventType;
+        type: 'requestData';
+      }>,
+    ) => {
       try {
         const message = event.data;
         console.log('Received message from extension', { message });

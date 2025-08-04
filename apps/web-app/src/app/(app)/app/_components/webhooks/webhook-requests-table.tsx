@@ -1,7 +1,7 @@
 'use client';
 
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Skeleton } from '@unhook/ui/skeleton';
 import {
@@ -27,7 +27,7 @@ export function WebhookRequestsTable({
   webhookId,
   limit,
 }: WebhookRequestsTableProps) {
-  const [requests, setRequests] = useState<RequestType[]>([]);
+  const [requests, setRequests] = useState<RequestTypeWithEventType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRequestIndex, setSelectedRequestIndex] = useState<
     number | null
@@ -43,64 +43,68 @@ export function WebhookRequestsTable({
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Generate mock data
-        const mockRequests: RequestType[] = Array.from({ length: 20 }).map(
-          (_, i) => {
-            const timestamp = new Date(
-              Date.now() - Math.random() * 1000 * 60 * 60 * 24,
-            );
-            const status = Math.random() > 0.8 ? 'failed' : 'completed';
-            const responseStatus =
-              status === 'failed'
-                ? 400 + Math.floor(Math.random() * 100)
-                : 200 + Math.floor(Math.random() * 100);
+        const mockRequests: RequestTypeWithEventType[] = Array.from({
+          length: 20,
+        }).map((_, i) => {
+          const timestamp = new Date(
+            Date.now() - Math.random() * 1000 * 60 * 60 * 24,
+          );
+          const status = Math.random() > 0.8 ? 'failed' : 'completed';
+          const responseStatus =
+            status === 'failed'
+              ? 400 + Math.floor(Math.random() * 100)
+              : 200 + Math.floor(Math.random() * 100);
 
-            // Generate mock webhook bodies with different event types
-            const mockEvents = [
-              {
-                data: { email: 'test@example.com', id: 'user_123' },
-                event: 'user.created',
-              },
-              {
-                data: { amount: 1000, currency: 'USD' },
-                event: 'payment.completed',
-              },
-              { data: { orderId: 'order_456' }, event: 'order.placed' },
-              {
-                data: { customerId: 'cust_789' },
-                event_type: 'customer.updated',
-              },
-              { data: { invoiceId: 'inv_012' }, type: 'invoice.paid' },
-              {
-                data: { subscriptionId: 'sub_345' },
-                eventType: 'subscription.cancelled',
-              },
-            ];
-            const mockBody =
-              mockEvents[Math.floor(Math.random() * mockEvents.length)];
+          // Generate mock webhook bodies with different event types
+          const mockEvents = [
+            {
+              data: { email: 'test@example.com', id: 'user_123' },
+              event: 'user.created',
+            },
+            {
+              data: { amount: 1000, currency: 'USD' },
+              event: 'payment.completed',
+            },
+            { data: { orderId: 'order_456' }, event: 'order.placed' },
+            {
+              data: { customerId: 'cust_789' },
+              event_type: 'customer.updated',
+            },
+            { data: { invoiceId: 'inv_012' }, type: 'invoice.paid' },
+            {
+              data: { subscriptionId: 'sub_345' },
+              eventType: 'subscription.cancelled',
+            },
+          ];
+          const mockBody =
+            mockEvents[Math.floor(Math.random() * mockEvents.length)];
 
-            return {
+          return {
+            apiKeyId: 'pk_test_123',
+            completedAt: status === 'completed' ? new Date() : null,
+            connectionId: null,
+            createdAt: timestamp,
+            destination: {
+              name: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
+                Math.floor(Math.random() * 4)
+              ] as string,
+              url: 'https://example.com',
+            },
+            destinationName: [
+              '/api/data',
+              '/api/users',
+              '/api/auth',
+              '/api/webhook',
+            ][Math.floor(Math.random() * 4)] as string,
+            destinationUrl: 'https://example.com',
+            event: {
               apiKeyId: 'pk_test_123',
-              completedAt: status === 'completed' ? new Date() : null,
-              connectionId: null,
               createdAt: timestamp,
-              destination: {
-                name: ['/api/data', '/api/users', '/api/auth', '/api/webhook'][
-                  Math.floor(Math.random() * 4)
-                ] as string,
-                url: 'https://example.com',
-              },
-              destinationName: [
-                '/api/data',
-                '/api/users',
-                '/api/auth',
-                '/api/webhook',
-              ][Math.floor(Math.random() * 4)] as string,
-              destinationUrl: 'https://example.com',
-              eventId: null,
-              failedReason: status === 'failed' ? 'Connection error' : null,
-              id: `req_${i}_${Date.now()}`,
+              failedReason: null,
+              id: `evt_${i}_${Date.now()}`,
+              maxRetries: 3,
               orgId: 'org_123',
-              request: {
+              originRequest: {
                 body: JSON.stringify(mockBody),
                 clientIp: '127.0.0.1',
                 contentType: 'application/json',
@@ -115,23 +119,34 @@ export function WebhookRequestsTable({
                 size: Math.floor(Math.random() * 1000),
                 sourceUrl: 'https://example.com',
               },
-              response:
-                status === 'completed'
-                  ? {
-                      body: JSON.stringify({ success: responseStatus < 400 }),
-                      headers: { 'content-type': 'application/json' },
-                      status: responseStatus,
-                    }
-                  : null,
-              responseTimeMs: Math.floor(Math.random() * 1000),
+              retryCount: 0,
               source: '*',
-              status,
+              status: 'completed' as const,
               timestamp,
+              updatedAt: null,
               userId: 'user_123',
               webhookId,
-            } satisfies RequestType;
-          },
-        );
+            },
+            eventId: null,
+            failedReason: status === 'failed' ? 'Connection error' : null,
+            id: `req_${i}_${Date.now()}`,
+            orgId: 'org_123',
+            response:
+              status === 'completed'
+                ? {
+                    body: JSON.stringify({ success: responseStatus < 400 }),
+                    headers: { 'content-type': 'application/json' },
+                    status: responseStatus,
+                  }
+                : null,
+            responseTimeMs: Math.floor(Math.random() * 1000),
+            source: '*',
+            status,
+            timestamp,
+            userId: 'user_123',
+            webhookId,
+          } as RequestTypeWithEventType;
+        });
 
         // Sort by timestamp (newest first)
         mockRequests.sort(
@@ -237,14 +252,14 @@ export function WebhookRequestsTable({
                     </TableCell>
                     <TableCell>
                       <Badge className="font-mono" variant="outline">
-                        {request.request.method}
+                        {request.event?.originRequest?.method}
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-[300px]">
                       <div className="space-y-1">
                         {(() => {
                           const eventName = extractEventName(
-                            request.request.body,
+                            request.event?.originRequest?.body,
                           );
                           return eventName ? (
                             <div className="text-sm font-medium text-foreground">

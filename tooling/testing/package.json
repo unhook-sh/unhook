@@ -5,7 +5,7 @@
     "@testing-library/jest-dom": "6.6.4",
     "@testing-library/react": "16.3.0",
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "exports": {
     ".": "./src/index.ts"

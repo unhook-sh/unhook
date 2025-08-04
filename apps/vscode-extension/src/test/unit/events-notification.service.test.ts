@@ -1,19 +1,28 @@
 import { beforeEach, describe, expect, mock, test } from 'bun:test';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
-import { EventsNotificationService } from '../providers/events-notification.service';
-import type { AnalyticsService } from '../services/analytics.service';
+import { EventsNotificationService } from '../../providers/events-notification.service';
+import type { AnalyticsService } from '../../services/analytics.service';
 
-// Mock vscode
+// Mock vscode functions
 const mockShowInformationMessage = mock(() => Promise.resolve('OK'));
 const mockShowWarningMessage = mock(() => Promise.resolve('OK'));
 
-// Mock the vscode module
-mock.module('vscode', () => ({
+// Create a mock vscode object
+const mockVscode = {
   window: {
     showInformationMessage: mockShowInformationMessage,
     showWarningMessage: mockShowWarningMessage,
   },
-}));
+};
+
+// Mock the vscode module if it's available, otherwise create a global mock
+try {
+  mock.module('vscode', () => mockVscode);
+} catch (_error) {
+  // If vscode module is not available (like in test environment),
+  // we'll need to mock it differently
+  (globalThis as Record<string, unknown>).vscode = mockVscode;
+}
 
 // Mock analytics service
 const mockAnalyticsService = {

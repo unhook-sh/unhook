@@ -6,6 +6,7 @@ import type {
   UserType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
+import type * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
 import type { ConfigProvider } from '../providers/config.provider';
 import type { AuthStore } from './auth.service';
@@ -41,13 +42,26 @@ interface DevInfo {
     webhookId: string | null;
     eventsConnected: boolean;
     requestsConnected: boolean;
+    subscriptionClaims?: {
+      events?: {
+        found: boolean;
+        claimsRole: string | null;
+        isAuthenticated: boolean;
+      };
+      requests?: {
+        found: boolean;
+        claimsRole: string | null;
+        isAuthenticated: boolean;
+      };
+    };
   };
 }
 
-export class DevInfoService {
+export class DevInfoService implements vscode.Disposable {
   private configProvider: ConfigProvider | null = null;
   private authStore: AuthStore | null = null;
   private realtimeService: RealtimeService | null = null;
+  private disposables: vscode.Disposable[] = [];
 
   constructor() {
     log('DevInfoService initialized');
@@ -59,6 +73,37 @@ export class DevInfoService {
 
   public setAuthStore(authStore: AuthStore) {
     this.authStore = authStore;
+
+    // Listen for auth state changes
+    const authDisposable = authStore.onDidChangeAuth(() => {
+      this.handleAuthStateChange();
+    });
+    this.disposables.push(authDisposable);
+
+    // Initial fetch if user is signed in
+    if (ConfigManager.getInstance().isDevelopment()) {
+      this.fetchDevInfo();
+    }
+  }
+
+  private async handleAuthStateChange(): Promise<void> {
+    if (ConfigManager.getInstance().isDevelopment()) {
+      this.fetchDevInfo();
+      // Try to connect realtime service after a short delay to ensure it's initialized
+      setTimeout(() => {
+        this.connectRealtimeService();
+      }, 1000);
+    }
+  }
+
+  private connectRealtimeService(): void {
+    if (this.realtimeService) {
+      // This method will be called when we have access to the realtime service
+      // The actual connection logic is handled by the realtime service itself
+      log(
+        'DevInfoService: Realtime service connection handled by RealtimeService',
+      );
+    }
   }
 
   public setRealtimeService(realtimeService: RealtimeService) {
@@ -201,7 +246,56 @@ export class DevInfoService {
 
     // Add realtime connection status
     if (this.realtimeService) {
-      devInfo.realtime = this.realtimeService.getConnectionState();
+      const connectionState = this.realtimeService.getConnectionState();
+      devInfo.realtime = connectionState;
+
+      // Fetch subscription claims information if we have a webhook ID
+      const webhookId =
+        connectionState.webhookId ||
+        this.configProvider?.getConfig()?.webhookId;
+
+      if (webhookId) {
+        try {
+          log('Fetching subscription claims for webhook', {
+            fromConfig:
+              !connectionState.webhookId &&
+              !!this.configProvider?.getConfig()?.webhookId,
+            fromRealtime: !!connectionState.webhookId,
+            webhookId,
+          });
+
+          const [eventsClaims, requestsClaims] = await Promise.allSettled([
+            api.realtimeSubscriptions.verifyWebhookSubscriptionClaims.query({
+              tableName: 'events',
+              webhookId,
+            }),
+            api.realtimeSubscriptions.verifyWebhookSubscriptionClaims.query({
+              tableName: 'requests',
+              webhookId,
+            }),
+          ]);
+
+          devInfo.realtime.subscriptionClaims = {};
+
+          if (eventsClaims.status === 'fulfilled') {
+            devInfo.realtime.subscriptionClaims.events = eventsClaims.value;
+            log('Events claims result', eventsClaims.value);
+          } else {
+            log('Events claims failed', eventsClaims.reason);
+          }
+
+          if (requestsClaims.status === 'fulfilled') {
+            devInfo.realtime.subscriptionClaims.requests = requestsClaims.value;
+            log('Requests claims result', requestsClaims.value);
+          } else {
+            log('Requests claims failed', requestsClaims.reason);
+          }
+        } catch (error) {
+          log('Error fetching subscription claims information:', error);
+        }
+      } else {
+        log('No webhook ID available for subscription claims check');
+      }
     }
 
     return devInfo;
@@ -209,5 +303,10 @@ export class DevInfoService {
 
   public async refresh(): Promise<void> {
     await this.fetchDevInfo();
+  }
+
+  public dispose(): void {
+    this.disposables.forEach((disposable) => disposable.dispose());
+    this.disposables = [];
   }
 }

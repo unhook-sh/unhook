@@ -2,7 +2,7 @@
   "dependencies": {
     "@unhook/db": "workspace:*",
     "@unhook/logger": "workspace:*",
-    "drizzle-orm": "0.44.3",
+    "drizzle-orm": "0.44.4",
     "isolated-vm": "6.0.1",
     "zod": "3.25.76"
   },
@@ -10,7 +10,7 @@
     "@types/node": "24.1.0",
     "@unhook/tsconfig": "workspace:*",
     "tsup": "8.5.0",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "exports": {
     ".": "./src/index.ts"

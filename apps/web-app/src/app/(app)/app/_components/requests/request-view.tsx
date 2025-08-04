@@ -1,7 +1,7 @@
 'use client';
 
 import { api } from '@unhook/api/react';
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Button } from '@unhook/ui/button';
 import { Input } from '@unhook/ui/input';
 import {
@@ -22,19 +22,18 @@ import { useMediaQuery } from '~/hooks/use-mobile';
 // Update the LogView component to handle showing/hiding the filter area
 export function RequestView() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRequest, setSelectedRequest] = useState<RequestType | null>(
-    null,
-  );
+  const [selectedRequest, setSelectedRequest] =
+    useState<RequestTypeWithEventType | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showMetadata, setShowMetadata] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [requests, { isLoading, refetch }] =
-    api.requests.all.useSuspenseQuery();
+    api.requests.allWithEvents.useSuspenseQuery();
 
   const filteredRequests = requests.filter((request) => {
     const name = request.destination?.name?.toLowerCase();
-    const method = request.request?.method?.toLowerCase();
+    const method = request.event?.originRequest?.method?.toLowerCase();
     if (!name || !method) {
       return false;
     }
@@ -44,7 +43,7 @@ export function RequestView() {
     );
   });
 
-  const handleRequestSelect = (request: RequestType) => {
+  const handleRequestSelect = (request: RequestTypeWithEventType) => {
     setSelectedRequest(request);
     setShowDetails(true);
     if (!isMobile) {

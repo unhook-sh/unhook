@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestType, RequestTypeWithEventType } from '@unhook/db/schema';
 import { z } from 'zod';
 import { trackError, trackToolUsage } from '../analytics';
 
@@ -16,7 +16,7 @@ export function registerSearchRequestsTool(
   server: McpServer,
   context: Context,
 ) {
-  const caller = createCaller(context);
+  const api = createCaller(context);
 
   // @ts-ignore
   server.registerTool(
@@ -32,7 +32,7 @@ export function registerSearchRequestsTool(
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
-        let requests = await caller.requests.all();
+        let requests = await api.requests.allWithEvents();
 
         if (args.webhookId) {
           requests = requests.filter(
@@ -51,7 +51,7 @@ export function registerSearchRequestsTool(
         }
 
         const limitedRequests = requests.slice(0, args.limit ?? 0);
-        const summary = formatRequestsList(limitedRequests);
+        const summary = formatRequestsList({ requests: limitedRequests });
 
         const executionTime = Date.now() - startTime;
 
@@ -93,23 +93,27 @@ export function registerSearchRequestsTool(
   );
 }
 
-function formatRequestsList(requests: RequestType[]): string {
+function formatRequestsList({
+  requests,
+}: {
+  requests: RequestTypeWithEventType[];
+}): string {
   if (requests.length === 0) {
     return 'No requests found matching the criteria.';
   }
 
   const summary = requests
-    .map(
-      (r) =>
-        `Request ${r.id}:
+    .map((r) => {
+      const originRequest = r.event?.originRequest;
+      return `Request ${r.id}:
   - Webhook: ${r.webhookId}
   - Event: ${r.eventId || 'N/A'}
   - Status: ${r.status}
-  - Method: ${r.request.method}
-  - URL: ${r.request.sourceUrl}
+  - Method: ${originRequest?.method || 'N/A (event data not loaded)'}
+  - URL: ${originRequest?.sourceUrl || 'N/A (event data not loaded)'}
   - Response Time: ${r.responseTimeMs || 'N/A'}ms
-  ${r.failedReason ? `- Failed Reason: ${r.failedReason}` : ''}`,
-    )
+  ${r.failedReason ? `- Failed Reason: ${r.failedReason}` : ''}`;
+    })
     .join('\n\n');
 
   return `Found ${requests.length} requests:\n\n${summary}`;

@@ -7,7 +7,7 @@ import {
   sortEventsAndRequests,
   sortEventsByTimestamp,
   sortRequestsByCreatedAt,
-} from '../providers/events.utils';
+} from '../../providers/events.utils';
 
 // Mock event data for testing
 const mockEvents = [

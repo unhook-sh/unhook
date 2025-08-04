@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@clerk/backend": "2.6.2",
+    "@unhook/db": "workspace:*",
+    "@unhook/id": "workspace:*",
+    "drizzle-orm": "0.44.4"
+  },
+  "devDependencies": {
+    "@unhook/tsconfig": "workspace:*",
+    "typescript": "5.9.2"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "license": "MIT",
+  "name": "@unhook/test-utils",
+  "private": true,
+  "scripts": {
+    "clean": "git clean -xdf .turbo node_modules dist",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

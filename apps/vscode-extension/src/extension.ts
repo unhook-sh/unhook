@@ -162,22 +162,6 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  // Listen for auth changes to refresh dev info
-  authStore.onDidChangeAuth(() => {
-    if (ConfigManager.getInstance().isDevelopment()) {
-      devInfoService.fetchDevInfo();
-      // Try to connect realtime service after a short delay to ensure it's initialized
-      setTimeout(connectRealtimeToDevInfo, 1000);
-    }
-
-    // Show sign-in notification if user signed out
-    if (!authStore.isSignedIn) {
-      setTimeout(async () => {
-        await signInNotificationService.showSignInNotification();
-      }, 1000);
-    }
-  });
-
   // Listen for when user already has access and needs to refresh
   authorizationService.onAccessAlreadyGranted(() => {
     log('Access already granted event received, refreshing events');
@@ -251,11 +235,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Try to connect realtime service initially
   setTimeout(connectRealtimeToDevInfo, 2000);
-
-  // Show sign-in notification if user is not signed in (after a short delay)
-  setTimeout(async () => {
-    await signInNotificationService.showSignInNotification();
-  }, 3000);
 
   // Set up periodic refresh for development info
   if (configManager.isDevelopment()) {

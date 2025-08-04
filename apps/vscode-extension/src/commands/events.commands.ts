@@ -109,6 +109,7 @@ export function registerEventCommands(
                 api,
                 delivery: config.delivery,
                 destination: config.destination,
+                event: item.event,
                 request: request,
                 requestFn: async (url, options) => {
                   const response = await fetch(url, options);
@@ -167,7 +168,10 @@ export function registerEventCommands(
           const firstRequest = item.event.requests?.[0];
           if (firstRequest) {
             // Show the request details in a panel
-            await requestDetailsWebviewProvider.show(firstRequest);
+            await requestDetailsWebviewProvider.show({
+              event: item.event,
+              request: firstRequest,
+            });
           } else {
             vscode.window.showWarningMessage(
               'No request data available for this event.',
@@ -236,15 +240,17 @@ export function registerEventCommands(
               log('Fetching complete request data from API', {
                 requestId: item.request.id,
               });
-              const completeRequest = await authStore.api.requests.byId.query({
-                id: item.request.id,
-              });
+              const completeRequest =
+                await authStore.api.requests.byIdWithEvent.query({
+                  id: item.request.id,
+                });
 
               if (completeRequest) {
                 log('Successfully fetched complete request data', {
-                  hasRequest: !!completeRequest.request,
+                  hasEvent: !!completeRequest.event,
+                  hasOriginRequest: !!completeRequest.event?.originRequest,
                   hasResponse: !!completeRequest.response,
-                  requestBody: completeRequest.request?.body
+                  requestBody: completeRequest.event?.originRequest?.body
                     ? 'PRESENT'
                     : 'MISSING',
                   requestId: completeRequest.id,
@@ -254,13 +260,19 @@ export function registerEventCommands(
                 });
 
                 // Show the complete request details in a panel
-                await requestDetailsWebviewProvider.show(completeRequest);
+                await requestDetailsWebviewProvider.show({
+                  event: item.parent.event,
+                  request: completeRequest,
+                });
               } else {
                 log('No request found with ID, using existing data', {
                   requestId: item.request.id,
                 });
                 // Fallback to existing data if API fetch fails
-                await requestDetailsWebviewProvider.show(item.request);
+                await requestDetailsWebviewProvider.show({
+                  event: item.parent.event,
+                  request: item.request,
+                });
               }
             } catch (error) {
               log(
@@ -271,14 +283,20 @@ export function registerEventCommands(
                 },
               );
               // Fallback to existing data if API fetch fails
-              await requestDetailsWebviewProvider.show(item.request);
+              await requestDetailsWebviewProvider.show({
+                event: item.parent.event,
+                request: item.request,
+              });
             }
           } else {
             log('Not authenticated, using existing request data', {
               requestId: item.request.id,
             });
             // Show the existing request details in a panel
-            await requestDetailsWebviewProvider.show(item.request);
+            await requestDetailsWebviewProvider.show({
+              event: item.parent.event,
+              request: item.request,
+            });
           }
 
           log('Request details shown successfully', {
@@ -331,7 +349,6 @@ export function registerEventCommands(
             destinationName: item.request.destination.name,
             destinationUrl: item.request.destination.url,
             eventId: item.request.eventId,
-            request: item.request.request,
             responseTimeMs: 0,
             source: item.request.source,
             status: 'pending',
@@ -344,6 +361,7 @@ export function registerEventCommands(
             api,
             delivery: config.delivery,
             destination: config.destination,
+            event: item.parent.event,
             request: newRequest,
             requestFn: async (url, options) => {
               const response = await fetch(url, options);
@@ -359,7 +377,9 @@ export function registerEventCommands(
           // Refresh the view to show the new request
           provider.refresh();
 
-          const eventName = extractEventName(item.request.request?.body);
+          const eventName = extractEventName(
+            item.parent.event.originRequest?.body,
+          );
           vscode.window.showInformationMessage(
             `Request ${eventName} replayed successfully`,
           );

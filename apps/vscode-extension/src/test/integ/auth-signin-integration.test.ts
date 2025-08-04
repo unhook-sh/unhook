@@ -1,6 +1,7 @@
-import { describe, expect, test } from 'bun:test';
+import * as assert from 'node:assert';
+import { suite, test } from 'mocha';
 
-describe('Auth Sign-In Integration Test', () => {
+suite('Auth Sign-In Integration Test', () => {
   test('should verify enhanced logging is in place for debugging', () => {
     // This test documents the enhanced logging we added to help debug sign-in issues
 
@@ -50,8 +51,8 @@ describe('Auth Sign-In Integration Test', () => {
     ];
 
     // Verify we have logging for all key points
-    expect(enhancedLoggingFiles.length).toBe(3);
-    expect(keyLogMessages.length).toBeGreaterThan(20);
+    assert.strictEqual(enhancedLoggingFiles.length, 3);
+    assert.ok(keyLogMessages.length > 20);
 
     console.log(
       '✅ Enhanced logging has been added to help debug sign-in issues',
@@ -101,7 +102,7 @@ describe('Auth Sign-In Integration Test', () => {
     ];
 
     // This test always passes - it's just documentation
-    expect(debuggingSteps.length).toBeGreaterThan(0);
+    assert.ok(debuggingSteps.length > 0);
 
     // Log the debugging steps for reference
     console.log('\n=== Debugging Guide for Sign-In Issues ===');

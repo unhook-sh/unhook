@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { z } from 'zod';
 import { trackError, trackToolUsage } from '../analytics';
 
@@ -29,7 +29,9 @@ export function registerAnalyzeRequestTool(
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
-        const request = await caller.requests.byId({ id: requestId });
+        const request = await caller.requests.byIdWithEvent({
+          id: requestId,
+        });
         if (!request) {
           // Track not found request
           trackToolUsage(
@@ -88,7 +90,38 @@ export function registerAnalyzeRequestTool(
   );
 }
 
-function formatRequestAnalysis(request: RequestType): string {
+function formatRequestAnalysis(request: RequestTypeWithEventType): string {
+  const originRequest = request.event?.originRequest;
+
+  if (!originRequest) {
+    return `Request Analysis for ${request.id}:
+
+Basic Information:
+- Webhook ID: ${request.webhookId}
+- Event ID: ${request.eventId || 'N/A'}
+- Status: ${request.status}
+- Created: ${request.createdAt}
+- Completed: ${request.completedAt || 'N/A'}
+
+Request Details: Not available (event data not loaded)
+
+Destination:
+- URL: ${request.destination.url}
+- Name: ${request.destination.name}
+
+${
+  request.response
+    ? `Response:
+- Status: ${request.response.status}
+- Headers: ${JSON.stringify(request.response.headers, null, 2)}
+- Body: ${request.response.body || '(empty)'}
+- Time: ${request.responseTimeMs}ms`
+    : 'Response: Not received'
+}
+
+${request.failedReason ? `Failed Reason: ${request.failedReason}` : ''}`;
+  }
+
   return `Request Analysis for ${request.id}:
 
 Basic Information:
@@ -99,18 +132,18 @@ Basic Information:
 - Completed: ${request.completedAt || 'N/A'}
 
 Request Details:
-- Method: ${request.request.method}
-- URL: ${request.request.sourceUrl}
-- Content Type: ${request.request.contentType}
-- Size: ${request.request.size} bytes
-- Client IP: ${request.request.clientIp}
+- Method: ${originRequest.method}
+- URL: ${originRequest.sourceUrl}
+- Content Type: ${originRequest.contentType}
+- Size: ${originRequest.size} bytes
+- Client IP: ${originRequest.clientIp}
 
 Request Headers:
-${JSON.stringify(request.request.headers, null, 2)}
+${JSON.stringify(originRequest.headers, null, 2)}
 
 ${
-  request.request.body
-    ? `Request Body:\n${request.request.body}`
+  originRequest.body
+    ? `Request Body:\n${originRequest.body}`
     : 'Request Body: (empty)'
 }
 

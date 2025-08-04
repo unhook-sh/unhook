@@ -29,12 +29,29 @@
       "cwd": "${workspaceFolder}/apps/vscode-extension",
       "env": {
         "DEBUG": "*",
-        "NODE_ENV": "development" // "VSCODE_DEV": "true"
+        "NODE_ENV": "development"
+        // "VSCODE_DEV": "true"
       },
       "name": "Run VSCode Extension",
       "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"],
       // "preLaunchTask": "prepare-extension",
       "request": "launch",
+      "type": "extensionHost"
+    },
+    {
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension",
+        "--extensionTestsPath=${workspaceFolder}/apps/vscode-extension/dist/test/integ/utils/test-runner.js"
+      ],
+      "name": "Extension Tests",
+      "outFiles": [
+        // "${workspaceFolder}/apps/vscode-extension/dist/**/*.js",
+        "${workspaceFolder}/**/dist/**/*.js"
+      ],
+      "preLaunchTask": "vscode-extension:build:test",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
       "type": "extensionHost"
     },
     {

@@ -21,6 +21,7 @@ const Circle = forwardRef<
         'z-10 flex size-12 items-center justify-center border-2 rounded-full border-border shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]',
         className,
       )}
+      // biome-ignore lint/style/noParameterAssign: not sure
       ref={ref}
     >
       {children}

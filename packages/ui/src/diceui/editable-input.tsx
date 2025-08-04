@@ -300,6 +300,7 @@ const EditableLabel = React.forwardRef<HTMLLabelElement, EditableLabelProps>(
         )}
         htmlFor={context.inputId}
         id={context.labelId}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       >
         {children}
@@ -326,12 +327,12 @@ const EditableArea = React.forwardRef<HTMLDivElement, EditableAreaProps>(
         data-editing={context.editing ? '' : undefined}
         data-slot="editable-area"
         dir={context.dir}
-        role="group"
         {...areaProps}
         className={cn(
           'relative inline-block min-w-0 data-disabled:cursor-not-allowed data-disabled:opacity-50',
           className,
         )}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       />
     );
@@ -424,6 +425,7 @@ const EditablePreview = React.forwardRef<HTMLDivElement, EditablePreviewProps>(
         onDoubleClick={onDoubleClick}
         onFocus={onFocus}
         onKeyDown={onKeyDown}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       >
         {context.value || context.placeholder}
@@ -636,6 +638,7 @@ const EditableTrigger = React.forwardRef<
       {...triggerProps}
       onClick={context.triggerMode === 'click' ? onTrigger : undefined}
       onDoubleClick={context.triggerMode === 'dblclick' ? onTrigger : undefined}
+      // biome-ignore lint/style/noParameterAssign: not sure
       ref={forwardedRef}
     />
   );
@@ -672,6 +675,7 @@ const EditableToolbar = React.forwardRef<HTMLDivElement, EditableToolbarProps>(
           orientation === 'vertical' && 'flex-col',
           className,
         )}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       />
     );
@@ -716,6 +720,7 @@ const EditableCancel = React.forwardRef<HTMLButtonElement, EditableCancelProps>(
         type="button"
         {...cancelProps}
         onClick={onClick}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       />
     );
@@ -761,6 +766,7 @@ const EditableSubmit = React.forwardRef<HTMLButtonElement, EditableSubmitProps>(
         type="button"
         {...submitProps}
         onClick={onClick}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={forwardedRef}
       />
     );

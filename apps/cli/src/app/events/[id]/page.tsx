@@ -137,7 +137,7 @@ export const EventPage: FC<RouteProps> = ({ params }) => {
                   },
                 });
                 if (request) {
-                  void replayRequest(request);
+                  void replayRequest({ event, request });
                 }
               },
             },

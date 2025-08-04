@@ -37,6 +37,7 @@ export const ShimmerButton = React.forwardRef<
           'transform-gpu transition-transform duration-300 ease-in-out active:translate-y-[1px]',
           className,
         )}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={ref}
         style={
           {

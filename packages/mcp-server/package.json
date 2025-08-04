@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.27.1",
-    "@modelcontextprotocol/sdk": "1.17.0",
+    "@clerk/nextjs": "6.28.1",
+    "@modelcontextprotocol/sdk": "1.17.1",
     "@unhook/analytics": "workspace:*",
     "@unhook/api": "workspace:*",
     "@unhook/db": "workspace:*",
@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/node": "24.1.0",
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "exports": {
     ".": "./src/index.ts"

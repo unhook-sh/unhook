@@ -1,15 +1,15 @@
 'use client';
 
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { cn } from '@unhook/ui/lib/utils';
 import { Skeleton } from '@unhook/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
 
 interface RequestListProps {
-  requests: RequestType[];
+  requests: RequestTypeWithEventType[];
   isLoading: boolean;
-  onSelectRequest: (request: RequestType) => void;
+  onSelectRequest: (request: RequestTypeWithEventType) => void;
   selectedRequestId?: string;
 }
 
@@ -58,7 +58,7 @@ export function RequestList({
 }
 
 interface RequestRowProps {
-  request: RequestType;
+  request: RequestTypeWithEventType;
   onClick: () => void;
   isSelected: boolean;
 }
@@ -93,11 +93,13 @@ function RequestRow({ request, onClick, isSelected }: RequestRowProps) {
             (request.response?.status ?? 0) >= 400 ? 'destructive' : 'outline'
           }
         >
-          {request.request.method} {request.response?.status}
+          {request.event?.originRequest?.method} {request.response?.status}
         </Badge>
       </div>
       <div className="truncate font-mono">{request.destination.name}</div>
-      <div className="truncate font-mono">{request.request.method}</div>
+      <div className="truncate font-mono">
+        {request.event?.originRequest?.method}
+      </div>
       <div className="truncate">{request.destination.name}</div>
     </div>
   );

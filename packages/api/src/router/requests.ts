@@ -2,6 +2,7 @@ import {
   CreateRequestTypeSchema,
   Requests,
   type RequestType,
+  type RequestTypeWithEventType,
 } from '@unhook/db/schema';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -9,17 +10,60 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const requestsRouter = createTRPCRouter({
-  all: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+  all: protectedProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().default(50),
+          offset: z.number().default(0),
+        })
+        .nullish(),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-    const requests = await ctx.db
-      .select()
-      .from(Requests)
-      .where(eq(Requests.orgId, ctx.auth.orgId))
-      .orderBy(desc(Requests.createdAt));
+      const { limit, offset } = input ?? {
+        limit: 50,
+        offset: 0,
+      };
 
-    return requests;
-  }),
+      const requests = await ctx.db.query.Requests.findMany({
+        limit,
+        offset,
+        orderBy: [desc(Requests.createdAt)],
+        where: eq(Requests.orgId, ctx.auth.orgId),
+      });
+
+      return requests satisfies RequestType[];
+    }),
+
+  allWithEvents: protectedProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().default(50),
+          offset: z.number().default(0),
+        })
+        .nullish(),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const { limit, offset } = input ?? {
+        limit: 50,
+        offset: 0,
+      };
+
+      const requests = await ctx.db.query.Requests.findMany({
+        limit,
+        offset,
+        orderBy: [desc(Requests.createdAt)],
+        where: eq(Requests.orgId, ctx.auth.orgId),
+        with: { event: true },
+      });
+
+      return requests satisfies RequestTypeWithEventType[];
+    }),
 
   byEventIdAndDestination: protectedProcedure
     .input(
@@ -32,20 +76,16 @@ export const requestsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      const requests = await ctx.db
-        .select()
-        .from(Requests)
-        .where(
-          and(
-            eq(Requests.eventId, input.eventId),
-            eq(Requests.orgId, ctx.auth.orgId),
-            eq(Requests.destinationName, input.destinationName),
-            eq(Requests.destinationUrl, input.destinationUrl),
-          ),
-        )
-        .limit(1);
+      const request = await ctx.db.query.Requests.findFirst({
+        where: and(
+          eq(Requests.eventId, input.eventId),
+          eq(Requests.orgId, ctx.auth.orgId),
+          eq(Requests.destinationName, input.destinationName),
+          eq(Requests.destinationUrl, input.destinationUrl),
+        ),
+      });
 
-      return requests[0] || null;
+      return request || null;
     }),
 
   byId: protectedProcedure
@@ -53,17 +93,30 @@ export const requestsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      const request = await ctx.db
-        .select()
-        .from(Requests)
-        .where(
-          and(eq(Requests.id, input.id), eq(Requests.orgId, ctx.auth.orgId)),
-        )
-        .limit(1);
+      const request = await ctx.db.query.Requests.findFirst({
+        where: and(
+          eq(Requests.id, input.id),
+          eq(Requests.orgId, ctx.auth.orgId),
+        ),
+      });
 
-      if (!request.length) return null;
+      return request || null;
+    }),
 
-      return request[0];
+  byIdWithEvent: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const request = await ctx.db.query.Requests.findFirst({
+        where: and(
+          eq(Requests.id, input.id),
+          eq(Requests.orgId, ctx.auth.orgId),
+        ),
+        with: { event: true },
+      });
+
+      return request || null;
     }),
 
   byWebhookId: protectedProcedure
@@ -71,18 +124,32 @@ export const requestsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      const requests = await ctx.db
-        .select()
-        .from(Requests)
-        .where(
-          and(
-            eq(Requests.webhookId, input.webhookId),
-            eq(Requests.orgId, ctx.auth.orgId),
-          ),
-        )
-        .orderBy(desc(Requests.createdAt));
+      const requests = await ctx.db.query.Requests.findMany({
+        orderBy: [desc(Requests.createdAt)],
+        where: and(
+          eq(Requests.webhookId, input.webhookId),
+          eq(Requests.orgId, ctx.auth.orgId),
+        ),
+      });
 
-      return requests;
+      return requests satisfies RequestType[];
+    }),
+
+  byWebhookIdWithEvents: protectedProcedure
+    .input(z.object({ webhookId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const requests = await ctx.db.query.Requests.findMany({
+        orderBy: [desc(Requests.createdAt)],
+        where: and(
+          eq(Requests.webhookId, input.webhookId),
+          eq(Requests.orgId, ctx.auth.orgId),
+        ),
+        with: { event: true },
+      });
+
+      return requests satisfies RequestTypeWithEventType[];
     }),
 
   create: protectedProcedure

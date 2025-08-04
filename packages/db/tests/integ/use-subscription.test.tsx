@@ -2,10 +2,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { createClient } from '@supabase/supabase-js';
 import { render, screen, waitFor } from '@testing-library/react';
 import { createId } from '@unhook/id';
-import { env } from '../env.client';
-import type { EventType } from '../schema';
-import type { Database, Json } from './types';
-import { SubscriptionProvider, useSubscription } from './use-subscription';
+import { env } from '../../src/env.client';
+import type { EventType } from '../../src/schema';
+import type { Database, Json } from '../../src/supabase/types';
+import {
+  SubscriptionProvider,
+  useSubscription,
+} from '../../src/supabase/use-subscription';
 
 type SupabaseEvent = Database['public']['Tables']['events']['Insert'];
 
@@ -39,7 +42,7 @@ function TestComponent({
   return <div data-testid="status">{status}</div>;
 }
 
-describe.skip('SubscriptionProvider and useSubscription Integration', () => {
+describe.skip('useSubscription Integration Tests', () => {
   const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

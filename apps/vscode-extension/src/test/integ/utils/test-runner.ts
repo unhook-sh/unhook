@@ -6,32 +6,34 @@ export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     color: true,
+    parallel: false,
+    timeout: 100_000_000,
     ui: 'tdd',
   });
 
-  const testsRoot = path.resolve(__dirname, '..');
+  const testsRoot = path.resolve(__dirname, '../');
 
   return new Promise((c, e) => {
-    glob('**/**.test.js', { cwd: testsRoot })
-      .then((files: string[]) => {
+    glob('**/*.test.js', { cwd: testsRoot })
+      .then((files) => {
         // Add files to the test suite
-        for (const f of files) {
-          mocha.addFile(path.resolve(testsRoot, f));
-        }
+        files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
 
         try {
           // Run the mocha test
-          mocha.run((failures: number) => {
+          mocha.run((failures) => {
             if (failures > 0) {
               e(new Error(`${failures} tests failed.`));
             } else {
               c();
             }
           });
-        } catch (err: unknown) {
+        } catch (err) {
           e(err);
         }
       })
-      .catch((err: unknown) => e(err));
+      .catch((err) => {
+        return e(err);
+      });
   });
 }

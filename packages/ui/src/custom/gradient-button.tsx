@@ -36,6 +36,7 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
     return (
       <button
         className={cn(gradientButtonVariants({ className, size, variant }))}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={ref}
         {...props}
       />

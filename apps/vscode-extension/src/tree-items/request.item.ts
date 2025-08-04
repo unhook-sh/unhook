@@ -1,5 +1,5 @@
 import { extractBody } from '@unhook/client/utils/extract-body';
-import type { RequestType } from '@unhook/db/schema';
+import type { EventType, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { formatDistance } from 'date-fns';
 import * as vscode from 'vscode';
@@ -8,32 +8,39 @@ import type { EventItem } from './event.item';
 
 const log = debug('unhook:vscode:request-item');
 
-export function formatRequestDetails(request: RequestType): string {
+export function formatRequestDetails({
+  request,
+  event,
+}: {
+  request: RequestType;
+  event: EventType;
+}): string {
   const lines: string[] = [];
+  const originRequest = event?.originRequest;
 
   // Request Details
   lines.push('# Request Details');
-  lines.push(`Method: ${request.request?.method || 'N/A'}`);
-  lines.push(`URL: ${request.request?.sourceUrl || 'N/A'}`);
-  lines.push(`Content Type: ${request.request?.contentType || 'N/A'}`);
-  lines.push(`Size: ${request.request?.size || 0} bytes`);
-  lines.push(`Client IP: ${request.request?.clientIp || 'N/A'}`);
+  lines.push(`Method: ${originRequest?.method || 'N/A'}`);
+  lines.push(`URL: ${originRequest?.sourceUrl || 'N/A'}`);
+  lines.push(`Content Type: ${originRequest?.contentType || 'N/A'}`);
+  lines.push(`Size: ${originRequest?.size || 0} bytes`);
+  lines.push(`Client IP: ${originRequest?.clientIp || 'N/A'}`);
   lines.push('');
 
   // Headers
-  if (request.request?.headers) {
+  if (originRequest?.headers) {
     lines.push('# Request Headers');
-    for (const [key, value] of Object.entries(request.request.headers)) {
+    for (const [key, value] of Object.entries(originRequest.headers)) {
       lines.push(`${key}: ${value}`);
     }
     lines.push('');
   }
 
   // Request Body
-  if (request.request?.body) {
+  if (originRequest?.body) {
     lines.push('# Request Body');
     lines.push('```json');
-    lines.push(extractBody(request.request.body) ?? '');
+    lines.push(extractBody(originRequest.body) ?? '');
     lines.push('```');
     lines.push('');
   }

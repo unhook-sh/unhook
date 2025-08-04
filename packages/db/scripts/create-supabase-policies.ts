@@ -23,6 +23,8 @@ const createRequestingUserIdFunction = async () => {
     RETURNS text
     LANGUAGE sql
     STABLE
+    SECURITY DEFINER
+    SET search_path = ''
     AS $$
       SELECT NULLIF(
         current_setting('request.jwt.claims', true)::json->>'sub',
@@ -41,6 +43,8 @@ const createRequestingOrgIdFunction = async () => {
     RETURNS text
     LANGUAGE sql
     STABLE
+    SECURITY DEFINER
+    SET search_path = ''
     AS $$
       SELECT NULLIF(
         current_setting('request.jwt.claims', true)::json->>'org_id',
@@ -54,13 +58,13 @@ const createRequestingOrgIdFunction = async () => {
 // Common policy conditions using the requesting_user_id function
 const policyConditions = {
   orgOwnership: (columnName = 'orgId') =>
-    `requesting_org_id() = ("${columnName}")::text`,
+    `(SELECT requesting_org_id()) = ("${columnName}")::text`,
   userOwnership: (columnName = 'userId') =>
-    `requesting_user_id() = ("${columnName}")::text`,
+    `(SELECT requesting_user_id()) = ("${columnName}")::text`,
   webhookOwnership: `EXISTS (
     SELECT 1 FROM webhooks
     WHERE webhooks.id = requests."webhookId"
-    AND webhooks."orgId" = requesting_org_id()
+    AND webhooks."orgId" = (SELECT requesting_org_id())
   )`,
 } as const;
 
@@ -350,6 +354,15 @@ async function _dropAllPolicies() {
   );
 }
 
+// _dropAllPolicies()
+//   .then(() => {
+//     console.log('Policy setup completed');
+//     process.exit(0);
+//   })
+//   .catch((error) => {
+//     console.error('Policy setup failed:', error);
+//     process.exit(1);
+//   });
 setupAllPolicies()
   .then(() => {
     console.log('Policy setup completed');

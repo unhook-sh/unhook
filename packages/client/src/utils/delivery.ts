@@ -171,7 +171,7 @@ export async function createRequestsForEventToAllDestinations({
       },
     });
     const request = await api.requests.create.mutate({
-      apiKeyId: event.apiKeyId ?? undefined,
+      apiKeyId: event.apiKeyId,
       connectionId: connectionId ?? undefined,
       destination: {
         name: dest.name,
@@ -180,7 +180,6 @@ export async function createRequestsForEventToAllDestinations({
       destinationName: dest.name,
       destinationUrl: urlString,
       eventId: event.id,
-      request: originRequest,
       responseTimeMs: 0,
       source: event.source,
       status: 'pending',
@@ -212,8 +211,10 @@ export async function handlePendingRequest({
   capture,
   onRetryRequest,
   requestFn,
+  event,
 }: {
   request: RequestType;
+  event: EventType;
   delivery: WebhookDelivery[];
   destination: WebhookDestination[];
   api: ApiClient;
@@ -227,12 +228,19 @@ export async function handlePendingRequest({
     source: request.source,
   });
   if (!dest) return;
+
+  // Get the original request data from the associated event
+  const originRequest = event?.originRequest;
+  if (!originRequest) {
+    throw new Error('No origin request data available - event data not loaded');
+  }
+
   capture?.({
     event: 'webhook_request_received',
     properties: {
       destination: dest.destination,
       eventId: request.eventId,
-      method: request.request.method,
+      method: originRequest.method,
       requestId: request.id,
       source: request.source,
       url: dest.url,
@@ -242,22 +250,22 @@ export async function handlePendingRequest({
   if (request.status === 'pending') {
     try {
       let requestBody: string | undefined;
-      if (request.request.body) {
+      if (originRequest.body) {
         try {
-          requestBody = Buffer.from(request.request.body, 'base64').toString(
+          requestBody = Buffer.from(originRequest.body, 'base64').toString(
             'utf-8',
           );
         } catch {
-          requestBody = request.request.body;
+          requestBody = originRequest.body;
         }
       }
       const startTime = Date.now();
-      const { host: _host, ...headers } = request.request.headers;
+      const { host: _host, ...headers } = originRequest.headers;
       const response = await (requestFn
         ? requestFn(dest.url, {
             body: requestBody,
             headers,
-            method: request.request.method,
+            method: originRequest.method,
           })
         : Promise.reject(new Error('No requestFn provided')));
 
@@ -272,7 +280,7 @@ export async function handlePendingRequest({
         event: 'webhook_request_completed',
         properties: {
           eventId: request.eventId,
-          method: request.request.method,
+          method: originRequest.method,
           requestId: request.id,
           responseStatus: response.statusCode,
           responseTimeMs,
@@ -315,7 +323,7 @@ export async function handlePendingRequest({
         properties: {
           eventId: request.eventId,
           failedReason,
-          method: request.request.method,
+          method: originRequest.method,
           requestId: request.id,
           webhookId: request.webhookId,
         },
@@ -344,7 +352,6 @@ export async function handlePendingRequest({
               destinationName: dest.destination,
               destinationUrl: dest.url,
               eventId: event.id,
-              request: event.originRequest,
               responseTimeMs: 0,
               source: event.source,
               status: 'pending',

@@ -21,6 +21,10 @@ export class AuthStore implements vscode.Disposable {
   private _isValidatingSession = false;
   private _api: ApiClient;
   private _configManager: ConfigManager;
+  private _sessionRefreshTimer: NodeJS.Timeout | null = null;
+  private readonly SESSION_REFRESH_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+  private _lastValidationTime = 0;
+  private readonly MIN_VALIDATION_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes minimum between validations
 
   constructor(private readonly context: vscode.ExtensionContext) {
     // Initialize ConfigManager
@@ -80,6 +84,10 @@ export class AuthStore implements vscode.Disposable {
     } catch (error) {
       log('Failed to get Supabase token during auth code exchange:', error);
     }
+
+    // Start periodic session refresh to keep tokens fresh
+    this.startPeriodicSessionRefresh();
+    log('Periodic session refresh started');
 
     // Fire one auth change event after everything is set
     this._onDidChangeAuth.fire();
@@ -149,6 +157,7 @@ export class AuthStore implements vscode.Disposable {
 
   async signOut() {
     log('Signing out user');
+    this.stopPeriodicSessionRefresh();
     await this.setAuthTokenInternal({ token: null });
     await this.setSupabaseTokenInternal({ token: null });
     await this.setSessionIdInternal({ sessionId: null });
@@ -157,7 +166,7 @@ export class AuthStore implements vscode.Disposable {
     log('User signed out');
   }
 
-  async validateSession(): Promise<boolean> {
+  async validateSession(isInitialization = false): Promise<boolean> {
     if (!this._authToken || !this._sessionId) {
       log('Cannot validate session - missing token or session ID', {
         hasSessionId: !!this._sessionId,
@@ -166,8 +175,25 @@ export class AuthStore implements vscode.Disposable {
       return false;
     }
 
-    log('Validating session');
+    // Debounce validation calls to prevent rapid successive validations
+    const now = Date.now();
+    if (
+      !isInitialization &&
+      now - this._lastValidationTime < this.MIN_VALIDATION_INTERVAL_MS
+    ) {
+      log('Validation skipped due to debouncing', {
+        minInterval: this.MIN_VALIDATION_INTERVAL_MS,
+        timeSinceLastValidation: now - this._lastValidationTime,
+      });
+      return this._isSignedIn; // Return current state without validating
+    }
+
+    log('Validating session', {
+      caller: new Error().stack?.split('\n')[2]?.trim() || 'unknown',
+      isInitialization,
+    });
     this.setValidatingSession(true);
+    this._lastValidationTime = now;
 
     try {
       // First, validate the regular session token for API calls
@@ -199,7 +225,18 @@ export class AuthStore implements vscode.Disposable {
       log('Session validated successfully', { userId: user.id });
       return true;
     } catch (error) {
-      log('Session validation failed', { error });
+      log('Session validation failed', { error, isInitialization });
+
+      // During initialization, be more lenient - don't immediately sign out
+      // This prevents logout on workspace reload due to temporary network issues
+      if (isInitialization) {
+        log(
+          'Keeping existing session during initialization despite validation failure',
+        );
+        // Keep the user signed in with existing tokens, but mark validation as failed
+        return false;
+      }
+      // For non-initialization validation (user-triggered), be more strict
       await this.signOut();
       return false;
     } finally {
@@ -221,18 +258,76 @@ export class AuthStore implements vscode.Disposable {
     }
 
     // Validate session if we have both token and sessionId
+    // Pass isInitialization=true to be more lenient during startup
     if (token && sessionId) {
-      await this.validateSession();
+      const validationResult = await this.validateSession(true);
+      if (!validationResult) {
+        log(
+          'Session validation failed during initialization, but keeping user signed in',
+        );
+        // Even though validation failed, we'll keep the user signed in with existing tokens
+        // This prevents logout on workspace reload due to network issues
+      }
+
+      // Start periodic session refresh if we have valid credentials
+      if (this._isSignedIn) {
+        this.startPeriodicSessionRefresh();
+      }
     }
 
     // Fire one auth change event after initialization
     this._onDidChangeAuth.fire();
 
-    log('Auth store initialization complete');
+    log('Auth store initialization complete', {
+      hasSessionId: !!sessionId,
+      hasToken: !!token,
+      isSignedIn: this._isSignedIn,
+    });
+  }
+
+  /**
+   * Manually validate and refresh the session (more strict than initialization)
+   */
+  async refreshSession(): Promise<boolean> {
+    return this.validateSession(false);
+  }
+
+  /**
+   * Start periodic session refresh to keep tokens fresh
+   */
+  private startPeriodicSessionRefresh() {
+    this.stopPeriodicSessionRefresh();
+
+    if (this._isSignedIn && this._sessionId) {
+      log('Starting periodic session refresh');
+      this._sessionRefreshTimer = setInterval(async () => {
+        if (this._isSignedIn && this._sessionId && !this._isValidatingSession) {
+          log('Performing periodic session refresh');
+          try {
+            // Use lenient validation to avoid logging out on temporary issues
+            await this.validateSession(true);
+          } catch (error) {
+            log('Periodic session refresh failed, but continuing', { error });
+          }
+        }
+      }, this.SESSION_REFRESH_INTERVAL_MS);
+    }
+  }
+
+  /**
+   * Stop periodic session refresh
+   */
+  private stopPeriodicSessionRefresh() {
+    if (this._sessionRefreshTimer) {
+      clearInterval(this._sessionRefreshTimer);
+      this._sessionRefreshTimer = null;
+      log('Stopped periodic session refresh');
+    }
   }
 
   dispose() {
     log('Disposing auth store');
+    this.stopPeriodicSessionRefresh();
     this._onDidChangeAuth.dispose();
   }
 }

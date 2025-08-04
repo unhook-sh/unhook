@@ -1,6 +1,6 @@
 'use client';
 
-import type { RequestType } from '@unhook/db/schema';
+import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import { cn } from '@unhook/ui/lib/utils';
@@ -15,7 +15,7 @@ import { ArrowDown, ArrowUp, Copy, Shield, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface LogMetadataProps {
-  request: RequestType;
+  request: RequestTypeWithEventType;
   onClose: () => void;
   onNavigate?: (direction: 'prev' | 'next') => void;
   hasPrev?: boolean;
@@ -54,7 +54,7 @@ export function RequestMetadata({
             className="bg-black text-white border-zinc-700 font-mono"
             variant="outline"
           >
-            {request.request.method}
+            {request.event?.originRequest?.method}
           </Badge>
           <span className="font-mono">{request.destination.name}</span>
           <Badge
@@ -156,14 +156,15 @@ export function RequestMetadata({
               <div className="space-y-1 border-t border-zinc-800 pt-4">
                 <div className="text-zinc-400">User Agent</div>
                 <div className="font-mono text-sm break-words">
-                  {request.request.headers['user-agent']}
+                  {request.event?.originRequest?.headers?.['user-agent']}
                 </div>
               </div>
 
               <div className="space-y-1 border-t border-zinc-800 pt-4">
                 <div className="flex items-center justify-between">
                   <div className="text-zinc-400">Search Params</div>
-                  {Object.keys(request.request.headers).length > 0 && (
+                  {Object.keys(request.event?.originRequest?.headers ?? {})
+                    .length > 0 && (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -171,7 +172,9 @@ export function RequestMetadata({
                             className="h-6 w-6 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
                             onClick={() =>
                               handleCopy(
-                                JSON.stringify(request.request.headers),
+                                JSON.stringify(
+                                  request.event?.originRequest?.headers,
+                                ),
                               )
                             }
                             size="icon"
@@ -187,26 +190,27 @@ export function RequestMetadata({
                     </TooltipProvider>
                   )}
                 </div>
-                {Object.keys(request.request.headers).length > 0 ? (
+                {Object.keys(request.event?.originRequest?.headers ?? {})
+                  .length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(request.request.headers).map(
-                      ([key, value]) => (
-                        <div className="flex" key={key}>
-                          <Badge
-                            className="rounded-r-none bg-black text-white border-zinc-700 font-mono"
-                            variant="outline"
-                          >
-                            {key}
-                          </Badge>
-                          <Badge
-                            className="rounded-l-none bg-zinc-800 text-white border-zinc-700 border-l-0 font-mono"
-                            variant="outline"
-                          >
-                            {value}
-                          </Badge>
-                        </div>
-                      ),
-                    )}
+                    {Object.entries(
+                      request.event?.originRequest?.headers ?? {},
+                    ).map(([key, value]) => (
+                      <div className="flex" key={key}>
+                        <Badge
+                          className="rounded-r-none bg-black text-white border-zinc-700 font-mono"
+                          variant="outline"
+                        >
+                          {key}
+                        </Badge>
+                        <Badge
+                          className="rounded-l-none bg-zinc-800 text-white border-zinc-700 border-l-0 font-mono"
+                          variant="outline"
+                        >
+                          {value as string}
+                        </Badge>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="text-zinc-500">No search params</div>
@@ -274,7 +278,9 @@ export function RequestMetadata({
             <div className="relative border-b border-zinc-800 px-4 py-3">
               <div className="space-y-1">
                 <div className="text-zinc-400">Location</div>
-                <div className="text-sm">{request.request.clientIp}</div>
+                <div className="text-sm">
+                  {request.event?.originRequest?.clientIp}
+                </div>
               </div>
             </div>
 
@@ -318,7 +324,7 @@ export function RequestMetadata({
                     variant="outline"
                   >
                     Delivered to localhost:
-                    {request.request.headers.port || '3000'}
+                    {request.event?.originRequest?.headers?.port || '3000'}
                   </Badge>
                   <Badge
                     className={

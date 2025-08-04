@@ -30,12 +30,14 @@ export function createClient(props: { authToken: string; url?: string }) {
         }
         return authToken;
       },
-      auth: {
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
-        persistSession: false,
-      },
       realtime: {
+        accessToken: async () => {
+          if (!authToken) {
+            log('No auth token available for accessToken');
+            return null;
+          }
+          return authToken;
+        },
         params: {
           eventsPerSecond: 10,
         },

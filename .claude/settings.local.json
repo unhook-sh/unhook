@@ -15,7 +15,11 @@
       "mcp__ide__getDiagnostics",
       "Bash(infisical run:*)",
       "Bash(mkdir:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(USE_LOCAL_DB=true bun test packages/integ-test/src/events-requests.test.ts)",
+      "Bash(USE_LOCAL_DB=true bun test ./packages/integ-test/src/events-requests.test.ts)",
+      "Bash(USE_LOCAL_DB=true bun test src/events-requests.test.ts)",
+      "Bash(USE_LOCAL_DB=true bun test src/events-requests.test.ts -t \"should create an event when webhook receives a request\")"
     ],
     "deny": []
   }

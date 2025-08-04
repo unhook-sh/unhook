@@ -113,7 +113,6 @@ export function constructRequestFromRealtimeData(
       failedReason: record.failedReason as string | null,
       id: record.id as string,
       orgId: record.orgId as string,
-      request: record.request as RequestPayload,
       response: record.response as ResponsePayload | null,
       responseTimeMs: record.responseTimeMs as number,
       source: record.source as string,

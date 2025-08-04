@@ -59,6 +59,7 @@ export class EventsDeliveryService {
             api: authStore.api,
             delivery: config.delivery,
             destination: config.destination,
+            event,
             request,
             requestFn: async (url, options) => {
               try {
@@ -154,6 +155,7 @@ export class EventsDeliveryService {
               api: authStore.api,
               delivery: config.delivery,
               destination: config.destination,
+              event,
               request,
               requestFn: async (url, options) => {
                 try {

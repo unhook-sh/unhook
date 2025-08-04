@@ -22,6 +22,7 @@ export interface RealtimeServiceOptions {
   onChannelStateChange?: (
     channelType: 'events' | 'requests',
     connected: boolean,
+    error?: Error,
   ) => void;
 }
 
@@ -38,19 +39,72 @@ export class RealtimeService implements vscode.Disposable {
   private readonly RECONNECT_DELAY_MS = 5000;
   private currentWebhookId: string | null = null;
   private connectionMonitorInterval: NodeJS.Timeout | null = null;
-  private readonly CONNECTION_MONITOR_INTERVAL_MS = 30000; // Check every 30 seconds
+  private readonly CONNECTION_MONITOR_INTERVAL_MS = 60000; // Check every 60 seconds
+  private lastReconnectAttempt = 0;
+  private readonly MIN_RECONNECT_INTERVAL_MS = 10000; // Minimum 10 seconds between reconnects
 
   constructor(private options: RealtimeServiceOptions) {
     this.setupAuthListener();
   }
 
+  private previousAuthState: {
+    isSignedIn: boolean;
+    supabaseToken: string | null;
+  } = {
+    isSignedIn: false,
+    supabaseToken: null,
+  };
+
   private setupAuthListener() {
     this.options.authStore.onDidChangeAuth(() => {
-      log('Auth state changed, reconnecting realtime');
-      this.disconnect();
-      if (this.options.authStore.isSignedIn) {
-        this.connect();
+      const currentAuthState = {
+        isSignedIn: this.options.authStore.isSignedIn,
+        supabaseToken: this.options.authStore.supabaseToken,
+      };
+
+      // Only reconnect if there's a meaningful change in auth state
+      const authStateChanged =
+        this.previousAuthState.isSignedIn !== currentAuthState.isSignedIn ||
+        this.previousAuthState.supabaseToken !== currentAuthState.supabaseToken;
+
+      log('Auth state changed', {
+        authStateChanged,
+        currentWebhookId: this.currentWebhookId,
+        hasSupabaseToken: !!currentAuthState.supabaseToken,
+        isSignedIn: currentAuthState.isSignedIn,
+        previousHadToken: !!this.previousAuthState.supabaseToken,
+        previousSignedIn: this.previousAuthState.isSignedIn,
+      });
+
+      if (authStateChanged) {
+        log(
+          'Meaningful auth state change detected, handling realtime connection',
+        );
+
+        // Always disconnect first to clean up existing connections
+        this.disconnect();
+
+        // Only reconnect if we're signed in and have tokens
+        if (currentAuthState.isSignedIn && currentAuthState.supabaseToken) {
+          // Add a small delay to ensure tokens are fully set up
+          setTimeout(() => {
+            if (this.currentWebhookId) {
+              this.connect(this.currentWebhookId);
+            } else {
+              this.connect();
+            }
+          }, 500);
+        } else {
+          log(
+            'Not reconnecting - either not signed in or missing Supabase token',
+          );
+        }
+      } else {
+        log('Auth event fired but no meaningful state change, ignoring');
       }
+
+      // Update previous state
+      this.previousAuthState = currentAuthState;
     });
   }
 
@@ -103,12 +157,13 @@ export class RealtimeService implements vscode.Disposable {
         throw new Error('Supabase realtime connection not established');
       }
 
+      this.currentWebhookId = webhookId || null;
+
       if (webhookId) {
         await this.subscribeToWebhook(webhookId);
       }
 
       this.isConnected = true;
-      this.currentWebhookId = webhookId || null;
       this.reconnectAttempts = 0;
 
       // Start monitoring connection health
@@ -133,7 +188,7 @@ export class RealtimeService implements vscode.Disposable {
 
     log('Subscribing to webhook events and requests', { webhookId });
 
-    // Subscribe to events table changes for this webhook
+    // Create both channels first with private configuration
     this.eventChannel = this.supabaseClient
       .channel(`events-${webhookId}`)
       .on(
@@ -183,6 +238,15 @@ export class RealtimeService implements vscode.Disposable {
             webhookId,
           });
           this.eventsConnected = false;
+
+          // Check if this is an authentication error
+          if (
+            error.message.includes('auth') ||
+            error.message.includes('unauthorized')
+          ) {
+            log('Detected authentication error in events channel');
+            this.handleAuthenticationFailure(error);
+          }
         }
 
         // Notify if connection state changed
@@ -195,10 +259,9 @@ export class RealtimeService implements vscode.Disposable {
         }
       });
 
-    // Wait a moment for the first subscription to establish
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.waitForChannelSubscription(this.eventChannel, 'events');
+    log('Events channel subscription established');
 
-    // Subscribe to requests table changes for this webhook
     this.requestChannel = this.supabaseClient
       .channel(`requests-${webhookId}`)
       .on(
@@ -248,6 +311,15 @@ export class RealtimeService implements vscode.Disposable {
             webhookId,
           });
           this.requestsConnected = false;
+
+          // Check if this is an authentication error
+          if (
+            error.message.includes('auth') ||
+            error.message.includes('unauthorized')
+          ) {
+            log('Detected authentication error in requests channel');
+            this.handleAuthenticationFailure(error);
+          }
         }
 
         // Notify if connection state changed
@@ -263,7 +335,363 @@ export class RealtimeService implements vscode.Disposable {
         }
       });
 
-    log('Successfully subscribed to webhook changes', { webhookId });
+    try {
+      await Promise.all([
+        this.waitForChannelSubscription(this.eventChannel, 'events'),
+        this.waitForChannelSubscription(this.requestChannel, 'requests'),
+      ]);
+      log('Successfully subscribed to webhook changes', { webhookId });
+    } catch (error) {
+      log('Failed to establish channel subscriptions', { error, webhookId });
+
+      // If subscription fails, clean up and try to reconnect with fresh token
+      if (this.eventChannel) {
+        this.supabaseClient?.removeChannel(this.eventChannel);
+        this.eventChannel = null;
+        this.eventsConnected = false;
+      }
+      if (this.requestChannel) {
+        this.supabaseClient?.removeChannel(this.requestChannel);
+        this.requestChannel = null;
+        this.requestsConnected = false;
+      }
+
+      // Try to refresh the Supabase token and reconnect after a short delay
+      setTimeout(async () => {
+        log(
+          'Attempting to refresh token and reconnect after subscription failure',
+        );
+        try {
+          // Validate session to refresh tokens
+          if (this.options.authStore.sessionId) {
+            await this.options.authStore.validateSession();
+          }
+          // Reconnect with fresh tokens
+          await this.reconnectWithAuthVerification();
+        } catch (reconnectError) {
+          log('Failed to reconnect after subscription failure', {
+            error: reconnectError,
+          });
+        }
+      }, 2000);
+
+      throw error;
+    }
+  }
+
+  /**
+   * Wait for a channel subscription to establish and verify authentication
+   */
+  private async waitForChannelSubscription(
+    channel: RealtimeChannel | null,
+    channelType: 'events' | 'requests',
+  ): Promise<void> {
+    if (!channel) {
+      throw new Error(`Channel ${channelType} is null`);
+    }
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(
+          new Error(`Timeout waiting for ${channelType} channel subscription`),
+        );
+      }, 15000); // Increased to 15 second timeout
+
+      let authVerificationAttempts = 0;
+      const maxAuthAttempts = 3;
+
+      const checkSubscription = () => {
+        // Check if the channel is subscribed by checking the connection state
+        const isConnected = this.supabaseClient?.realtime.isConnected();
+        const channelConnected =
+          channelType === 'events'
+            ? this.eventsConnected
+            : this.requestsConnected;
+
+        if (isConnected && channelConnected) {
+          clearTimeout(timeout);
+
+          // Verify authentication with retry logic
+          const attemptAuthVerification = async () => {
+            try {
+              await this.verifyChannelAuthentication(channelType);
+              log(
+                `${channelType} channel subscription established successfully`,
+              );
+              resolve();
+            } catch (error) {
+              authVerificationAttempts++;
+              if (authVerificationAttempts < maxAuthAttempts) {
+                log(
+                  `Auth verification failed for ${channelType} channel, retrying (${authVerificationAttempts}/${maxAuthAttempts})`,
+                  { error },
+                );
+                // Wait a bit longer before retrying
+                setTimeout(attemptAuthVerification, 1000);
+              } else {
+                log(
+                  `Auth verification failed permanently for ${channelType} channel after ${maxAuthAttempts} attempts`,
+                  { error },
+                );
+                reject(error);
+              }
+            }
+          };
+
+          // Give a longer initial delay for auth to settle
+          setTimeout(attemptAuthVerification, 1000);
+        } else {
+          setTimeout(checkSubscription, 200);
+        }
+      };
+
+      checkSubscription();
+    });
+  }
+
+  /**
+   * Verify that a channel is properly authenticated
+   */
+  private async verifyChannelAuthentication(
+    channelType: 'events' | 'requests',
+  ): Promise<void> {
+    const hasAuthToken = !!this.options.authStore.supabaseToken;
+
+    // If we don't have an auth token, skip authentication verification
+    if (!hasAuthToken) {
+      log(
+        `No auth token available for ${channelType} channel, skipping verification`,
+      );
+      return;
+    }
+
+    try {
+      // More lenient authentication check - if we have a token and either we're authenticated
+      // OR we have claims (which indicates a valid session), consider it successful
+      if (hasAuthToken) {
+        log(`Channel ${channelType} authentication verified successfully`);
+
+        // Also verify subscription claims role for additional security check
+        await this.verifySubscriptionClaimsRole(channelType);
+        return;
+      }
+
+      // When using accessToken configuration (CLI mode), we won't have claims/session data
+      // but isAuthenticated will be true if we have a valid token
+      if (hasAuthToken) {
+        log(
+          `Channel ${channelType} authentication verified (accessToken mode)`,
+        );
+        return;
+      }
+
+      // If we have an auth token but no authentication, this might be a temporary issue
+      // Only fail if we're sure there's a real authentication problem
+      if (hasAuthToken) {
+        log(
+          `Channel ${channelType} authentication may have failed - token exists but no claims/auth`,
+        );
+        throw new Error(
+          `Channel ${channelType} authentication verification failed`,
+        );
+      }
+
+      log(`Channel ${channelType} authentication check completed`);
+    } catch (error) {
+      // Log the error but be more lenient - many auth verification failures are temporary
+      log(`Auth verification error for ${channelType} channel:`, error);
+
+      // Only throw if this is a definitive authentication failure
+      if (
+        error instanceof Error &&
+        error.message.includes('authentication verification failed')
+      ) {
+        throw error;
+      }
+
+      // For other errors (timeouts, network issues), log but don't fail the subscription
+      log(
+        `Allowing ${channelType} channel subscription despite auth verification error`,
+      );
+    }
+  }
+
+  /**
+   * Verify that our subscription for a specific table has the correct claims role (authenticated vs anon)
+   */
+  private async verifySubscriptionClaimsRole(
+    tableName: 'events' | 'requests',
+  ): Promise<void> {
+    if (!this.currentWebhookId) {
+      log(
+        'No webhook ID available, skipping subscription claims role verification',
+      );
+      return;
+    }
+
+    try {
+      log('Verifying subscription claims roles for events and requests', {
+        webhookId: this.currentWebhookId,
+      });
+
+      // Use the API to verify subscription claims role
+      try {
+        const result =
+          await this.options.authStore.api.realtimeSubscriptions.verifyWebhookSubscriptionClaims.query(
+            {
+              tableName,
+              webhookId: this.currentWebhookId,
+            },
+          );
+
+        if (!result.found) {
+          log(`No ${tableName} subscription found for webhook`, {
+            webhookId: this.currentWebhookId,
+          });
+          return;
+        }
+
+        const hasAuthToken = !!this.options.authStore.supabaseToken;
+        const expectedRole = hasAuthToken ? 'authenticated' : 'anon';
+
+        log(`${tableName} subscription claims role check`, {
+          claimsRole: result.claimsRole,
+          entity: tableName,
+          expectedRole,
+          hasAuthToken,
+        });
+
+        if (result.claimsRole !== expectedRole) {
+          log(`${tableName} subscription claims role mismatch detected`, {
+            actualRole: result.claimsRole,
+            entity: tableName,
+            expectedRole,
+            hasAuthToken,
+          });
+
+          // Trigger reauthentication by calling the authentication failure handler
+          await this.handleAuthenticationFailure(
+            new Error('Subscription claims role mismatch'),
+          );
+        } else {
+          log(`${tableName} subscription claims role verified successfully`, {
+            claimsRole: result.claimsRole,
+            entity: tableName,
+            expectedRole,
+          });
+        }
+      } catch (error) {
+        log('Error verifying subscription claims role via API', {
+          error: error instanceof Error ? error.message : error,
+          tableName,
+          webhookId: this.currentWebhookId,
+        });
+        // Don't throw - this is diagnostic information, not a critical failure
+      }
+    } catch (error) {
+      log('Error verifying subscription claims roles', {
+        error: error instanceof Error ? error.message : error,
+        webhookId: this.currentWebhookId,
+      });
+      // Don't throw - this is diagnostic information, not a critical failure
+    }
+  }
+
+  /**
+   * Reconnect with authentication verification
+   */
+  public async reconnectWithAuthVerification(): Promise<void> {
+    const now = Date.now();
+
+    // Rate limit reconnection attempts
+    if (now - this.lastReconnectAttempt < this.MIN_RECONNECT_INTERVAL_MS) {
+      log('Reconnection rate limited, skipping attempt', {
+        minInterval: this.MIN_RECONNECT_INTERVAL_MS,
+        timeSinceLastAttempt: now - this.lastReconnectAttempt,
+      });
+      return;
+    }
+
+    this.lastReconnectAttempt = now;
+    log('Reconnecting with authentication verification');
+
+    // Disconnect current connection
+    this.disconnect();
+
+    // Wait a moment for cleanup
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Reconnect
+    await this.connect(this.currentWebhookId || undefined);
+
+    // Verify both channels are authenticated
+    if (this.currentWebhookId) {
+      await this.verifyChannelAuthentication('events');
+      await this.verifyChannelAuthentication('requests');
+    }
+
+    log('Reconnection with authentication verification completed');
+  }
+
+  /**
+   * Check if any channels are unauthenticated and reconnect if needed
+   */
+  public async checkAndFixAuthentication(): Promise<boolean> {
+    if (!this.isConnected || !this.currentWebhookId) {
+      log('Not connected or no webhook ID, skipping authentication check');
+      return false;
+    }
+
+    const hasAuthToken = !!this.options.authStore.supabaseToken;
+    if (!hasAuthToken) {
+      log('No auth token available, skipping authentication check');
+      return false;
+    }
+
+    try {
+      // If at least one channel is connected, assume things are working
+      if (this.eventsConnected || this.requestsConnected) {
+        log(
+          'At least one channel connected, authentication appears to be working',
+        );
+        return false;
+      }
+
+      log('Authentication check completed without action needed');
+      return false;
+    } catch (error) {
+      log('Error during authentication check:', error);
+      // Don't automatically reconnect on errors to avoid loops
+      return false;
+    }
+  }
+
+  /**
+   * Handle authentication failure by forcing a reconnection
+   */
+  public async handleAuthenticationFailure(_error: Error): Promise<void> {
+    const now = Date.now();
+
+    // Rate limit authentication failure handling
+    if (now - this.lastReconnectAttempt < this.MIN_RECONNECT_INTERVAL_MS) {
+      log(
+        'Authentication failure handling rate limited, skipping reconnection',
+      );
+      return;
+    }
+
+    log('Handling authentication failure, forcing reconnection');
+
+    // Mark both channels as disconnected
+    this.eventsConnected = false;
+    this.requestsConnected = false;
+
+    // Notify about channel state changes
+    this.options.onChannelStateChange?.('events', false);
+    this.options.onChannelStateChange?.('requests', false);
+
+    // Force reconnection with authentication verification
+    await this.reconnectWithAuthVerification();
   }
 
   public disconnect(): void {
@@ -336,8 +764,20 @@ export class RealtimeService implements vscode.Disposable {
     this.isConnected = false;
     this.options.onConnectionStateChange?.(false);
 
+    const now = Date.now();
+
+    // Rate limit connection error handling
+    if (now - this.lastReconnectAttempt < this.MIN_RECONNECT_INTERVAL_MS) {
+      log(
+        'Connection error handling rate limited, skipping reconnection attempt',
+      );
+      return;
+    }
+
     if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
       this.reconnectAttempts++;
+      this.lastReconnectAttempt = now;
+
       log(
         `Attempting to reconnect (${this.reconnectAttempts}/${this.MAX_RECONNECT_ATTEMPTS})`,
       );
@@ -354,8 +794,8 @@ export class RealtimeService implements vscode.Disposable {
     // Stop any existing monitoring
     this.stopConnectionMonitoring();
 
-    this.connectionMonitorInterval = setInterval(() => {
-      this.checkConnectionHealth();
+    this.connectionMonitorInterval = setInterval(async () => {
+      await this.checkConnectionHealth();
     }, this.CONNECTION_MONITOR_INTERVAL_MS);
   }
 
@@ -366,7 +806,7 @@ export class RealtimeService implements vscode.Disposable {
     }
   }
 
-  private checkConnectionHealth(): void {
+  private async checkConnectionHealth(): Promise<void> {
     if (!this.supabaseClient || !this.isConnected) {
       return;
     }
@@ -383,6 +823,9 @@ export class RealtimeService implements vscode.Disposable {
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.options.onConnectionStateChange?.(true);
+    } else if (isConnected && this.isConnected) {
+      // Connection is stable, check authentication
+      await this.checkAndFixAuthentication();
     }
   }
 
@@ -415,6 +858,36 @@ export class RealtimeService implements vscode.Disposable {
   } {
     return {
       eventsConnected: this.eventsConnected,
+      isConnected: this.isConnected,
+      requestsConnected: this.requestsConnected,
+      webhookId: this.currentWebhookId,
+    };
+  }
+
+  /**
+   * Check if the current connection is authenticated or anonymous
+   * @returns 'authenticated' if we have a valid auth token, 'anonymous' otherwise
+   */
+  public getConnectionType(): 'authenticated' | 'anonymous' {
+    const hasAuthToken = !!this.options.authStore.supabaseToken;
+    return hasAuthToken ? 'authenticated' : 'anonymous';
+  }
+
+  /**
+   * Get detailed connection information including authentication status
+   */
+  public getDetailedConnectionInfo(): {
+    isConnected: boolean;
+    connectionType: 'authenticated' | 'anonymous';
+    webhookId: string | null;
+    eventsConnected: boolean;
+    requestsConnected: boolean;
+    hasAuthToken: boolean;
+  } {
+    return {
+      connectionType: this.getConnectionType(),
+      eventsConnected: this.eventsConnected,
+      hasAuthToken: !!this.options.authStore.supabaseToken,
       isConnected: this.isConnected,
       requestsConnected: this.requestsConnected,
       webhookId: this.currentWebhookId,

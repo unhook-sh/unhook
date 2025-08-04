@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "mint": "4.2.34"
+    "mint": "4.2.45"
   },
   "name": "@unhook/docs",
   "private": true,

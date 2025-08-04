@@ -23,6 +23,7 @@ export default defineConfig({
       port: 5173,
       protocol: 'ws',
     },
+    host: true,
     port: 5173,
     strictPort: true,
     watch: {

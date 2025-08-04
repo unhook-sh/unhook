@@ -5,5 +5,5 @@
   },
   "exclude": ["node_modules"],
   "extends": "@unhook/tsconfig/react-library.json",
-  "include": ["src", "scripts"]
+  "include": ["src", "tests", "scripts"]
 }

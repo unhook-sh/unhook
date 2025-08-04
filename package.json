@@ -5,7 +5,7 @@
     ]
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.2",
+    "@biomejs/biome": "2.1.3",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.29.5",
     "@commitlint/cli": "19.8.1",
@@ -18,7 +18,7 @@
     "knip": "5.62.0",
     "lefthook": "1.12.2",
     "turbo": "2.5.5",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "vitest": "3.2.4"
   },
   "engines": {
@@ -46,9 +46,9 @@
     "db:push": "turbo -F @unhook/db push",
     "db:seed": "turbo -F @unhook/db seed",
     "db:studio": "turbo -F @unhook/db studio",
-    "dev": "turbo watch dev",
+    "dev": "turbo watch dev dev:extension dev:webview",
     "dev:next": "turbo watch dev -F @unhook/web-app...",
-    "dev:vscode": "turbo watch dev -F unhook-vscode... -F @unhook/web-app...",
+    "dev:vscode": "turbo watch dev dev:extension dev:webview -F unhook-vscode... -F @unhook/web-app...",
     "docs": "turbo run dev --filter=@unhook/docs...",
     "ensure:user-resources": "bun run scripts/ensure-user-resources.ts",
     "ensure:user-resources:dry-run": "bun run scripts/ensure-user-resources.ts --dry-run",

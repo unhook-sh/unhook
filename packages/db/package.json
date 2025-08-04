@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.27.1",
+    "@clerk/nextjs": "6.28.1",
     "@supabase/ssr": "0.6.1",
-    "@supabase/supabase-js": "2.52.1",
+    "@supabase/supabase-js": "2.53.0",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
@@ -10,31 +10,31 @@
     "@unhook/zustand": "workspace:*",
     "@vercel/postgres": "0.10.0",
     "date-fns": "4.1.0",
-    "drizzle-orm": "0.44.3",
+    "drizzle-orm": "0.44.4",
     "drizzle-seed": "0.3.1",
     "drizzle-zod": "0.8.2",
     "lodash-es": "4.17.21",
     "next": "15.4.2-canary.16",
     "pg": "8.16.3",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "zod": "3.25.76",
-    "zustand": "5.0.6"
+    "zustand": "5.0.7"
   },
   "devDependencies": {
     "@t3-oss/env-core": "0.13.8",
     "@t3-oss/env-nextjs": "0.13.8",
     "@types/lodash-es": "4.17.12",
-    "@types/pg": "8.15.4",
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
+    "@types/pg": "8.15.5",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
     "@unhook/tsconfig": "workspace:*",
     "chokidar": "4.0.3",
     "drizzle-kit": "0.31.4",
-    "supabase": "2.31.8",
+    "supabase": "2.33.9",
     "tsx": "4.20.3",
-    "typescript": "5.8.3",
-    "zx": "8.7.1"
+    "typescript": "5.9.2",
+    "zx": "8.7.2"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -43,6 +43,7 @@
     "./supabase/cli": "./src/supabase/cli.ts",
     "./supabase/client": "./src/supabase/client-exports.ts",
     "./supabase/create-channel": "./src/supabase/create-channel.ts",
+    "./supabase/get-realtime-record": "./src/supabase/get-realtime-record.ts",
     "./supabase/rcs": "./src/supabase/server.rcs.ts",
     "./supabase/server": "./src/supabase/server-exports.ts",
     "./supabase/types": "./src/supabase/types.generated.ts"
@@ -63,6 +64,8 @@
     "seed": "tsx src/seed.ts",
     "studio": "drizzle-kit studio",
     "supabase:local": "supabase start",
+    "test:integ": "bun test --test=integ",
+    "test:unit": "bun test --test=unit",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",

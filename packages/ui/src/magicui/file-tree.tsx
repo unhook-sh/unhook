@@ -156,6 +156,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
           <ScrollArea
             className="relative h-full px-2"
             dir={dir as Direction}
+            // biome-ignore lint/style/noParameterAssign: not sure
             ref={ref}
           >
             <AccordionPrimitive.Root
@@ -193,6 +194,7 @@ const TreeIndicator = forwardRef<
         className,
       )}
       dir={direction}
+      // biome-ignore lint/style/noParameterAssign: not sure
       ref={ref}
       {...props}
     />
@@ -321,6 +323,7 @@ const File = forwardRef<
         )}
         disabled={!isSelectable}
         onClick={() => selectItem(value)}
+        // biome-ignore lint/style/noParameterAssign: not sure
         ref={ref}
         type="button"
         {...props}
@@ -377,6 +380,7 @@ const CollapseButton = forwardRef<
           ? closeAll
           : () => expendAllTree(elements)
       }
+      // biome-ignore lint/style/noParameterAssign: not sure
       ref={ref}
       variant={'ghost'}
       {...props}

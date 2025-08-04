@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "next": "15.4.2-canary.16",
-    "stripe": "18.3.0"
+    "stripe": "18.4.0"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "exports": {
     ".": "./src/index.ts",

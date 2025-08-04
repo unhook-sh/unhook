@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.25
+
+### Patch Changes
+
+- [`c7c9c18`](https://github.com/unhook-sh/unhook/commit/c7c9c18408deae56af6e988d6891a904c26b1bca) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with first time onboarding vscode
+
+- Updated dependencies [[`c7c9c18`](https://github.com/unhook-sh/unhook/commit/c7c9c18408deae56af6e988d6891a904c26b1bca)]:
+  - @unhook/client@0.5.20
+
 ## 0.2.24
 
 ### Patch Changes

@@ -19,6 +19,9 @@ export function registerAuthCommands(
     async () => {
       log('unhook.signIn command triggered');
       try {
+        // Cancel any existing pending authentication before starting a new one
+        provider.cancelPendingAuth();
+
         log('Requesting authentication session...');
         const session = await vscode.authentication.getSession(
           'unhook',
@@ -38,9 +41,14 @@ export function registerAuthCommands(
         }
       } catch (error) {
         log('Sign-in command failed:', error);
-        vscode.window.showErrorMessage(
-          `Failed to sign in to Unhook: ${(error as Error).message}`,
-        );
+        // Don't show error message for user cancellation
+        if (
+          (error as Error).message !== 'Authentication was canceled by user'
+        ) {
+          vscode.window.showErrorMessage(
+            `Failed to sign in to Unhook: ${(error as Error).message}`,
+          );
+        }
       }
     },
   );
@@ -65,15 +73,27 @@ export function registerAuthCommands(
     },
   );
 
+  // Register cancel auth command (for debugging/manual cancellation)
+  const cancelAuthCommand = vscode.commands.registerCommand(
+    'unhook.cancelAuth',
+    () => {
+      log('unhook.cancelAuth command triggered');
+      provider.cancelPendingAuth();
+      vscode.window.showInformationMessage('Authentication canceled');
+    },
+  );
+
   // Add commands to extension context
   context.subscriptions.push(
     signInCommand,
     signOutCommand,
+    cancelAuthCommand,
     authProviderDisposable,
   );
 
   return {
     authProvider: provider,
+    cancelAuthCommand,
     signInCommand,
     signOutCommand,
   };

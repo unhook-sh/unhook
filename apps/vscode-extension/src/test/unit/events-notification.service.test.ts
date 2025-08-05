@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from 'bun:test';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
-import { EventsNotificationService } from '../../providers/events-notification.service';
 import type { AnalyticsService } from '../../services/analytics.service';
+import { EventsNotificationService } from '../../services/events-notification.service';
 
 // Mock vscode functions
 const mockShowInformationMessage = mock(() => Promise.resolve('OK'));

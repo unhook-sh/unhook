@@ -58,11 +58,19 @@ export const eventsRouter = createTRPCRouter({
     }),
 
   byWebhookId: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
+    .input(
+      z.object({
+        limit: z.number().optional().default(50),
+        offset: z.number().optional().default(0),
+        webhookId: z.string(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
       const events = await ctx.db.query.Events.findMany({
+        limit: input.limit ?? 50,
+        offset: input.offset ?? 0,
         orderBy: [desc(Events.timestamp)],
         where: and(
           eq(Events.webhookId, input.webhookId),

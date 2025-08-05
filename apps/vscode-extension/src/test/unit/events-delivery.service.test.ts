@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, mock, test } from 'bun:test';
 import type { WebhookConfig } from '@unhook/client/config';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
-import { EventsDeliveryService } from '../../providers/events-delivery.service';
 import type { AnalyticsService } from '../../services/analytics.service';
 import type { AuthStore } from '../../services/auth.service';
+import { EventsDeliveryService } from '../../services/events-delivery.service';
 
 // Mock the client utilities
 const mockCreateRequestsForEventToAllDestinations = mock(() =>

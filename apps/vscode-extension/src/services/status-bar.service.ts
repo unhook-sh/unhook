@@ -1,6 +1,7 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
+import type { UnhookAuthProvider } from '../providers/auth.provider';
 import type { AuthStore } from './auth.service';
 import { WebhookAuthorizationService } from './webhook-authorization.service';
 
@@ -10,6 +11,7 @@ export class StatusBarService implements vscode.Disposable {
   private static instance: StatusBarService;
   private statusBarItem: vscode.StatusBarItem;
   private authStore: AuthStore | null = null;
+  private authProvider: UnhookAuthProvider | null = null;
   private authorizationService: WebhookAuthorizationService;
   private disposables: vscode.Disposable[] = [];
 
@@ -56,6 +58,18 @@ export class StatusBarService implements vscode.Disposable {
     this.update();
   }
 
+  setAuthProvider(authProvider: UnhookAuthProvider) {
+    this.authProvider = authProvider;
+
+    // Listen for pending auth state changes
+    const pendingAuthDisposable = authProvider.onDidChangePendingAuth(() =>
+      this.update(),
+    );
+    this.disposables.push(pendingAuthDisposable);
+
+    this.update();
+  }
+
   update() {
     if (!this.authStore) {
       return;
@@ -90,9 +104,19 @@ export class StatusBarService implements vscode.Disposable {
         this.statusBarItem.command = 'unhook.showQuickPick';
       }
     } else {
-      this.statusBarItem.text = '$(sign-in) Sign in to Unhook';
-      this.statusBarItem.tooltip = 'Click to sign in to Unhook';
-      this.statusBarItem.command = 'unhook.signIn';
+      // Check if authentication is pending
+      const isAuthPending = this.authProvider?.isAuthPending() ?? false;
+
+      if (isAuthPending) {
+        this.statusBarItem.text = '$(close) Cancel Sign In...';
+        this.statusBarItem.tooltip =
+          'Authentication in progress • Click to cancel sign in to Unhook';
+        this.statusBarItem.command = 'unhook.cancelAuth';
+      } else {
+        this.statusBarItem.text = '$(sign-in) Sign in to Unhook';
+        this.statusBarItem.tooltip = 'Click to sign in to Unhook';
+        this.statusBarItem.command = 'unhook.signIn';
+      }
     }
 
     this.statusBarItem.show();

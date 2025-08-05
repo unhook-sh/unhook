@@ -127,6 +127,12 @@
       },
       {
         "category": "Unhook",
+        "command": "unhook.cancelAuth",
+        "icon": "$(close)",
+        "title": "Cancel Authentication"
+      },
+      {
+        "category": "Unhook",
         "command": "unhook.requestWebhookAccess",
         "icon": "$(unlock)",
         "title": "Request Webhook Access"
@@ -297,6 +303,13 @@
       {
         "icon": "media/unhook-config-js.svg",
         "pattern": "**/unhook.config.cjs"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "unhook.cancelAuth",
+        "key": "escape",
+        "when": "unhook.auth.pending"
       }
     ],
     "languages": [
@@ -498,7 +511,7 @@
     "url": "https://github.com/unhook-sh/unhook"
   },
   "scripts": {
-    "build": "bun run typecheck && bun run build:webview && NODE_ENV=production bun run build:base",
+    "build": "bun run typecheck && bun run build:webview && echo 'NODE_ENV before build:base:' $NODE_ENV && NODE_ENV=production bun run build:base",
     "build:base": "tsup",
     "build:debug": "bun run typecheck && bun run build:webview && NODE_ENV=development tsup",
     "build:test": " concurrently \"tsup --config tsup.test.config.ts\" \"tsup\"",

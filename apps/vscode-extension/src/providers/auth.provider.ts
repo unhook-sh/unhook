@@ -21,12 +21,17 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
   readonly onDidChangeSessions = this._onDidChangeSessions.event;
 
+  private _onDidChangePendingAuth = new vscode.EventEmitter<void>();
+  readonly onDidChangePendingAuth = this._onDidChangePendingAuth.event;
+
   private _pendingAuth:
     | {
         resolve: (session: vscode.AuthenticationSession) => void;
         reject: (error: Error) => void;
       }
     | undefined;
+
+  private _authPendingContextKey = 'unhook.auth.pending';
 
   constructor(
     _context: vscode.ExtensionContext,
@@ -94,6 +99,9 @@ export class UnhookAuthProvider implements AuthenticationProvider {
   ): Promise<vscode.AuthenticationSession> {
     log('UnhookAuthProvider.createSession called');
 
+    // Clear any existing pending auth before starting a new one
+    this.clearPendingAuth();
+
     try {
       // Open browser for auth
       const authUrl = new URL(
@@ -119,11 +127,21 @@ export class UnhookAuthProvider implements AuthenticationProvider {
           log('Setting up pending auth promise');
           this._pendingAuth = { reject, resolve };
 
+          // Set the auth pending context
+          vscode.commands.executeCommand(
+            'setContext',
+            this._authPendingContextKey,
+            true,
+          );
+
+          // Fire event to notify listeners that pending auth state changed
+          this._onDidChangePendingAuth.fire();
+
           // Set a timeout in case the auth flow fails
           setTimeout(() => {
             if (this._pendingAuth) {
               log('Authentication timed out after 2 minutes');
-              this._pendingAuth = undefined;
+              this.clearPendingAuth();
               reject(new Error('Authentication timed out'));
             }
           }, 120000); // 2 minute timeout
@@ -148,10 +166,58 @@ export class UnhookAuthProvider implements AuthenticationProvider {
       return session;
     } catch (error) {
       log('Failed to create authentication session:', error);
+      // Clear pending auth on error
+      this.clearPendingAuth();
       vscode.window.showErrorMessage(
         `Failed to create authentication session: ${(error as Error).message}`,
       );
       throw error;
+    }
+  }
+
+  /**
+   * Clear any pending authentication state
+   */
+  private clearPendingAuth(): void {
+    if (this._pendingAuth) {
+      log('Clearing pending authentication state');
+      this._pendingAuth = undefined;
+      // Clear the auth pending context
+      vscode.commands.executeCommand(
+        'setContext',
+        this._authPendingContextKey,
+        false,
+      );
+      // Fire event to notify listeners that pending auth state changed
+      this._onDidChangePendingAuth.fire();
+    }
+  }
+
+  /**
+   * Check if authentication is currently pending
+   */
+  public isAuthPending(): boolean {
+    return !!this._pendingAuth;
+  }
+
+  /**
+   * Public method to clear pending authentication state
+   * This can be called when user cancels authentication
+   */
+  public cancelPendingAuth(): void {
+    log('Canceling pending authentication');
+    if (this._pendingAuth) {
+      this._pendingAuth.reject(
+        new Error('Authentication was canceled by user'),
+      );
+      this.clearPendingAuth();
+    } else {
+      // Clear the context even if no pending auth exists
+      vscode.commands.executeCommand(
+        'setContext',
+        this._authPendingContextKey,
+        false,
+      );
     }
   }
 
@@ -198,7 +264,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
       log('Resolving pending auth promise');
       // Resolve the pending auth promise
       this._pendingAuth.resolve(session);
-      this._pendingAuth = undefined;
+      this.clearPendingAuth();
 
       // Show success message
       vscode.window.showInformationMessage('Successfully signed in to Unhook');
@@ -206,7 +272,7 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     } catch (error) {
       log('Error during auth completion:', error);
       this._pendingAuth?.reject(error as Error);
-      this._pendingAuth = undefined;
+      this.clearPendingAuth();
 
       // Show error message to user
       vscode.window.showErrorMessage(
@@ -217,6 +283,16 @@ export class UnhookAuthProvider implements AuthenticationProvider {
 
   async removeSession(_sessionId: string): Promise<void> {
     log('removeSession called');
+
+    // Clear any pending auth state
+    this.clearPendingAuth();
+
+    // Clear the auth pending context
+    vscode.commands.executeCommand(
+      'setContext',
+      this._authPendingContextKey,
+      false,
+    );
 
     // Always sign out from the auth store first
     await this.authStore.signOut();
@@ -262,5 +338,10 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     }
 
     log('Sign out completed');
+  }
+
+  dispose() {
+    this._onDidChangeSessions.dispose();
+    this._onDidChangePendingAuth.dispose();
   }
 }

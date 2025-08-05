@@ -5,6 +5,8 @@ import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
 import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
+import { EventsDeliveryService } from '../services/events-delivery.service';
+import { EventsNotificationService } from '../services/events-notification.service';
 import {
   type RealtimeEvent,
   RealtimeService,
@@ -21,8 +23,6 @@ import {
   sortEventsAndRequests,
 } from './events.utils';
 import { EventsConfigManager } from './events-config.manager';
-import { EventsDeliveryService } from './events-delivery.service';
-import { EventsNotificationService } from './events-notification.service';
 import {
   handleEventChange,
   handleRequestChange,

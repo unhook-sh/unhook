@@ -60,10 +60,8 @@ export async function activate(context: vscode.ExtensionContext) {
   firstTimeUserService.setAuthStore(authStore);
 
   // Register auth commands and provider
-  const { authProvider, signInCommand, signOutCommand } = registerAuthCommands(
-    context,
-    authStore,
-  );
+  const { authProvider, signInCommand, signOutCommand, cancelAuthCommand } =
+    registerAuthCommands(context, authStore);
 
   // Register analytics provider
   const { provider: analyticsProvider, disposable: analyticsDisposable } =
@@ -116,8 +114,9 @@ export async function activate(context: vscode.ExtensionContext) {
     statusBarService.update(); // Update status bar when delivery settings change
   });
 
-  // Set auth store on status bar service
+  // Set auth store and provider on status bar service
   statusBarService.setAuthStore(authStore);
+  statusBarService.setAuthProvider(authProvider);
   setupFirstTimeUserHandler(authStore, firstTimeUserService);
 
   // Listen for delivery setting changes
@@ -131,7 +130,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
   statusBarService.update();
 
-  context.subscriptions.push(authStore, signInCommand, signOutCommand);
+  context.subscriptions.push(
+    authStore,
+    authProvider,
+    signInCommand,
+    signOutCommand,
+    cancelAuthCommand,
+  );
 
   // Initialize webhook events provider
   const eventsProvider = new EventsProvider(context);

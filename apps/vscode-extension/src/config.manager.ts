@@ -1,7 +1,10 @@
 import type { WebhookConfig } from '@unhook/client/config';
 import { findUpConfig, loadConfig } from '@unhook/client/config';
+import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { env } from './env';
+
+const log = debug('unhook:config-manager');
 
 export class ConfigManager {
   private static instance: ConfigManager;
@@ -26,7 +29,6 @@ export class ConfigManager {
     if (!ConfigManager.instance) {
       ConfigManager.instance = new ConfigManager();
     }
-    console.log('ConfigManager.getInstance', ConfigManager.instance);
     // Store context if provided
     if (context) {
       ConfigManager.instance.context = context;
@@ -46,16 +48,34 @@ export class ConfigManager {
   }
 
   public isDevelopment(): boolean {
+    // Skip development checks during CI/CD builds
+    if (process.env.CI || process.env.GITHUB_ACTIONS) {
+      log(
+        'ConfigManager: Skipping development checks due to CI/CD environment',
+      );
+      return false;
+    }
+
+    // Check if explicitly set to production
+    if (env.NEXT_PUBLIC_APP_ENV === 'production') {
+      log('ConfigManager: Production mode detected via NEXT_PUBLIC_APP_ENV');
+      return false;
+    }
+
     // Check ExtensionMode from context if available
     if (
       this.context &&
       this.context.extensionMode === vscode.ExtensionMode.Development
     ) {
+      log('ConfigManager: Development mode detected via ExtensionMode');
       return true;
     }
 
     // Check if running in Extension Development Host (most reliable for VS Code extensions)
     if (vscode.env.appName.includes('Extension Development Host')) {
+      log(
+        'ConfigManager: Development mode detected via Extension Development Host',
+      );
       return true;
     }
 
@@ -64,6 +84,7 @@ export class ConfigManager {
       process.env.NODE_ENV === 'development' ||
       process.env.VSCODE_DEV === 'true'
     ) {
+      log('ConfigManager: Development mode detected via environment variables');
       return true;
     }
 
@@ -76,10 +97,12 @@ export class ConfigManager {
         extension &&
         extension.extensionPath.includes('.vscode/extensions') === false
       ) {
+        log('ConfigManager: Development mode detected via extension path');
         return true;
       }
     }
 
+    log('ConfigManager: Production mode detected');
     return false;
   }
 

@@ -1,7 +1,7 @@
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import * as vscode from 'vscode';
-import type { AnalyticsService } from '../services/analytics.service';
+import type { AnalyticsService } from './analytics.service';
 
 export class EventsNotificationService {
   constructor(private analyticsService: AnalyticsService | null) {}

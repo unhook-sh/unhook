@@ -14,6 +14,9 @@ inputs:
   node_env:
     description: "Node environment"
     required: true
+  next_public_app_env:
+    description: "Next.js public app environment"
+    required: true
 runs:
   using: composite
   steps:
@@ -23,6 +26,9 @@ runs:
     - name: Build Stripe Generated Files
       shell: bash
       working-directory: packages/stripe
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
+        NEXT_PUBLIC_APP_ENV: ${{ inputs.next_public_app_env }}
       run: |
         echo "Building Stripe generated files..."
         bun run build
@@ -31,8 +37,14 @@ runs:
       shell: bash
       working-directory: apps/vscode-extension
       env:
-        NODE_ENV: ${{ inputs.NODE_ENV }}
+        NODE_ENV: ${{ inputs.node_env }}
+        NEXT_PUBLIC_APP_ENV: ${{ inputs.next_public_app_env }}
       run: |
+        echo "Environment variables:"
+        echo "NODE_ENV: $NODE_ENV"
+        echo "CI: $CI"
+        echo "GITHUB_ACTIONS: $GITHUB_ACTIONS"
+        echo "NEXT_PUBLIC_APP_ENV: $NEXT_PUBLIC_APP_ENV"
         echo "Preparing, building, and packaging VSCode extension..."
         bun run package
 

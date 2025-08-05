@@ -5,8 +5,8 @@ import {
 } from '@unhook/client/utils/delivery';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
-import type { AnalyticsService } from '../services/analytics.service';
-import type { AuthStore } from '../services/auth.service';
+import type { AnalyticsService } from './analytics.service';
+import type { AuthStore } from './auth.service';
 
 const log = debug('unhook:vscode:events-delivery-service');
 

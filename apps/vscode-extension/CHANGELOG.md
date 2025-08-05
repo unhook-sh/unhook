@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.28
+
+### Patch Changes
+
+- [`071e481`](https://github.com/unhook-sh/unhook/commit/071e481e40e605a1471f3852f1e7847be5159bb0) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with building in ci
+
 ## 0.2.27
 
 ### Patch Changes

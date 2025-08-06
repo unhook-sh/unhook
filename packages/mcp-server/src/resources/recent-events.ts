@@ -24,8 +24,11 @@ export function registerRecentEventsResource(
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
-        const events = await caller.events.all();
-        const limitedEvents = events.slice(0, 100);
+        const events = await caller.events.all({
+          limit: 100,
+          offset: 0,
+        });
+        const totalEvents = await caller.events.count({});
         const executionTime = Date.now() - startTime;
 
         // Track resource access
@@ -33,8 +36,8 @@ export function registerRecentEventsResource(
           'recent-events',
           {
             execution_time_ms: executionTime,
-            returned_events: limitedEvents.length,
-            total_events: events.length,
+            returned_events: events.length,
+            total_events: totalEvents,
           },
           userId,
           organizationId,
@@ -44,7 +47,7 @@ export function registerRecentEventsResource(
           contents: [
             {
               mimeType: 'application/json',
-              text: JSON.stringify(limitedEvents, null, 2),
+              text: JSON.stringify(events, null, 2),
               uri: uri.href,
             },
           ],

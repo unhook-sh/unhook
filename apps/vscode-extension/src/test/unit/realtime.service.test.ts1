@@ -1,0 +1,122 @@
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import type { AuthStore } from '../../services/auth.service';
+import {
+  type RealtimeEvent,
+  RealtimeService,
+} from '../../services/realtime.service.ts1';
+
+describe('RealtimeService', () => {
+  let realtimeService: RealtimeService;
+  let mockAuthStore: AuthStore;
+  let mockOnEventReceived: (event: RealtimeEvent) => void;
+  let mockOnConnectionStateChange: (connected: boolean) => void;
+  let mockOnChannelStateChange: (
+    channelType: 'events' | 'requests',
+    connected: boolean,
+  ) => void;
+
+  beforeEach(() => {
+    mockOnEventReceived = () => {};
+    mockOnConnectionStateChange = () => {};
+    mockOnChannelStateChange = () => {};
+
+    mockAuthStore = {
+      api: {
+        realtimeSubscriptions: {
+          verifyWebhookSubscriptionClaims: {
+            query: async () => ({ claimsRole: 'authenticated', found: true }),
+          },
+        },
+      },
+      isSignedIn: true,
+      onDidChangeAuth: () => {},
+      sessionId: 'mock-session-123',
+      supabaseToken: 'mock-token-123',
+      validateSession: async () => {},
+    } as unknown as AuthStore;
+
+    realtimeService = new RealtimeService({
+      authStore: mockAuthStore,
+      onChannelStateChange: mockOnChannelStateChange,
+      onConnectionStateChange: mockOnConnectionStateChange,
+      onEventReceived: mockOnEventReceived,
+    });
+  });
+
+  afterEach(() => {
+    realtimeService.dispose();
+  });
+
+  describe('connection state management', () => {
+    it('should initialize with correct default state', () => {
+      const state = realtimeService.getConnectionState();
+      expect(state.isConnected).toBe(false);
+      expect(state.webhookId).toBe(null);
+      expect(state.eventsConnected).toBe(false);
+      expect(state.requestsConnected).toBe(false);
+    });
+
+    it('should return correct connection type', () => {
+      const connectionType = realtimeService.getConnectionType();
+      expect(connectionType).toBe('authenticated');
+    });
+
+    it('should provide detailed connection info', () => {
+      const info = realtimeService.getDetailedConnectionInfo();
+      expect(info.isConnected).toBe(false);
+      expect(info.connectionType).toBe('authenticated');
+      expect(info.hasAuthToken).toBe(true);
+      expect(info.webhookId).toBe(null);
+      expect(info.eventsConnected).toBe(false);
+      expect(info.requestsConnected).toBe(false);
+    });
+  });
+
+  describe('disconnect', () => {
+    it('should reset all connection states on disconnect', () => {
+      // Set some mock states
+      (realtimeService as unknown as { isConnected: boolean }).isConnected =
+        true;
+      (
+        realtimeService as unknown as { eventsConnected: boolean }
+      ).eventsConnected = true;
+      (
+        realtimeService as unknown as { requestsConnected: boolean }
+      ).requestsConnected = true;
+      (
+        realtimeService as unknown as { currentWebhookId: string | null }
+      ).currentWebhookId = 'test-webhook';
+      (realtimeService as unknown as { isConnecting: boolean }).isConnecting =
+        true;
+
+      realtimeService.disconnect();
+
+      const state = realtimeService.getConnectionState();
+      expect(state.isConnected).toBe(false);
+      expect(state.webhookId).toBe(null);
+      expect(state.eventsConnected).toBe(false);
+      expect(state.requestsConnected).toBe(false);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle authentication failures without throwing', async () => {
+      // This should not throw
+      await expect(
+        realtimeService.handleAuthenticationFailure(new Error('Auth failed')),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should handle reconnection attempts with rate limiting', async () => {
+      // First reconnection should work
+      await expect(
+        realtimeService.reconnectWithAuthVerification(),
+      ).resolves.toBeUndefined();
+
+      // Second immediate reconnection should be rate limited but not throw
+      await expect(
+        realtimeService.reconnectWithAuthVerification(),
+      ).resolves.toBeUndefined();
+    });
+  });
+});

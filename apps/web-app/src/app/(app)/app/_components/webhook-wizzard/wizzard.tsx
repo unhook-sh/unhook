@@ -38,7 +38,6 @@ export function WebhookWizard({
   const [source, setSource] = useState('');
   const [webhook, setWebhook] = useState<WebhookType | null>(null);
   const [authCode, setAuthCode] = useState<AuthCodeType | null>(null);
-  const [hasReceivedFirstEvent, setHasReceivedFirstEvent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { organization } = useOrganization();
@@ -93,7 +92,6 @@ export function WebhookWizard({
 
   const handleFirstEventReceived = () => {
     console.log('handleFirstEventReceived');
-    setHasReceivedFirstEvent(true);
     onSetupComplete?.(true);
     toast.success('🎉 Webhook setup complete!', {
       description: 'You successfully received your first webhook event.',
@@ -103,20 +101,11 @@ export function WebhookWizard({
   return (
     <div className="w-full space-y-6">
       <Card className="w-full relative overflow-hidden">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>{STEP_TITLE}</CardTitle>
-              {webhook && authCode && !isLoading && !isCreatingAuthCode && (
-                <CardDescription>{STEP_DESCRIPTION}</CardDescription>
-              )}
-            </div>
-            {hasReceivedFirstEvent && (
-              <div className="flex items-center gap-2 text-green-600">
-                <span className="text-sm font-medium">Setup Complete!</span>
-              </div>
-            )}
-          </div>
+        <CardHeader>
+          <CardTitle>{STEP_TITLE}</CardTitle>
+          {webhook && authCode && !isLoading && !isCreatingAuthCode && (
+            <CardDescription>{STEP_DESCRIPTION}</CardDescription>
+          )}
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="space-y-4">
@@ -130,7 +119,12 @@ export function WebhookWizard({
             ) : webhook && authCode ? (
               <>
                 <SourceStep onChange={setSource} value={source} />
-                <WebhookUrlStep source={source} webhookUrl={webhookUrl} />
+                <WebhookUrlStep
+                  apiUrl={env.NEXT_PUBLIC_API_URL || 'https://unhook.sh'}
+                  source={source}
+                  webhookId={webhook.id}
+                  webhookUrl={webhookUrl}
+                />
                 {showInstallationTabs && (
                   <InstallationTabs
                     authCode={authCode.id}

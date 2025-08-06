@@ -17,16 +17,16 @@ mock.module('vscode', () => {
       );
     }
 
-    event = {
-      subscribe: (listener: unknown) => {
+    get event() {
+      return (listener: unknown) => {
         this.listeners.push(listener);
         return {
           dispose: () => {
             this.listeners = this.listeners.filter((l) => l !== listener);
           },
         };
-      },
-    };
+      };
+    }
 
     dispose() {
       this.listeners = [];
@@ -96,9 +96,36 @@ mock.module('vscode', () => {
       registerCompletionItemProvider: mock(() => ({ dispose: mock() })),
       registerHoverProvider: mock(() => ({ dispose: mock() })),
     },
+    MarkdownString: class MockMarkdownString {
+      value: string;
+      isTrusted: boolean;
+
+      constructor(value: string) {
+        this.value = value;
+        this.isTrusted = false;
+      }
+    },
     StatusBarAlignment: {
       Left: 1,
       Right: 2,
+    },
+    TreeItem: class MockTreeItem {
+      label: string;
+      collapsibleState: string;
+      contextValue?: string;
+      resourceUri?: { toString: () => string };
+      tooltip?: { value: string; isTrusted: boolean };
+      iconPath?: { dark: { path: string }; light: { path: string } };
+
+      constructor(label: string, collapsibleState: string) {
+        this.label = label;
+        this.collapsibleState = collapsibleState;
+      }
+    },
+    TreeItemCollapsibleState: {
+      Collapsed: 'collapsed',
+      Expanded: 'expanded',
+      None: 'none',
     },
     Uri: {
       file: mock((path: string) => ({

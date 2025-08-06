@@ -1,5 +1,5 @@
 import type { WebhookConfig } from '@unhook/client/config';
-import type { EventTypeWithRequest } from '@unhook/db/schema';
+import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { isDeliveryEnabled } from '../commands/delivery.commands';
@@ -7,13 +7,12 @@ import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
 import { EventsDeliveryService } from '../services/events-delivery.service';
 import { EventsNotificationService } from '../services/events-notification.service';
-import {
-  type RealtimeEvent,
-  RealtimeService,
-} from '../services/realtime.service';
+import { PollingService } from '../services/polling.service';
+
 import { SettingsService } from '../services/settings.service';
 import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 import { EventItem } from '../tree-items/event.item';
+import { LoadingItem } from '../tree-items/loading.item';
 import { RequestItem } from '../tree-items/request.item';
 import type { ConfigProvider } from './config.provider';
 import {
@@ -23,51 +22,79 @@ import {
   sortEventsAndRequests,
 } from './events.utils';
 import { EventsConfigManager } from './events-config.manager';
-import {
-  handleEventChange,
-  handleRequestChange,
-} from './events-realtime.handlers';
 
 const log = debug('unhook:vscode:events-provider');
 
 export class EventsProvider
-  implements vscode.TreeDataProvider<EventItem | RequestItem>
+  implements vscode.TreeDataProvider<EventItem | RequestItem | LoadingItem>
 {
   private _onDidChangeTreeData: vscode.EventEmitter<
-    EventItem | RequestItem | undefined
-  > = new vscode.EventEmitter<EventItem | RequestItem | undefined>();
+    EventItem | RequestItem | LoadingItem | undefined
+  > = new vscode.EventEmitter<
+    EventItem | RequestItem | LoadingItem | undefined
+  >();
   readonly onDidChangeTreeData: vscode.Event<
-    EventItem | RequestItem | undefined
+    EventItem | RequestItem | LoadingItem | undefined
   > = this._onDidChangeTreeData.event;
 
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
   private previousEvents: EventTypeWithRequest[] = [];
   public authStore: AuthStore | null = null;
-  private realtimeService: RealtimeService | null = null;
+  private pollingService: PollingService | null = null;
   private authorizationService: WebhookAuthorizationService;
   private analyticsService: AnalyticsService | null = null;
   private isFetching = false;
-  private lastAuthorizationSuccessTime = 0;
-  private readonly AUTHORIZATION_SUCCESS_DEBOUNCE_MS = 1000; // 1 second debounce
+  private hasLoadedEvents = false; // Track if events have been loaded
   configProvider: ConfigProvider | null = null;
-  private onRealtimeStateChange: (() => void) | null = null;
+  private onPollingStateChange: (() => void) | null = null;
+  private onLoadingStateChange: ((isLoading: boolean) => void) | null = null;
 
   // Services
   private configManager: EventsConfigManager;
   private deliveryService: EventsDeliveryService;
   private notificationService: EventsNotificationService;
+  private disposables: vscode.Disposable[] = [];
 
   constructor(private context: vscode.ExtensionContext) {
     log('Initializing EventsProvider');
     this.authorizationService = WebhookAuthorizationService.getInstance();
 
     // Initialize services
-    this.configManager = new EventsConfigManager(() => {
-      this.handleRealtimeConnection();
+    this.configManager = new EventsConfigManager();
+
+    // Listen for config changes and handle polling connection
+    const configChangeDisposable = this.configManager.onDidChangeConfig(() => {
+      log('Config changed, handling polling connection and refreshing events');
+      this.handlePollingConnection();
+      // Refresh the tree view without forcing a config reload (config already changed)
+      this.refreshEventsOnly();
     });
+    this.disposables.push(configChangeDisposable);
     this.deliveryService = new EventsDeliveryService(null, null);
     this.notificationService = new EventsNotificationService(null);
+
+    // Set up optimistic update callbacks for delivery service
+    this.deliveryService.setOnRequestCreated(
+      (eventId: string, request: RequestType) => {
+        this.handleOptimisticRequestCreated(eventId, request);
+      },
+    );
+    this.deliveryService.setOnRequestStatusUpdated(
+      (
+        eventId: string,
+        requestId: string,
+        status: string,
+        responseTimeMs?: number,
+      ) => {
+        this.handleOptimisticRequestStatusUpdate(
+          eventId,
+          requestId,
+          status,
+          responseTimeMs,
+        );
+      },
+    );
   }
 
   public setAnalyticsService(analyticsService: AnalyticsService) {
@@ -75,6 +102,27 @@ export class EventsProvider
     this.deliveryService = new EventsDeliveryService(
       this.authStore,
       analyticsService,
+    );
+    // Re-set the optimistic update callbacks
+    this.deliveryService.setOnRequestCreated(
+      (eventId: string, request: RequestType) => {
+        this.handleOptimisticRequestCreated(eventId, request);
+      },
+    );
+    this.deliveryService.setOnRequestStatusUpdated(
+      (
+        eventId: string,
+        requestId: string,
+        status: string,
+        responseTimeMs?: number,
+      ) => {
+        this.handleOptimisticRequestStatusUpdate(
+          eventId,
+          requestId,
+          status,
+          responseTimeMs,
+        );
+      },
     );
     this.notificationService = new EventsNotificationService(analyticsService);
   }
@@ -85,12 +133,33 @@ export class EventsProvider
       authStore,
       this.analyticsService,
     );
+    // Re-set the optimistic update callbacks
+    this.deliveryService.setOnRequestCreated(
+      (eventId: string, request: RequestType) => {
+        this.handleOptimisticRequestCreated(eventId, request);
+      },
+    );
+    this.deliveryService.setOnRequestStatusUpdated(
+      (
+        eventId: string,
+        requestId: string,
+        status: string,
+        responseTimeMs?: number,
+      ) => {
+        this.handleOptimisticRequestStatusUpdate(
+          eventId,
+          requestId,
+          status,
+          responseTimeMs,
+        );
+      },
+    );
     this.authStore.onDidChangeAuth(() => {
       this.refresh();
-      this.handleRealtimeConnection();
+      this.handlePollingConnection();
     });
     this.refresh();
-    this.handleRealtimeConnection();
+    this.handlePollingConnection();
   }
 
   public setConfigProvider(configProvider: ConfigProvider) {
@@ -98,12 +167,16 @@ export class EventsProvider
     this.configManager.setConfigProvider(configProvider);
   }
 
-  public getRealtimeService(): RealtimeService | null {
-    return this.realtimeService;
+  public getPollingService(): PollingService | null {
+    return this.pollingService;
   }
 
-  public setOnRealtimeStateChange(callback: () => void) {
-    this.onRealtimeStateChange = callback;
+  public setOnPollingStateChange(callback: () => void) {
+    this.onPollingStateChange = callback;
+  }
+
+  public setOnLoadingStateChange(callback: (isLoading: boolean) => void) {
+    this.onLoadingStateChange = callback;
   }
 
   public getCurrentFilter(): string {
@@ -116,13 +189,23 @@ export class EventsProvider
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  public getTreeItem(element: EventItem | RequestItem): vscode.TreeItem {
+  public getTreeItem(
+    element: EventItem | RequestItem | LoadingItem,
+  ): vscode.TreeItem {
+    // For EventItem, dynamically update the collapsible state based on current requests
+    if (element instanceof EventItem) {
+      const hasRequests =
+        element.event.requests && element.event.requests.length > 0;
+      element.collapsibleState = hasRequests
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None;
+    }
     return element;
   }
 
   public async getChildren(
     element?: EventItem | RequestItem,
-  ): Promise<(EventItem | RequestItem)[]> {
+  ): Promise<(EventItem | RequestItem | LoadingItem)[]> {
     if (element instanceof EventItem) {
       // Return requests for this event, or empty array if no requests
       const requests = element.event.requests ?? [];
@@ -146,6 +229,19 @@ export class EventsProvider
       return [];
     }
 
+    // Lazy loading: Only fetch events when tree becomes visible and we haven't loaded yet
+    if (!this.hasLoadedEvents && !this.isFetching) {
+      log('Tree became visible, triggering lazy load of events');
+      this.hasLoadedEvents = true; // Mark as loading to prevent multiple calls
+      this.fetchAndUpdateEvents();
+      return [new LoadingItem(this.context)];
+    }
+
+    // Show loading state if we're currently fetching events and have no events yet
+    if (this.isFetching && this.events.length === 0) {
+      return [new LoadingItem(this.context)];
+    }
+
     // Filter events if needed
     const filteredEvents = filterEvents(this.events, this.filterText);
 
@@ -156,7 +252,7 @@ export class EventsProvider
   }
 
   public refresh(): void {
-    log('Refreshing tree data');
+    log('Refreshing tree data - firing onDidChangeTreeData event');
     this._onDidChangeTreeData.fire(undefined);
   }
 
@@ -175,6 +271,36 @@ export class EventsProvider
 
     // Force the config manager to reload configuration
     this.configManager.forceReload();
+
+    // Set fetching state to show loading
+    this.isFetching = true;
+    this.hasLoadedEvents = false; // Reset flag to allow fresh loading
+
+    // Notify tree view of loading state change
+    if (this.onLoadingStateChange) {
+      this.onLoadingStateChange(true);
+    }
+
+    // Force a refresh immediately to update the tree view
+    this.forceRefresh();
+
+    // Add a small delay to prevent rapid successive calls, then fetch fresh data
+    setTimeout(() => {
+      this.fetchAndUpdateEvents();
+    }, 100);
+  }
+
+  public refreshEventsOnly(): void {
+    log('Refreshing events only (config already updated)');
+
+    // Set fetching state to show loading
+    this.isFetching = true;
+    this.hasLoadedEvents = false; // Reset flag to allow fresh loading
+
+    // Notify tree view of loading state change
+    if (this.onLoadingStateChange) {
+      this.onLoadingStateChange(true);
+    }
 
     // Force a refresh immediately to update the tree view
     this.forceRefresh();
@@ -214,101 +340,262 @@ export class EventsProvider
     // Sort events and their requests by timestamp time
     this.events = sortEventsAndRequests(events);
 
-    log('Events updated, refreshing tree view');
-    this.refresh();
+    // Clear loading state since we now have events
+    this.isFetching = false;
+    this.hasLoadedEvents = true; // Mark that events have been loaded
+
+    // Notify tree view that loading is complete
+    if (this.onLoadingStateChange) {
+      this.onLoadingStateChange(false);
+    }
+
+    log('Events updated, refreshing tree view', {
+      eventIds: this.events.map((e) => e.id),
+      totalEvents: this.events.length,
+    });
+
+    // Force refresh to ensure VSCode processes the tree changes
+    this.forceRefresh();
   }
 
   public dispose() {
-    // Stop realtime service
-    if (this.realtimeService) {
-      this.realtimeService.dispose();
-      this.realtimeService = null;
+    // Stop polling service
+    if (this.pollingService) {
+      this.pollingService.dispose();
+      this.pollingService = null;
     }
 
     // Dispose config manager
     this.configManager.dispose();
+
+    // Dispose all event listeners
+    this.disposables.forEach((disposable) => disposable.dispose());
+    this.disposables = [];
   }
 
-  private async handleRealtimeConnection() {
-    // Stop any existing realtime connection
-    if (this.realtimeService) {
-      this.realtimeService.disconnect();
-      this.realtimeService = null;
+  private async handlePollingConnection() {
+    // Stop any existing polling connection
+    if (this.pollingService) {
+      this.pollingService.dispose();
+      this.pollingService = null;
     }
 
     if (this.authStore?.isSignedIn) {
-      log('Starting realtime connection for events');
+      log('Starting polling connection for events');
 
-      // Create realtime service
-      this.realtimeService = new RealtimeService({
-        authStore: this.authStore,
-        onChannelStateChange: (channelType, connected) => {
-          log('Realtime channel state changed', { channelType, connected });
-          // Notify dev info service of state change
-          if (this.onRealtimeStateChange) {
-            this.onRealtimeStateChange();
-          }
-        },
-        onConnectionStateChange: (connected) => {
-          log('Realtime connection state changed', { connected });
-        },
-        onEventReceived: this.handleRealtimeEvent.bind(this),
-      });
-
-      // Get config and connect to webhook
+      // Get config and create polling service
       const config = await this.configManager.getConfig();
       const webhookId = config?.webhookId;
+
       if (webhookId) {
-        await this.realtimeService.connect(webhookId);
+        // Create polling service
+        this.pollingService = new PollingService({
+          authStore: this.authStore,
+          onError: (error) => {
+            log('Polling error', { error: error.message });
+          },
+          onStateChange: (state) => {
+            log('Polling state changed', {
+              isPaused: state.isPaused,
+              isPolling: state.isPolling,
+              webhookId: webhookId,
+            });
+            // Notify dev info service of state change
+            if (this.onPollingStateChange) {
+              this.onPollingStateChange();
+            }
+          },
+        });
+
+        // Subscribe to events received
+        const eventSubscription = this.pollingService.onEventsReceived(
+          this.handlePollingEvents.bind(this),
+        );
+        this.disposables.push(eventSubscription);
+
+        // Start polling for the webhook
+        this.pollingService.startPolling(webhookId);
       }
 
-      // Immediately fetch events to get current state
-      this.fetchAndUpdateEvents();
+      // Events will be fetched when tree view becomes visible (lazy loading)
     }
   }
 
-  private handleRealtimeEvent(event: RealtimeEvent) {
-    log('Handling realtime event', {
-      recordId: event.record?.id,
-      table: event.table,
-      type: event.type,
+  private handlePollingEvents(changedEvents: EventTypeWithRequest[]) {
+    log('Handling polling events', {
+      changedEventCount: changedEvents.length,
+      changedEventIds: changedEvents.map((e) => e.id),
+      hasChangedEvents: changedEvents.length > 0,
     });
 
-    // Handle the event based on its type and table
-    if (event.table === 'events') {
-      handleEventChange(event, {
-        events: this.events,
-        onEventsUpdate: (events) => {
-          this.events = events;
-          this.updateEvents(events);
-        },
-        onRealtimeEventDelivery: async (newEvent) => {
-          if (isDeliveryEnabled()) {
-            const config = await this.configManager.getConfig();
-            if (config) {
-              await this.deliveryService.handleRealtimeEventDelivery(
-                newEvent,
-                config,
-              );
+    if (changedEvents.length === 0) return;
+
+    // The API now returns a smart filtered list of events:
+    // - New events (not in our current list)
+    // - Existing events that have new requests (with all their requests)
+
+    // Merge with existing events
+    const existingEventMap = new Map(
+      this.events.map((event) => [event.id, event]),
+    );
+    const updatedEvents: EventTypeWithRequest[] = [];
+
+    // First, add all existing events, updating them if they were in the changed list
+    for (const existingEvent of this.events) {
+      const changedEvent = changedEvents.find((e) => e.id === existingEvent.id);
+      if (changedEvent) {
+        // Event was updated (has new requests or other changes)
+        updatedEvents.push(changedEvent);
+      } else {
+        // Event unchanged
+        updatedEvents.push(existingEvent);
+      }
+    }
+
+    // Then, add any completely new events that weren't in the existing list
+    for (const changedEvent of changedEvents) {
+      if (!existingEventMap.has(changedEvent.id)) {
+        updatedEvents.unshift(changedEvent); // Add new events at the beginning
+      }
+    }
+
+    // Update events with the merged data
+    // Don't set this.events here - let updateEvents handle it properly
+    this.updateEvents(updatedEvents);
+
+    // Handle delivery for changed events if enabled
+    if (isDeliveryEnabled() && changedEvents.length > 0) {
+      this.configManager.getConfig().then((config) => {
+        if (config) {
+          log('Delivering changed events', {
+            changedEventIds: changedEvents.map((e) => e.id),
+            deliveryConfig: config.delivery,
+          });
+
+          // Since polling service already identified these as changed events,
+          // we can deliver them directly without additional filtering
+          for (const event of changedEvents) {
+            if (event.status === 'pending') {
+              this.deliveryService.handleRealtimeEventDelivery(event, config);
             }
           }
-        },
-        onRefreshAndFetch: () => this.refreshAndFetchEvents(),
+        }
       });
-    } else if (event.table === 'requests') {
-      handleRequestChange(event, {
-        events: this.events,
-        onEventsUpdate: (events) => {
-          this.events = events;
-          this.updateEvents(events);
-        },
-        onRefreshAndFetch: () => this.refreshAndFetchEvents(),
-      });
+    }
+  }
+
+  /**
+   * Handle optimistic request creation - immediately add request to event in UI
+   */
+  private handleOptimisticRequestCreated(
+    eventId: string,
+    request: RequestType,
+  ): void {
+    log('Handling optimistic request created', {
+      eventId,
+      requestId: request.id,
+    });
+
+    // Find the event and add the request optimistically
+    const eventIndex = this.events.findIndex((event) => event.id === eventId);
+    if (eventIndex !== -1 && this.events[eventIndex]) {
+      const updatedEvents = [...this.events];
+      const event = updatedEvents[eventIndex];
+
+      if (event) {
+        // Add the new request to the beginning of the requests array
+        const updatedEvent = {
+          ...event,
+          requests: [request, ...(event.requests || [])],
+        };
+        updatedEvents[eventIndex] = updatedEvent;
+
+        // Update the events array and refresh the UI
+        this.events = updatedEvents;
+
+        log('Optimistically added request to event', {
+          eventId,
+          requestId: request.id,
+          totalRequests: updatedEvent.requests.length,
+        });
+
+        // Force refresh to update the tree immediately
+        this.forceRefresh();
+      }
+    } else {
+      log('Event not found for optimistic request update', { eventId });
+    }
+  }
+
+  /**
+   * Handle optimistic request status update - immediately update request status in UI
+   */
+  private handleOptimisticRequestStatusUpdate(
+    eventId: string,
+    requestId: string,
+    status: string,
+    responseTimeMs?: number,
+  ): void {
+    log('Handling optimistic request status update', {
+      eventId,
+      requestId,
+      responseTimeMs,
+      status,
+    });
+
+    // Find the event and update the request status
+    const eventIndex = this.events.findIndex((event) => event.id === eventId);
+    if (eventIndex !== -1 && this.events[eventIndex]) {
+      const updatedEvents = [...this.events];
+      const event = updatedEvents[eventIndex];
+
+      if (event?.requests) {
+        // Find the request and update its status
+        const requestIndex = event.requests.findIndex(
+          (r) => r.id === requestId,
+        );
+        const existingRequest = event.requests[requestIndex];
+        if (requestIndex !== -1 && existingRequest) {
+          const updatedRequests = [...event.requests];
+          updatedRequests[requestIndex] = {
+            ...existingRequest,
+            responseTimeMs: responseTimeMs || existingRequest.responseTimeMs,
+            status: status as 'pending' | 'completed' | 'failed',
+          };
+
+          const updatedEvent = {
+            ...event,
+            requests: updatedRequests,
+          };
+          updatedEvents[eventIndex] = updatedEvent;
+
+          // Update the events array and refresh the UI
+          this.events = updatedEvents;
+
+          log('Optimistically updated request status', {
+            eventId,
+            requestId,
+            responseTimeMs,
+            status,
+          });
+
+          // Force refresh to update the tree immediately
+          this.forceRefresh();
+        } else {
+          log('Request not found for status update', { eventId, requestId });
+        }
+      }
+    } else {
+      log('Event not found for request status update', { eventId });
     }
   }
 
   public async getConfig(): Promise<WebhookConfig | null> {
     return this.configManager.getConfig();
+  }
+
+  public getConfigManager(): EventsConfigManager {
+    return this.configManager;
   }
 
   private async fetchAndUpdateEvents() {
@@ -320,6 +607,12 @@ export class EventsProvider
     }
 
     this.isFetching = true;
+    // Trigger refresh to show loading state
+    this.refresh();
+    // Notify tree view of loading state change
+    if (this.onLoadingStateChange) {
+      this.onLoadingStateChange(true);
+    }
     try {
       log('Fetching and updating events - getting config');
       // Get config and webhookId
@@ -338,18 +631,6 @@ export class EventsProvider
         webhookId,
       });
       this.updateEvents(events);
-      // Only notify authorization service if we were previously unauthorized
-      const authState = this.authorizationService.getState();
-      if (authState.isUnauthorized) {
-        const now = Date.now();
-        if (
-          now - this.lastAuthorizationSuccessTime >
-          this.AUTHORIZATION_SUCCESS_DEBOUNCE_MS
-        ) {
-          this.authorizationService.handleAuthorizationSuccess();
-          this.lastAuthorizationSuccessTime = now;
-        }
-      }
     } catch (error) {
       log('Failed to fetch events', { error });
       // Check if it's an authorization error
@@ -370,6 +651,10 @@ export class EventsProvider
       }
     } finally {
       this.isFetching = false;
+      // Notify tree view that loading is complete (even if it failed)
+      if (this.onLoadingStateChange) {
+        this.onLoadingStateChange(false);
+      }
     }
   }
 

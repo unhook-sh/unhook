@@ -18,10 +18,11 @@ export class EventsConfigManager {
   private configWatcher: vscode.FileSystemWatcher | null = null;
   private workspaceWatcher: vscode.FileSystemWatcher | null = null;
   private configProvider: ConfigProvider | null = null;
-  private onConfigChanged: (() => void) | null = null;
 
-  constructor(onConfigChanged?: () => void) {
-    this.onConfigChanged = onConfigChanged || null;
+  private _onDidChangeConfig = new vscode.EventEmitter<void>();
+  readonly onDidChangeConfig = this._onDidChangeConfig.event;
+
+  constructor() {
     this.setupWorkspaceWatcher();
   }
 
@@ -153,7 +154,7 @@ export class EventsConfigManager {
     this.configWatcher.onDidDelete(() => this.onConfigFileChanged());
   }
 
-  private onConfigFileChanged() {
+  private async onConfigFileChanged() {
     log('Config file changed, reloading config and events');
     this.config = null;
     // Don't clear configPath immediately - let getConfig() try to reload from the cached path first
@@ -163,20 +164,28 @@ export class EventsConfigManager {
       this.configWatcher = null;
     }
 
-    // Clear config provider
-    if (this.configProvider) {
-      log('Clearing config provider');
-      this.configProvider.setConfig(null, '');
+    // Reload the config and update the config provider
+    try {
+      const newConfig = await this.getConfig();
+      if (this.configProvider && this.configPath) {
+        log('Updating config provider with new config');
+        this.configProvider.setConfig(newConfig, this.configPath);
+      }
+    } catch (error) {
+      log('Error reloading config after file change:', error);
+      // Clear config provider on error
+      if (this.configProvider) {
+        log('Clearing config provider due to error');
+        this.configProvider.setConfig(null, '');
+      }
     }
 
-    // Notify that config has changed
-    if (this.onConfigChanged) {
-      log('Notifying config change callback');
-      this.onConfigChanged();
-    }
+    // Fire the config change event for all listeners
+    log('Firing config change event');
+    this._onDidChangeConfig.fire();
   }
 
-  private onConfigFileDeleted() {
+  private async onConfigFileDeleted() {
     log('Config file deleted, clearing config and events');
     this.config = null;
     this.configPath = null; // Clear cached config path since file was deleted
@@ -186,15 +195,31 @@ export class EventsConfigManager {
       this.configWatcher = null;
     }
 
-    // Clear config provider
-    if (this.configProvider) {
-      this.configProvider.setConfig(null, '');
+    // Try to find another config file or clear if none found
+    try {
+      const newConfig = await this.getConfig();
+      if (this.configProvider && this.configPath) {
+        log('Found alternative config file, updating config provider');
+        this.configProvider.setConfig(newConfig, this.configPath);
+      } else {
+        // No config file found, clear the provider
+        if (this.configProvider) {
+          log('No config file found, clearing config provider');
+          this.configProvider.setConfig(null, '');
+        }
+      }
+    } catch (error) {
+      log('Error searching for alternative config after deletion:', error);
+      // Clear config provider on error
+      if (this.configProvider) {
+        log('Clearing config provider due to error');
+        this.configProvider.setConfig(null, '');
+      }
     }
 
-    // Notify that config has changed
-    if (this.onConfigChanged) {
-      this.onConfigChanged();
-    }
+    // Fire the config change event for all listeners
+    log('Firing config change event (file deleted)');
+    this._onDidChangeConfig.fire();
   }
 
   private setupWorkspaceWatcher() {
@@ -235,22 +260,38 @@ export class EventsConfigManager {
     });
   }
 
-  public forceReload(): void {
+  public async forceReload(): Promise<void> {
     log('Force reloading configuration');
     this.config = null;
     this.configPath = null;
 
-    // Clear config provider
-    if (this.configProvider) {
-      log('Clearing config provider during force reload');
-      this.configProvider.setConfig(null, '');
+    // Reload the config and update the config provider
+    try {
+      const newConfig = await this.getConfig();
+      if (this.configProvider && this.configPath) {
+        log('Updating config provider with reloaded config');
+        this.configProvider.setConfig(newConfig, this.configPath);
+      } else {
+        // No config file found, clear the provider
+        if (this.configProvider) {
+          log(
+            'No config file found during force reload, clearing config provider',
+          );
+          this.configProvider.setConfig(null, '');
+        }
+      }
+    } catch (error) {
+      log('Error reloading config during force reload:', error);
+      // Clear config provider on error
+      if (this.configProvider) {
+        log('Clearing config provider due to error during force reload');
+        this.configProvider.setConfig(null, '');
+      }
     }
 
-    // Notify that config has changed
-    if (this.onConfigChanged) {
-      log('Notifying config change callback during force reload');
-      this.onConfigChanged();
-    }
+    // Fire the config change event for all listeners
+    log('Firing config change event (force reload)');
+    this._onDidChangeConfig.fire();
   }
 
   public dispose() {
@@ -265,5 +306,8 @@ export class EventsConfigManager {
       this.workspaceWatcher.dispose();
       this.workspaceWatcher = null;
     }
+
+    // Dispose event emitter
+    this._onDidChangeConfig.dispose();
   }
 }

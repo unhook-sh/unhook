@@ -59,10 +59,10 @@ function getStatusBadgeVariant(status: string) {
 }
 
 export function RecentEventsTable() {
-  const events = api.events.all.useQuery();
-
-  // Take only the last 50 events
-  const recentEvents = events.data?.slice(0, 50) || [];
+  const events = api.events.all.useQuery({
+    limit: 50,
+    offset: 0,
+  });
 
   const handleViewEvent = (eventId: string) => {
     // Navigate to the events page with the specific event
@@ -109,7 +109,7 @@ export function RecentEventsTable() {
                 'skeleton-5',
               ].map((key) => <SkeletonRow key={key} />)
             : // Show actual data when loaded
-              recentEvents.map((event) => (
+              events.data?.map((event) => (
                 <TableRow key={event.id}>
                   <TableCell className="font-mono text-sm">
                     <TimeDisplay date={event.timestamp} />

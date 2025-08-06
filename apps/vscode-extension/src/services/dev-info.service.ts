@@ -10,7 +10,8 @@ import type * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
 import type { ConfigProvider } from '../providers/config.provider';
 import type { AuthStore } from './auth.service';
-import type { RealtimeService } from './realtime.service';
+import type { PollingService, PollingState } from './polling.service';
+import { WebhookAuthorizationService } from './webhook-authorization.service';
 
 const log = debug('unhook:vscode:dev-info-service');
 
@@ -35,36 +36,33 @@ interface DevInfo {
     isUnlimited: boolean;
     limit: number;
     period: 'day' | 'month';
+    webhookCount: number;
+  };
+  webhookAuthorization?: {
+    isAuthorized: boolean;
+    webhookId: string | null;
+    hasPendingRequest: boolean;
+  };
+  config?: {
+    dashboardUrl: string;
+    apiUrl: string;
+    isSelfHosted: boolean;
+    isDevelopment: boolean;
   };
   orgMembers?: Array<OrgMembersType>;
-  realtime?: {
-    isConnected: boolean;
-    webhookId: string | null;
-    eventsConnected: boolean;
-    requestsConnected: boolean;
-    subscriptionClaims?: {
-      events?: {
-        found: boolean;
-        claimsRole: string | null;
-        isAuthenticated: boolean;
-      };
-      requests?: {
-        found: boolean;
-        claimsRole: string | null;
-        isAuthenticated: boolean;
-      };
-    };
-  };
+  polling?: PollingState;
 }
 
 export class DevInfoService implements vscode.Disposable {
   private configProvider: ConfigProvider | null = null;
   private authStore: AuthStore | null = null;
-  private realtimeService: RealtimeService | null = null;
+  private pollingService: PollingService | null = null;
+  private authorizationService: WebhookAuthorizationService;
   private disposables: vscode.Disposable[] = [];
 
   constructor() {
     log('DevInfoService initialized');
+    this.authorizationService = WebhookAuthorizationService.getInstance();
   }
 
   public setConfigProvider(provider: ConfigProvider) {
@@ -89,26 +87,26 @@ export class DevInfoService implements vscode.Disposable {
   private async handleAuthStateChange(): Promise<void> {
     if (ConfigManager.getInstance().isDevelopment()) {
       this.fetchDevInfo();
-      // Try to connect realtime service after a short delay to ensure it's initialized
+      // Try to connect polling service after a short delay to ensure it's initialized
       setTimeout(() => {
-        this.connectRealtimeService();
+        this.connectPollingService();
       }, 1000);
     }
   }
 
-  private connectRealtimeService(): void {
-    if (this.realtimeService) {
-      // This method will be called when we have access to the realtime service
-      // The actual connection logic is handled by the realtime service itself
+  private connectPollingService(): void {
+    if (this.pollingService) {
+      // This method will be called when we have access to the polling service
+      // The actual connection logic is handled by the polling service itself
       log(
-        'DevInfoService: Realtime service connection handled by RealtimeService',
+        'DevInfoService: Polling service connection handled by PollingService',
       );
     }
   }
 
-  public setRealtimeService(realtimeService: RealtimeService) {
-    this.realtimeService = realtimeService;
-    // Refresh dev info when realtime connection state changes
+  public setPollingService(pollingService: PollingService) {
+    this.pollingService = pollingService;
+    // Refresh dev info when polling state changes
     if (ConfigManager.getInstance().isDevelopment()) {
       this.fetchDevInfo();
     }
@@ -147,6 +145,10 @@ export class DevInfoService implements vscode.Disposable {
 
     const api = this.authStore.api;
 
+    // Get webhook ID from config
+    const configManager = ConfigManager.getInstance();
+    const webhookId = configManager.getConfig()?.webhookId;
+
     // Fetch all data in parallel
     const [
       userInfo,
@@ -154,7 +156,10 @@ export class DevInfoService implements vscode.Disposable {
       subscriptionStatus,
       apiKeys,
       connections,
-      usageStats,
+      monthlyUsageStats,
+      dailyUsage,
+      webhookUsage,
+      authorizedWebhooks,
       orgMembers,
     ] = await Promise.allSettled([
       // Get user info from session verification
@@ -166,8 +171,16 @@ export class DevInfoService implements vscode.Disposable {
       api.apiKeys.allWithLastUsage.query(),
       // Get connections
       api.connections.all.query(),
-      // Get usage statistics for the last 30 days
-      api.apiKeyUsage.stats.query({ days: 30, type: 'webhook-event' }),
+      // Get usage statistics for the current billing period
+      api.events.usage.query({ period: 'month' }),
+      // Get daily usage statistics
+      api.events.usage.query({ period: 'day' }),
+      // Get webhook usage statistics
+      api.webhooks.usage.query(),
+      // Get authorized webhooks
+      webhookId
+        ? api.webhooks.authorized.query({ id: webhookId })
+        : Promise.resolve(false),
       // Get org members
       api.orgMembers.all.query(),
     ]);
@@ -206,96 +219,58 @@ export class DevInfoService implements vscode.Disposable {
     }
 
     // Calculate usage metrics
-    if (usageStats.status === 'fulfilled') {
-      const totalEvents = usageStats.value.reduce((sum, stat) => {
-        if (stat.type === 'webhook-event') {
-          return sum + stat.count;
-        }
-        return sum;
-      }, 0);
-
-      // Get daily events (last 1 day)
-      const dailyStats = await api.apiKeyUsage.stats.query({
-        days: 1,
-        type: 'webhook-event',
-      });
-      const dailyEvents = dailyStats.reduce((sum, stat) => {
-        if (stat.type === 'webhook-event') {
-          return sum + stat.count;
-        }
-        return sum;
-      }, 0);
+    if (monthlyUsageStats.status === 'fulfilled' && monthlyUsageStats.value) {
+      const monthlyEvents = monthlyUsageStats.value;
+      const webhookCount =
+        webhookUsage.status === 'fulfilled' ? (webhookUsage.value ?? 0) : 0;
 
       const isUnlimited = devInfo.subscription?.isPaid || false;
-      const limit = isUnlimited ? -1 : 50; // 50 events per day for free plan
-      const period = isUnlimited ? ('month' as const) : ('day' as const);
+      const limit = isUnlimited ? -1 : 50; // 50 events per month for free plan
+      const period = isUnlimited ? ('month' as const) : ('month' as const);
 
       devInfo.usage = {
-        dailyEvents,
+        dailyEvents:
+          dailyUsage.status === 'fulfilled' ? (dailyUsage.value ?? 0) : 0,
         isUnlimited,
         limit,
-        monthlyEvents: totalEvents,
+        monthlyEvents,
         period,
+        webhookCount,
       };
     }
+
+    // Set webhook authorization info
+    if (webhookId) {
+      const isAuthorized =
+        authorizedWebhooks.status === 'fulfilled'
+          ? authorizedWebhooks.value
+          : false;
+      const authState = this.authorizationService?.getState();
+
+      devInfo.webhookAuthorization = {
+        hasPendingRequest: authState?.hasPendingRequest ?? false,
+        isAuthorized,
+        webhookId,
+      };
+    }
+
+    // Set config info
+    devInfo.config = {
+      apiUrl: configManager.getApiUrl(),
+      dashboardUrl: configManager.getDashboardUrl(),
+      isDevelopment: configManager.isDevelopment(),
+      isSelfHosted: configManager.isSelfHosted(),
+    };
 
     // Add org members
     if (orgMembers.status === 'fulfilled') {
       devInfo.orgMembers = orgMembers.value;
     }
 
-    // Add realtime connection status
-    if (this.realtimeService) {
-      const connectionState = this.realtimeService.getConnectionState();
-      devInfo.realtime = connectionState;
-
-      // Fetch subscription claims information if we have a webhook ID
-      const webhookId =
-        connectionState.webhookId ||
-        this.configProvider?.getConfig()?.webhookId;
-
-      if (webhookId) {
-        try {
-          log('Fetching subscription claims for webhook', {
-            fromConfig:
-              !connectionState.webhookId &&
-              !!this.configProvider?.getConfig()?.webhookId,
-            fromRealtime: !!connectionState.webhookId,
-            webhookId,
-          });
-
-          const [eventsClaims, requestsClaims] = await Promise.allSettled([
-            api.realtimeSubscriptions.verifyWebhookSubscriptionClaims.query({
-              tableName: 'events',
-              webhookId,
-            }),
-            api.realtimeSubscriptions.verifyWebhookSubscriptionClaims.query({
-              tableName: 'requests',
-              webhookId,
-            }),
-          ]);
-
-          devInfo.realtime.subscriptionClaims = {};
-
-          if (eventsClaims.status === 'fulfilled') {
-            devInfo.realtime.subscriptionClaims.events = eventsClaims.value;
-            log('Events claims result', eventsClaims.value);
-          } else {
-            log('Events claims failed', eventsClaims.reason);
-          }
-
-          if (requestsClaims.status === 'fulfilled') {
-            devInfo.realtime.subscriptionClaims.requests = requestsClaims.value;
-            log('Requests claims result', requestsClaims.value);
-          } else {
-            log('Requests claims failed', requestsClaims.reason);
-          }
-        } catch (error) {
-          log('Error fetching subscription claims information:', error);
-        }
-      } else {
-        log('No webhook ID available for subscription claims check');
-      }
+    // Add polling connection status
+    if (this.pollingService) {
+      const pollingState = this.pollingService.getState();
+      devInfo.polling = pollingState;
     }
 
     return devInfo;

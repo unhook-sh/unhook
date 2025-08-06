@@ -26,7 +26,7 @@ import { createCheckoutSessionAction } from '~/app/(app)/app/settings/billing/ac
 
 // Types for usage data
 interface UsageData {
-  current: number;
+  current: number | null;
   description: string;
   isLoading: boolean;
   isUnlimited: boolean;
@@ -99,20 +99,20 @@ function UsageDisplay({ usage }: { usage: UsageData }) {
       <div className="space-y-1">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Events this month</span>
-          <span className="font-medium">{usage.current.toLocaleString()}</span>
+          <span className="font-medium">{usage.current?.toLocaleString()}</span>
         </div>
       </div>
     );
   }
 
-  const percentage = Math.round((usage.current / usage.limit) * 100);
-  const isApproachingLimit = usage.current >= usage.limit * 0.8;
+  const percentage = Math.round(((usage.current ?? 0) / usage.limit) * 100);
+  const isApproachingLimit = (usage.current ?? 0) >= usage.limit * 0.8;
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs">
         <span className="text-muted-foreground">
-          Events this month ({usage.current} / {usage.limit})
+          Events this month ({usage.current?.toLocaleString()} / {usage.limit})
         </span>
         <span className="font-medium">{percentage}%</span>
       </div>
@@ -126,9 +126,8 @@ function UsageDisplay({ usage }: { usage: UsageData }) {
 
 // Usage data hook that fetches real data from the API
 function useWebhookUsage(): UsageData {
-  const { data: usageStats, isLoading } = api.apiKeyUsage.stats.useQuery({
-    days: 30, // Always fetch 30 days for monthly usage
-    type: 'webhook-event',
+  const { data: usageStats, isLoading } = api.events.usage.useQuery({
+    period: 'month',
   });
 
   return useMemo(() => {
@@ -144,14 +143,9 @@ function useWebhookUsage(): UsageData {
       };
     }
 
-    const totalEvents =
-      usageStats?.reduce((sum, stat) => {
-        return stat.type === 'webhook-event' ? sum + stat.count : sum;
-      }, 0) ?? 0;
-
     // Free plan: 50 webhook events per month
     return {
-      current: totalEvents,
+      current: usageStats ?? 0,
       description: '50 webhook events per month',
       isLoading: false,
       isUnlimited: false,

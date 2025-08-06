@@ -58,7 +58,7 @@ export function ChartAreaInteractive() {
   }, [isMobile]);
 
   // Fetch all events from the database
-  const { data: events = [], isLoading } = api.events.all.useQuery();
+  const { data: events = [], isLoading } = api.events.all.useQuery({});
 
   // Transform events data for the chart
   const chartData = React.useMemo(() => {

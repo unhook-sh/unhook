@@ -279,6 +279,10 @@ export const Webhooks = pgTable('webhooks', {
     .notNull()
     .primaryKey(),
   isPrivate: boolean('isPrivate').notNull().default(false),
+  lastRequestAt: timestamp('lastRequestAt', {
+    mode: 'date',
+    withTimezone: true,
+  }),
   name: text('name').notNull(),
   orgId: varchar('orgId')
     .references(() => Orgs.id, {

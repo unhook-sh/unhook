@@ -276,12 +276,14 @@ export const billingRouter = createTRPCRouter({
     if (!org) {
       return {
         customerId: null,
+        dailyUsage: 0,
         hasAny: false,
         isActive: false,
         isCanceled: false,
         isPaid: false,
         isPastDue: false,
         isTrialing: false,
+        monthlyUsage: 0,
         status: null,
         subscriptionId: null,
       };
@@ -292,12 +294,14 @@ export const billingRouter = createTRPCRouter({
 
     return {
       customerId: org.stripeCustomerId,
+      dailyUsage: 0,
       hasAny: !!status,
       isActive: status === 'active',
       isCanceled: status === 'canceled',
       isPaid,
       isPastDue: status === 'past_due',
       isTrialing: status === 'trialing',
+      monthlyUsage: 0,
       status,
       subscriptionId: org.stripeSubscriptionId,
     };

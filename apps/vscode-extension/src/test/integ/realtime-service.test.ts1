@@ -8,7 +8,7 @@ import type { AuthStore } from '../../services/auth.service';
 import {
   type RealtimeEvent,
   RealtimeService,
-} from '../../services/realtime.service';
+} from '../../services/realtime.service.ts1';
 
 // Mock AuthStore for testing
 class MockAuthStore {

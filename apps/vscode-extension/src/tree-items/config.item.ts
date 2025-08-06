@@ -93,6 +93,62 @@ export class ConfigSectionItem extends vscode.TreeItem {
       ).length;
       this.description = `${connectedCount}/${sectionData.length} connected`;
       this.iconPath = new vscode.ThemeIcon('plug');
+    } else if (
+      sectionName === 'usage' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      const usage = sectionData as {
+        dailyEvents: number;
+        monthlyEvents: number;
+        isUnlimited: boolean;
+        limit: number;
+        period: 'day' | 'month';
+        webhookCount: number;
+      };
+      if (usage.isUnlimited) {
+        this.description = `${usage.monthlyEvents} events, ${usage.webhookCount} webhooks (unlimited)`;
+      } else {
+        this.description = `${usage.monthlyEvents}/${usage.limit} events, ${usage.webhookCount} webhooks`;
+      }
+      this.iconPath = new vscode.ThemeIcon('graph');
+    } else if (
+      sectionName === 'webhookAuthorization' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      const auth = sectionData as {
+        isAuthorized: boolean;
+        webhookId: string | null;
+        hasPendingRequest: boolean;
+      };
+      if (auth.isAuthorized) {
+        this.description = 'Authorized';
+        this.iconPath = new vscode.ThemeIcon('check');
+      } else if (auth.hasPendingRequest) {
+        this.description = 'Access pending';
+        this.iconPath = new vscode.ThemeIcon('clock');
+      } else {
+        this.description = 'Not authorized';
+        this.iconPath = new vscode.ThemeIcon('error');
+      }
+    } else if (
+      sectionName === 'config' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      const config = sectionData as {
+        dashboardUrl: string;
+        apiUrl: string;
+        isSelfHosted: boolean;
+        isDevelopment: boolean;
+      };
+      this.description = config.isDevelopment
+        ? 'Development'
+        : config.isSelfHosted
+          ? 'Self-hosted'
+          : 'Cloud';
+      this.iconPath = new vscode.ThemeIcon('settings-gear');
     } else {
       this.description =
         typeof sectionData === 'boolean'

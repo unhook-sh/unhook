@@ -190,7 +190,10 @@ export async function createRequestsForEventToAllDestinations({
       webhookId: event.webhookId,
     });
     if (typeof event.webhookId === 'string') {
-      await api.webhooks.updateStats.mutate({ webhookId: event.webhookId });
+      await api.webhooks.updateStats.mutate({
+        updateLastRequest: true,
+        webhookId: event.webhookId,
+      });
     }
     if (request && onRequestCreated) {
       await onRequestCreated(request);

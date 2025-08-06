@@ -27,6 +27,8 @@ export class WebhookAuthorizationService implements vscode.Disposable {
     webhookId: null,
   };
 
+  private disposables: vscode.Disposable[] = [];
+
   private constructor() {
     log('Initializing WebhookAuthorizationService');
   }
@@ -140,5 +142,9 @@ export class WebhookAuthorizationService implements vscode.Disposable {
     log('Disposing WebhookAuthorizationService');
     this._onDidChangeAuthorizationState.dispose();
     this._onAccessAlreadyGranted.dispose();
+
+    // Clean up all disposables
+    this.disposables.forEach((disposable) => disposable.dispose());
+    this.disposables = [];
   }
 }

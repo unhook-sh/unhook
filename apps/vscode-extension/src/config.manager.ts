@@ -223,6 +223,10 @@ export class ConfigManager {
   }
 
   isSelfHosted(): boolean {
+    if (this.isDevelopment()) {
+      return false;
+    }
+
     return this.apiUrl !== 'https://unhook.sh';
   }
 

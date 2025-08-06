@@ -40,7 +40,7 @@ export function RealTimeEventStream({
     if (fetchedEvents) {
       // Filter out events with source "example"
       const filteredEvents = fetchedEvents.filter(
-        (event) => event.source !== 'example',
+        (event) => event.source !== 'unhook_example',
       );
 
       // Check if we have new events (excluding example events)

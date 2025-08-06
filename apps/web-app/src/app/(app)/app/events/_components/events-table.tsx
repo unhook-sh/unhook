@@ -64,7 +64,10 @@ function getStatusBadgeVariant(status: string) {
 }
 
 export function EventsTable() {
-  const events = api.events.all.useQuery();
+  const events = api.events.all.useQuery({
+    limit: 50,
+    offset: 0,
+  });
   const [_selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const handleViewEvent = (eventId: string) => {

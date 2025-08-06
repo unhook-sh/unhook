@@ -28,7 +28,10 @@ export function registerSearchEventsTool(server: McpServer, context: Context) {
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
-        let events = await caller.events.all();
+        let events = await caller.events.all({
+          limit: args.limit,
+          offset: 0,
+        });
 
         if (args.webhookId) {
           events = events.filter(

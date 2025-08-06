@@ -73,6 +73,9 @@ export async function createConfigContentWithWebhookId(
 #     - source?: string                  # Optional source filter (default: *)
 #       destination: string              # Name of the destination from 'destination' array
 
+# Test Curl:
+# curl -X POST ${apiUrl}/${webhookId}?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
+
 webhookId: ${webhookId}
 destination:
   - name: local

@@ -8,6 +8,7 @@ import type {
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
+import type { PollingState } from '../services/polling.service';
 import { ConfigDetailItem, ConfigSectionItem } from '../tree-items/config.item';
 
 const log = debug('unhook:vscode:config-provider');
@@ -33,25 +34,20 @@ interface DevInfo {
     isUnlimited: boolean;
     limit: number;
     period: 'day' | 'month';
+    webhookCount: number;
   };
-  realtime?: {
-    isConnected: boolean;
+  webhookAuthorization?: {
+    isAuthorized: boolean;
     webhookId: string | null;
-    eventsConnected: boolean;
-    requestsConnected: boolean;
-    subscriptionClaims?: {
-      events?: {
-        found: boolean;
-        claimsRole: string | null;
-        isAuthenticated: boolean;
-      };
-      requests?: {
-        found: boolean;
-        claimsRole: string | null;
-        isAuthenticated: boolean;
-      };
-    };
+    hasPendingRequest: boolean;
   };
+  config?: {
+    dashboardUrl: string;
+    apiUrl: string;
+    isSelfHosted: boolean;
+    isDevelopment: boolean;
+  };
+  polling?: PollingState;
 }
 
 export class ConfigProvider
@@ -147,6 +143,20 @@ export class ConfigProvider
           new ConfigSectionItem('usage', this.devInfo.usage, this.context),
         );
       }
+      if (this.devInfo.webhookAuthorization) {
+        sections.push(
+          new ConfigSectionItem(
+            'webhookAuthorization',
+            this.devInfo.webhookAuthorization,
+            this.context,
+          ),
+        );
+      }
+      if (this.devInfo.config) {
+        sections.push(
+          new ConfigSectionItem('config', this.devInfo.config, this.context),
+        );
+      }
       if (this.devInfo.apiKeys && this.devInfo.apiKeys.length > 0) {
         sections.push(
           new ConfigSectionItem('apiKeys', this.devInfo.apiKeys, this.context),
@@ -161,13 +171,9 @@ export class ConfigProvider
           ),
         );
       }
-      if (this.devInfo.realtime) {
+      if (this.devInfo.polling) {
         sections.push(
-          new ConfigSectionItem(
-            'realtime',
-            this.devInfo.realtime,
-            this.context,
-          ),
+          new ConfigSectionItem('polling', this.devInfo.polling, this.context),
         );
       }
     }
@@ -278,6 +284,35 @@ export class ConfigProvider
     }
 
     if (
+      sectionName === 'usage' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      // Show usage details
+      const usage = sectionData as DevInfo['usage'];
+      if (usage) {
+        details.push(
+          new ConfigDetailItem('dailyEvents', usage.dailyEvents, this.context),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'monthlyEvents',
+            usage.monthlyEvents,
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem('isUnlimited', usage.isUnlimited, this.context),
+        );
+        details.push(new ConfigDetailItem('limit', usage.limit, this.context));
+        details.push(
+          new ConfigDetailItem('period', usage.period, this.context),
+        );
+      }
+      return details;
+    }
+
+    if (
       sectionName === 'subscription' &&
       typeof sectionData === 'object' &&
       sectionData !== null
@@ -377,6 +412,78 @@ export class ConfigProvider
         }
         details.push(
           new ConfigDetailItem('period', usage.period, this.context),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'webhookCount',
+            `${usage.webhookCount} webhooks`,
+            this.context,
+          ),
+        );
+      }
+      return details;
+    }
+
+    if (
+      sectionName === 'webhookAuthorization' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      // Show webhook authorization details
+      const auth = sectionData as DevInfo['webhookAuthorization'];
+      if (auth) {
+        details.push(
+          new ConfigDetailItem('isAuthorized', auth.isAuthorized, this.context),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'webhookId',
+            auth.webhookId || 'none',
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'hasPendingRequest',
+            auth.hasPendingRequest,
+            this.context,
+          ),
+        );
+      }
+      return details;
+    }
+
+    if (
+      sectionName === 'config' &&
+      typeof sectionData === 'object' &&
+      sectionData !== null
+    ) {
+      // Show config details
+      const config = sectionData as DevInfo['config'];
+      if (config) {
+        details.push(
+          new ConfigDetailItem(
+            'isDevelopment',
+            config.isDevelopment,
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'isSelfHosted',
+            config.isSelfHosted,
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'dashboardUrl',
+            config.dashboardUrl,
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem('apiUrl', config.apiUrl, this.context),
         );
       }
       return details;
@@ -479,94 +586,73 @@ export class ConfigProvider
     }
 
     if (
-      sectionName === 'realtime' &&
+      sectionName === 'polling' &&
       typeof sectionData === 'object' &&
       sectionData !== null
     ) {
-      // Show realtime connection details
-      const realtime = sectionData as DevInfo['realtime'];
-      if (realtime) {
+      // Show polling connection details
+      const polling = sectionData as DevInfo['polling'];
+      if (polling) {
         details.push(
           new ConfigDetailItem(
-            'isConnected',
-            realtime.isConnected ? 'Connected' : 'Disconnected',
+            'isPolling',
+            polling.isPolling ? 'Active' : 'Inactive',
             this.context,
           ),
         );
         details.push(
           new ConfigDetailItem(
-            'webhookId',
-            realtime.webhookId || 'None',
-            this.context,
-          ),
-        );
-        details.push(
-          new ConfigDetailItem(
-            'eventsConnected',
-            realtime.eventsConnected ? 'Connected' : 'Disconnected',
-            this.context,
-          ),
-        );
-        details.push(
-          new ConfigDetailItem(
-            'requestsConnected',
-            realtime.requestsConnected ? 'Connected' : 'Disconnected',
+            'isPaused',
+            polling.isPaused ? 'Yes' : 'No',
             this.context,
           ),
         );
 
-        // Add subscription claims information if available
-        if (realtime.subscriptionClaims) {
-          if (realtime.subscriptionClaims.events) {
-            const eventsClaims = realtime.subscriptionClaims.events;
-            details.push(
-              new ConfigDetailItem(
-                'events.found',
-                eventsClaims.found ? 'Yes' : 'No',
-                this.context,
-              ),
-            );
-            details.push(
-              new ConfigDetailItem(
-                'events.claimsRole',
-                eventsClaims.claimsRole || 'None',
-                this.context,
-              ),
-            );
-            details.push(
-              new ConfigDetailItem(
-                'events.isAuthenticated',
-                eventsClaims.isAuthenticated ? 'Yes' : 'No',
-                this.context,
-              ),
-            );
-          }
+        details.push(
+          new ConfigDetailItem(
+            'pollingInterval',
+            `${Math.round(polling.pollingInterval / 1000)} seconds`,
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'autoPauseTimeout',
+            `${Math.round(polling.autoPauseTimeout / 60000)} minutes`,
+            this.context,
+          ),
+        );
 
-          if (realtime.subscriptionClaims.requests) {
-            const requestsClaims = realtime.subscriptionClaims.requests;
-            details.push(
-              new ConfigDetailItem(
-                'requests.found',
-                requestsClaims.found ? 'Yes' : 'No',
-                this.context,
-              ),
-            );
-            details.push(
-              new ConfigDetailItem(
-                'requests.claimsRole',
-                requestsClaims.claimsRole || 'None',
-                this.context,
-              ),
-            );
-            details.push(
-              new ConfigDetailItem(
-                'requests.isAuthenticated',
-                requestsClaims.isAuthenticated ? 'Yes' : 'No',
-                this.context,
-              ),
-            );
-          }
-        }
+        details.push(
+          new ConfigDetailItem(
+            'lastEventTime',
+            polling.lastEventTime
+              ? polling.lastEventTime.toISOString()
+              : 'None',
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'lastPollTime',
+            polling.lastPollTime ? polling.lastPollTime.toISOString() : 'None',
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'errorCount',
+            polling.errorCount.toString(),
+            this.context,
+          ),
+        );
+        details.push(
+          new ConfigDetailItem(
+            'consecutiveErrors',
+            polling.consecutiveErrors.toString(),
+            this.context,
+          ),
+        );
       }
       return details;
     }

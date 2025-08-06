@@ -7,6 +7,7 @@ import { registerConfigPanelCommands } from './commands/config-panel.commands';
 import { registerDeliveryCommands } from './commands/delivery.commands';
 import { registerEventCommands } from './commands/events.commands';
 import { registerOutputCommands } from './commands/output.commands';
+import { registerPollingCommands } from './commands/polling.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
 import { registerSignInNotificationCommands } from './commands/sign-in-notification.commands';
@@ -27,6 +28,7 @@ import { SignInNotificationService } from './services/sign-in-notification.servi
 import { StatusBarService } from './services/status-bar.service';
 import { WebhookAuthorizationService } from './services/webhook-authorization.service';
 import type { EventItem } from './tree-items/event.item';
+import type { LoadingItem } from './tree-items/loading.item';
 import type { RequestItem } from './tree-items/request.item';
 
 defaultLogger.enableNamespace('*');
@@ -34,7 +36,9 @@ defaultLogger.enableNamespace('unhook:vscode');
 defaultLogger.enableNamespace('unhook:vscode:*');
 const log = debug('unhook:vscode');
 
-let eventsTreeView: vscode.TreeView<EventItem | RequestItem> | undefined;
+let eventsTreeView:
+  | vscode.TreeView<EventItem | RequestItem | LoadingItem>
+  | undefined;
 let requestDetailsWebviewProvider: RequestDetailsWebviewProvider;
 let analyticsProvider: AnalyticsProvider | undefined;
 
@@ -152,16 +156,16 @@ export async function activate(context: vscode.ExtensionContext) {
   devInfoService.setConfigProvider(configProvider);
   devInfoService.setAuthStore(authStore);
 
-  // Connect realtime service to dev info service
-  const connectRealtimeToDevInfo = () => {
-    const realtimeService = eventsProvider.getRealtimeService();
-    if (realtimeService) {
-      devInfoService.setRealtimeService(realtimeService);
+  // Connect polling service to dev info service
+  const connectPollingToDevInfo = () => {
+    const pollingService = eventsProvider.getPollingService();
+    if (pollingService) {
+      devInfoService.setPollingService(pollingService);
     }
   };
 
-  // Set up callback for realtime state changes
-  eventsProvider.setOnRealtimeStateChange(() => {
+  // Set up callback for polling state changes
+  eventsProvider.setOnPollingStateChange(() => {
     if (ConfigManager.getInstance().isDevelopment()) {
       devInfoService.fetchDevInfo();
     }
@@ -171,12 +175,19 @@ export async function activate(context: vscode.ExtensionContext) {
   authorizationService.onAccessAlreadyGranted(() => {
     log('Access already granted event received, refreshing events');
     eventsProvider.refreshAndFetchEvents();
-    // Try to connect realtime service after events are refreshed
-    setTimeout(connectRealtimeToDevInfo, 1000);
+    // Try to connect polling service after events are refreshed
+    setTimeout(connectPollingToDevInfo, 1000);
   });
 
   // Register webhook event commands
   registerEventCommands(context, eventsProvider);
+
+  // Register polling commands
+  const { disposables: pollingDisposables } = registerPollingCommands(
+    context,
+    eventsProvider,
+  );
+  context.subscriptions.push(...pollingDisposables);
 
   // Register config panel commands
   registerConfigPanelCommands(context, configProvider);
@@ -216,6 +227,34 @@ export async function activate(context: vscode.ExtensionContext) {
     eventsProvider.refresh();
   });
 
+  // Set up loading state callback for the tree view
+  // Use VS Code's progress API to show the blue progress bar
+  let progressResolve: (() => void) | undefined;
+  eventsProvider.setOnLoadingStateChange((isLoading: boolean) => {
+    if (isLoading) {
+      // Show progress indicator
+      vscode.window.withProgress(
+        {
+          cancellable: false,
+          location: vscode.ProgressLocation.Window,
+          title: 'Loading events...',
+        },
+        async () => {
+          // Keep the progress indicator active while loading
+          return new Promise<void>((resolve) => {
+            progressResolve = resolve;
+          });
+        },
+      );
+    } else {
+      // Hide progress indicator
+      if (progressResolve) {
+        progressResolve();
+        progressResolve = undefined;
+      }
+    }
+  });
+
   // Register the config provider
   const configTreeView = vscode.window.createTreeView('unhook.config', {
     showCollapseAll: true,
@@ -243,8 +282,8 @@ export async function activate(context: vscode.ExtensionContext) {
   devInfoService.fetchDevInfo();
   // orgMembers will now be included in dev info for development mode
 
-  // Try to connect realtime service initially
-  setTimeout(connectRealtimeToDevInfo, 2000);
+  // Try to connect polling service initially
+  setTimeout(connectPollingToDevInfo, 2000);
 
   // Set up periodic refresh for development info
   if (configManager.isDevelopment()) {

@@ -2,41 +2,46 @@ import {
   CreateEventTypeSchema,
   Events,
   type EventTypeWithRequest,
+  Orgs,
   Requests,
   UpdateEventTypeSchema,
 } from '@unhook/db/schema';
-import { and, count, desc, eq } from 'drizzle-orm';
+import { stripe } from '@unhook/stripe';
+import { and, desc, eq, gte, sql } from 'drizzle-orm';
+import type Stripe from 'stripe';
 import { z } from 'zod';
-
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const eventsRouter = createTRPCRouter({
-  all: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+  all: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().optional().default(50),
+        offset: z.number().optional().default(0),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-    const events = await ctx.db
-      .select()
-      .from(Events)
-      .where(eq(Events.orgId, ctx.auth.orgId))
-      .orderBy(desc(Events.timestamp));
+      const events = await ctx.db.query.Events.findMany({
+        limit: input.limit ?? 50,
+        offset: input.offset ?? 0,
+        orderBy: [desc(Events.createdAt)],
+        where: eq(Events.orgId, ctx.auth.orgId),
+      });
 
-    return events;
-  }),
-
+      return events;
+    }),
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      const event = await ctx.db
-        .select()
-        .from(Events)
-        .where(and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)))
-        .limit(1);
+      const event = await ctx.db.query.Events.findFirst({
+        where: and(eq(Events.id, input.id), eq(Events.orgId, ctx.auth.orgId)),
+      });
 
-      if (!event.length) return null;
-
-      return event[0];
+      return event;
     }),
 
   byIdWithRequests: protectedProcedure
@@ -60,6 +65,7 @@ export const eventsRouter = createTRPCRouter({
   byWebhookId: protectedProcedure
     .input(
       z.object({
+        lastEventTime: z.string().optional(),
         limit: z.number().optional().default(50),
         offset: z.number().optional().default(0),
         webhookId: z.string(),
@@ -68,32 +74,52 @@ export const eventsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
+      const whereConditions = [
+        eq(Events.webhookId, input.webhookId),
+        eq(Events.orgId, ctx.auth.orgId),
+      ];
+
+      if (input.lastEventTime) {
+        whereConditions.push(
+          gte(Events.createdAt, new Date(input.lastEventTime)),
+        );
+      }
+
       const events = await ctx.db.query.Events.findMany({
         limit: input.limit ?? 50,
         offset: input.offset ?? 0,
-        orderBy: [desc(Events.timestamp)],
-        where: and(
-          eq(Events.webhookId, input.webhookId),
-          eq(Events.orgId, ctx.auth.orgId),
-        ),
+        orderBy: [desc(Events.createdAt)],
+        where: and(...whereConditions),
         with: {
           requests: {
             orderBy: [desc(Requests.createdAt)],
           },
         },
       });
+      console.log('events', {
+        events: events.length,
+        lastEventTime: input.lastEventTime,
+        orgId: ctx.auth.orgId,
+        webhookId: input.webhookId,
+      });
 
       return events satisfies EventTypeWithRequest[];
     }),
+
   count: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
+    .input(z.object({ webhookId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      const whereConditions = [eq(Events.orgId, ctx.auth.orgId)];
+
+      if (input.webhookId) {
+        whereConditions.push(eq(Events.webhookId, input.webhookId));
+      }
 
       const totalCount = await ctx.db
-        .select({ count: count() })
+        .select({ count: sql<number>`cast(count(*) as integer)` })
         .from(Events)
-        .where(eq(Events.webhookId, input.webhookId));
+        .where(and(...whereConditions));
 
       return totalCount[0]?.count ?? 0;
     }),
@@ -170,5 +196,53 @@ export const eventsRouter = createTRPCRouter({
         .returning();
 
       return event;
+    }),
+  usage: protectedProcedure
+    .input(
+      z.object({
+        period: z.enum(['day', 'month']).optional().default('month'),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      const org = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.id, ctx.auth.orgId),
+      });
+
+      if (!org || !org.stripeSubscriptionId) {
+        return null;
+      }
+
+      const subscription = (await stripe.subscriptions.retrieve(
+        org.stripeSubscriptionId,
+        {
+          expand: ['latest_invoice'],
+        },
+      )) as Stripe.Subscription;
+
+      // Get events since the current period start
+      const currentPeriodStart = new Date(
+        (subscription.items.data[0]?.current_period_start ??
+          Date.now() / 1000) * 1000,
+      );
+
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+      let events = await ctx.db.query.Events.findMany({
+        where: and(
+          eq(Events.orgId, ctx.auth.orgId),
+          gte(
+            Events.createdAt,
+            input.period === 'day' ? oneDayAgo : currentPeriodStart,
+          ),
+        ),
+      });
+
+      // If there is only one event, we need to filter out the example event
+      if (events.length === 1) {
+        events = events.filter((event) => event.source !== 'unhook_example');
+      }
+
+      return events.length;
     }),
 });

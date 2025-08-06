@@ -42,6 +42,7 @@ export class RealtimeService implements vscode.Disposable {
   private readonly CONNECTION_MONITOR_INTERVAL_MS = 60000; // Check every 60 seconds
   private lastReconnectAttempt = 0;
   private readonly MIN_RECONNECT_INTERVAL_MS = 10000; // Minimum 10 seconds between reconnects
+  private isConnecting = false; // Connection lock to prevent race conditions
 
   constructor(private options: RealtimeServiceOptions) {
     this.setupAuthListener();
@@ -86,12 +87,19 @@ export class RealtimeService implements vscode.Disposable {
 
         // Only reconnect if we're signed in and have tokens
         if (currentAuthState.isSignedIn && currentAuthState.supabaseToken) {
-          // Add a small delay to ensure tokens are fully set up
+          // Add a small delay to ensure tokens are fully set up and prevent race conditions
           setTimeout(() => {
-            if (this.currentWebhookId) {
-              this.connect(this.currentWebhookId);
+            // Check if we're already connecting to prevent duplicate attempts
+            if (!this.isConnecting) {
+              if (this.currentWebhookId) {
+                this.connect(this.currentWebhookId);
+              } else {
+                this.connect();
+              }
             } else {
-              this.connect();
+              log(
+                'Connection already in progress, skipping auth-triggered reconnection',
+              );
             }
           }, 500);
         } else {
@@ -111,6 +119,12 @@ export class RealtimeService implements vscode.Disposable {
   public async connect(webhookId?: string): Promise<void> {
     if (!this.options.authStore.isSignedIn) {
       log('Cannot connect: user not signed in');
+      return;
+    }
+
+    // Prevent multiple simultaneous connection attempts
+    if (this.isConnecting) {
+      log('Connection already in progress, skipping duplicate request');
       return;
     }
 
@@ -137,6 +151,8 @@ export class RealtimeService implements vscode.Disposable {
       return;
     }
 
+    this.isConnecting = true;
+
     try {
       log('Connecting to Supabase realtime', {
         hasAuthToken: !!token,
@@ -161,6 +177,16 @@ export class RealtimeService implements vscode.Disposable {
 
       if (webhookId) {
         await this.subscribeToWebhook(webhookId);
+
+        // Double-check that subscription was successful
+        if (!this.eventsConnected || !this.requestsConnected) {
+          log('Channel subscription incomplete after connect', {
+            eventsConnected: this.eventsConnected,
+            requestsConnected: this.requestsConnected,
+            webhookId,
+          });
+          // Don't throw here - let the subscription error handling deal with it
+        }
       }
 
       this.isConnected = true;
@@ -177,12 +203,29 @@ export class RealtimeService implements vscode.Disposable {
         errorStack: error instanceof Error ? error.stack : undefined,
       });
       this.handleConnectionError();
+    } finally {
+      this.isConnecting = false;
     }
   }
 
   public async subscribeToWebhook(webhookId: string): Promise<void> {
     if (!this.supabaseClient) {
       log('Cannot subscribe: not connected to Supabase');
+      return;
+    }
+
+    if (!this.supabaseClient.realtime.isConnected()) {
+      log('Cannot subscribe: Supabase realtime not connected');
+      return;
+    }
+
+    // Check if we're already subscribed to this webhook
+    if (
+      this.currentWebhookId === webhookId &&
+      this.eventsConnected &&
+      this.requestsConnected
+    ) {
+      log('Already subscribed to this webhook', { webhookId });
       return;
     }
 
@@ -259,9 +302,6 @@ export class RealtimeService implements vscode.Disposable {
         }
       });
 
-    await this.waitForChannelSubscription(this.eventChannel, 'events');
-    log('Events channel subscription established');
-
     this.requestChannel = this.supabaseClient
       .channel(`requests-${webhookId}`)
       .on(
@@ -336,13 +376,29 @@ export class RealtimeService implements vscode.Disposable {
       });
 
     try {
+      // Validate that both channels were created successfully
+      if (!this.eventChannel) {
+        throw new Error('Failed to create events channel');
+      }
+      if (!this.requestChannel) {
+        throw new Error('Failed to create requests channel');
+      }
+
+      // Wait for both channels to be established and authenticated
       await Promise.all([
         this.waitForChannelSubscription(this.eventChannel, 'events'),
         this.waitForChannelSubscription(this.requestChannel, 'requests'),
       ]);
       log('Successfully subscribed to webhook changes', { webhookId });
     } catch (error) {
-      log('Failed to establish channel subscriptions', { error, webhookId });
+      log('Failed to establish channel subscriptions', {
+        error: error instanceof Error ? error.message : error,
+        errorStack: error instanceof Error ? error.stack : undefined,
+        hasEventChannel: !!this.eventChannel,
+        hasRequestChannel: !!this.requestChannel,
+        supabaseConnected: this.supabaseClient?.realtime.isConnected(),
+        webhookId,
+      });
 
       // If subscription fails, clean up and try to reconnect with fresh token
       if (this.eventChannel) {
@@ -401,6 +457,17 @@ export class RealtimeService implements vscode.Disposable {
       const maxAuthAttempts = 3;
 
       const checkSubscription = () => {
+        // Check if the channel is still valid (not null)
+        if (!channel) {
+          clearTimeout(timeout);
+          reject(
+            new Error(
+              `Channel ${channelType} became null during subscription wait`,
+            ),
+          );
+          return;
+        }
+
         // Check if the channel is subscribed by checking the connection state
         const isConnected = this.supabaseClient?.realtime.isConnected();
         const channelConnected =
@@ -441,6 +508,7 @@ export class RealtimeService implements vscode.Disposable {
           // Give a longer initial delay for auth to settle
           setTimeout(attemptAuthVerification, 1000);
         } else {
+          // Continue checking, but with a shorter interval
           setTimeout(checkSubscription, 200);
         }
       };
@@ -621,16 +689,24 @@ export class RealtimeService implements vscode.Disposable {
     // Wait a moment for cleanup
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Reconnect
-    await this.connect(this.currentWebhookId || undefined);
+    try {
+      // Reconnect
+      await this.connect(this.currentWebhookId || undefined);
 
-    // Verify both channels are authenticated
-    if (this.currentWebhookId) {
-      await this.verifyChannelAuthentication('events');
-      await this.verifyChannelAuthentication('requests');
+      // Verify both channels are authenticated only if we have a webhook ID
+      if (this.currentWebhookId && this.isConnected) {
+        await this.verifyChannelAuthentication('events');
+        await this.verifyChannelAuthentication('requests');
+      }
+
+      log('Reconnection with authentication verification completed');
+    } catch (error) {
+      log('Reconnection with authentication verification failed', {
+        error: error instanceof Error ? error.message : error,
+        errorStack: error instanceof Error ? error.stack : undefined,
+      });
+      // Don't throw - let the caller handle the error
     }
-
-    log('Reconnection with authentication verification completed');
   }
 
   /**
@@ -690,8 +766,15 @@ export class RealtimeService implements vscode.Disposable {
     this.options.onChannelStateChange?.('events', false);
     this.options.onChannelStateChange?.('requests', false);
 
-    // Force reconnection with authentication verification
-    await this.reconnectWithAuthVerification();
+    try {
+      // Force reconnection with authentication verification
+      await this.reconnectWithAuthVerification();
+    } catch (error) {
+      log('Authentication failure reconnection failed', {
+        error: error instanceof Error ? error.message : error,
+      });
+      // Don't throw - this is handled gracefully
+    }
   }
 
   public disconnect(): void {
@@ -727,6 +810,7 @@ export class RealtimeService implements vscode.Disposable {
     this.eventsConnected = false;
     this.requestsConnected = false;
     this.currentWebhookId = null;
+    this.isConnecting = false; // Reset connection lock
     this.options.onConnectionStateChange?.(false);
     this.options.onChannelStateChange?.('events', false);
     this.options.onChannelStateChange?.('requests', false);

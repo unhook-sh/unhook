@@ -193,6 +193,36 @@
         "command": "unhook.resetSignInNotification",
         "icon": "$(bell)",
         "title": "Reset Sign-In Notification Preference"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.startPolling",
+        "icon": "$(play)",
+        "title": "Start Polling"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.pausePolling",
+        "icon": "$(debug-pause)",
+        "title": "Pause Polling"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.resumePolling",
+        "icon": "$(play)",
+        "title": "Resume Polling"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.stopPolling",
+        "icon": "$(debug-stop)",
+        "title": "Stop Polling"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.togglePolling",
+        "icon": "$(sync)",
+        "title": "Toggle Polling"
       }
     ],
     "configuration": {
@@ -251,6 +281,40 @@
           "default": 1000,
           "description": "Maximum number of lines to keep in the output panel",
           "type": "number"
+        },
+        "unhook.polling.autoPauseEnabled": {
+          "default": true,
+          "description": "Enable auto-pause after inactivity to save resources",
+          "type": "boolean"
+        },
+        "unhook.polling.autoPauseTimeout": {
+          "default": 600000,
+          "description": "Auto-pause timeout in milliseconds after no events are received. Must be between 5 and 60 minutes.",
+          "maximum": 3600000,
+          "minimum": 300000,
+          "type": "number"
+        },
+        "unhook.polling.interval": {
+          "default": 5000,
+          "description": "Polling interval in milliseconds for checking new events. Must be between 2 and 30 seconds.",
+          "maximum": 30000,
+          "minimum": 2000,
+          "type": "number"
+        },
+        "unhook.statusBar.showLastEventTime": {
+          "default": true,
+          "description": "Show last event time in the status bar",
+          "type": "boolean"
+        },
+        "unhook.statusBar.showPollingInterval": {
+          "default": true,
+          "description": "Show polling interval in the status bar",
+          "type": "boolean"
+        },
+        "unhook.statusBar.showPollingStatus": {
+          "default": true,
+          "description": "Show polling status in the status bar",
+          "type": "boolean"
         }
       },
       "title": "Unhook"

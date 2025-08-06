@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.22
+
+### Patch Changes
+
+- [`446bf49`](https://github.com/unhook-sh/unhook/commit/446bf49b12b724791b88544e2e6f38a37feb9704) Thanks [@seawatts](https://github.com/seawatts)! - Fix build
+
+- Updated dependencies [[`446bf49`](https://github.com/unhook-sh/unhook/commit/446bf49b12b724791b88544e2e6f38a37feb9704)]:
+  - @unhook/client@0.5.22
+
 ## 0.13.21
 
 ### Patch Changes

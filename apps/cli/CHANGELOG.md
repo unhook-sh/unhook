@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.21
+
+### Patch Changes
+
+- [`fd746be`](https://github.com/unhook-sh/unhook/commit/fd746be9b43f5a6592481024e1d6eb09dc39dc02) Thanks [@seawatts](https://github.com/seawatts)! - Switch to polling instead of realtime
+
+- Updated dependencies [[`fd746be`](https://github.com/unhook-sh/unhook/commit/fd746be9b43f5a6592481024e1d6eb09dc39dc02)]:
+  - @unhook/client@0.5.21
+
 ## 0.13.20
 
 ### Patch Changes

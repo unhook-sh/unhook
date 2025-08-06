@@ -67,6 +67,7 @@ export const mockWebhook = {
   createdAt: new Date(),
   id: createId({ prefix: 'wh' }),
   isPrivate: false,
+  lastRequestAt: null,
   name: 'Test Webhook',
   orgId: orgId,
   requestCount: 0,

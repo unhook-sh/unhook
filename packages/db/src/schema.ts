@@ -423,6 +423,8 @@ export const Events = pgTable(
       table.status,
       table.timestamp,
     ),
+    // Index for webhook ID lookups (most common query pattern)
+    index('events_webhook_id_idx').on(table.webhookId),
     index('events_webhook_status_idx').on(table.webhookId, table.status),
     // Partial index for pending events that need processing
     index('events_pending_idx')

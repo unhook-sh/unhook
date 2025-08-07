@@ -1,0 +1,1 @@
+CREATE INDEX "events_webhook_id_idx" ON "events" USING btree ("webhookId");

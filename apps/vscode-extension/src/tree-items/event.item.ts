@@ -1,8 +1,11 @@
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
+import { debug } from '@unhook/logger';
 import { formatDistance } from 'date-fns';
 import * as vscode from 'vscode';
 import { getStatusIconPath } from '../utils/status-icon.utils';
+
+const log = debug('unhook:vscode:event-item');
 
 export class EventItem extends vscode.TreeItem {
   constructor(
@@ -63,5 +66,18 @@ export class EventItem extends vscode.TreeItem {
     this.tooltip.appendMarkdown(
       '\n\n$(eye) View Details\n$(play) Replay Event',
     );
+
+    // Add command to view event details
+    const command = {
+      arguments: [this],
+      command: 'unhook.viewEvent',
+      title: 'View Event Details',
+    };
+    log('Setting up command for event', {
+      eventId: event.id,
+      hasEvent: !!this.event,
+      itemConstructor: this.constructor.name,
+    });
+    this.command = command;
   }
 }

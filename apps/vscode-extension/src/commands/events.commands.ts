@@ -136,19 +136,8 @@ export function registerEventCommands(
         try {
           log('Opening event details', { eventId: item.event.id });
 
-          // Get the first request from the event
-          const firstRequest = item.event.requests?.[0];
-          if (firstRequest) {
-            // Show the request details in a panel
-            await requestDetailsWebviewProvider.show({
-              event: item.event,
-              request: firstRequest,
-            });
-          } else {
-            vscode.window.showWarningMessage(
-              'No request data available for this event.',
-            );
-          }
+          // Show the event details in a panel
+          await requestDetailsWebviewProvider.showEvent(item.event);
 
           log('Event details shown successfully', { eventId: item.event.id });
         } catch (error) {

@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { EventType, RequestType } from '@unhook/db/schema';
+import type {
+  EventType,
+  EventTypeWithRequest,
+  RequestType,
+} from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
@@ -20,6 +24,7 @@ export class RequestDetailsWebviewProvider {
   private _disposables: vscode.Disposable[] = [];
   private _devServerUrl?: string;
   private _currentRequestData: RequestType | null = null;
+  private _currentEventData: EventTypeWithRequest | null = null;
 
   constructor(private readonly _extensionUri: vscode.Uri) {
     // In development mode, set up file watching
@@ -55,6 +60,7 @@ export class RequestDetailsWebviewProvider {
       ) as Record<string, string>;
     }
     this._currentRequestData = request;
+    this._currentEventData = null;
 
     // If we already have a panel, show it
     if (this._panel) {
@@ -101,6 +107,88 @@ export class RequestDetailsWebviewProvider {
               this._panel?.webview.postMessage({
                 data: this._currentRequestData,
                 type: 'requestData',
+              });
+            }
+            break;
+          default:
+            log('Unknown message type from webview', { type: message.type });
+        }
+      },
+      null,
+      this._disposables,
+    );
+
+    // Reset when the panel is disposed
+    this._panel.onDidDispose(
+      () => {
+        log('Panel disposed');
+        this._panel = undefined;
+      },
+      null,
+      this._disposables,
+    );
+  }
+
+  public async showEvent(event: EventTypeWithRequest) {
+    log('Showing event details', { eventId: event.id });
+
+    // Sanitize headers in event if present
+    if (
+      event?.originRequest?.headers &&
+      typeof event.originRequest.headers === 'object'
+    ) {
+      event.originRequest.headers = sanitizeHeaders(
+        event.originRequest.headers as Record<string, unknown>,
+      ) as Record<string, string>;
+    }
+    this._currentEventData = event;
+    this._currentRequestData = null;
+
+    // If we already have a panel, show it
+    if (this._panel) {
+      log('Revealing existing panel');
+      this._panel.reveal(vscode.ViewColumn.One);
+      this._panel.webview.postMessage({
+        data: this._currentEventData,
+        type: 'eventData',
+      });
+      return;
+    }
+
+    // Otherwise, create a new panel
+    log('Creating new panel');
+    this._panel = vscode.window.createWebviewPanel(
+      'unhookRequestDetails',
+      'Event Details',
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          this._extensionUri,
+          vscode.Uri.joinPath(
+            this._extensionUri,
+            'dist',
+            'request-details-webview',
+          ),
+        ],
+        retainContextWhenHidden: true,
+      },
+    );
+
+    this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
+
+    // Handle messages from the webview
+    this._panel.webview.onDidReceiveMessage(
+      (message) => {
+        log('Received message from webview', { message });
+        switch (message.type) {
+          case 'ready':
+            log('Webview is ready, sending event data');
+            // If we have event data, send it to the webview
+            if (this._currentEventData) {
+              this._panel?.webview.postMessage({
+                data: this._currentEventData,
+                type: 'eventData',
               });
             }
             break;

@@ -32,6 +32,7 @@
 
 ### VSCode Issues
 - [ ] Fix issue where if user clicks sign in twice it doesn't work
+- [ ] Fix issue where we are seeing multiple user_signed_in events all the time
 - [x] Vscode not signing in on dev
 - [x] I think in dev it's pointing to the wrong endpoint
 - [x] Issue with hitting replay doesn't make the latest request show up but it goes through

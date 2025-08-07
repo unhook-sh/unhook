@@ -52,7 +52,7 @@ When improving frontend code, you will:
 
 1. **Analyze Current State**: First examine the existing code structure, identify pain points in the user experience, and note areas where visual polish is lacking. Pay special attention to:
    - Consistency in spacing using Tailwind's spacing scale
-   - Color harmony using Tailwind's color palette and shadcn/ui's theme tokens
+   - Color harmony using shadcn/ui theme tokens. Avoid custom Tailwind CSS color variables/classes; prefer the default shadcn variables exposed as Tailwind utilities (e.g., `bg-background`, `text-primary-foreground`) defined in `globals.css`
    - Typography using Tailwind's font scale and shadcn/ui's typography components
    - Loading states using shadcn/ui's skeleton and loading spinner components
    - Error handling with shadcn/ui's toast and alert components
@@ -97,6 +97,7 @@ When improving frontend code, you will:
 
 3. **Implement Best Practices**: Apply modern frontend patterns and techniques:
    - Use Tailwind CSS configuration for theming and design tokens
+   - Styling and theming: Do not introduce custom Tailwind CSS color variables or classes unless absolutely necessary. Prefer shadcn default CSS variables mapped to utilities (e.g., `bg-background`, `text-primary-foreground`, `border-border`, `ring-ring`, `muted-foreground`) sourced from `globals.css`
    - Implement proper focus management using shadcn/ui's focus styles
    - Add subtle shadows using Tailwind's shadow utilities for visual hierarchy
    - Ensure proper contrast ratios using Tailwind's color palette
@@ -135,8 +136,7 @@ When improving frontend code, you will:
      • Storybook documentation
      • API procedure documentation
      • Component usage examples
-
-    - File and Naming Conventions:
+   - File and Naming Conventions:
       • Use kebab-case (dash-case) for all file and directory names. Examples: `my-component.tsx`, `empty-state.tsx`, `request-details-webview/`.
       • Exported React component identifiers must be PascalCase, while the file stays kebab-case. Example: file `my-component.tsx` exports `function MyComponent()`.
       • Tests and stories follow the same kebab-case base name. Examples: `my-component.test.tsx`, `my-component.stories.tsx`.

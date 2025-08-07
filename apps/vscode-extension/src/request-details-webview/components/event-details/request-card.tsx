@@ -1,0 +1,297 @@
+import type { EventType, RequestType } from '@unhook/db/schema';
+import { Badge } from '@unhook/ui/badge';
+import { Button } from '@unhook/ui/button';
+import { Card, CardContent } from '@unhook/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@unhook/ui/collapsible';
+import { Icons } from '@unhook/ui/custom/icons';
+import { useState } from 'react';
+import { JsonViewer } from '../json-viewer';
+import { HeadersList } from '../shared/headers-list';
+
+interface RequestCardProps {
+  request: RequestType;
+  event: EventType | null;
+  index: number;
+}
+
+export function RequestCard({ request, event, index }: RequestCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const getStatusColor = (status: string) => {
+    if (status === 'completed')
+      return 'bg-primary/10 text-primary border-border';
+    if (status === 'failed')
+      return 'bg-destructive/10 text-destructive border-destructive/20';
+    if (status === 'pending')
+      return 'bg-accent text-accent-foreground border-border';
+    return 'bg-muted text-muted-foreground border-border';
+  };
+
+  const getStatusIcon = (status: string) => {
+    if (status === 'completed')
+      return <Icons.CheckCircle2 className="h-3 w-3" />;
+    if (status === 'failed') return <Icons.X className="h-3 w-3" />;
+    if (status === 'pending') return <Icons.Clock className="h-3 w-3" />;
+    return <Icons.Clock className="h-3 w-3" />;
+  };
+
+  const getMethodColor = (method?: string) => {
+    switch (method?.toUpperCase()) {
+      case 'GET':
+        return 'bg-secondary text-secondary-foreground';
+      case 'POST':
+        return 'bg-primary/10 text-primary';
+      case 'PUT':
+        return 'bg-accent text-accent-foreground';
+      case 'DELETE':
+        return 'bg-destructive/10 text-destructive';
+      case 'PATCH':
+        return 'bg-muted text-foreground';
+      default:
+        return 'bg-muted text-muted-foreground';
+    }
+  };
+
+  const copyUrl = () => {
+    if (request.destination?.url) {
+      navigator.clipboard.writeText(request.destination.url);
+    }
+  };
+
+  const copyRequestBody = () => {
+    const body = event?.originRequest.body;
+    if (body) navigator.clipboard.writeText(body);
+  };
+
+  const copyResponseBody = () => {
+    const body = request.response?.body;
+    if (body) navigator.clipboard.writeText(body);
+  };
+
+  return (
+    <Card className="border border-border hover:border-accent transition-colors">
+      <Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
+        <CollapsibleTrigger asChild>
+          <div className="p-4 cursor-pointer hover:bg-accent/50 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  {isExpanded ? (
+                    <Icons.ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Icons.ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span className="font-mono text-sm bg-muted px-2 py-1 rounded">
+                    #{index + 1}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground">
+                    {request.destination?.name || 'Unknown Destination'}
+                  </span>
+                  <Badge
+                    className={`${getStatusColor(request.status)} flex items-center gap-1 border`}
+                  >
+                    {getStatusIcon(request.status)}
+                    {request.status}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Icons.Clock className="h-3 w-3" />
+                  <span>{request.responseTimeMs || 0}ms</span>
+                </div>
+                {event?.originRequest?.method && (
+                  <Badge
+                    className={`${getMethodColor(event.originRequest.method)} text-xs font-mono`}
+                  >
+                    {event.originRequest.method}
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-2 flex items-center gap-2">
+              <Icons.ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm text-muted-foreground font-mono truncate">
+                {request.destination?.url}
+              </span>
+            </div>
+
+            {request.failedReason && (
+              <div className="mt-2 flex items-start gap-2 p-2 bg-destructive/10 border border-destructive/20 rounded">
+                <Icons.AlertCircle className="h-3 w-3 text-destructive flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-destructive">
+                  {request.failedReason}
+                </span>
+              </div>
+            )}
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent>
+          <div className="border-t border-border">
+            <CardContent className="p-4 space-y-4">
+              {/* Request Details Grid */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-foreground flex items-center gap-2">
+                    <Icons.ArrowRight className="h-3 w-3" />
+                    Request Details
+                  </h4>
+                  <div className="space-y-1 text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span>Status Code:</span>
+                      <span className="font-mono">
+                        {request.response?.status ?? 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Content Type:</span>
+                      <span
+                        className="font-mono text-xs truncate max-w-32"
+                        title={event?.originRequest?.contentType || 'N/A'}
+                      >
+                        {event?.originRequest?.contentType || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Size:</span>
+                      <span className="font-mono">
+                        {event?.originRequest?.size || 0} bytes
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="font-medium text-foreground flex items-center gap-2">
+                    <Icons.ArrowLeft className="h-3 w-3" />
+                    Response Details
+                  </h4>
+                  <div className="space-y-1 text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span>Response Time:</span>
+                      <span className="font-mono">
+                        {request.responseTimeMs || 0}ms
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Response Size:</span>
+                      <span className="font-mono">
+                        {request.response?.body
+                          ? (request.response.body as string).length
+                          : 0}{' '}
+                        bytes
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Retry Count:</span>
+                      <span className="font-mono">
+                        {event?.retryCount || 0}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* URL Section with Copy */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-foreground flex items-center gap-2">
+                    <Icons.ExternalLink className="h-3 w-3" />
+                    Destination URL
+                  </h4>
+                  <Button
+                    className="text-xs"
+                    onClick={copyUrl}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <Icons.Copy className="h-3 w-3 mr-1" />
+                    Copy
+                  </Button>
+                </div>
+                <div className="bg-muted rounded p-3 font-mono text-sm break-all">
+                  {request.destination?.url}
+                </div>
+              </div>
+
+              {/* Request Body */}
+              {event?.originRequest?.body && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-foreground flex items-center gap-2">
+                      <Icons.ExternalLink className="h-3 w-3" />
+                      Request Body
+                    </h4>
+                    <Button
+                      className="text-xs"
+                      onClick={copyRequestBody}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <Icons.Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
+                  <JsonViewer
+                    data={event.originRequest.body}
+                    defaultExpanded={false}
+                    maxHeight={300}
+                    title="Request Payload"
+                  />
+                </div>
+              )}
+
+              {/* Response Body */}
+              {request.response?.body && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-foreground flex items-center gap-2">
+                      <Icons.ExternalLink className="h-3 w-3" />
+                      Response Body
+                    </h4>
+                    <Button
+                      className="text-xs"
+                      onClick={copyResponseBody}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      <Icons.Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
+                  <JsonViewer
+                    data={request.response.body}
+                    defaultExpanded={false}
+                    maxHeight={300}
+                    title="Response Data"
+                  />
+                </div>
+              )}
+
+              {/* Headers */}
+              {event?.originRequest?.headers && (
+                <div className="space-y-2">
+                  <h4 className="font-medium text-foreground flex items-center gap-2">
+                    <Icons.ExternalLink className="h-3 w-3" />
+                    Request Headers
+                  </h4>
+                  <div className="bg-muted rounded p-3 max-h-48 overflow-auto">
+                    <HeadersList headers={event.originRequest.headers} />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
+  );
+}

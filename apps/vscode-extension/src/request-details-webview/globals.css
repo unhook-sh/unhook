@@ -175,3 +175,9 @@ a:hover {
     filter: brightness(0.9);
   }
 }
+
+/* Shiki container adjustments to blend with theme */
+.shiki,
+.shiki span {
+  background-color: transparent !important;
+}

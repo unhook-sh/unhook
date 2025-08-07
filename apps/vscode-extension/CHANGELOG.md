@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.31
+
+### Patch Changes
+
+- [`0d6c202`](https://github.com/unhook-sh/unhook/commit/0d6c202007351daaa7298be4f9f5e7811c3ba830) Thanks [@seawatts](https://github.com/seawatts)! - Get logo working correctly for activity bar
+
 ## 0.2.30
 
 ### Patch Changes

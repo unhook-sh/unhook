@@ -602,7 +602,7 @@
     "url": "https://github.com/sponsors/seawatts"
   },
   "type": "commonjs",
-  "version": "0.2.30",
+  "version": "0.2.31",
   "vsce": {
     "dependencies": false,
     "yarn": false

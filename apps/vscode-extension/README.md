@@ -22,7 +22,7 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 - **Provider Integrations**: Out-of-the-box support for Stripe, GitHub, Clerk, Discord, and more
 - **Smart Routing**: Route webhooks to your local environment based on team and session
 - **Beautiful, Native UI**: Seamless integration with the VS Code interface
-- **Custom File Icons**: Dedicated icons for Unhook configuration files (`unhook.yaml`, `unhook.yml`, `unhook.json`, `unhook.ts`)
+- **Custom File Icons**: Dedicated icons for Unhook configuration files (`unhook.yml`, `unhook.yaml`, `unhook.json`, `unhook.ts`)
 
 ---
 
@@ -30,91 +30,373 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 
 ### 1. Install the Extension
 
-- Open the Extensions view in VS Code (`⇧⌘X`)
-- Search for `Unhook - Webhook Development` (or install from a local `.vsix` file if provided)
+- Open the Extensions view in VS Code (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+- Search for `Unhook - Webhook Development`
 - Click **Install**
 
 ### 2. Authenticate with Unhook
 
-- Open the Unhook sidebar from the Activity Bar
-- Follow the prompts to sign in with your Unhook account
+- Click the Unhook icon in the Activity Bar
+- Click "Sign in to Unhook" in the status bar
+- Complete the OAuth flow in your browser
 - If you don't have an account, you can create one for free at [unhook.sh](https://unhook.sh)
 
-### 3. Start Using Unhook in VS Code
+### 3. Configure Your Workspace
 
-- Use the sidebar to view, replay, and debug webhook events
-- Add or manage API events with the provided commands
-- Collaborate with your team in real time
+Create an `unhook.yml` file in your workspace root:
+
+```yaml
+webhookId: wh_your_webhook_id
+destination:
+  - name: local
+    url: http://localhost:3000/api/webhooks
+    ping: true
+delivery:
+  - source: "*"
+    destination: local
+```
+
+### 4. Start Receiving Webhooks
+
+- Create a webhook URL at [unhook.sh/app](https://unhook.sh/app)
+- Configure your webhook provider to use the Unhook URL
+- View events in the VS Code sidebar as they arrive
 
 ---
 
 ## Configuration
 
-Create an `unhook.yml` file in your workspace root:
+### Basic Configuration
+
+The extension automatically detects Unhook configuration files in your workspace:
 
 ```yaml
-webhookId: your_webhook_id_here
+# Required: Your unique webhook ID
+webhookId: wh_your_webhook_id
+
+# Optional: Enable debug mode
+debug: false
+
+# Optional: Enable telemetry
+telemetry: true
+
+# Required: Array of destination endpoints
 destination:
-  url: http://localhost:3000/webhook
-  name: Local Development Server
+  - name: local
+    url: http://localhost:3000/api/webhooks
+    ping: true  # Optional: Health check configuration
+
+# Optional: Array of webhook sources
+source:
+  - name: stripe
+  - name: github
+
+# Required: Array of delivery rules
 delivery:
-  enabled: true
+  - source: "*"  # Optional: Source filter (defaults to "*")
+    destination: local  # Name of the destination from 'destination' array
 ```
 
-## Settings
+### Configuration File Locations
 
-The following settings are available in VS Code:
+The extension will look for configuration files in the following order:
 
-- `unhook.delivery.enabled`: Enable or disable automatic webhook delivery
-- `unhook.events.autoClear`: Automatically clear old events when max history is reached
-- `unhook.events.maxHistory`: Maximum number of events to keep in history
-- `unhook.notifications.showForNewEvents`: Show notifications for new webhook events
-- `unhook.output.autoShow`: Automatically show the output panel for new events
-- `unhook.output.maxLines`: Maximum number of lines in the output panel
+1. `unhook.yml` (workspace root)
+2. `unhook.yaml` (workspace root)
+3. `unhook.config.yml` (workspace root)
+4. `unhook.config.yaml` (workspace root)
+5. `unhook.config.js` (workspace root)
+6. `unhook.config.cjs` (workspace root)
+7. `unhook.config.ts` (workspace root)
+8. `unhook.config.json` (workspace root)
+
+### Custom Configuration Path
+
+You can specify a custom configuration file path in VS Code settings:
+
+```json
+{
+  "unhook.configFilePath": "./config/unhook.yml"
+}
+```
 
 ---
 
-## Why Unhook?
+## Extension Settings
 
-- **For Teams**: Share a single webhook endpoint while everyone tests locally
-- **For Security**: All traffic is encrypted and authenticated
-- **For Productivity**: No more switching between tools—debug webhooks where you code
+### Output Settings
+
+```json
+{
+  "unhook.output.autoShow": true,
+  "unhook.output.maxLines": 1000
+}
+```
+
+- **`unhook.output.autoShow`** (boolean, default: `false`)
+  Automatically show the output panel when new events are received
+
+- **`unhook.output.maxLines`** (number, default: `1000`)
+  Maximum number of lines to keep in the output panel
+
+### Event Management Settings
+
+```json
+{
+  "unhook.events.maxHistory": 100,
+  "unhook.events.autoClear": false
+}
+```
+
+- **`unhook.events.maxHistory`** (number, default: `100`)
+  Maximum number of events to keep in history
+
+- **`unhook.events.autoClear`** (boolean, default: `false`)
+  Automatically clear old events when the maximum history is reached
+
+### Delivery Settings
+
+```json
+{
+  "unhook.delivery.enabled": true
+}
+```
+
+- **`unhook.delivery.enabled`** (boolean, default: `true`)
+  Enable or disable forwarding new events to their destinations
+
+### Polling Settings
+
+```json
+{
+  "unhook.polling.interval": 5000,
+  "unhook.polling.autoPauseEnabled": true,
+  "unhook.polling.autoPauseTimeout": 600000
+}
+```
+
+- **`unhook.polling.interval`** (number, default: `5000`)
+  Polling interval in milliseconds for checking new events
+
+- **`unhook.polling.autoPauseEnabled`** (boolean, default: `true`)
+  Enable auto-pause after inactivity to save resources
+
+- **`unhook.polling.autoPauseTimeout`** (number, default: `600000`)
+  Auto-pause timeout in milliseconds after no events are received
+
+### Status Bar Settings
+
+```json
+{
+  "unhook.statusBar.showPollingStatus": true,
+  "unhook.statusBar.showPollingInterval": true,
+  "unhook.statusBar.showLastEventTime": true
+}
+```
+
+- **`unhook.statusBar.showPollingStatus`** (boolean, default: `true`)
+  Show polling status in the status bar
+
+- **`unhook.statusBar.showPollingInterval`** (boolean, default: `true`)
+  Show polling interval in the status bar
+
+- **`unhook.statusBar.showLastEventTime`** (boolean, default: `true`)
+  Show last event time in the status bar
+
+### Notification Settings
+
+```json
+{
+  "unhook.notifications.showForNewEvents": true
+}
+```
+
+- **`unhook.notifications.showForNewEvents`** (boolean, default: `true`)
+  Show notifications when new webhook events are received
+
+### Analytics Settings
+
+```json
+{
+  "unhook.analytics.enabled": false
+}
+```
+
+- **`unhook.analytics.enabled`** (boolean, default: `false`)
+  Enable anonymous usage analytics to help improve Unhook
 
 ---
 
-## Configuration & Advanced Usage
+## Commands
 
-### Extension Settings
+### Authentication Commands
 
-- **Event Forwarding**: Control whether new webhook events are automatically forwarded to their destinations
-  - Setting: `unhook.delivery.enabled` (default: `true`)
-  - When disabled, events will be received and displayed but not forwarded until manually replayed
-  - Toggle via Command Palette: "Unhook: Toggle Event Forwarding"
+| Command | Description |
+|---------|-------------|
+| `unhook.signIn` | Sign in to Unhook |
+| `unhook.signOut` | Sign out of Unhook |
 
-### Advanced Configuration
+### Event Management Commands
 
-- Configure routing and provider integrations via the Unhook web dashboard or CLI
-- For advanced configuration, see the [Unhook documentation](https://unhook.sh/docs)
+| Command | Description |
+|---------|-------------|
+| `unhook.showEvents` | Show Events sidebar |
+| `unhook.events.refresh` | Refresh events list |
+| `unhook.events.filter` | Filter events |
+| `unhook.quickPick` | Show Quick Pick interface |
 
-### File Icons
+### Event Actions
+
+| Command | Description | Context |
+|---------|-------------|---------|
+| `unhook.viewEvent` | View event details | Event item |
+| `unhook.replayEvent` | Replay event | Event item |
+| `unhook.copyEvent` | Copy event to clipboard | Event item |
+| `unhook.viewRequest` | View request details | Request item |
+| `unhook.replayRequest` | Replay request | Request item |
+
+### Output & Settings Commands
+
+| Command | Description |
+|---------|-------------|
+| `unhook.focusOutput` | Focus output panel |
+| `unhook.clearOutput` | Clear output panel |
+| `unhook.toggleOutput` | Toggle output panel |
+| `unhook.toggleAutoShowOutput` | Toggle auto-show output |
+| `unhook.toggleAutoClearEvents` | Toggle auto-clear events |
+| `unhook.toggleDelivery` | Toggle event delivery |
+
+### Polling Commands
+
+| Command | Description |
+|---------|-------------|
+| `unhook.startPolling` | Start polling |
+| `unhook.pausePolling` | Pause polling |
+| `unhook.resumePolling` | Resume polling |
+| `unhook.stopPolling` | Stop polling |
+| `unhook.togglePolling` | Toggle polling |
+
+---
+
+## Team Development
+
+### Shared Configuration
+
+Teams can share a single webhook configuration:
+
+```yaml
+webhookId: wh_team_webhook_id
+destination:
+  - name: dev1
+    url: http://localhost:3000/api/webhooks
+    ping: true
+  - name: dev2
+    url: http://localhost:3001/api/webhooks
+    ping: true
+source:
+  - name: clerk
+  - name: stripe
+delivery:
+  - source: clerk
+    destination: dev1
+  - source: stripe
+    destination: dev2
+```
+
+### Team Features
+
+- **Shared Webhook URL**: All team members use the same webhook URL
+- **Individual Routing**: Each developer can receive specific webhook types
+- **Request History**: View and replay requests across the team
+- **Real-time Monitoring**: See incoming requests in real-time
+- **Team Dashboard**: Monitor team activity and webhook status
+
+---
+
+## Provider Integration
+
+The extension works with all supported webhook providers:
+
+- **Stripe** - Payment and subscription webhooks
+- **GitHub** - Repository and organization events
+- **Clerk** - Authentication and user management events
+- **Discord** - Bot and server events
+- **Custom Providers** - Any webhook-enabled service
+
+---
+
+## File Icons
 
 The extension provides custom icons for Unhook configuration files:
-- `unhook.yaml` and `unhook.yml` - YAML configuration files
+- `unhook.yml` and `unhook.yaml` - YAML configuration files
 - `unhook.json` - JSON configuration files
 - `unhook.ts` - TypeScript configuration files
+- `unhook.js` and `unhook.cjs` - JavaScript configuration files
 
-To use the custom file icons, enable the "Unhook File Icons" icon theme in VS Code:
-1. Open VS Code Settings (`⌘,`)
-2. Search for "File Icon Theme"
-3. Select "Unhook File Icons" from the dropdown
+---
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Authentication Problems**
+   - Sign out and sign in again using the command palette
+   - Ensure you have a valid Unhook account at [unhook.sh](https://unhook.sh)
+
+2. **No Events Appearing**
+   - Verify your `unhook.yml` configuration is correct
+   - Ensure the webhook URL is properly configured with your provider
+   - Use the refresh button in the Events panel
+
+3. **Configuration Not Found**
+   - Ensure `unhook.yml` exists in your workspace root
+   - Set custom path via `unhook.configFilePath` setting
+   - Check YAML syntax is valid
+
+4. **Replay Failures**
+   - Ensure delivery is not paused (use "Toggle Event Delivery")
+   - Verify destination URLs are accessible
+   - Check the output panel for error messages
+
+---
+
+## Development
+
+### Building from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/unhook-sh/unhook.git
+cd unhook/apps/vscode-extension
+
+# Install dependencies
+bun install
+
+# Build the extension
+bun run build
+
+# Package as VSIX
+bun run package
+```
+
+### Development Mode
+
+```bash
+# Start development mode
+bun run dev
+
+# This runs both:
+# - Extension compilation in watch mode
+# - Webview development server
+```
 
 ---
 
 ## Support & Feedback
 
-- [Unhook Documentation](https://unhook.sh/docs)
+- [Documentation](https://docs.unhook.sh/vscode-extension)
 - [GitHub Issues](https://github.com/unhook-sh/unhook/issues)
-- [Contact Us](https://unhook.sh/contact)
+- [Discord Community](https://discord.gg/unhook)
 
 ---
 

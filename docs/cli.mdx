@@ -40,7 +40,7 @@ npx @unhook/cli init
 
 2. Start the webhook:
 ```bash
-unhook listen
+npx @unhook/cli listen
 ```
 
 3. Use the generated webhook URL in your provider's settings:
@@ -50,87 +50,164 @@ https://unhook.sh/wh_your_webhook_id
 
 ## Core Commands
 
-### Start Webhook
+### `unhook init`
+
+Authenticate with Unhook and set up your project. Creates an `unhook.yml` config and guides you through connecting your webhook provider.
+
 ```bash
-# Basic usage
-unhook listen
+unhook init [options]
 
-# With custom client ID
-unhook listen --client-id dev-1
-
-# With debug logging
-unhook listen --debug
-
-# Redirect to remote URL
-unhook --redirect https://api.example.com
+Options:
+  -c, --code         Authentication code for direct login (advanced; usually not needed)
+  -t, --destination  Set the local destination URL to forward webhooks to (e.g., "http://localhost:3000/api/webhooks")
+  -s, --source       Set the source name or URL for incoming webhooks (e.g., "stripe")
+  -w, --webhook      Specify a webhook ID to use (optional; usually auto-generated)
+  -v, --verbose      Enable verbose debug logging for troubleshooting
+  -h, --help         Show help
 ```
 
-### Initialize Project
+**Examples:**
 ```bash
-# Using npx
+# Basic initialization
 npx @unhook/cli init
 
-# Using bunx
-bunx @unhook/cli init
+# With custom destination
+npx @unhook/cli init --destination http://localhost:3000/api/webhooks
 
-# Using pnpm
-pnpm dlx @unhook/cli init
+# With specific source
+npx @unhook/cli init --source stripe
 
-# Using deno
-deno run --allow-net --allow-read --allow-write npm:@unhook/cli init
+# With custom webhook ID
+npx @unhook/cli init --webhook wh_custom_id
 ```
 
-## Command Line Options
+### `unhook listen`
 
-| Option | Alias | Description | Required | Default |
-|--------|-------|-------------|----------|---------|
-| `--port` | `-p` | Local service port | Yes* | - |
-| `--webhook-id` | `-t` | Webhook ID | Yes* | - |
-| `--client-id` | `-c` | Unique client ID | No | Auto-generated |
-| `--redirect` | `-r` | Redirect URL | Yes* | - |
-| `--debug` | `-d` | Enable debug logs | No | `false` |
-| `--ping` | - | Health check config | No | `true` |
-| `--help` | `-h` | Show help | No | - |
-| `--version` | `-v` | Show version | No | - |
+Start the Unhook relay to receive and forward webhooks to your local server. Keeps the CLI running and displays incoming requests.
 
-\* Either `--port` or `--redirect` must be provided, but not both.
+```bash
+unhook listen [options]
+
+Options:
+  -c, --config       Path to a custom unhook.yml configuration file
+  --path             Directory to watch for config changes (default: ".")
+  -v, --verbose      Enable verbose debug logging for troubleshooting
+  -h, --help         Show help
+```
+
+**Examples:**
+```bash
+# Basic usage
+npx @unhook/cli listen
+
+# With custom config file
+npx @unhook/cli listen --config ./custom/unhook.yml
+
+# With custom directory
+npx @unhook/cli listen --path ./config
+
+# With debug logging
+npx @unhook/cli listen --verbose
+```
+
+### `unhook login`
+
+Authenticate your CLI with your Unhook account. Opens a browser for login.
+
+```bash
+unhook login [options]
+
+Options:
+  -c, --code         Authentication code for direct login (advanced; usually not needed)
+  -v, --verbose      Enable verbose debug logging for troubleshooting
+  -h, --help         Show help
+```
+
+**Examples:**
+```bash
+# Basic login
+npx @unhook/cli login
+
+# With authentication code
+npx @unhook/cli login --code your_auth_code
+```
+
+## Global Options
+
+| Option | Alias | Description | Default |
+|--------|-------|-------------|---------|
+| `--verbose` | `-v` | Enable verbose debug logging for troubleshooting | `false` |
+| `--help` | `-h` | Show help | - |
+| `--version` | - | Show version number | - |
 
 ## Configuration
 
 ### Configuration File
-Create an `unhook.yaml` in your project root:
+
+The CLI uses an `unhook.yml` file for configuration. This file should be in your project root:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+# Required: Your unique webhook ID
+webhookId: wh_your_webhook_id
+
+# Optional: Enable debug mode
 debug: false
+
+# Optional: Enable telemetry
 telemetry: true
+
+# Required: Array of destination endpoints
 destination:
-  - name: "your-endpoint"
-    url: "http://localhost:3000/api/webhooks"
+  - name: local
+    url: http://localhost:3000/api/webhooks
+    ping: true  # Optional: Health check configuration
+
+# Optional: Array of webhook sources
 source:
-  - name: "stripe"
-  - name: "github"
+  - name: stripe
+  - name: github
+
+# Required: Array of delivery rules
 delivery:
-  - source: "stripe"
-    destination: "your-endpoint"
-  - source: "github"
-    destination: "your-endpoint"
+  - source: "*"  # Optional: Source filter (defaults to *)
+    destination: local  # Name of the destination from 'destination' array
 ```
+
+### Configuration File Locations
+
+The CLI will look for configuration files in the following order:
+
+1. `unhook.yml` (current directory)
+2. `unhook.yaml` (current directory)
+3. `unhook.config.yml` (current directory)
+4. `unhook.config.yaml` (current directory)
+5. `unhook.config.js` (current directory)
+6. `unhook.config.cjs` (current directory)
+7. `unhook.config.ts` (current directory)
+8. `unhook.config.json` (current directory)
 
 ### Environment Variables
 
-All CLI options can be set via environment variables:
+All configuration options can be set via environment variables:
 
 ```bash
 # Core settings
-WEBHOOK_PORT=3000
-WEBHOOK_API_KEY=your_api_key
-WEBHOOK_CLIENT_ID=dev-1
+WEBHOOK_ID=wh_your_webhook_id
 WEBHOOK_DEBUG=true
+WEBHOOK_TELEMETRY=true
 
-# Advanced settings
-WEBHOOK_REDIRECT=https://api.example.com
-WEBHOOK_PING=true
+# Destination settings
+WEBHOOK_DESTINATION_0_NAME=local
+WEBHOOK_DESTINATION_0_URL=http://localhost:3000/api/webhooks
+WEBHOOK_DESTINATION_0_PING=true
+
+# Source settings
+WEBHOOK_SOURCE_0_NAME=stripe
+WEBHOOK_SOURCE_1_NAME=github
+
+# Delivery settings
+WEBHOOK_DELIVERY_0_SOURCE=*
+WEBHOOK_DELIVERY_0_DESTINATION=local
 ```
 
 ## Interactive UI
@@ -142,30 +219,34 @@ The CLI includes an interactive terminal UI that shows:
 - Error messages
 - Debug information (when enabled)
 
-<Frame>
-  <img src="/images/cli-ui.png" alt="CLI UI" />
-</Frame>
-
 ### UI Elements
 
 - **Status Bar**: Shows connection status and client ID
 - **Activity Log**: Real-time webhook request log
-- **Debug Panel**: Detailed debug information (visible with `--debug`)
+- **Debug Panel**: Detailed debug information (visible with `--verbose`)
 - **Error Messages**: Highlighted in red for visibility
+
+### Navigation
+
+- **Arrow Keys**: Navigate through lists and menus
+- **Enter**: Select items or execute actions
+- **ESC**: Go back to previous screen
+- **q**: Quit the application
+- **?**: Show keyboard shortcuts
 
 ## Health Checks
 
-The `--ping` option configures connection health monitoring:
+The `ping` option in your configuration configures connection health monitoring:
 
-```bash
-# Disable health checks
-unhook listen --ping false
+```yaml
+destination:
+  - name: local
+    url: http://localhost:3000/api/webhooks
+    ping: true  # Enable default health check
 
-# Check specific port
-unhook listen --ping 3001
-
-# Check specific URL
-unhook listen --ping https://api.example.com/health
+  - name: custom
+    url: http://localhost:3001/api/webhooks
+    ping: http://localhost:3001/health  # Custom health check URL
 ```
 
 ## Authentication
@@ -195,38 +276,49 @@ rm ~/.unhook/auth-storage.json
 
 ### Basic Development Setup
 ```bash
-# Start webhook on default port
-unhook listen --webhook-id your_webhook_id
+# Initialize project
+npx @unhook/cli init
+
+# Start webhook
+npx @unhook/cli listen
 ```
 
 ### Team Development
 ```bash
 # Developer 1
-unhook listen --client-id dev1 --webhook-id team_webhook_id
+npx @unhook/cli init --webhook wh_team_webhook_id
+npx @unhook/cli listen
 
 # Developer 2
-unhook listen --client-id dev2 --webhook-id team_webhook_id
+npx @unhook/cli init --webhook wh_team_webhook_id
+npx @unhook/cli listen
 ```
 
-### Production Redirect
+### Custom Configuration
 ```bash
-# Redirect to production API
-unhook --redirect https://api.production.com --webhook-id prod_webhook_id
+# Use custom config file
+npx @unhook/cli listen --config ./config/unhook.yml
+
+# Watch custom directory
+npx @unhook/cli listen --path ./config
 ```
 
-### Custom Health Checks
+### Debug Mode
 ```bash
-# Check specific health endpoint
-unhook listen --ping https://localhost:3000/health
+# Enable debug logging
+npx @unhook/cli listen --verbose
+
+# Debug initialization
+npx @unhook/cli init --verbose
 ```
 
 ## Best Practices
 
-1. **Use Client IDs**: Always specify a meaningful client ID in team environments
-2. **Enable Debug Logging**: Use `--debug` when troubleshooting issues
+1. **Use Configuration Files**: Store your settings in `unhook.yml` for consistency
+2. **Enable Debug Logging**: Use `--verbose` when troubleshooting issues
 3. **Health Checks**: Configure appropriate health checks for your setup
 4. **Environment Variables**: Use env vars for sensitive information
-5. **Configuration Files**: Use config files for consistent settings
+5. **Team Configuration**: Share configuration files in version control
 
 ## Troubleshooting
 
@@ -241,9 +333,20 @@ unhook listen --ping https://localhost:3000/health
    - Clear auth data: `rm ~/.unhook/auth-storage.json`
    - Re-run initialization: `npx @unhook/cli init`
 
-3. **Debug Mode**
-   - Enable debug logging: `unhook listen --debug`
+3. **Configuration Issues**
+   - Verify YAML syntax in `unhook.yml`
+   - Check file permissions
+   - Ensure required fields are present
+
+4. **Debug Mode**
+   - Enable debug logging: `npx @unhook/cli listen --verbose`
    - Check the debug panel for detailed information
+
+### Getting Help
+
+- **Documentation**: [docs.unhook.sh](https://docs.unhook.sh)
+- **GitHub Issues**: [github.com/unhook-sh/unhook/issues](https://github.com/unhook-sh/unhook/issues)
+- **Discord Community**: [discord.gg/unhook](https://discord.gg/unhook)
 
 ## Support
 

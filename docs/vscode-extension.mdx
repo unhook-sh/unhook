@@ -85,15 +85,16 @@ The extension will automatically look for Unhook configuration files in your wor
 - `unhook.yaml` or `unhook.yml` in the workspace root
 - Custom path via the `unhook.configFilePath` setting
 
-Example `unhook.yaml`:
+Example `unhook.yml`:
 ```yaml
-version: 1
-apiKey: your-api-key-here
+webhookId: wh_your_webhook_id
+destination:
+  - name: local
+    url: http://localhost:3000/api/webhooks
+    ping: true
 delivery:
-  destinations:
-    - name: local
-      url: http://localhost:3000/webhook
-      ping: true
+  - source: "*"
+    destination: local
 ```
 
 ### 3. Start Receiving Webhooks
@@ -120,7 +121,7 @@ The main interface for webhook management:
 Each event supports these actions:
 
 - **View Event** (`👁️`) - Open detailed view in webview panel
-- **Replay Event** (`▶️`) - Resend the event to all configured destinations  
+- **Replay Event** (`▶️`) - Resend the event to all configured destinations
 - **Copy Event** (`📋`) - Copy event JSON to clipboard
 
 #### Request Actions
@@ -220,10 +221,10 @@ Configure the extension through VS Code settings (`Ctrl+,` / `Cmd+,`):
 }
 ```
 
-- **`unhook.output.autoShow`** (boolean, default: `true`)  
+- **`unhook.output.autoShow`** (boolean, default: `true`)
   Automatically show the output panel when new events are received
 
-- **`unhook.output.maxLines`** (number, default: `1000`)  
+- **`unhook.output.maxLines`** (number, default: `1000`)
   Maximum number of lines to keep in the output panel
 
 #### Event Management Settings
@@ -235,10 +236,10 @@ Configure the extension through VS Code settings (`Ctrl+,` / `Cmd+,`):
 }
 ```
 
-- **`unhook.events.maxHistory`** (number, default: `100`)  
+- **`unhook.events.maxHistory`** (number, default: `100`)
   Maximum number of events to keep in history
 
-- **`unhook.events.autoClear`** (boolean, default: `false`)  
+- **`unhook.events.autoClear`** (boolean, default: `false`)
   Automatically clear old events when the maximum history is reached
 
 #### Configuration File Settings
@@ -249,7 +250,7 @@ Configure the extension through VS Code settings (`Ctrl+,` / `Cmd+,`):
 }
 ```
 
-- **`unhook.configFilePath`** (string, default: `""`)  
+- **`unhook.configFilePath`** (string, default: `""`)
   Path to the Unhook config file. If not set, the extension will look in the workspace root.
 
 ### Workspace Configuration
@@ -257,25 +258,26 @@ Configure the extension through VS Code settings (`Ctrl+,` / `Cmd+,`):
 The extension integrates with your existing Unhook configuration:
 
 ```yaml
-# unhook.yaml
-version: 1
-apiKey: your-api-key
-
-delivery:
-  destinations:
-    - name: local-dev
-      url: http://localhost:3000/webhooks
-      ping: true
-      headers:
-        Authorization: Bearer dev-token
-    
-    - name: staging
-      url: https://staging.example.com/webhooks
-      ping: false
+# unhook.yml
+webhookId: wh_your_webhook_id
 
 destination:
-  port: 3001
-  path: /webhook
+  - name: local-dev
+    url: http://localhost:3000/api/webhooks
+    ping: true
+  - name: staging
+    url: https://staging.example.com/api/webhooks
+    ping: false
+
+source:
+  - name: stripe
+  - name: github
+
+delivery:
+  - source: stripe
+    destination: local-dev
+  - source: github
+    destination: staging
 ```
 
 ## Advanced Usage
@@ -293,7 +295,7 @@ When working with a team:
 The extension works with all supported webhook providers:
 
 - **Stripe** - Payment and subscription webhooks
-- **GitHub** - Repository and organization events  
+- **GitHub** - Repository and organization events
 - **Clerk** - Authentication and user management events
 - **Discord** - Bot and server events
 - **Custom Providers** - Any webhook-enabled service

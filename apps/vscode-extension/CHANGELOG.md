@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.33
+
+### Patch Changes
+
+- [`38d8a02`](https://github.com/unhook-sh/unhook/commit/38d8a02e2aabeb95cd4dd13f6380ac68d43479de) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with requests not getting forwarded
+
 ## 0.2.32
 
 ### Patch Changes

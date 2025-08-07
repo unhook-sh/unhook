@@ -507,7 +507,7 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "icon": "activity-logo.svg",
+          "icon": "logo-fill-svg.svg",
           "id": "unhook",
           "title": "Unhook"
         }
@@ -558,7 +558,7 @@
     "vscode": ">=1.96.0"
   },
   "homepage": "https://github.com/unhook-sh/unhook#readme",
-  "icon": "logo.png",
+  "icon": "logo-figma.png",
   "keywords": [
     "webhook",
     "development",

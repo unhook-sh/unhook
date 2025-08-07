@@ -66,7 +66,7 @@
 - [ ] Create a vscode command to setup the MCP server
 - [ ] Add report bug to vscode
 - [ ] Make transparent logo for vscode
-- [ ] Bug with vscode icons not showing up
+- [x] Bug with vscode icons not showing up
 - [x] Toggle auto refresh
 
 ### Dashboard & UI Improvements

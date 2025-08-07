@@ -31,10 +31,10 @@
 ## 🚨 Critical Bugs (High Priority, Low-Medium Effort)
 
 ### VSCode Issues
-- [ ] Vscode not signing in on dev
-- [ ] I think in dev it's pointing to the wrong endpoint
 - [ ] Fix issue where if user clicks sign in twice it doesn't work
-- [ ] Issue with hitting replay doesn't make the latest request show up but it goes through
+- [x] Vscode not signing in on dev
+- [x] I think in dev it's pointing to the wrong endpoint
+- [x] Issue with hitting replay doesn't make the latest request show up but it goes through
 - [x] Vscode not seeing events
 - [x] VScode refreshing auth and not seeing events
 - [x] Fix issue where realtime is anon
@@ -49,10 +49,10 @@
 - [x] Sidebar notification for billing usage doesn't keep showing
 
 ### Data & Request Issues
-- [ ] (P0) Fix issue where requests are getting created twice when an event comes in
-- [ ] Copying event in vscode doesn't decode the body from base64
 - [ ] Add idempotency key
 - [ ] Make sure to only get requests for an individual user
+- [x] (P0) Fix issue where requests are getting created twice when an event comes in
+- [x] Copying event in vscode doesn't decode the body from base64
 - [x] Optimize getting events by webhook id with cursor/pagination
 - [x] Set max on get events
 - [x] Playground isn't actually sending events
@@ -61,18 +61,18 @@
 
 ### VSCode Extension Enhancements
 - [ ] Add upgrade account in vscode
-- [ ] Toggle auto refresh
 - [ ] Make it so that the unhook bottom bar turns red if the unhook.yml doesn't exist
-- [ ] Reorder vscode things
+- [ ] Reorder menu items
 - [ ] Create a vscode command to setup the MCP server
 - [ ] Add report bug to vscode
 - [ ] Make transparent logo for vscode
 - [ ] Bug with vscode icons not showing up
+- [x] Toggle auto refresh
 
 ### Dashboard & UI Improvements
 - [ ] Add vscode link and cli link in the web app side bar
 - [ ] Make it so that the auth code page has instructions on the yaml file and webhook url
-- [ ] Make it so that we show the event name in the notification in vscode
+- [x] Make it so that we show the event name in the notification in vscode
 - [x] Make sure to create a default api key when an org is created
 - [x] When installing from vscode, need to make a default webhook
 - [x] Add default event to show events

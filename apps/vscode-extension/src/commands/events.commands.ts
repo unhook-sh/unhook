@@ -1,3 +1,4 @@
+import { extractBody } from '@unhook/client/utils/extract-body';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
@@ -116,8 +117,19 @@ export function registerEventCommands(
       'unhook.copyEvent',
       async (item: EventItem) => {
         try {
-          const eventData = JSON.stringify(item.event, null, 2);
-          await vscode.env.clipboard.writeText(eventData);
+          // Create a copy of the event data with decoded body
+          const eventData = { ...item.event };
+
+          // Decode the base64 body if it exists
+          if (eventData.originRequest?.body) {
+            const decodedBody = extractBody(eventData.originRequest.body);
+            if (decodedBody) {
+              eventData.originRequest.body = decodedBody;
+            }
+          }
+
+          const eventDataString = JSON.stringify(eventData, null, 2);
+          await vscode.env.clipboard.writeText(eventDataString);
           vscode.window.showInformationMessage(
             'Event data copied to clipboard',
           );

@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.32
+
+### Patch Changes
+
+- [`cfeceb4`](https://github.com/unhook-sh/unhook/commit/cfeceb40b4f24d011d4df5ff47f948c107906f38) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with icons
+
 ## 0.2.31
 
 ### Patch Changes

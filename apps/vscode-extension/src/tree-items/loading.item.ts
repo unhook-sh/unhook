@@ -4,6 +4,7 @@ export class LoadingItem extends vscode.TreeItem {
   constructor(context: vscode.ExtensionContext) {
     super('Loading events...', vscode.TreeItemCollapsibleState.None);
 
+    // Use custom SVG with spinning animation
     this.iconPath = {
       dark: vscode.Uri.file(context.asAbsolutePath('src/media/loading.svg')),
       light: vscode.Uri.file(context.asAbsolutePath('src/media/loading.svg')),

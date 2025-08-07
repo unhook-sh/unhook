@@ -17,11 +17,14 @@ export function getStatusIconPath({
 
   if (!request) {
     // If no request, use event status to determine icon
-    if (eventStatus === 'pending' || eventStatus === 'processing') {
+    if (eventStatus === 'pending') {
       return new vscode.ThemeIcon(
-        'sync',
+        'circle-outline',
         new vscode.ThemeColor('charts.yellow'),
       );
+    }
+    if (eventStatus === 'processing') {
+      return iconPath('loading');
     }
     if (eventStatus === 'failed') {
       return new vscode.ThemeIcon('error', new vscode.ThemeColor('charts.red'));

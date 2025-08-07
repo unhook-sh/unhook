@@ -100,6 +100,7 @@ const store = createStore<EventStore>()((set, get) => ({
       onRequestCreated: async (request) => {
         await store.getState().handlePendingRequest({ event, request });
       },
+      preventDuplicates: true, // Enable duplicate prevention
     });
   },
   fetchEvents: async ({
@@ -211,6 +212,7 @@ const store = createStore<EventStore>()((set, get) => ({
         await store.getState().handlePendingRequest({ event, request });
       },
       pingEnabledFn: (destination) => !!destination.ping,
+      preventDuplicates: true, // Enable duplicate prevention for retry scenarios
     });
   },
   replayRequest: async ({

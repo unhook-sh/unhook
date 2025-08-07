@@ -170,7 +170,17 @@ export class EventsDeliveryService {
 
             // Optimistic update - notify the UI immediately
             if (this.onRequestCreatedCallback) {
+              log('Calling onRequestCreatedCallback', {
+                eventId: event.id,
+                requestId: request.id,
+                requestStatus: request.status,
+              });
               this.onRequestCreatedCallback(event.id, request);
+            } else {
+              log('onRequestCreatedCallback is not set', {
+                eventId: event.id,
+                requestId: request.id,
+              });
             }
 
             // Handle the pending request immediately with status updates
@@ -184,6 +194,7 @@ export class EventsDeliveryService {
             log(`Delivered request ${request.id} for event ${event.id}`);
           },
           pingEnabledFn: (destination) => !!destination.ping,
+          preventDuplicates: true, // Enable duplicate prevention for batch delivery
         });
 
         // Update event status
@@ -232,6 +243,31 @@ export class EventsDeliveryService {
         }
       }
     }
+  }
+
+  /**
+   * Handle single request replay with optimistic UI updates
+   */
+  public async handleSingleRequestReplay(
+    request: RequestType,
+    event: EventTypeWithRequest,
+    config: WebhookConfig,
+  ): Promise<void> {
+    const authStore = this.authStore;
+    if (!authStore || !authStore.isSignedIn) return;
+
+    // Notify UI of request creation immediately
+    if (this.onRequestCreatedCallback) {
+      this.onRequestCreatedCallback(event.id, request);
+    }
+
+    // Handle the request with status updates
+    await this.handleRequestWithStatusUpdates(
+      request,
+      event,
+      config,
+      authStore.api,
+    );
   }
 
   /**
@@ -300,6 +336,10 @@ export class EventsDeliveryService {
       const responseBodyBase64 = Buffer.from(responseText).toString('base64');
       const responseTimeMs = Date.now() - startTime;
 
+      // Determine if the request was successful based on response status
+      const isSuccessful = response.status >= 200 && response.status < 300;
+      const requestStatus = isSuccessful ? 'completed' : 'failed';
+
       // Update request status in database
       await api.requests.markCompleted.mutate({
         requestId: request.id,
@@ -313,15 +353,27 @@ export class EventsDeliveryService {
 
       // Notify UI of status update
       if (this.onRequestStatusUpdatedCallback) {
+        log('Calling onRequestStatusUpdatedCallback for response', {
+          eventId: event.id,
+          requestId: request.id,
+          responseStatus: response.status,
+          responseTimeMs,
+          status: requestStatus,
+        });
         this.onRequestStatusUpdatedCallback(
           event.id,
           request.id,
-          'completed',
+          requestStatus,
           responseTimeMs,
         );
+      } else {
+        log('onRequestStatusUpdatedCallback is not set for response', {
+          eventId: event.id,
+          requestId: request.id,
+        });
       }
 
-      log('Request completed successfully', {
+      log(`Request ${requestStatus}`, {
         eventId: event.id,
         requestId: request.id,
         responseStatus: response.status,
@@ -362,7 +414,17 @@ export class EventsDeliveryService {
 
       // Notify UI of failure
       if (this.onRequestStatusUpdatedCallback) {
+        log('Calling onRequestStatusUpdatedCallback for failure', {
+          eventId: event.id,
+          requestId: request.id,
+          status: 'failed',
+        });
         this.onRequestStatusUpdatedCallback(event.id, request.id, 'failed', 0);
+      } else {
+        log('onRequestStatusUpdatedCallback is not set for failure', {
+          eventId: event.id,
+          requestId: request.id,
+        });
       }
     }
   }

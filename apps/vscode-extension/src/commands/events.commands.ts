@@ -1,7 +1,3 @@
-import {
-  createRequestsForEventToAllDestinations,
-  handlePendingRequest,
-} from '@unhook/client/utils/delivery';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
@@ -78,58 +74,34 @@ export function registerEventCommands(
             return;
           }
 
-          const eventName = extractEventName(item.event.originRequest?.body);
+          const eventName =
+            extractEventName(item.event.originRequest?.body) || 'Unknown';
+          const source = item.event.source || 'Unknown';
           vscode.window.showInformationMessage(
-            `Replaying event ${eventName}...`,
+            `Replaying event: ${eventName} from ${source}...`,
           );
 
-          // Get the API and config from the provider
-          const authStore = provider.authStore;
-          if (!authStore) throw new Error('Not authenticated');
-          const api = authStore.api;
+          // Get the config from the provider
           const config = await provider.getConfig();
           if (!config) throw new Error('No config loaded');
 
           // Update event status and retry count
-          await api.events.updateEventStatus.mutate({
+          const authStore = provider.authStore;
+          if (!authStore) throw new Error('Not authenticated');
+          await authStore.api.events.updateEventStatus.mutate({
             eventId: item.event.id,
             retryCount: (item.event.retryCount ?? 0) + 1,
             status: 'processing',
           });
 
-          // Use the shared delivery utilities
-          await createRequestsForEventToAllDestinations({
-            api,
-            delivery: config.delivery,
-            destination: config.destination,
-            event: item.event,
-            isEventRetry: true,
-            onRequestCreated: async (request) => {
-              await handlePendingRequest({
-                api,
-                delivery: config.delivery,
-                destination: config.destination,
-                event: item.event,
-                request: request,
-                requestFn: async (url, options) => {
-                  const response = await fetch(url, options);
-                  const responseText = await response.text();
-                  return {
-                    body: { text: () => Promise.resolve(responseText) },
-                    headers: Object.fromEntries(response.headers.entries()),
-                    statusCode: response.status,
-                  };
-                },
-              });
-            },
-            pingEnabledFn: (destination) => !!destination.ping,
-          });
-
-          // Optionally, refetch events to update the UI
-          provider.refresh();
+          // Use the delivery service for consistent behavior and optimistic UI updates
+          await provider.deliveryService.handleRealtimeEventDelivery(
+            item.event,
+            config,
+          );
 
           vscode.window.showInformationMessage(
-            `Event ${eventName} replayed successfully`,
+            `Event ${eventName} from ${source} replayed successfully`,
           );
         } catch (error) {
           vscode.window.showErrorMessage(`Failed to replay event: ${error}`);
@@ -328,9 +300,15 @@ export function registerEventCommands(
             return;
           }
 
-          // Show a loading message
+          // Extract event name and source for notifications
+          const eventName =
+            extractEventName(item.parent.event.originRequest?.body) ||
+            'Unknown';
+          const source = item.parent.event.source || 'Unknown';
+
+          // Show a loading message with event name and source
           vscode.window.showInformationMessage(
-            `Replaying request ${item.request.id}...`,
+            `Replaying request: ${eventName} from ${source}...`,
           );
 
           // Get the API and config from the provider
@@ -356,30 +334,13 @@ export function registerEventCommands(
             webhookId: item.request.webhookId,
           });
 
-          // Handle the pending request using the delivery utility
-          await handlePendingRequest({
-            api,
-            delivery: config.delivery,
-            destination: config.destination,
-            event: item.parent.event,
-            request: newRequest,
-            requestFn: async (url, options) => {
-              const response = await fetch(url, options);
-              const responseText = await response.text();
-              return {
-                body: { text: () => Promise.resolve(responseText) },
-                headers: Object.fromEntries(response.headers.entries()),
-                statusCode: response.status,
-              };
-            },
-          });
-
-          // Refresh the view to show the new request
-          provider.refresh();
-
-          const eventName = extractEventName(
-            item.parent.event.originRequest?.body,
+          // Use the delivery service for consistent behavior and optimistic UI updates
+          await provider.deliveryService.handleSingleRequestReplay(
+            newRequest,
+            item.parent.event,
+            config,
           );
+
           vscode.window.showInformationMessage(
             `Request ${eventName} replayed successfully`,
           );

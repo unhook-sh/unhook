@@ -30,10 +30,11 @@
 
 ## 🚨 Critical Bugs (High Priority, Low-Medium Effort)
 
-### Authentication & VSCode Issues
+### VSCode Issues
 - [ ] Vscode not signing in on dev
 - [ ] I think in dev it's pointing to the wrong endpoint
 - [ ] Fix issue where if user clicks sign in twice it doesn't work
+- [ ] Issue with hitting replay doesn't make the latest request show up but it goes through
 - [x] Vscode not seeing events
 - [x] VScode refreshing auth and not seeing events
 - [x] Fix issue where realtime is anon
@@ -48,13 +49,13 @@
 - [x] Sidebar notification for billing usage doesn't keep showing
 
 ### Data & Request Issues
-- [ ] Fix issue where requests are getting created twice when an event comes in
+- [ ] (P0) Fix issue where requests are getting created twice when an event comes in
 - [ ] Copying event in vscode doesn't decode the body from base64
-- [x] Playground isn't actually sending events
-- [ ] Optimize getting events by webhook id with cursor/pagination
 - [ ] Add idempotency key
 - [ ] Make sure to only get requests for an individual user
-- [ ] Set max on get events
+- [x] Optimize getting events by webhook id with cursor/pagination
+- [x] Set max on get events
+- [x] Playground isn't actually sending events
 
 ## 🔧 Core Features (High Priority, Medium Effort)
 
@@ -70,16 +71,15 @@
 
 ### Dashboard & UI Improvements
 - [ ] Add vscode link and cli link in the web app side bar
-- [ ] Add example curl
 - [ ] Make it so that the auth code page has instructions on the yaml file and webhook url
-- [ ] Add default event to show events
 - [ ] Make it so that we show the event name in the notification in vscode
-- [ ] When installing from vscode, need to make a default webhook
-- [ ] Make sure to create a default api key when an org is created
+- [x] Make sure to create a default api key when an org is created
+- [x] When installing from vscode, need to make a default webhook
+- [x] Add default event to show events
+- [x] Add example curl
 
 ### Real-time & Performance
 - [x] I think when the user logs in we need to read the config right away
-- [ ] Fix issues with icons
 - [x] Move to realtime
 
 ## 🗄️ Data Storage & Architecture (Medium Priority, High Effort)
@@ -133,11 +133,11 @@
 - [ ] Stats: Failure rate
 - [ ] Chart of the number of requests success/failure
 - [ ] Analytics dashboard
-- [x] Team management page
 - [ ] Maybe add cli command in main dashboard
 - [ ] Webhooks page
 - [ ] Webhook ID page with Settings and Delivery rules
 - [ ] Private webhooks functionality
+- [x] Team management page
 
 ## 💰 Pricing & Business Model (Low Priority, Low Effort)
 
@@ -148,10 +148,7 @@
 - [ ] Enterprise team members
 - [ ] Add subdomain support
 - [ ] Private (API KEY) webhooks
-- [ ] $9.99 for solo devs
-- [ ] $49.99 for teams of 3
-- [ ] $350 for teams above that
-- [ ] Plus per seat or per usage?
+- [ ] $10.00 / user
 
 ## 🔮 Future Features (Low Priority, High Effort)
 
@@ -165,7 +162,6 @@
 
 ### Integrations & Extensions
 - [ ] MCP Server integration
-- [ ] Git Config integration
 - [ ] Integrate with SVIX to take their users
 - [ ] Easy integration for next.js
 - [ ] Docker support for local CLI
@@ -176,7 +172,6 @@
 - [ ] Add mocks in config
 - [ ] Be able to add custom headers/cookies from tunnel config
 - [x] Watch config for changes
-- [ ] Add override config
 
 ## 🚀 Marketing & Distribution (Low Priority, Low Effort)
 
@@ -278,9 +273,9 @@
 ## 🏗️ Infrastructure & Architecture (High Priority, High Effort)
 
 ### URL & Routing Configuration
-- [x] URL pattern improvements for endpoints (e.g., https://unhook.sh/t_123?e=webhook/clerk)
 - [ ] Support for integration parameters (?integration=slack&integration=email)
 - [ ] Custom tunnel routing with port/endpoint config in file
+- [x] URL pattern improvements for endpoints (e.g., https://unhook.sh/t_123?e=webhook/clerk)
 
 ### Performance & Scaling
 - [ ] Setup SQS queue with lambda for webhook request handling

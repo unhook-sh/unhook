@@ -52,7 +52,7 @@ export class EventsProvider
 
   // Services
   private configManager: EventsConfigManager;
-  private deliveryService: EventsDeliveryService;
+  public deliveryService: EventsDeliveryService;
   private notificationService: EventsNotificationService;
   private disposables: vscode.Disposable[] = [];
 
@@ -463,25 +463,8 @@ export class EventsProvider
     // Don't set this.events here - let updateEvents handle it properly
     this.updateEvents(updatedEvents);
 
-    // Handle delivery for changed events if enabled
-    if (isDeliveryEnabled() && changedEvents.length > 0) {
-      this.configManager.getConfig().then((config) => {
-        if (config) {
-          log('Delivering changed events', {
-            changedEventIds: changedEvents.map((e) => e.id),
-            deliveryConfig: config.delivery,
-          });
-
-          // Since polling service already identified these as changed events,
-          // we can deliver them directly without additional filtering
-          for (const event of changedEvents) {
-            if (event.status === 'pending') {
-              this.deliveryService.handleRealtimeEventDelivery(event, config);
-            }
-          }
-        }
-      });
-    }
+    // Note: Delivery is now handled by updateEvents() method, which calls
+    // handleNewEventsDelivery() for new events. No need for duplicate delivery here.
   }
 
   /**
@@ -516,6 +499,7 @@ export class EventsProvider
         log('Optimistically added request to event', {
           eventId,
           requestId: request.id,
+          requestStatus: request.status,
           totalRequests: updatedEvent.requests.length,
         });
 
@@ -574,19 +558,31 @@ export class EventsProvider
 
           log('Optimistically updated request status', {
             eventId,
+            newStatus: status,
+            oldStatus: existingRequest.status,
             requestId,
             responseTimeMs,
             status,
+            totalRequests: updatedEvent.requests.length,
           });
 
           // Force refresh to update the tree immediately
           this.forceRefresh();
         } else {
-          log('Request not found for status update', { eventId, requestId });
+          log('Request not found for status update', {
+            availableRequestIds: event.requests.map((r) => r.id),
+            eventId,
+            requestId,
+          });
         }
+      } else {
+        log('Event has no requests array', { eventId });
       }
     } else {
-      log('Event not found for request status update', { eventId });
+      log('Event not found for request status update', {
+        availableEventIds: this.events.map((e) => e.id),
+        eventId,
+      });
     }
   }
 

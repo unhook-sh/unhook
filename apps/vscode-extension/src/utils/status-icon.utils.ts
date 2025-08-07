@@ -42,6 +42,11 @@ export function getStatusIconPath({
     return iconPath('loading');
   }
 
+  // Handle failed requests (status 0 or failed status)
+  if (request.status === 'failed') {
+    return iconPath('x-red');
+  }
+
   const status = request.response?.status;
 
   if (typeof status === 'number') {
@@ -56,6 +61,10 @@ export function getStatusIconPath({
     }
     if (status >= 100 && status < 200) {
       return iconPath('loading');
+    }
+    // Handle status 0 (failed requests)
+    if (status === 0) {
+      return iconPath('x-red');
     }
   }
 

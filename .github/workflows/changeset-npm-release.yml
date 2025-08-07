@@ -13,6 +13,11 @@ permissions:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  FORCE_COLOR: 3
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+
 jobs:
   changeset:
     name: Changeset NPM Release

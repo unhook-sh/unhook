@@ -41,15 +41,12 @@ export class EventsNotificationService {
             status: event.status,
           },
         );
+        const eventName =
+          extractEventName(event.originRequest?.body) || 'Unknown';
+        const source = event.source || 'Unknown';
+        const message = `Webhook Event: ${eventName} from ${source}`;
+        vscode.window.showInformationMessage(message);
       }
-
-      const message =
-        newEventsOnly.length === 1
-          ? `New webhook event received: ${
-              newEventsOnly[0]?.source || 'Unknown'
-            }`
-          : `${newEventsOnly.length} new webhook events received`;
-      vscode.window.showInformationMessage(message);
     }
 
     // Check for status changes in existing events

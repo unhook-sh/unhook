@@ -39,7 +39,7 @@ export class EventsProvider
 
   private filterText = '';
   private events: EventTypeWithRequest[] = [];
-  private previousEvents: EventTypeWithRequest[] = [];
+  previousEvents: EventTypeWithRequest[] = [];
   public authStore: AuthStore | null = null;
   private pollingService: PollingService | null = null;
   private authorizationService: WebhookAuthorizationService;
@@ -312,29 +312,56 @@ export class EventsProvider
   }
 
   public updateEvents(events: EventTypeWithRequest[]): void {
+    // Store previous events for comparison BEFORE checking delivery
+    const previousEvents = [...this.events];
+
     // Check if notifications are enabled
     const settings = SettingsService.getInstance().getSettings();
     if (settings.notifications.showForNewEvents) {
       this.notificationService.checkForNewEventsAndNotify(
         events,
-        this.previousEvents,
+        previousEvents,
       );
     }
 
     // Handle automatic delivery for new events
-    if (isDeliveryEnabled() && this.previousEvents.length > 0) {
+    const deliveryEnabled = isDeliveryEnabled();
+    const hasPreviousEvents = previousEvents.length > 0;
+
+    log('Checking delivery conditions', {
+      currentEventsCount: events.length,
+      deliveryEnabled,
+      hasPreviousEvents,
+      previousEventsCount: previousEvents.length,
+    });
+
+    if (deliveryEnabled && hasPreviousEvents) {
+      log('Delivery conditions met, getting config and handling delivery');
       this.configManager.getConfig().then((config) => {
         if (config) {
+          log('Config retrieved, calling handleNewEventsDelivery', {
+            configWebhookId: config.webhookId,
+            hasDelivery: !!config.delivery,
+            hasDestination: !!config.destination,
+          });
           this.deliveryService.handleNewEventsDelivery(
             events,
-            this.previousEvents,
+            previousEvents,
             config,
           );
+        } else {
+          log('No config available for delivery');
         }
+      });
+    } else {
+      log('Delivery conditions not met', {
+        deliveryEnabled,
+        hasPreviousEvents,
+        reason: !deliveryEnabled ? 'delivery disabled' : 'no previous events',
       });
     }
 
-    // Store previous events for comparison
+    // Store previous events for next iteration
     this.previousEvents = [...this.events];
 
     // Sort events and their requests by timestamp time
@@ -424,7 +451,6 @@ export class EventsProvider
   private handlePollingEvents(changedEvents: EventTypeWithRequest[]) {
     log('Handling polling events', {
       changedEventCount: changedEvents.length,
-      changedEventIds: changedEvents.map((e) => e.id),
       hasChangedEvents: changedEvents.length > 0,
     });
 

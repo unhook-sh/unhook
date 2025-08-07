@@ -143,22 +143,35 @@ export class EventsDeliveryService {
     previousEvents: EventTypeWithRequest[],
     config: WebhookConfig,
   ): Promise<void> {
+    log('handleNewEventsDelivery called', {
+      newEventsCount: newEvents.length,
+      previousEventsCount: previousEvents.length,
+    });
+
     const authStore = this.authStore;
-    if (!authStore || !authStore.isSignedIn) return;
+    if (!authStore || !authStore.isSignedIn) {
+      log('Auth store not available or user not signed in, returning early');
+      return;
+    }
 
     const previousEventIds = previousEvents.map((e) => e.id);
-    const newPendingEvents = newEvents.filter(
-      (event) =>
-        previousEventIds.indexOf(event.id) === -1 && event.status === 'pending',
+    const newEventsToProcess = newEvents.filter(
+      (event) => previousEventIds.indexOf(event.id) === -1,
     );
 
-    if (newPendingEvents.length === 0) return;
+    log('Filtered new events to process', {
+      newEventsCount: newEventsToProcess.length,
+    });
 
-    for (const event of newPendingEvents) {
+    if (newEventsToProcess.length === 0) {
+      log('No new events to deliver');
+      return;
+    }
+
+    for (const event of newEventsToProcess) {
       try {
         log(`Delivering event ${event.id}`);
 
-        // Create requests for all destinations
         await createRequestsForEventToAllDestinations({
           api: authStore.api,
           delivery: config.delivery,
@@ -170,17 +183,9 @@ export class EventsDeliveryService {
 
             // Optimistic update - notify the UI immediately
             if (this.onRequestCreatedCallback) {
-              log('Calling onRequestCreatedCallback', {
-                eventId: event.id,
-                requestId: request.id,
-                requestStatus: request.status,
-              });
               this.onRequestCreatedCallback(event.id, request);
             } else {
-              log('onRequestCreatedCallback is not set', {
-                eventId: event.id,
-                requestId: request.id,
-              });
+              log('onRequestCreatedCallback is not set');
             }
 
             // Handle the pending request immediately with status updates

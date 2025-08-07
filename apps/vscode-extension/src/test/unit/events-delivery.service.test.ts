@@ -261,10 +261,11 @@ describe('EventsDeliveryService', () => {
         mockConfig,
       );
 
-      expect(
-        mockCreateRequestsForEventToAllDestinations,
-      ).not.toHaveBeenCalled();
-      expect(mockAnalyticsService.trackWebhookEvent).not.toHaveBeenCalled();
+      // With the updated logic, we should process all new events regardless of status
+      expect(mockCreateRequestsForEventToAllDestinations).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(mockAnalyticsService.trackWebhookEvent).toHaveBeenCalledTimes(1);
     });
 
     test('should handle events with different sources', async () => {

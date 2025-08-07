@@ -24,6 +24,7 @@ README.md
 CHANGELOG.md
 # But include the logo, license, icons, and language configuration
 !logo.png
+!media/**
 !LICENSE
 !icons/**
 !language-configuration.json

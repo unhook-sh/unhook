@@ -51,8 +51,8 @@ describe('LoadingItem', () => {
     const loadingItem = new LoadingItem(mockContext);
 
     expect(loadingItem.iconPath).toEqual({
-      dark: vscode.Uri.file('/mock/extension/path/src/media/loading.svg'),
-      light: vscode.Uri.file('/mock/extension/path/src/media/loading.svg'),
+      dark: vscode.Uri.file('/mock/extension/path/media/loading.svg'),
+      light: vscode.Uri.file('/mock/extension/path/media/loading.svg'),
     });
   });
 

@@ -6,8 +6,8 @@ export class LoadingItem extends vscode.TreeItem {
 
     // Use custom SVG with spinning animation
     this.iconPath = {
-      dark: vscode.Uri.file(context.asAbsolutePath('src/media/loading.svg')),
-      light: vscode.Uri.file(context.asAbsolutePath('src/media/loading.svg')),
+      dark: vscode.Uri.file(context.asAbsolutePath('media/loading.svg')),
+      light: vscode.Uri.file(context.asAbsolutePath('media/loading.svg')),
     };
 
     this.contextValue = 'unhook.loading';

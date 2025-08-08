@@ -28,7 +28,7 @@ export class AnalyticsProvider implements vscode.Disposable {
   }
 
   private registerEventHandlers() {
-    // Track workspace events
+    // Track workspace configuration changes and telemetry enablement only
     this.disposables.push(
       vscode.workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration('unhook')) {
@@ -48,25 +48,6 @@ export class AnalyticsProvider implements vscode.Disposable {
     this.disposables.push(
       vscode.env.onDidChangeTelemetryEnabled(() => {
         this.analyticsService.reinitialize();
-      }),
-    );
-
-    // Track window state changes
-    this.disposables.push(
-      vscode.window.onDidChangeActiveTextEditor((editor) => {
-        if (editor) {
-          this.analyticsService.trackPageView('editor_changed', {
-            is_untitled: editor.document.isUntitled,
-            language: editor.document.languageId,
-          });
-        }
-      }),
-    );
-
-    // Track terminal events
-    this.disposables.push(
-      vscode.window.onDidOpenTerminal(() => {
-        this.analyticsService.track('terminal_opened');
       }),
     );
   }

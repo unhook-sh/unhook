@@ -22,6 +22,7 @@ export class AnalyticsService implements vscode.Disposable {
   private authStore: AuthStore;
   private context: vscode.ExtensionContext;
   private _isInitialized = false;
+  private _previousIsSignedIn = false;
 
   private constructor(context: vscode.ExtensionContext, authStore: AuthStore) {
     this.context = context;
@@ -34,15 +35,14 @@ export class AnalyticsService implements vscode.Disposable {
     // Initialize PostHog
     this.initialize();
 
-    // Listen for auth changes
-    this.authStore.onDidChangeAuth(() => {
-      this.updateUser();
-    });
+    // Initialize previous state and set initial user WITHOUT tracking sign-in
+    this._previousIsSignedIn = this.authStore.isSignedIn;
+    this.updateUser(false);
 
-    // Set initial user if already signed in
-    if (this.authStore.isSignedIn && this.authStore.user) {
-      this.updateUser();
-    }
+    // Listen for auth changes (track only on transitions)
+    this.authStore.onDidChangeAuth(() => {
+      this.updateUser(true);
+    });
   }
 
   /**
@@ -138,23 +138,28 @@ export class AnalyticsService implements vscode.Disposable {
     }
   }
 
-  private updateUser() {
-    if (this.authStore.isSignedIn && this.authStore.user) {
+  private updateUser(trackTransitions = true) {
+    const currentlySignedIn = this.authStore.isSignedIn;
+    const user = this.authStore.user;
+
+    if (currentlySignedIn && user) {
       setUser({
-        email: this.authStore.user.email ?? undefined,
-        id: this.authStore.user.id,
+        email: user.email ?? undefined,
+        id: user.id,
       });
 
-      // Track sign in event
-      this.track('user_signed_in', {
-        method: 'vscode',
-      });
+      if (trackTransitions && !this._previousIsSignedIn) {
+        this.track('user_signed_in', { method: 'vscode' });
+      }
     } else {
       setUser(null);
 
-      // Track sign out event
-      this.track('user_signed_out');
+      if (trackTransitions && this._previousIsSignedIn) {
+        this.track('user_signed_out');
+      }
     }
+
+    this._previousIsSignedIn = currentlySignedIn;
   }
 
   get isInitialized(): boolean {

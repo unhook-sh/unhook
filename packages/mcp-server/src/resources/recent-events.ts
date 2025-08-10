@@ -1,14 +1,11 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '@unhook/api';
-import { createCaller } from '@unhook/api';
 import { trackError, trackResourceAccess } from '../analytics';
+import { createHttpClient } from '../http-client';
 
 export function registerRecentEventsResource(
   server: McpServer,
-  context: Context,
+  baseUrl?: string,
 ) {
-  const caller = createCaller(context);
-
   // @ts-ignore
   server.registerResource(
     'recent-events',
@@ -23,12 +20,16 @@ export function registerRecentEventsResource(
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 
+      // Create HTTP client with auth token from the request
+      const authToken = extra.authInfo?.token;
+      const httpClient = createHttpClient({ authToken, baseUrl });
+
       try {
-        const events = await caller.events.all({
+        const events = await httpClient.getEvents({
           limit: 100,
           offset: 0,
         });
-        const totalEvents = await caller.events.count({});
+        const totalEvents = await httpClient.getEventCount();
         const executionTime = Date.now() - startTime;
 
         // Track resource access

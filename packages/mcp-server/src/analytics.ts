@@ -1,4 +1,4 @@
-import { posthog } from '@unhook/analytics/posthog/server';
+// import { posthog } from '@unhook/analytics/posthog/server';
 
 export interface MCPAnalyticsEvent {
   event: string;
@@ -13,36 +13,8 @@ export function trackMCPEvent({
   userId,
   organizationId,
 }: MCPAnalyticsEvent) {
-  try {
-    const eventProperties = {
-      ...properties,
-      source: 'mcp-server',
-      timestamp: new Date().toISOString(),
-    };
-
-    if (userId) {
-      posthog.capture({
-        distinctId: userId,
-        event,
-        properties: eventProperties,
-      });
-    } else if (organizationId) {
-      posthog.capture({
-        distinctId: organizationId,
-        event,
-        properties: eventProperties,
-      });
-    } else {
-      posthog.capture({
-        distinctId: 'anonymous',
-        event,
-        properties: eventProperties,
-      });
-    }
-  } catch (error) {
-    // Silently fail analytics tracking to not break MCP functionality
-    console.warn('Failed to track MCP analytics event:', error);
-  }
+  // Analytics disabled for standalone MCP server
+  // console.log('MCP Event:', event, { userId, organizationId, properties });
 }
 
 export function trackToolUsage(

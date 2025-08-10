@@ -1,5 +1,4 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '@unhook/api';
 import {
   registerAnalyzeFailuresPrompt,
   registerDebugWebhookPrompt,
@@ -20,24 +19,24 @@ import {
   registerWebhookStatsTool,
 } from './tools';
 
-export function createUnhookMCPServer(context: Context): McpServer {
+export function createUnhookMCPServer(baseUrl?: string): McpServer {
   const server = new McpServer({
     name: 'unhook-mcp-server',
     version: '1.0.0',
   });
 
   // Register Resources
-  registerRecentEventsResource(server, context);
-  registerRecentRequestsResource(server, context);
-  registerWebhooksListResource(server, context);
+  registerRecentEventsResource(server, baseUrl);
+  registerRecentRequestsResource(server, baseUrl);
+  registerWebhooksListResource(server, baseUrl);
 
   // Register Tools
-  registerSearchEventsTool(server, context);
-  registerSearchRequestsTool(server, context);
-  registerAnalyzeEventTool(server, context);
-  registerAnalyzeRequestTool(server, context);
-  registerWebhookStatsTool(server, context);
-  registerCreateTestEventTool(server, context);
+  registerSearchEventsTool(server, baseUrl);
+  registerSearchRequestsTool(server, baseUrl);
+  registerAnalyzeEventTool(server, baseUrl);
+  registerAnalyzeRequestTool(server, baseUrl);
+  registerWebhookStatsTool(server, baseUrl);
+  registerCreateTestEventTool(server, baseUrl);
 
   // Register Prompts
   registerDebugWebhookPrompt(server);

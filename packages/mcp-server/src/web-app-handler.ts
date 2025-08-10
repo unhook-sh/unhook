@@ -1,4 +1,4 @@
-import { createTRPCContext } from '@unhook/api';
+// Removed API client dependency for standalone operation
 import {
   createMcpHandler,
   experimental_withMcpAuth as withMcpAuth,
@@ -21,23 +21,30 @@ import {
   registerWebhookStatsTool,
 } from './tools';
 
+// Get base URL for HTTP requests
+export const getBaseUrl = () => {
+  return process.env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+};
+
 // Define the handler with proper parameter validation
 export const createWebAppHandler = () => {
   return createMcpHandler(
     async (server) => {
-      const context = await createTRPCContext();
+      // Get base URL - auth will be handled per-request via headers
+      const baseUrl = getBaseUrl();
+
       // Register Resources
-      registerRecentEventsResource(server, context);
-      registerRecentRequestsResource(server, context);
-      registerWebhooksListResource(server, context);
+      registerRecentEventsResource(server, baseUrl);
+      registerRecentRequestsResource(server, baseUrl);
+      registerWebhooksListResource(server, baseUrl);
 
       // Register Tools
-      registerSearchEventsTool(server, context);
-      registerSearchRequestsTool(server, context);
-      registerAnalyzeEventTool(server, context);
-      registerAnalyzeRequestTool(server, context);
-      registerWebhookStatsTool(server, context);
-      registerCreateTestEventTool(server, context);
+      registerSearchEventsTool(server, baseUrl);
+      registerSearchRequestsTool(server, baseUrl);
+      registerAnalyzeEventTool(server, baseUrl);
+      registerAnalyzeRequestTool(server, baseUrl);
+      registerWebhookStatsTool(server, baseUrl);
+      registerCreateTestEventTool(server, baseUrl);
 
       // Register Prompts
       registerDebugWebhookPrompt(server);

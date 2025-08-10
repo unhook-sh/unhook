@@ -10,8 +10,8 @@
  */
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { createTRPCContext } from '@unhook/api';
 import { debug, defaultLogger } from '@unhook/logger';
+import { createHttpClient } from './http-client.js';
 import { createUnhookMCPServer } from './server.js';
 
 // Enable all debug logging
@@ -28,26 +28,29 @@ async function main() {
   log('Starting Unhook MCP debug server...');
 
   try {
-    // Create a mock context for development
-    const context = await createTRPCContext();
+    // Create the MCP server with base URL
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
 
-    // Check if we have proper authentication
-    if (!context.auth?.userId) {
-      console.error(
-        'Warning: No authentication found. Some features may not work properly.',
-      );
-      console.error(
-        'To test with authentication, set up proper environment variables.',
-      );
+    if (process.env.UNHOOK_API_KEY) {
+      try {
+        // Test the API key by making a simple request
+        const httpClient = createHttpClient({
+          authToken: process.env.UNHOOK_API_KEY,
+          baseUrl,
+        });
+
+        // Try to make a simple authenticated request to test the key
+        await httpClient.getEvents({ limit: 1 });
+        log('API key verified successfully');
+      } catch (error) {
+        log('Failed to verify API key, proceeding without auth:', error);
+      }
     } else {
-      log('Authentication found:', {
-        orgId: context.auth.orgId,
-        userId: context.auth.userId,
-      });
+      log('No API key provided, proceeding without auth');
     }
 
-    // Create the MCP server
-    const server = createUnhookMCPServer(context);
+    // Create the MCP server with base URL
+    const server = createUnhookMCPServer(baseUrl);
 
     // Create stdio transport
     const transport = new StdioServerTransport();

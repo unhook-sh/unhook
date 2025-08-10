@@ -1,9 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '@unhook/api';
-import { createCaller } from '@unhook/api';
-import type { EventType } from '@unhook/db/schema';
 import { z } from 'zod';
 import { trackError, trackToolUsage } from '../analytics';
+import { createHttpClient } from '../http-client';
+import type { EventType } from '../types';
 
 export const searchEventsSchema = {
   limit: z.number().default(50),
@@ -11,9 +10,7 @@ export const searchEventsSchema = {
   webhookId: z.string().optional(),
 };
 
-export function registerSearchEventsTool(server: McpServer, context: Context) {
-  const caller = createCaller(context);
-
+export function registerSearchEventsTool(server: McpServer, baseUrl?: string) {
   // @ts-ignore
   server.registerTool(
     'search_events',

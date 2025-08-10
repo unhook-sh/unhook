@@ -2,7 +2,7 @@ import { createTRPCContext } from '@unhook/api';
 import {
   createMcpHandler,
   experimental_withMcpAuth as withMcpAuth,
-} from '@vercel/mcp-adapter';
+} from 'mcp-handler';
 import { verifyToken } from './auth';
 import {
   registerAnalyzeFailuresPrompt,

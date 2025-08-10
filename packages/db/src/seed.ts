@@ -36,10 +36,12 @@ await db.delete(ForwardingRules);
 await db.delete(ApiKeyUsage);
 await db.delete(ApiKeys);
 
-const userId = 'user_30TmyvIYguwWcSZPQiblG4KcWmH';
-const orgId = 'org_30Tmz32JRLPO42Yy96ZyCJ5w0TX';
-const apiKeyId = 'ak_300nYp2JItCuoiHhaioQv82QHwo';
+const userId = 'user_30oVYOGDYUTdXqB6HImz3XbRyTs';
+const orgId = 'org_30oVYhhebEP3q4dSFlxo8DyAxhr';
+const apiKeyId = 'ak_seawatts';
 const webhookId = 'wh_seawatts';
+const stripeCustomerId = 'cus_Snv28tYxHudPzx';
+const stripeSubscriptionId = 'sub_1RsJCH4hM6DbRRtOGcENjqIO';
 
 await seed(db, {
   ApiKeys,
@@ -140,6 +142,13 @@ await seed(db, {
         defaultValue: orgId,
       }),
       id: funcs.default({ defaultValue: orgId }),
+      stripeCustomerId: funcs.default({ defaultValue: stripeCustomerId }),
+      stripeSubscriptionId: funcs.default({
+        defaultValue: stripeSubscriptionId,
+      }),
+      stripeSubscriptionStatus: funcs.default({
+        defaultValue: 'active',
+      }),
     },
     count: 1,
   },

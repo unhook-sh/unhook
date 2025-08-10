@@ -1,4 +1,5 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
+import { withPostHogConfig } from '@posthog/nextjs-config';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -64,4 +65,13 @@ const configWithPlugins = withPlugins.reduce(
   nextConfig,
 );
 
-export default configWithPlugins;
+export default withPostHogConfig(configWithPlugins, {
+  envId: process.env.POSTHOG_ENV_ID, // Environment ID
+  host: process.env.NEXT_PUBLIC_POSTHOG_HOST, // (optional), defaults to https://us.posthog.com
+  personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY, // Personal API Key
+  sourcemaps: {
+    deleteAfterUpload: true, // (optional) Delete sourcemaps after upload, defaults to true
+    enabled: true, // (optional) Enable sourcemaps generation and upload, default to true on production builds
+    project: 'unhook', // (optional) Project name, defaults to repository name
+  },
+});

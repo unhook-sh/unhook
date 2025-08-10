@@ -1,7 +1,6 @@
 'use client';
 
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
-import { usePostHog } from '@unhook/analytics/posthog/client';
 import { Button } from '@unhook/ui/button';
 import {
   Command,
@@ -14,6 +13,7 @@ import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@unhook/ui/popover';
 import { ChevronsUpDown } from 'lucide-react';
+import posthog from 'posthog-js';
 import React from 'react';
 
 interface OrgSelectorProps {
@@ -29,7 +29,6 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<string>(activeOrg?.id || '');
   const [input, setInput] = React.useState('');
-  const posthog = usePostHog();
 
   // Update value when activeOrg changes
   React.useEffect(() => {
@@ -153,7 +152,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
                     }
                     onSelect?.(membership.organization.id);
 
-                    posthog?.capture('cli_org_selected', {
+                    posthog.capture('cli_org_selected', {
                       orgId: membership.organization.id,
                       orgName: membership.organization.name,
                     });

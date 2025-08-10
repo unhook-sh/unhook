@@ -64,7 +64,7 @@ export function RequestHeader({
           </Button>
         </div>
 
-        <div className="flex items-center gap-6 text-sm text-muted-foreground mt-4">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mt-4">
           <div className="flex items-center gap-2">
             <Icons.PanelLeft size="sm" />
             <span>Source: {source}</span>

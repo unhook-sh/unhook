@@ -5,13 +5,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { PropsWithChildren } from 'react';
 
 import { env } from './env.client';
-import { WebVitals } from './nextjs/web-vitals';
-import {
-  PostHogIdentifyUser,
-  PostHogPageView,
-  PostHogProvider,
-  PosthogWebVitals,
-} from './posthog/client';
+import { PostHogIdentifyUser } from './posthog/client';
+import { WebVitals } from './web-vitals';
 
 const isProduction = env.NEXT_PUBLIC_APP_ENV === 'production';
 
@@ -21,15 +16,13 @@ export function AnalyticsProviders(
   return (
     <>
       {isProduction && (
-        <PostHogProvider>
-          <PosthogWebVitals />
-          <PostHogPageView />
+        <>
           {props.identifyUser && <PostHogIdentifyUser />}
           <WebVitals />
           {props.children}
           <Analytics />
           <SpeedInsights />
-        </PostHogProvider>
+        </>
       )}
       {!isProduction && props.children}
     </>

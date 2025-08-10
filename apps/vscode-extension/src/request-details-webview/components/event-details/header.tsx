@@ -1,8 +1,13 @@
+import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Card, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
+
+export interface EventHeaderProps {
+  data: EventTypeWithRequest;
+}
 
 function getStatusColor(status: string) {
   if (status === 'completed') return 'bg-primary/10 text-primary border-border';
@@ -20,14 +25,9 @@ function getStatusIcon(status: string) {
   return <Icons.Clock className="h-4 w-4" />;
 }
 
-export interface EventHeaderProps {
-  data: EventTypeWithRequest;
-}
-
 export function EventHeader({ data }: EventHeaderProps) {
-  const eventName = data.originRequest?.body
-    ? 'Webhook Event'
-    : 'Webhook Event';
+  const extracted = extractEventName(data.originRequest?.body);
+  const eventName = extracted || 'Webhook Event';
   const source = data.source || 'Unknown';
   const requestCount = data.requests?.length || 0;
 

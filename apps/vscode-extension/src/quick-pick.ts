@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ConfigManager } from './config.manager';
+// import { ConfigManager } from './config.manager';
 import { env } from './env';
 import type { AuthStore } from './services/auth.service';
 
@@ -77,27 +77,15 @@ export class EventQuickPick {
     });
 
     // Add API key configuration item
-    const configManager = ConfigManager.getInstance();
-    const hasApiKey = configManager.hasApiKey();
+    // API key will be resolved dynamically during MCP setup
 
     items.push({
-      description: hasApiKey
-        ? 'Update your API key for MCP server access'
-        : 'Configure API key for MCP server access',
-      detail: hasApiKey
-        ? 'API key is configured'
-        : 'Required for Cursor MCP server integration',
-      label: hasApiKey ? '$(key) Update API Key' : '$(key) Configure API Key',
+      description: "Setup Cursor MCP server with your webhook's API key",
+      detail: 'Automatically fetches the API key associated with your webhook',
+      label: '$(key) Setup MCP Server',
     });
 
-    // Add MCP configuration item if API key is configured
-    if (hasApiKey) {
-      items.push({
-        description: 'Create Cursor MCP server configuration',
-        detail: 'Generate MCP configuration and Cursor rules for AI assistant',
-        label: '$(server) Create Cursor MCP Server',
-      });
-    }
+    // Only show one entry for MCP setup; it performs registration and file fallback
 
     // Add settings item
     items.push({
@@ -133,8 +121,7 @@ export class EventQuickPick {
         case '$(settings-gear) Configure Server URLs':
           await vscode.commands.executeCommand('unhook.configureServerUrls');
           break;
-        case '$(key) Configure API Key':
-        case '$(key) Update API Key':
+        case '$(key) Setup MCP Server':
           await vscode.commands.executeCommand('unhook.configureApiKey');
           break;
         case '$(server) Create Cursor MCP Server':

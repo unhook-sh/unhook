@@ -92,17 +92,44 @@ export function registerConfigCommands(
   const createCursorMcpServerCommand = vscode.commands.registerCommand(
     'unhook.createCursorMcpServer',
     async () => {
-      // Get API key from config manager
+      // Resolve API key dynamically from the webhook association
       const { ConfigManager } = await import('../config.manager');
       const configManager = ConfigManager.getInstance();
-      const apiKey = configManager.getApiKey();
-
-      if (!apiKey) {
+      if (!authStore || !authStore.isSignedIn) {
         vscode.window.showErrorMessage(
-          'Please configure your API key first. You can get one from https://unhook.sh/app/api-keys',
+          'Please sign in to Unhook before setting up the MCP server.',
         );
         return;
       }
+
+      const webhookId = configManager.getConfig()?.webhookId;
+      if (!webhookId) {
+        vscode.window.showErrorMessage(
+          'No webhookId found in your Unhook config. Create an `unhook.yml` first.',
+        );
+        return;
+      }
+
+      const webhook = await authStore.api.webhooks.byId.query({
+        id: webhookId,
+      });
+      if (!webhook) {
+        vscode.window.showErrorMessage(
+          `Webhook ${webhookId} was not found or you do not have access.`,
+        );
+        return;
+      }
+
+      const apiKeyRecord = await authStore.api.apiKeys.byId.query({
+        id: webhook.apiKeyId,
+      });
+      if (!apiKeyRecord?.key) {
+        vscode.window.showErrorMessage(
+          'No API key associated with this webhook.',
+        );
+        return;
+      }
+      const apiKey = apiKeyRecord.key;
 
       // Get the workspace folder
       const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -143,15 +170,35 @@ export function registerConfigCommands(
       const apiUrl = configManager.getApiUrl();
       const isSelfHosted = configManager.isSelfHosted();
 
-      // Create MCP configuration content
-      const mcpConfigContent = `{
-  "mcpServers": {
-    "unhook": {
-      "url": "${apiUrl}/api/mcp/${apiKey}/sse",
-      "transport": "sse"
-    }
-  }
-}`;
+      // Prefer programmatic registration via Cursor MCP API
+      const serverUrl = `${apiUrl}/api/mcp/sse`;
+      const anyVscode = vscode as unknown as {
+        cursor?: {
+          mcp?: {
+            registerServer?: (args: {
+              name: string;
+              server: { url: string; headers?: Record<string, string> };
+            }) => Promise<void>;
+          };
+        };
+      };
+
+      let registeredViaApi = false;
+      try {
+        if (anyVscode?.cursor?.mcp?.registerServer) {
+          await anyVscode.cursor.mcp.registerServer({
+            name: 'unhook',
+            server: {
+              headers: { 'x-api-key': apiKey },
+              url: serverUrl,
+            },
+          });
+          registeredViaApi = true;
+        }
+      } catch (_err) {
+        // Fall back to file-based configuration
+        registeredViaApi = false;
+      }
 
       // Create Cursor rules content
       const cursorRulesContent = `# Unhook Cursor Rules
@@ -218,32 +265,50 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
       try {
         const encoder = new TextEncoder();
 
-        // Create .cursor-mcp.json
-        const mcpConfigUri = vscode.Uri.joinPath(
-          targetFolder.uri,
-          '.cursor-mcp.json',
-        );
-
-        // Check if .cursor-mcp.json already exists
-        try {
-          await vscode.workspace.fs.stat(mcpConfigUri);
-          const overwriteMcp = await vscode.window.showWarningMessage(
-            '.cursor-mcp.json already exists. Do you want to overwrite it?',
-            'Yes',
-            'No',
+        // If API registration failed or isn't available, update .vscode/mcp.json
+        if (!registeredViaApi) {
+          const mcpJsonUri = vscode.Uri.joinPath(
+            targetFolder.uri,
+            '.vscode',
+            'mcp.json',
           );
 
-          if (overwriteMcp !== 'Yes') {
-            return;
+          // Ensure .vscode directory exists
+          const vscodeDir = vscode.Uri.joinPath(targetFolder.uri, '.vscode');
+          try {
+            await vscode.workspace.fs.stat(vscodeDir);
+          } catch {
+            await vscode.workspace.fs.createDirectory(vscodeDir);
           }
-        } catch {
-          // File doesn't exist, which is what we want
-        }
 
-        await vscode.workspace.fs.writeFile(
-          mcpConfigUri,
-          encoder.encode(mcpConfigContent),
-        );
+          let mcpConfig: Record<string, unknown> & {
+            servers: Record<string, unknown>;
+          } = { servers: {} };
+          try {
+            const existing = await vscode.workspace.fs.readFile(mcpJsonUri);
+            const text = new TextDecoder().decode(existing);
+            const parsed = JSON.parse(text);
+            if (parsed && typeof parsed === 'object') mcpConfig = parsed;
+            if (!mcpConfig.servers || typeof mcpConfig.servers !== 'object') {
+              mcpConfig.servers = {};
+            }
+          } catch {
+            // No existing file or parse error; start fresh
+            mcpConfig = { servers: {} };
+          }
+
+          // Write/overwrite the unhook server entry with x-api-key header
+          mcpConfig.servers.unhook = {
+            headers: { 'x-api-key': apiKey },
+            type: 'sse',
+            url: serverUrl,
+          };
+
+          await vscode.workspace.fs.writeFile(
+            mcpJsonUri,
+            encoder.encode(JSON.stringify(mcpConfig, null, 2)),
+          );
+        }
 
         // Create .cursor/rules directory if it doesn't exist
         const cursorRulesDir = vscode.Uri.joinPath(
@@ -286,9 +351,17 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
         );
 
         // Open the created files
-        const mcpDocument =
-          await vscode.workspace.openTextDocument(mcpConfigUri);
-        await vscode.window.showTextDocument(mcpDocument);
+        // Open MCP config if file-based fallback was used
+        if (!registeredViaApi) {
+          const mcpJsonUri = vscode.Uri.joinPath(
+            targetFolder.uri,
+            '.vscode',
+            'mcp.json',
+          );
+          const mcpDocument =
+            await vscode.workspace.openTextDocument(mcpJsonUri);
+          await vscode.window.showTextDocument(mcpDocument);
+        }
 
         const rulesDocument =
           await vscode.workspace.openTextDocument(cursorRulesUri);
@@ -296,7 +369,9 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
 
         const serverType = isSelfHosted ? 'self-hosted' : 'cloud';
         vscode.window.showInformationMessage(
-          `Created Cursor MCP server configuration in ${targetFolder.name} for ${serverType} Unhook instance`,
+          registeredViaApi
+            ? `Registered Cursor MCP server (unhook) via API for ${serverType} Unhook instance`
+            : `Updated .vscode/mcp.json with Cursor MCP server (unhook) for ${serverType} Unhook instance`,
         );
 
         // Show additional instructions
@@ -442,84 +517,8 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
   const configureApiKeyCommand = vscode.commands.registerCommand(
     'unhook.configureApiKey',
     async () => {
-      // Get current configuration
-      const config = vscode.workspace.getConfiguration('unhook');
-      const currentApiKey = config.get<string>('apiKey', '');
-
-      // Show instructions first
-      const instructions = `## API Key Configuration
-
-To use the Unhook MCP server with Cursor, you need an API key.
-
-1. **Get your API key**:
-   - Go to https://unhook.sh/app/api-keys
-   - Sign in to your Unhook account
-   - Create a new API key or copy an existing one
-
-2. **Enter your API key below**:
-   - The API key will be stored securely in VS Code settings
-   - It will be used to authenticate with the Unhook MCP server
-
-3. **Security note**:
-   - API keys are stored in VS Code's secure storage
-   - They are included in MCP server URLs for authentication
-   - Keep your API keys secure and don't share them
-
-**Current API key**: ${currentApiKey ? `***${currentApiKey.slice(-4)}` : 'Not configured'}`;
-
-      const showInstructions = await vscode.window.showInformationMessage(
-        'API Key Configuration',
-        'Show Instructions',
-        'Configure API Key',
-        'Cancel',
-      );
-
-      if (showInstructions === 'Show Instructions') {
-        // Create a new document with instructions
-        const instructionsDoc = await vscode.workspace.openTextDocument({
-          content: instructions,
-          language: 'markdown',
-        });
-        await vscode.window.showTextDocument(instructionsDoc);
-        return;
-      }
-
-      if (showInstructions === 'Cancel') {
-        return;
-      }
-
-      // Get API key from user
-      const apiKey = await vscode.window.showInputBox({
-        password: true,
-        placeHolder: 'whsk_...',
-        prompt:
-          'Enter your Unhook API key (get it from https://unhook.sh/app/api-keys)',
-        value: currentApiKey,
-      });
-
-      if (!apiKey) {
-        return;
-      }
-
-      // Validate API key format (basic validation)
-      if (!apiKey.startsWith('whsk_')) {
-        const continueAnyway = await vscode.window.showWarningMessage(
-          'The API key format doesn\'t look like a standard Unhook API key (should start with "whsk_"). Continue anyway?',
-          'Yes',
-          'No',
-        );
-
-        if (continueAnyway !== 'Yes') {
-          return;
-        }
-      }
-
-      // Update configuration
-      await config.update('apiKey', apiKey, true);
-
-      vscode.window.showInformationMessage(
-        'API key configured successfully. You can now create Cursor MCP server configurations.',
-      );
+      // Repurposed: run MCP server setup
+      await vscode.commands.executeCommand('unhook.createCursorMcpServer');
     },
   );
 

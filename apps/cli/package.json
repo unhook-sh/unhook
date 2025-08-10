@@ -7,10 +7,10 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@clerk/backend": "2.6.2",
-    "@clerk/clerk-js": "5.79.0",
-    "@clerk/express": "1.7.15",
-    "@clerk/types": "4.72.0",
+    "@clerk/backend": "2.7.0",
+    "@clerk/clerk-js": "5.81.0",
+    "@clerk/express": "1.7.17",
+    "@clerk/types": "4.74.0",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/api": "workspace:*",
     "@unhook/client": "workspace:*",
@@ -19,7 +19,7 @@
     "@unhook/logger": "workspace:*",
     "@unhook/utils": "workspace:*",
     "@unhook/zustand": "workspace:*",
-    "chalk": "5.4.1",
+    "chalk": "5.5.0",
     "cli-highlight": "2.1.11",
     "cli-spinners": "3.2.0",
     "clipboardy": "4.0.0",
@@ -34,7 +34,7 @@
     "keytar": "7.9.0",
     "meow": "13.2.0",
     "open": "10.2.0",
-    "posthog-js": "1.258.5",
+    "posthog-js": "1.259.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "react-error-boundary": "6.0.0",
@@ -44,7 +44,7 @@
     "yargs": "18.0.0",
     "zod": "3.25.76",
     "zustand": "5.0.7",
-    "zx": "8.7.2"
+    "zx": "8.8.0"
   },
   "description": "A CLI tool for testing webhooks locally with team collaboration features.",
   "devDependencies": {

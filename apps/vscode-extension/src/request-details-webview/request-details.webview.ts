@@ -232,9 +232,36 @@ export class RequestDetailsWebviewProvider {
     font-src ${webview.cspSource} http://localhost:5173;">
   <title>Unhook</title>
   <base href="/">
+  <style>
+    @keyframes unhook-spin { to { transform: rotate(360deg); } }
+    #initial-loader {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      background: var(--vscode-editor-background, #0b0b0b);
+      color: var(--vscode-editor-foreground, #cccccc);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    #initial-loader .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 9999px;
+      animation: unhook-spin 0.9s linear infinite;
+      margin-right: 8px;
+      opacity: 0.9;
+    }
+    #initial-loader .text { font-size: 12px; opacity: 0.8; }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div id="initial-loader">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="text" aria-live="polite">Loading request panel…</div>
+    </div>
+  </div>
   <script type="module">
     import RefreshRuntime from 'http://localhost:5173/@react-refresh'
     RefreshRuntime.injectIntoGlobalHook(window)

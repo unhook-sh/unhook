@@ -145,12 +145,6 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.createCursorMcpServer",
-        "icon": "$(server)",
-        "title": "Create Cursor MCP Server"
-      },
-      {
-        "category": "Unhook",
         "command": "unhook.configureServerUrls",
         "icon": "$(settings-gear)",
         "title": "Configure Server URLs"
@@ -159,7 +153,7 @@
         "category": "Unhook",
         "command": "unhook.configureApiKey",
         "icon": "$(key)",
-        "title": "Configure API Key"
+        "title": "Setup MCP Server"
       },
       {
         "category": "Unhook",
@@ -520,7 +514,7 @@
     "date-fns": "4.1.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "shiki": "3.9.1",
+    "shiki": "3.9.2",
     "tailwind-merge": "3.3.1",
     "ws": "8.18.3"
   },
@@ -529,13 +523,13 @@
     "@tailwindcss/postcss": "4.1.11",
     "@types/bun": "1.2.19",
     "@types/glob": "9.0.0",
-    "@types/node": "24.1.0",
+    "@types/node": "24.2.1",
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",
-    "@types/vscode": "1.96.0",
+    "@types/vscode": "1.102.0",
     "@unhook/db": "workspace:*",
     "@unhook/test-utils": "workspace:*",
-    "@vitejs/plugin-react": "4.7.0",
+    "@vitejs/plugin-react": "5.0.0",
     "@vscode/test-cli": "0.0.11",
     "@vscode/test-electron": "2.5.2",
     "@vscode/vsce": "3.6.0",
@@ -551,7 +545,7 @@
     "tailwindcss": "4.1.11",
     "tsup": "8.5.0",
     "typescript": "5.9.2",
-    "vite": "7.0.6",
+    "vite": "7.1.1",
     "vitest": "3.2.4"
   },
   "displayName": "Unhook - Webhook Development",

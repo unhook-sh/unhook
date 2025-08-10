@@ -4,9 +4,9 @@ import type {
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { useEffect, useState } from 'react';
-import { EmptyState } from './components/empty-state';
 import { ErrorState } from './components/error-state';
 import { EventDetails } from './components/event-details';
+import { LoadingState } from './components/loading-state';
 import { RequestDetails } from './components/request-details';
 import { vscode } from './lib/vscode';
 
@@ -58,7 +58,8 @@ function App() {
   if (error) return <ErrorState error={error} />;
   if (requestData) return <RequestDetails data={requestData} />;
   if (eventData) return <EventDetails data={eventData} />;
-  return <EmptyState />;
+  // First-time load: show a friendly loading screen before any data arrives
+  return <LoadingState />;
 }
 
 export default App;

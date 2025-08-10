@@ -96,12 +96,6 @@ export const eventsRouter = createTRPCRouter({
           },
         },
       });
-      console.log('events', {
-        events: events.length,
-        lastEventTime: input.lastEventTime,
-        orgId: ctx.auth.orgId,
-        webhookId: input.webhookId,
-      });
 
       return events satisfies EventTypeWithRequest[];
     }),

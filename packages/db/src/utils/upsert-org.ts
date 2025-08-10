@@ -1,5 +1,3 @@
-'server-only';
-
 import {
   clerkClient,
   type Organization,

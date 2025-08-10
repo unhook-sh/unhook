@@ -1,3 +1,4 @@
+import { extractBody } from '@unhook/client/utils/extract-body';
 import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Card, CardContent } from '@unhook/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
@@ -31,7 +32,10 @@ export function PayloadTabs({ data }: PayloadTabsProps) {
             {data.event?.originRequest.body ? (
               <JsonViewer
                 className="shadow-sm"
-                data={data.event.originRequest.body}
+                data={
+                  extractBody(data.event.originRequest.body) ??
+                  data.event.originRequest.body
+                }
                 defaultExpanded={true}
                 maxHeight={500}
                 title="Request Body"
@@ -49,7 +53,9 @@ export function PayloadTabs({ data }: PayloadTabsProps) {
             {data.response?.body ? (
               <JsonViewer
                 className="shadow-sm"
-                data={data.response.body}
+                data={
+                  extractBody(String(data.response.body)) ?? data.response.body
+                }
                 defaultExpanded={false}
                 maxHeight={500}
                 title="Response Body"

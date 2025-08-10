@@ -1,4 +1,4 @@
-import type { EventType, RequestType } from '@unhook/db/schema';
+import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import { Card, CardContent } from '@unhook/ui/card';
@@ -10,66 +10,60 @@ import {
 import { Icons } from '@unhook/ui/custom/icons';
 import { useState } from 'react';
 import { JsonViewer } from '../json-viewer';
-import { HeadersList } from '../shared/headers-list';
 
 interface RequestCardProps {
-  request: RequestType;
-  event: EventType | null;
+  request: NonNullable<EventTypeWithRequest['requests']>[number];
+  event: EventTypeWithRequest;
   index: number;
+}
+
+function getStatusColor(status: string) {
+  if (status === 'completed') return 'bg-primary/10 text-primary border-border';
+  if (status === 'failed')
+    return 'bg-destructive/10 text-destructive border-destructive/20';
+  if (status === 'pending')
+    return 'bg-accent text-accent-foreground border-border';
+  return 'bg-muted text-muted-foreground border-border';
+}
+
+function getStatusIcon(status: string) {
+  if (status === 'completed') return <Icons.CheckCircle2 className="h-3 w-3" />;
+  if (status === 'failed') return <Icons.X className="h-3 w-3" />;
+  if (status === 'pending') return <Icons.Clock className="h-3 w-3" />;
+  return <Icons.Clock className="h-3 w-3" />;
+}
+
+function getMethodColor(method?: string) {
+  switch (method?.toUpperCase()) {
+    case 'GET':
+      return 'bg-secondary text-secondary-foreground';
+    case 'POST':
+      return 'bg-primary/10 text-primary';
+    case 'PUT':
+      return 'bg-accent text-accent-foreground';
+    case 'DELETE':
+      return 'bg-destructive/10 text-destructive';
+    case 'PATCH':
+      return 'bg-muted text-foreground';
+    default:
+      return 'bg-muted text-muted-foreground';
+  }
 }
 
 export function RequestCard({ request, event, index }: RequestCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const getStatusColor = (status: string) => {
-    if (status === 'completed')
-      return 'bg-primary/10 text-primary border-border';
-    if (status === 'failed')
-      return 'bg-destructive/10 text-destructive border-destructive/20';
-    if (status === 'pending')
-      return 'bg-accent text-accent-foreground border-border';
-    return 'bg-muted text-muted-foreground border-border';
-  };
-
-  const getStatusIcon = (status: string) => {
-    if (status === 'completed')
-      return <Icons.CheckCircle2 className="h-3 w-3" />;
-    if (status === 'failed') return <Icons.X className="h-3 w-3" />;
-    if (status === 'pending') return <Icons.Clock className="h-3 w-3" />;
-    return <Icons.Clock className="h-3 w-3" />;
-  };
-
-  const getMethodColor = (method?: string) => {
-    switch (method?.toUpperCase()) {
-      case 'GET':
-        return 'bg-secondary text-secondary-foreground';
-      case 'POST':
-        return 'bg-primary/10 text-primary';
-      case 'PUT':
-        return 'bg-accent text-accent-foreground';
-      case 'DELETE':
-        return 'bg-destructive/10 text-destructive';
-      case 'PATCH':
-        return 'bg-muted text-foreground';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
-  };
-
   const copyUrl = () => {
-    if (request.destination?.url) {
+    if (request.destination?.url)
       navigator.clipboard.writeText(request.destination.url);
-    }
   };
-
   const copyRequestBody = () => {
-    const body = event?.originRequest.body;
+    const body = event?.originRequest?.body;
     if (body) navigator.clipboard.writeText(body);
   };
-
   const copyResponseBody = () => {
     const body = request.response?.body;
-    if (body) navigator.clipboard.writeText(body);
+    if (body) navigator.clipboard.writeText(String(body));
   };
 
   return (
@@ -137,7 +131,6 @@ export function RequestCard({ request, event, index }: RequestCardProps) {
         <CollapsibleContent>
           <div className="border-t border-border">
             <CardContent className="p-4 space-y-4">
-              {/* Request Details Grid */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-2">
                   <h4 className="font-medium text-foreground flex items-center gap-2">
@@ -185,7 +178,7 @@ export function RequestCard({ request, event, index }: RequestCardProps) {
                       <span>Response Size:</span>
                       <span className="font-mono">
                         {request.response?.body
-                          ? (request.response.body as string).length
+                          ? String(request.response.body).length
                           : 0}{' '}
                         bytes
                       </span>
@@ -200,7 +193,6 @@ export function RequestCard({ request, event, index }: RequestCardProps) {
                 </div>
               </div>
 
-              {/* URL Section with Copy */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h4 className="font-medium text-foreground flex items-center gap-2">
@@ -222,7 +214,6 @@ export function RequestCard({ request, event, index }: RequestCardProps) {
                 </div>
               </div>
 
-              {/* Request Body */}
               {event?.originRequest?.body && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -249,7 +240,6 @@ export function RequestCard({ request, event, index }: RequestCardProps) {
                 </div>
               )}
 
-              {/* Response Body */}
               {request.response?.body && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -273,19 +263,6 @@ export function RequestCard({ request, event, index }: RequestCardProps) {
                     maxHeight={300}
                     title="Response Data"
                   />
-                </div>
-              )}
-
-              {/* Headers */}
-              {event?.originRequest?.headers && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-foreground flex items-center gap-2">
-                    <Icons.ExternalLink className="h-3 w-3" />
-                    Request Headers
-                  </h4>
-                  <div className="bg-muted rounded p-3 max-h-48 overflow-auto">
-                    <HeadersList headers={event.originRequest.headers} />
-                  </div>
                 </div>
               )}
             </CardContent>

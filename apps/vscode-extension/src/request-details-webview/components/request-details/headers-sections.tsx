@@ -104,7 +104,9 @@ export function ResponseHeadersSection({
                     <span className="text-primary w-48 flex-shrink-0">
                       {key}:
                     </span>
-                    <span className="text-foreground break-all">{value}</span>
+                    <span className="text-foreground break-all">
+                      {String(value)}
+                    </span>
                   </div>
                 ))}
               </div>

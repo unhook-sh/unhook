@@ -1,3 +1,5 @@
+// Simplified raw viewer removed; unified JsonViewer is defined below
+
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import {

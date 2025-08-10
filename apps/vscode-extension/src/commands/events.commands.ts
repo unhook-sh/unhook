@@ -204,72 +204,48 @@ export function registerEventCommands(
             return;
           }
 
-          log('Opening request details', { requestId: item.request.id });
+          log('Opening request details (optimistic render)', {
+            requestId: item.request.id,
+          });
 
-          // Fetch complete request data from API to ensure we have all fields
+          // 1) Show immediately with existing data for instant UI
+          await requestDetailsWebviewProvider.show({
+            event: item.parent.event,
+            request: item.request,
+          });
+
+          // 2) In the background, if signed in, fetch the full request and update the panel
           const authStore = provider.authStore;
           if (authStore?.isSignedIn) {
-            try {
-              log('Fetching complete request data from API', {
-                requestId: item.request.id,
-              });
-              const completeRequest =
-                await authStore.api.requests.byIdWithEvent.query({
-                  id: item.request.id,
-                });
-
-              if (completeRequest) {
-                log('Successfully fetched complete request data', {
-                  hasEvent: !!completeRequest.event,
-                  hasOriginRequest: !!completeRequest.event?.originRequest,
-                  hasResponse: !!completeRequest.response,
-                  requestBody: completeRequest.event?.originRequest?.body
-                    ? 'PRESENT'
-                    : 'MISSING',
-                  requestId: completeRequest.id,
-                  responseBody: completeRequest.response?.body
-                    ? 'PRESENT'
-                    : 'MISSING',
-                });
-
-                // Show the complete request details in a panel
-                await requestDetailsWebviewProvider.show({
-                  event: item.parent.event,
-                  request: completeRequest,
-                });
-              } else {
-                log('No request found with ID, using existing data', {
+            (async () => {
+              try {
+                log('Fetching complete request data from API (background)', {
                   requestId: item.request.id,
                 });
-                // Fallback to existing data if API fetch fails
-                await requestDetailsWebviewProvider.show({
-                  event: item.parent.event,
-                  request: item.request,
-                });
+                const completeRequest =
+                  await authStore.api.requests.byIdWithEvent.query({
+                    id: item.request.id,
+                  });
+                if (completeRequest) {
+                  log('Updating panel with complete request data', {
+                    hasResponse: !!completeRequest.response,
+                    requestId: completeRequest.id,
+                  });
+                  await requestDetailsWebviewProvider.show({
+                    event: item.parent.event,
+                    request: completeRequest,
+                  });
+                }
+              } catch (error) {
+                log(
+                  'Background fetch failed; leaving optimistic data in place',
+                  {
+                    error,
+                    requestId: item.request.id,
+                  },
+                );
               }
-            } catch (error) {
-              log(
-                'Failed to fetch complete request data from API, using existing data',
-                {
-                  error,
-                  requestId: item.request.id,
-                },
-              );
-              // Fallback to existing data if API fetch fails
-              await requestDetailsWebviewProvider.show({
-                event: item.parent.event,
-                request: item.request,
-              });
-            }
-          } else {
-            log('Not authenticated, using existing request data', {
-              requestId: item.request.id,
-            });
-            // Show the existing request details in a panel
-            await requestDetailsWebviewProvider.show({
-              event: item.parent.event,
-              request: item.request,
-            });
+            })();
           }
 
           log('Request details shown successfully', {

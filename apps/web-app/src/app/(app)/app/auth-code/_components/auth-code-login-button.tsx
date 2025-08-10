@@ -1,9 +1,9 @@
 'use client';
 
-import { usePostHog } from '@unhook/analytics/posthog/client';
 import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useAction } from 'next-safe-action/hooks';
+import posthog from 'posthog-js';
 import { useCallback, useState } from 'react';
 import { createAuthCode } from '../actions';
 
@@ -17,7 +17,6 @@ export function AuthCodeLoginButton({
   text?: string;
 }) {
   const [error, setError] = useState<string>();
-  const posthog = usePostHog();
 
   const { executeAsync, status } = useAction(createAuthCode);
   const isPending = status === 'executing';
@@ -26,7 +25,7 @@ export function AuthCodeLoginButton({
   const onLogin = useCallback(async () => {
     try {
       setError(undefined);
-      posthog?.capture('auth_code_login_started');
+      posthog.capture('auth_code_login_started');
       const result = await executeAsync();
 
       if (!result?.data) {
@@ -56,7 +55,7 @@ export function AuthCodeLoginButton({
         window.location.href = redirectUrl.href;
       }
 
-      posthog?.capture('auth_code_login_success', {
+      posthog.capture('auth_code_login_success', {
         hasCsrfToken: !!currentUrl.searchParams.get('csrf'),
         isVSCode: !!redirectUri,
         port: currentUrl.searchParams.get('port'),
@@ -66,7 +65,7 @@ export function AuthCodeLoginButton({
       setError('Failed to authenticate. Please try again.');
       posthog?.captureException(error);
     }
-  }, [executeAsync, posthog]);
+  }, [executeAsync]);
 
   return (
     <div className="flex flex-col gap-2">

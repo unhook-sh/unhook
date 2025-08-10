@@ -2,7 +2,15 @@ import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Card, CardContent } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
-import { RequestCard } from './request-card';
+import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@unhook/ui/table';
 
 export interface ForwardedRequestsProps {
   data: EventTypeWithRequest;
@@ -24,30 +32,84 @@ export function ForwardedRequests({ data }: ForwardedRequestsProps) {
         </Badge>
       </div>
 
-      <div className="space-y-3">
-        {data.requests && data.requests.length > 0 ? (
-          data.requests.map((request, index) => (
-            <RequestCard
-              event={data}
-              index={index}
-              key={request.id}
-              request={request}
-            />
-          ))
-        ) : (
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Icons.Search className="h-12 w-12 text-muted-foreground/50 mb-3" />
-              <p className="text-muted-foreground font-medium">
-                No requests found
-              </p>
-              <p className="text-sm text-muted-foreground/70">
-                This event hasn't been forwarded to any destinations
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {data.requests && data.requests.length > 0 ? (
+        <div className="rounded border">
+          <Table>
+            <TableHeader className="bg-muted">
+              <TableRow>
+                <TableHead>#</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Destination</TableHead>
+                <TableHead>URL</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Resp. Code</TableHead>
+                <TableHead>Resp. Time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.requests.map((request, index) => (
+                <TableRow key={request.id}>
+                  <TableCell className="font-mono text-xs">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {request.timestamp ? (
+                      <TimeDisplay
+                        date={request.timestamp}
+                        showRelative={true}
+                      />
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {request.destinationName ||
+                      request.destination?.name ||
+                      'Unknown'}
+                  </TableCell>
+                  <TableCell
+                    className="font-mono text-xs max-w-[320px] truncate"
+                    title={request.destinationUrl || request.destination?.url}
+                  >
+                    {request.destinationUrl || request.destination?.url}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        request.status === 'completed'
+                          ? 'default'
+                          : request.status === 'failed'
+                            ? 'destructive'
+                            : 'outline'
+                      }
+                    >
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {request.response?.status ?? '—'}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {request.responseTimeMs ?? 0}ms
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <Icons.Search className="h-12 w-12 text-muted-foreground/50 mb-3" />
+            <p className="text-muted-foreground font-medium">
+              No requests found
+            </p>
+            <p className="text-sm text-muted-foreground/70">
+              This event hasn't been forwarded to any destinations
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

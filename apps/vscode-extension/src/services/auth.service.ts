@@ -3,8 +3,8 @@ import * as vscode from 'vscode';
 import { type ApiClient, type AuthUser, createApiClient } from '../api';
 import { ConfigManager } from '../config.manager';
 
-const TOKEN_KEY = 'unhook.auth.token';
-const SESSION_ID_KEY = 'unhook.auth.sessionId';
+const TOKEN_KEY_BASE = 'unhook.auth.token';
+const SESSION_ID_KEY_BASE = 'unhook.auth.sessionId';
 
 // Create debug logger for auth store
 const log = debug('unhook:vscode:auth');
@@ -34,6 +34,17 @@ export class AuthStore implements vscode.Disposable {
     this._api = createApiClient({
       baseUrl: this._configManager.getApiUrl(),
     });
+  }
+
+  private getTokenKey(): string {
+    // Namespace auth token by environment to avoid re-auth when switching
+    const suffix = this._configManager.isDevelopment() ? 'dev' : 'prod';
+    return `${TOKEN_KEY_BASE}.${suffix}`;
+  }
+
+  private getSessionIdKey(): string {
+    const suffix = this._configManager.isDevelopment() ? 'dev' : 'prod';
+    return `${SESSION_ID_KEY_BASE}.${suffix}`;
   }
 
   get isSignedIn() {
@@ -102,9 +113,9 @@ export class AuthStore implements vscode.Disposable {
 
   private async setAuthTokenInternal({ token }: { token: string | null }) {
     if (token) {
-      await this.context.secrets.store(TOKEN_KEY, token);
+      await this.context.secrets.store(this.getTokenKey(), token);
     } else {
-      await this.context.secrets.delete(TOKEN_KEY);
+      await this.context.secrets.delete(this.getTokenKey());
     }
 
     this._authToken = token;
@@ -133,9 +144,9 @@ export class AuthStore implements vscode.Disposable {
     sessionId: string | null;
   }) {
     if (sessionId) {
-      await this.context.secrets.store(SESSION_ID_KEY, sessionId);
+      await this.context.secrets.store(this.getSessionIdKey(), sessionId);
     } else {
-      await this.context.secrets.delete(SESSION_ID_KEY);
+      await this.context.secrets.delete(this.getSessionIdKey());
     }
 
     this._sessionId = sessionId;
@@ -246,8 +257,8 @@ export class AuthStore implements vscode.Disposable {
 
   async initialize() {
     const [token, sessionId] = await Promise.all([
-      this.context.secrets.get(TOKEN_KEY),
-      this.context.secrets.get(SESSION_ID_KEY),
+      this.context.secrets.get(this.getTokenKey()),
+      this.context.secrets.get(this.getSessionIdKey()),
     ]);
 
     if (token) {

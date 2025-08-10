@@ -1,5 +1,3 @@
-import 'server-only';
-
 import {
   dehydrate,
   HydrationBoundary as ReactQueryHydrationBoundary,

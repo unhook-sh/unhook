@@ -2,9 +2,12 @@
 
 import { useReportWebVitals } from 'next/web-vitals';
 import { event } from 'nextjs-google-analytics';
+import posthog from 'posthog-js';
 
 export function WebVitals() {
-  useReportWebVitals(({ name, label, id, value }) => {
+  useReportWebVitals((metric) => {
+    const { name, label, id, value } = metric;
+    posthog.capture(name, metric);
     event(name, {
       category: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
       // values must be integers

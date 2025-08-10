@@ -1,5 +1,3 @@
-import 'server-only';
-
 import { createServerSideHelpers } from '@trpc/react-query/server';
 import { headers } from 'next/headers';
 import { cache } from 'react';

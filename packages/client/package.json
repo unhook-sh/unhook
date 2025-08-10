@@ -4,7 +4,7 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.53.0",
+    "@supabase/supabase-js": "2.54.0",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
@@ -15,7 +15,7 @@
     "drizzle-orm": "0.44.4",
     "find-up": "7.0.0",
     "undici": "7.13.0",
-    "yaml": "2.8.0",
+    "yaml": "2.8.1",
     "zod": "3.25.76"
   },
   "devDependencies": {

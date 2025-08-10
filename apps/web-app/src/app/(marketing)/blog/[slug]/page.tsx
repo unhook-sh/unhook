@@ -49,7 +49,6 @@ export async function generateMetadata({
 }
 
 async function getBlogPost(slug: string) {
-  'use cache';
   const post = await getPost(slug);
   if (!post) {
     notFound();
@@ -58,7 +57,6 @@ async function getBlogPost(slug: string) {
 }
 
 async function BlogContent({ params }: { params: Promise<{ slug: string }> }) {
-  'use cache';
   const { slug } = await params;
   const post = await getBlogPost(slug);
 

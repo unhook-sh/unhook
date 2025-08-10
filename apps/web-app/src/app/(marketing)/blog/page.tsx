@@ -59,7 +59,6 @@ export const metadata = constructMetadata({
 });
 
 async function getBlogArticles() {
-  'use cache';
   const allPosts = await getBlogPosts();
   return allPosts.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }

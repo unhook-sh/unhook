@@ -2,13 +2,14 @@
 
 import { useOrganizationList, useUser } from '@clerk/nextjs';
 import { IconLoader2 } from '@tabler/icons-react';
+import { MetricButton, MetricLink } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import {
   Entitled,
   NotEntitled,
   useIsEntitled,
 } from '@unhook/stripe/guards/client';
-import { Button } from '@unhook/ui/button';
+import { Button } from '@unhook/ui/components/button';
 import { P } from '@unhook/ui/custom/typography';
 import {
   Dialog,
@@ -20,7 +21,6 @@ import {
 } from '@unhook/ui/dialog';
 import { Input } from '@unhook/ui/input';
 import { Label } from '@unhook/ui/label';
-import Link from 'next/link';
 import { useAction } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import { createOrgAction } from './actions';
@@ -169,23 +169,38 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
           )}
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">
+              <MetricButton
+                metric="new_org_dialog_cancel_clicked"
+                type="button"
+                variant="outline"
+              >
                 Cancel
-              </Button>
+              </MetricButton>
             </DialogClose>
             <Entitled entitlement="unlimited_developers">
-              <Button disabled={isLoading || !name} type="submit">
+              <MetricButton
+                disabled={isLoading || !name}
+                metric="new_org_dialog_create_clicked"
+                type="submit"
+              >
                 {isLoading && (
                   <IconLoader2 className="text-secondary" size="sm" />
                 )}
                 Create
-              </Button>
+              </MetricButton>
             </Entitled>
             <NotEntitled entitlement="unlimited_developers">
               <Button asChild>
-                <Link href="/app/settings/billing">
+                <MetricLink
+                  href="/app/settings/billing"
+                  metric="new_org_dialog_upgrade_clicked"
+                  properties={{
+                    destination: '/app/settings/billing',
+                    location: 'new_org_dialog',
+                  }}
+                >
                   Upgrade to create organizations
-                </Link>
+                </MetricLink>
               </Button>
             </NotEntitled>
           </DialogFooter>

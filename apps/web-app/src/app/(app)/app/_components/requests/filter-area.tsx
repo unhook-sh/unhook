@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Checkbox } from '@unhook/ui/checkbox';
 import {
   Collapsible,
@@ -30,9 +30,13 @@ export function FilterArea({ className }: FilterAreaProps) {
     <div className={cn('flex flex-col bg-background overflow-auto', className)}>
       <div className="flex items-center justify-between p-4">
         <h2 className="text-lg font-semibold">Filters</h2>
-        <Button size="sm" variant="outline">
+        <MetricButton
+          metric="filter_area_reset_clicked"
+          size="sm"
+          variant="outline"
+        >
           Reset
-        </Button>
+        </MetricButton>
       </div>
 
       <div className="flex-1 overflow-auto">

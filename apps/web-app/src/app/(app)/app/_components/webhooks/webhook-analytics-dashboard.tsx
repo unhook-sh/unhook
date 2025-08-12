@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import {
   Card,
   CardContent,
@@ -54,10 +54,15 @@ export function WebhookAnalyticsDashboard({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="h-8 gap-1" size="sm" variant="outline">
+              <MetricButton
+                className="h-8 gap-1"
+                metric="webhook_analytics_time_range_clicked"
+                size="sm"
+                variant="outline"
+              >
                 <Calendar className="h-3.5 w-3.5" />
                 <span>{timeRange}</span>
-              </Button>
+              </MetricButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTimeRange('1h')}>
@@ -77,44 +82,53 @@ export function WebhookAnalyticsDashboard({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
+          <MetricButton
             className="h-8 gap-1"
+            metric="webhook_analytics_export_clicked"
             onClick={handleExportData}
             size="sm"
             variant="outline"
           >
             <Download className="h-3.5 w-3.5" />
             <span>Export</span>
-          </Button>
-          <Button className="h-8 gap-1" size="sm" variant="outline">
+          </MetricButton>
+          <MetricButton
+            className="h-8 gap-1"
+            metric="webhook_analytics_filter_clicked"
+            size="sm"
+            variant="outline"
+          >
             <Filter className="h-3.5 w-3.5" />
             <span>Filter</span>
-          </Button>
+          </MetricButton>
           <div className="flex items-center gap-1 rounded-md border bg-background p-1">
-            <Button
+            <MetricButton
               className={`h-6 px-2 text-xs ${activeTab === 'overview' ? 'bg-muted' : ''}`}
+              metric="webhook_analytics_overview_tab_clicked"
               onClick={() => setActiveTab('overview')}
               size="sm"
               variant="ghost"
             >
               Overview
-            </Button>
-            <Button
+            </MetricButton>
+            <MetricButton
               className={`h-6 px-2 text-xs ${activeTab === 'performance' ? 'bg-muted' : ''}`}
+              metric="webhook_analytics_performance_tab_clicked"
               onClick={() => setActiveTab('performance')}
               size="sm"
               variant="ghost"
             >
               Performance
-            </Button>
-            <Button
+            </MetricButton>
+            <MetricButton
               className={`h-6 px-2 text-xs ${activeTab === 'usage' ? 'bg-muted' : ''}`}
+              metric="webhook_analytics_usage_tab_clicked"
               onClick={() => setActiveTab('usage')}
               size="sm"
               variant="ghost"
             >
               Usage
-            </Button>
+            </MetricButton>
           </div>
         </div>
       </div>

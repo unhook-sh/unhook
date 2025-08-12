@@ -10,6 +10,7 @@ import {
 import { Icons } from '@unhook/ui/custom/icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { codeToHtml } from 'shiki';
+import { trackJsonViewerInteraction } from '../lib/analytics';
 
 interface JsonViewerProps {
   data: string | object;
@@ -28,6 +29,17 @@ interface JsonNodeProps {
 
 function JsonNode({ data, keyName, level }: JsonNodeProps) {
   const [isExpanded, setIsExpanded] = useState(level < 2);
+
+  const handleExpandChange = (expanded: boolean) => {
+    setIsExpanded(expanded);
+    trackJsonViewerInteraction('json_node_expanded', {
+      data_type: typeof data,
+      expanded,
+      has_key: !!keyName,
+      is_array: Array.isArray(data),
+      level,
+    });
+  };
 
   function computeArrayItemKey(value: unknown): string {
     if (
@@ -96,7 +108,7 @@ function JsonNode({ data, keyName, level }: JsonNodeProps) {
 
     return (
       <div className="select-none">
-        <Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
+        <Collapsible onOpenChange={handleExpandChange} open={isExpanded}>
           <div className="flex items-center gap-2">
             {keyName && (
               <span className="text-primary font-medium">"{keyName}":</span>
@@ -146,7 +158,7 @@ function JsonNode({ data, keyName, level }: JsonNodeProps) {
 
     return (
       <div className="select-none">
-        <Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
+        <Collapsible onOpenChange={handleExpandChange} open={isExpanded}>
           <div className="flex items-center gap-2">
             {keyName && (
               <span className="text-primary font-medium">"{keyName}":</span>
@@ -250,8 +262,22 @@ export function JsonViewer({
       await navigator.clipboard.writeText(jsonString);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
+      // Track copy action
+      trackJsonViewerInteraction('json_copied', {
+        data_size: jsonString.length,
+        data_type: typeof jsonData,
+        is_array: Array.isArray(jsonData),
+        title,
+      });
     } catch (error) {
       console.error('Failed to copy:', error);
+
+      // Track copy failure
+      trackJsonViewerInteraction('json_copy_failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        title,
+      });
     }
   };
 
@@ -266,7 +292,18 @@ export function JsonViewer({
 
   return (
     <div className={`bg-card border border-border rounded-lg ${className}`}>
-      <Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
+      <Collapsible
+        onOpenChange={(expanded) => {
+          setIsExpanded(expanded);
+          trackJsonViewerInteraction('json_viewer_expanded', {
+            data_type: typeof jsonData,
+            expanded,
+            is_array: Array.isArray(jsonData),
+            title,
+          });
+        }}
+        open={isExpanded}
+      >
         <CollapsibleTrigger asChild>
           <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-accent/50 transition-colors border-b border-border">
             <div className="flex items-center gap-3">
@@ -291,7 +328,16 @@ export function JsonViewer({
                 className="opacity-70 hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowRaw((prev) => !prev);
+                  const newShowRaw = !showRaw;
+                  setShowRaw(newShowRaw);
+
+                  // Track view mode toggle
+                  trackJsonViewerInteraction('json_view_mode_toggled', {
+                    data_type: typeof jsonData,
+                    is_array: Array.isArray(jsonData),
+                    new_mode: newShowRaw ? 'raw' : 'tree',
+                    title,
+                  });
                 }}
                 size="sm"
                 variant="ghost"

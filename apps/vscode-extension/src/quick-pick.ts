@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
 // import { ConfigManager } from './config.manager';
 import { env } from './env';
+import type { AnalyticsService } from './services/analytics.service';
 import type { AuthStore } from './services/auth.service';
 
 export class EventQuickPick {
   private static instance: EventQuickPick;
   private authStore: AuthStore | null = null;
+  private analyticsService: AnalyticsService | null = null;
 
   private constructor() {}
 
@@ -18,6 +20,10 @@ export class EventQuickPick {
 
   public setAuthStore(authStore: AuthStore) {
     this.authStore = authStore;
+  }
+
+  public setAnalyticsService(analyticsService: AnalyticsService) {
+    this.analyticsService = analyticsService;
   }
 
   public async showQuickPick() {
@@ -104,30 +110,46 @@ export class EventQuickPick {
     if (selected) {
       switch (selected.label) {
         case '$(sign-in) Sign In':
+          // Track quick pick sign-in action
+          this.analyticsService?.track('quick_pick_sign_in');
           await vscode.commands.executeCommand('unhook.signIn');
           break;
         case '$(sign-out) Sign Out':
+          // Track quick pick sign-out action
+          this.analyticsService?.track('quick_pick_sign_out');
           await vscode.commands.executeCommand('unhook.signOut');
           break;
         case '$(add) Add New Event':
+          // Track quick pick add event action
+          this.analyticsService?.track('quick_pick_add_event');
           await vscode.commands.executeCommand('unhook.addEvent');
           break;
         case '$(refresh) Refresh Events':
+          // Track quick pick refresh events action
+          this.analyticsService?.track('quick_pick_refresh_events');
           await vscode.commands.executeCommand('unhook.events.refresh');
           break;
         case '$(new-file) Create Configuration File':
+          // Track quick pick create config action
+          this.analyticsService?.track('quick_pick_create_config');
           await vscode.commands.executeCommand('unhook.createConfig');
           break;
         case '$(settings-gear) Configure Server URLs':
+          // Track quick pick configure server URLs action
+          this.analyticsService?.track('quick_pick_configure_server_urls');
           await vscode.commands.executeCommand('unhook.configureServerUrls');
           break;
         case '$(key) Setup MCP Server':
+          // Track quick pick MCP server setup action
+          this.analyticsService?.track('quick_pick_mcp_server_setup');
           await vscode.commands.executeCommand('unhook.configureApiKey');
           break;
         case '$(server) Create Cursor MCP Server':
           await vscode.commands.executeCommand('unhook.createCursorMcpServer');
           break;
         case '$(settings) Configure Settings':
+          // Track quick pick settings action
+          this.analyticsService?.track('quick_pick_open_settings');
           await vscode.commands.executeCommand(
             'workbench.action.openSettings',
             `@ext:${env.NEXT_PUBLIC_VSCODE_EXTENSION_ID}`,

@@ -7,10 +7,10 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@clerk/backend": "2.7.0",
-    "@clerk/clerk-js": "5.81.0",
-    "@clerk/express": "1.7.17",
-    "@clerk/types": "4.74.0",
+    "@clerk/backend": "2.7.1",
+    "@clerk/clerk-js": "5.82.0",
+    "@clerk/express": "1.7.18",
+    "@clerk/types": "4.75.0",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/api": "workspace:*",
     "@unhook/client": "workspace:*",
@@ -50,11 +50,11 @@
   "devDependencies": {
     "@happy-dom/global-registrator": "18.0.1",
     "@playwright/test": "1.54.2",
-    "@types/bun": "1.2.19",
+    "@types/bun": "1.2.20",
     "@types/figlet": "1.7.0",
     "@types/js-yaml": "4.0.9",
     "@types/jsonwebtoken": "9.0.10",
-    "@types/react": "19.1.9",
+    "@types/react": "19.1.10",
     "@types/react-devtools": "3.6.2",
     "@types/react-dom": "19.1.7",
     "@types/ws": "8.18.1",

@@ -67,6 +67,9 @@
 - [ ] Create a vscode command to setup the MCP server
 - [ ] Add report bug to vscode
 - [ ] Make transparent logo for vscode
+- [ ] Add fine grained notifications to the vscode settings for "Show Status Changes", etc
+- [ ] make it so that you can add config around timeouts in unhook.yml
+- [ ] show
 - [x] Bug with vscode icons not showing up
 - [x] Toggle auto refresh
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrganization } from '@clerk/nextjs';
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Input } from '@unhook/ui/input';
 import { toast } from '@unhook/ui/sonner';
@@ -69,12 +69,13 @@ export function TeamNameSection() {
               value={name}
             />
           </div>
-          <Button
+          <MetricButton
             disabled={isUpdating || !name.trim() || name === activeOrg?.name}
+            metric="team_name_section_update_clicked"
             onClick={handleUpdateName}
           >
             {isUpdating ? 'Updating...' : 'Update Name'}
-          </Button>
+          </MetricButton>
         </div>
       </CardContent>
     </Card>

@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricLink } from '@unhook/analytics';
 import { Tabs, TabsList, TabsTrigger } from '@unhook/ui/tabs';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const settingsTabs = [
@@ -53,7 +53,16 @@ export default function SettingsLayout({
               key={tab.value}
               value={tab.value}
             >
-              <Link href={tab.href}>{tab.label}</Link>
+              <MetricLink
+                href={tab.href}
+                metric="navigation_settings_tab_clicked"
+                properties={{
+                  tab_name: tab.label,
+                  tab_value: tab.value,
+                }}
+              >
+                {tab.label}
+              </MetricLink>
             </TabsTrigger>
           ))}
         </TabsList>

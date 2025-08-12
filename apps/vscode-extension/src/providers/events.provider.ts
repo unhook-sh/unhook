@@ -127,6 +127,10 @@ export class EventsProvider
     this.notificationService = new EventsNotificationService(analyticsService);
   }
 
+  public getAnalyticsService(): AnalyticsService | null {
+    return this.analyticsService;
+  }
+
   public setAuthStore(authStore: AuthStore) {
     this.authStore = authStore;
     this.deliveryService = new EventsDeliveryService(

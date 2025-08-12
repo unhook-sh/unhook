@@ -2,6 +2,7 @@
 
 import type { Icon } from '@tabler/icons-react';
 
+import { MetricLink } from '@unhook/analytics';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -9,7 +10,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@unhook/ui/sidebar';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export function NavMain({
@@ -35,10 +35,17 @@ export function NavMain({
                 className="data-[slot=sidebar-menu-button]:!p-1.5"
                 isActive={pathname.includes(item.url)}
               >
-                <Link href={item.url}>
+                <MetricLink
+                  href={item.url}
+                  metric="navigation_main_menu_clicked"
+                  properties={{
+                    menu_item: item.title,
+                    url: item.url,
+                  }}
+                >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                </Link>
+                </MetricLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

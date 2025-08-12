@@ -2,9 +2,9 @@
 
 import { useOrganization } from '@clerk/nextjs';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { useIsEntitled } from '@unhook/stripe/guards/client';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -193,15 +193,16 @@ export function UsageCard() {
           ) : (
             <>
               <UsageDisplay usage={usage} />
-              <Button
+              <MetricButton
                 className="w-full"
                 disabled={isSubscribing}
+                metric="usage_card_upgrade_clicked"
                 onClick={handleUpgrade}
                 size="sm"
                 variant="secondary"
               >
                 {isSubscribing ? 'Redirecting...' : 'Upgrade For Unlimited'}
-              </Button>
+              </MetricButton>
             </>
           )}
         </div>

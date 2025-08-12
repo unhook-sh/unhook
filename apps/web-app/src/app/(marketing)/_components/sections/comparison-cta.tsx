@@ -1,11 +1,12 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { NeonGradientCard } from '@unhook/ui/magicui/neon-gradient-card';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { WordFadeIn } from '@unhook/ui/magicui/word-fade-in';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
+import posthog from 'posthog-js';
 
 interface ComparisonCTAProps {
   competitor: string;
@@ -18,6 +19,22 @@ export function ComparisonCTA({
   ctaText,
   description,
 }: ComparisonCTAProps) {
+  const handleStartFreeTrialClick = () => {
+    posthog.capture('comparison_cta_free_trial_clicked', {
+      competitor: _competitor,
+      location: 'comparison_cta_section',
+      source: 'marketing_site',
+    });
+  };
+
+  const handleScheduleDemoClick = () => {
+    posthog.capture('comparison_cta_schedule_demo_clicked', {
+      competitor: _competitor,
+      location: 'comparison_cta_section',
+      source: 'marketing_site',
+    });
+  };
+
   return (
     <section className="w-full py-20">
       <div className="container mx-auto px-6">
@@ -63,17 +80,27 @@ export function ComparisonCTA({
                   initial={{ opacity: 0, y: 20 }}
                   transition={{ delay: 0.6, duration: 0.5 }}
                 >
-                  <ShimmerButton className="px-8 py-3 text-lg font-semibold">
+                  <ShimmerButton
+                    className="px-8 py-3 text-lg font-semibold"
+                    onClick={handleStartFreeTrialClick}
+                  >
                     Start Free Trial
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </ShimmerButton>
-                  <Button
+                  <MetricButton
                     className="px-8 py-3 text-lg"
+                    metric="comparison_cta_schedule_demo_clicked"
+                    onClick={handleScheduleDemoClick}
+                    properties={{
+                      competitor: _competitor,
+                      location: 'comparison_cta_section',
+                      source: 'marketing_site',
+                    }}
                     size="lg"
                     variant="outline"
                   >
                     Schedule Demo
-                  </Button>
+                  </MetricButton>
                 </motion.div>
 
                 <motion.div

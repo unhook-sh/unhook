@@ -2,8 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
-import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import {
   Dialog,
@@ -24,6 +24,7 @@ import {
 } from '@unhook/ui/form';
 import { Input } from '@unhook/ui/input';
 import { toast } from '@unhook/ui/sonner';
+import posthog from 'posthog-js';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -70,6 +71,46 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
     resolver: zodResolver(formSchema),
   });
 
+  const handleFormSubmit = async (values: FormValues) => {
+    // Track webhook creation attempt
+    posthog.capture('webhook_creation_attempted', {
+      api_key_id: values.apiKeyId,
+      location: 'create_webhook_dialog',
+      webhook_name: values.name,
+    });
+
+    try {
+      await createWebhook(values);
+      await queryClient.invalidateQueries({
+        queryKey: ['webhooks', 'all'],
+      });
+
+      // Track successful webhook creation
+      posthog.capture('webhook_created_successfully', {
+        api_key_id: values.apiKeyId,
+        location: 'create_webhook_dialog',
+        webhook_name: values.name,
+      });
+
+      toast.success('Webhook created', {
+        description: 'The webhook has been created successfully.',
+      });
+      form.reset();
+    } catch (_error) {
+      // Track webhook creation failure
+      posthog.capture('webhook_creation_failed', {
+        api_key_id: values.apiKeyId,
+        error: _error instanceof Error ? _error.message : 'Unknown error',
+        location: 'create_webhook_dialog',
+        webhook_name: values.name,
+      });
+
+      toast.error('Failed to create webhook', {
+        description: 'Please try again.',
+      });
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -84,22 +125,7 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
         <Form {...form}>
           <form
             className="space-y-4"
-            onSubmit={form.handleSubmit(async (values) => {
-              try {
-                await createWebhook(values);
-                await queryClient.invalidateQueries({
-                  queryKey: ['webhooks', 'all'],
-                });
-                toast.success('Webhook created', {
-                  description: 'The webhook has been created successfully.',
-                });
-                form.reset();
-              } catch (_error) {
-                toast.error('Failed to create webhook', {
-                  description: 'Please try again.',
-                });
-              }
-            })}
+            onSubmit={form.handleSubmit(handleFormSubmit)}
           >
             <FormField
               control={form.control}
@@ -129,12 +155,15 @@ export function CreateWebhookDialog({ children }: CreateWebhookDialogProps) {
             />
 
             <DialogFooter>
-              <Button disabled={form.formState.isSubmitting}>
+              <MetricButton
+                disabled={form.formState.isSubmitting}
+                metric="create_webhook_form_submit_clicked"
+              >
                 {form.formState.isSubmitting && (
                   <Icons.Spinner className="mr-2" size="sm" />
                 )}
                 Create Webhook
-              </Button>
+              </MetricButton>
             </DialogFooter>
           </form>
         </Form>

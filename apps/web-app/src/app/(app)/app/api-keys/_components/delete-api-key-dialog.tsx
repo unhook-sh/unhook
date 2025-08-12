@@ -1,6 +1,7 @@
 'use client';
 
 import { IconLoader2, IconTrash } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import {
   AlertDialog,
@@ -13,8 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@unhook/ui/alert-dialog';
-import { Button } from '@unhook/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
+import posthog from 'posthog-js';
 import { useState } from 'react';
 
 interface DeleteApiKeyDialogProps {
@@ -46,6 +47,12 @@ export function DeleteApiKeyDialog({
   };
 
   const handleConfirmDelete = () => {
+    // Track the API key deletion
+    posthog.capture('api_keys_deleted', {
+      api_key_id: apiKeyId,
+      api_key_name: apiKeyName,
+    });
+
     setDeleting(true);
     deleteApiKey.mutate({ id: apiKeyId });
   };
@@ -65,9 +72,10 @@ export function DeleteApiKeyDialog({
       <AlertDialogTrigger asChild>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
+            <MetricButton
               className="h-8 w-8 p-0 text-destructive hover:text-destructive"
               disabled={deleting}
+              metric="delete_api_key_dialog_trigger_clicked"
               onClick={handleDeleteClick}
               size="sm"
               variant="ghost"
@@ -77,7 +85,7 @@ export function DeleteApiKeyDialog({
               ) : (
                 <IconTrash size="sm" />
               )}
-            </Button>
+            </MetricButton>
           </TooltipTrigger>
           <TooltipContent>Delete API Key</TooltipContent>
         </Tooltip>

@@ -2,6 +2,7 @@
 
 import { SignedIn, SignedOut, useOrganization } from '@clerk/nextjs';
 import { IconCheck } from '@tabler/icons-react';
+import { MetricLink } from '@unhook/analytics/components';
 import {
   SubscriptionActive,
   SubscriptionPastDue,
@@ -10,8 +11,8 @@ import {
 } from '@unhook/stripe/guards/client';
 import { cn } from '@unhook/ui/lib/utils';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import { useAction } from 'next-safe-action/hooks';
+import posthog from 'posthog-js';
 import { memo, useMemo, useState } from 'react';
 import type { siteConfig } from '~/app/(marketing)/_lib/config';
 import { TEAM_PRICING } from '~/app/(marketing)/_lib/config';
@@ -44,6 +45,15 @@ export const PricingCard = memo(function PricingCard({
 
   const isSubscribing = checkoutStatus === 'executing';
 
+  // Track pricing card view
+  useState(() => {
+    posthog.capture('pricing_card_viewed', {
+      billing_cycle: billingCycle,
+      location: 'pricing_section',
+      plan_name: tier.name,
+    });
+  });
+
   // Calculate team price
   const teamPrice = useMemo(() => {
     if (tier.name !== 'Team') return 0;
@@ -66,15 +76,55 @@ export const PricingCard = memo(function PricingCard({
   const handleSubscribe = async () => {
     if (!organization?.id) return;
 
+    // Track subscription attempt
+    posthog.capture('subscription_attempted', {
+      billing_cycle: billingCycle,
+      location: 'pricing_section',
+      organization_id: organization.id,
+      plan_name: tier.name,
+      team_seats: tier.name === 'Team' ? teamSeats : undefined,
+    });
+
     try {
       await executeCreateCheckout({
         billingInterval: billingCycle,
         orgId: organization.id,
         planType: tier.name === 'Team' ? 'team' : 'free',
       });
+
+      // Track successful checkout creation
+      posthog.capture('checkout_session_created', {
+        billing_cycle: billingCycle,
+        location: 'pricing_section',
+        organization_id: organization.id,
+        plan_name: tier.name,
+        team_seats: tier.name === 'Team' ? teamSeats : undefined,
+      });
     } catch (error) {
       console.error('Failed to create checkout session:', error);
+
+      // Track checkout failure
+      posthog.capture('checkout_session_failed', {
+        billing_cycle: billingCycle,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        location: 'pricing_section',
+        organization_id: organization.id,
+        plan_name: tier.name,
+        team_seats: tier.name === 'Team' ? teamSeats : undefined,
+      });
     }
+  };
+
+  const handleTeamSeatsChange = (seats: number) => {
+    setTeamSeats(seats);
+
+    // Track team seats change
+    posthog.capture('team_seats_changed', {
+      billing_cycle: billingCycle,
+      location: 'pricing_section',
+      new_seats: seats,
+      plan_name: tier.name,
+    });
   };
 
   const PriceDisplay = () => {
@@ -132,16 +182,20 @@ export const PricingCard = memo(function PricingCard({
     return (
       <>
         <SignedOut>
-          <Link
+          <MetricLink
             className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
               tier.isPopular
                 ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
                 : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
             }`}
             href="/app/onboarding"
+            metric="pricing_card_create_webhook_url_clicked"
+            properties={{
+              location: 'pricing_card',
+            }}
           >
             Create Webhook URL
-          </Link>
+          </MetricLink>
         </SignedOut>
 
         {/* For signed in users */}
@@ -200,16 +254,20 @@ export const PricingCard = memo(function PricingCard({
             // Free plan logic
             <>
               <SubscriptionActive>
-                <Link
+                <MetricLink
                   className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
                     tier.isPopular
                       ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
                       : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
                   }`}
                   href="/app/onboarding"
+                  metric="pricing_card_create_webhook_url_clicked"
+                  properties={{
+                    location: 'pricing_card',
+                  }}
                 >
                   Create Webhook URL
-                </Link>
+                </MetricLink>
               </SubscriptionActive>
               <SubscriptionPastDue>
                 <button
@@ -226,16 +284,20 @@ export const PricingCard = memo(function PricingCard({
                 </button>
               </SubscriptionPastDue>
               {!hasActiveSubscription && !hasPastDueSubscription && (
-                <Link
+                <MetricLink
                   className={`h-10 w-full flex items-center justify-center text-sm font-normal tracking-wide rounded-full px-4 cursor-pointer transition-all ease-out active:scale-95 ${
                     tier.isPopular
                       ? `${tier.buttonColor} shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)]`
                       : `${tier.buttonColor} shadow-[0px_1px_2px_0px_rgba(255,255,255,0.16)_inset,0px_3px_3px_-1.5px_rgba(16,24,40,0.24),0px_1px_1px_-0.5px_rgba(16,24,40,0.20)]`
                   }`}
                   href="/app/onboarding"
+                  metric="pricing_card_create_webhook_url_clicked"
+                  properties={{
+                    location: 'pricing_card',
+                  }}
                 >
                   Create Webhook URL
-                </Link>
+                </MetricLink>
               )}
             </>
           )}
@@ -274,7 +336,7 @@ export const PricingCard = memo(function PricingCard({
           <TeamSeatsSlider
             billingCycle={billingCycle}
             includedSeats={TEAM_PRICING.INCLUDED_SEATS}
-            onSeatsChange={setTeamSeats}
+            onSeatsChange={handleTeamSeatsChange}
             seats={teamSeats}
           />
         )}

@@ -8,7 +8,13 @@ import { env } from './env.client';
 import { PostHogIdentifyUser } from './posthog/client';
 import { WebVitals } from './web-vitals';
 
-const isProduction = env.NEXT_PUBLIC_APP_ENV === 'production';
+// Build-time prod check
+const isBuildProduction = env.NODE_ENV === 'production';
+// Runtime environment hint from Vercel
+const vercelEnv = env.NEXT_PUBLIC_VERCEL_ENV;
+const isVercelProduction = vercelEnv === 'production';
+// Final: enable analytics in real production builds only
+const isProduction = isBuildProduction && isVercelProduction;
 
 export function AnalyticsProviders(
   props: PropsWithChildren & { identifyUser?: boolean },

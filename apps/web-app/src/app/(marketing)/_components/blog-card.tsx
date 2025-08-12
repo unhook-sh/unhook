@@ -1,6 +1,6 @@
+import { MetricLink } from '@unhook/analytics/components';
 import { formatDate } from '@unhook/ui/lib/format-date';
 import Image from 'next/image';
-import Link from 'next/link';
 import type { Post } from '../_lib/blog';
 
 export default function BlogCard({
@@ -11,7 +11,14 @@ export default function BlogCard({
   priority?: boolean;
 }) {
   return (
-    <Link className="block" href={`/blog/${data.slug}`}>
+    <MetricLink
+      className="block"
+      href={`/blog/${data.slug}`}
+      metric="blog_card_clicked"
+      properties={{
+        location: 'blog_card',
+      }}
+    >
       <div className="bg-background rounded-lg p-4 mb-4 border hover:shadow-sm transition-shadow duration-200">
         {data.image && (
           <Image
@@ -35,6 +42,6 @@ export default function BlogCard({
         <h3 className="text-xl font-semibold mb-2">{data.title}</h3>
         <p className="text-foreground mb-4">{data.summary}</p>
       </div>
-    </Link>
+    </MetricLink>
   );
 }

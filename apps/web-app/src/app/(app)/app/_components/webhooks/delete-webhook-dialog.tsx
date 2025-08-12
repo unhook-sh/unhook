@@ -1,5 +1,6 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -9,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@unhook/ui/alert-dialog';
-import { Button } from '@unhook/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import type { Webhook } from '~/types/webhook';
@@ -59,14 +59,15 @@ export function DeleteWebhookDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button
+          <MetricButton
             disabled={isDeleting}
+            metric="delete_webhook_confirm_clicked"
             onClick={handleDelete}
             variant="destructive"
           >
             {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Delete
-          </Button>
+          </MetricButton>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

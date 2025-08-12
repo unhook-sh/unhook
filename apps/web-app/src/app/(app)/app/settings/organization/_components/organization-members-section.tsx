@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrganization, useUser } from '@clerk/nextjs';
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import {
   Select,
@@ -175,13 +175,14 @@ export function OrganizationMembersSection() {
                       </SelectContent>
                     </Select>
                     {membership.publicUserData?.userId !== user?.id && (
-                      <Button
+                      <MetricButton
+                        metric="organization_members_remove_member_clicked"
                         onClick={() => openRemoveMemberDialog(membership)}
                         size="sm"
                         variant="destructive"
                       >
                         Remove
-                      </Button>
+                      </MetricButton>
                     )}
                   </div>
                 </div>

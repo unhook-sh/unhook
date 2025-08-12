@@ -1,8 +1,8 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import type { RequestTypeWithEventType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { cn } from '@unhook/ui/lib/utils';
 import { ScrollArea } from '@unhook/ui/scroll-area';
 import {
@@ -71,33 +71,36 @@ export function RequestMetadata({
           </Badge>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <MetricButton
             className="h-8 w-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
             disabled={!hasPrev}
+            metric="request_metadata_navigate_prev_clicked"
             onClick={() => onNavigate?.('prev')}
             size="icon"
             variant="ghost"
           >
             <ArrowUp className="h-5 w-5" />
-          </Button>
-          <Button
+          </MetricButton>
+          <MetricButton
             className="h-8 w-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
             disabled={!hasNext}
+            metric="request_metadata_navigate_next_clicked"
             onClick={() => onNavigate?.('next')}
             size="icon"
             variant="ghost"
           >
             <ArrowDown className="h-5 w-5" />
-          </Button>
+          </MetricButton>
           <div className="h-6 w-px bg-zinc-800 mx-1" />
-          <Button
+          <MetricButton
             className="h-8 w-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
+            metric="request_metadata_close_clicked"
             onClick={onClose}
             size="icon"
             variant="ghost"
           >
             <X className="h-5 w-5" />
-          </Button>
+          </MetricButton>
         </div>
       </div>
 
@@ -122,14 +125,15 @@ export function RequestMetadata({
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
+                        <MetricButton
                           className="h-6 w-6 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
+                          metric="request_metadata_copy_id_clicked"
                           onClick={() => handleCopy(request.id)}
                           size="icon"
                           variant="ghost"
                         >
                           <Copy className="h-3.5 w-3.5" />
-                        </Button>
+                        </MetricButton>
                       </TooltipTrigger>
                       <TooltipContent side="right">
                         {copied ? 'Copied!' : 'Copy ID'}
@@ -168,8 +172,9 @@ export function RequestMetadata({
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          <MetricButton
                             className="h-6 w-6 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
+                            metric="request_metadata_copy_params_clicked"
                             onClick={() =>
                               handleCopy(
                                 JSON.stringify(
@@ -181,7 +186,7 @@ export function RequestMetadata({
                             variant="ghost"
                           >
                             <Copy className="h-3.5 w-3.5" />
-                          </Button>
+                          </MetricButton>
                         </TooltipTrigger>
                         <TooltipContent side="left">
                           {copied ? 'Copied!' : 'Copy params'}

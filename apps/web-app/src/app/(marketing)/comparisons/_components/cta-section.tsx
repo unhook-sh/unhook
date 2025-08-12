@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton, MetricLink } from '@unhook/analytics/components';
 import { MagicCard } from '@unhook/ui/magicui/magic-card';
 import { motion } from 'motion/react';
-import Link from 'next/link';
+
 export function CTASection() {
   return (
     <section className="w-full py-20">
@@ -38,26 +38,46 @@ export function CTASection() {
                 with team collaboration and VS Code integration.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
+                <MetricButton
                   asChild
                   className="rounded-full"
+                  metric="comparisons_cta_create_webhook_url_clicked"
+                  properties={{
+                    location: 'comparisons_cta',
+                  }}
                   size="lg"
                   variant="secondary"
                 >
-                  <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=comparisons-cta">
+                  <MetricLink
+                    href="/app/onboarding?utm_source=marketing-site&utm_medium=comparisons-cta"
+                    metric="comparisons_cta_create_webhook_url_clicked"
+                    properties={{
+                      location: 'comparisons_cta',
+                    }}
+                  >
                     Create Webhook URL
-                  </Link>
-                </Button>
-                <Button
+                  </MetricLink>
+                </MetricButton>
+                <MetricButton
                   asChild
                   className="rounded-full"
+                  metric="comparisons_cta_schedule_demo_clicked"
+                  properties={{
+                    location: 'comparisons_cta',
+                  }}
                   size="lg"
                   variant="outline"
                 >
-                  <Link href="https://cal.com/seawatts/30min">
+                  <MetricLink
+                    href="https://cal.com/seawatts/30min"
+                    metric="comparisons_cta_schedule_demo_clicked"
+                    properties={{
+                      location: 'comparisons_cta',
+                    }}
+                  >
                     Schedule Demo
-                  </Link>
-                </Button>
+                  </MetricLink>
+                </MetricButton>
               </div>
             </div>
           </MagicCard>

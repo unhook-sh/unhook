@@ -4,6 +4,7 @@ import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { RetroGrid } from '@unhook/ui/magicui/retro-grid';
 import { ArrowRight, Brain, Code, Play, Settings, Zap } from 'lucide-react';
 import { motion } from 'motion/react';
+import posthog from 'posthog-js';
 
 const MCPWorkflow = () => {
   return (
@@ -168,6 +169,20 @@ POST /wh_abc123
 };
 
 export function AIMCPSection() {
+  const handleVSCodeExtensionClick = () => {
+    posthog.capture('ai_mcp_vscode_extension_clicked', {
+      location: 'ai_mcp_section',
+      source: 'marketing_site',
+    });
+  };
+
+  const handleMCPExamplesClick = () => {
+    posthog.capture('ai_mcp_examples_clicked', {
+      location: 'ai_mcp_section',
+      source: 'marketing_site',
+    });
+  };
+
   return (
     <section className="w-full py-20 relative overflow-hidden">
       <div className="absolute inset-0">
@@ -293,6 +308,7 @@ export function AIMCPSection() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                onClick={handleVSCodeExtensionClick}
                 type="button"
               >
                 <span>Install VS Code Extension</span>
@@ -300,6 +316,7 @@ export function AIMCPSection() {
               </button>
               <button
                 className="inline-flex items-center space-x-2 border border-border hover:bg-accent text-primary px-6 py-3 rounded-lg font-medium transition-colors"
+                onClick={handleMCPExamplesClick}
                 type="button"
               >
                 <span>View MCP Examples</span>

@@ -1,6 +1,7 @@
 'use client';
 
 import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { MetricLink } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import { GitHubStarsButtonWrapper } from '@unhook/ui/custom/github-stars-button/button-wrapper';
@@ -16,7 +17,7 @@ import {
 } from '@unhook/ui/navigation-menu';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion, useScroll } from 'motion/react';
-import Link from 'next/link';
+import posthog from 'posthog-js';
 import React, { useEffect, useState } from 'react';
 import { Icons } from '~/app/(marketing)/_components/icons';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
@@ -63,7 +64,15 @@ const drawerMenuVariants = {
 // Logo component
 function Logo() {
   return (
-    <Link className="flex items-center gap-1" href="/">
+    <MetricLink
+      className="flex items-center gap-1"
+      href="/"
+      metric="navbar_logo_clicked"
+      properties={{
+        destination: '/',
+        location: 'navbar',
+      }}
+    >
       <Icons.logo className="size-12" />
       <div className="flex items-center gap-2">
         <p className="text-lg font-semibold text-primary">Unhook AI</p>
@@ -71,7 +80,7 @@ function Logo() {
           Beta
         </Badge>
       </div>
-    </Link>
+    </MetricLink>
   );
 }
 
@@ -80,12 +89,20 @@ function DesktopActionButtons() {
   return (
     <div className="flex items-center space-x-4">
       <SignedOut>
-        <Link
+        <MetricLink
           className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
           href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+          metric="navbar_create_webhook_clicked"
+          properties={{
+            destination:
+              '/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url',
+            location: 'navbar',
+            medium: 'navbar-create-webhook-url',
+            source: 'marketing_site',
+          }}
         >
           Create Webhook URL
-        </Link>
+        </MetricLink>
       </SignedOut>
       <SignedIn>
         <Button
@@ -93,9 +110,19 @@ function DesktopActionButtons() {
           className="hidden md:flex rounded-full"
           variant="outline"
         >
-          <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+          <MetricLink
+            href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard"
+            metric="navbar_dashboard_clicked"
+            properties={{
+              destination:
+                '/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard',
+              location: 'navbar',
+              medium: 'navbar-dashboard',
+              source: 'marketing_site',
+            }}
+          >
             Dashboard
-          </Link>
+          </MetricLink>
         </Button>
       </SignedIn>
       <SignedOut>
@@ -104,9 +131,19 @@ function DesktopActionButtons() {
           className="hidden md:flex rounded-full"
           variant="outline"
         >
-          <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in">
+          <MetricLink
+            href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in"
+            metric="navbar_sign_in_clicked"
+            properties={{
+              destination:
+                '/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in',
+              location: 'navbar',
+              medium: 'navbar-sign-in',
+              source: 'marketing_site',
+            }}
+          >
             Sign In
-          </Link>
+          </MetricLink>
         </Button>
       </SignedOut>
     </div>
@@ -121,10 +158,19 @@ function MobileMenuToggle({
   isOpen: boolean;
   onToggle: () => void;
 }) {
+  const handleToggle = () => {
+    posthog.capture('navbar_mobile_menu_toggled', {
+      action: isOpen ? 'close' : 'open',
+      location: 'navbar',
+      source: 'marketing_site',
+    });
+    onToggle();
+  };
+
   return (
     <button
       className="md:hidden border border-border size-8 rounded-md cursor-pointer flex items-center justify-center"
-      onClick={onToggle}
+      onClick={handleToggle}
       type="button"
     >
       {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -144,6 +190,25 @@ function MobileMenuItem({
   isAnchor: boolean;
   onClose: () => void;
 }) {
+  const handleClick = () => {
+    if (isAnchor) {
+      posthog.capture('navbar_mobile_anchor_clicked', {
+        anchor: item.href.substring(1),
+        item_name: item.name,
+        location: 'navbar',
+        source: 'marketing_site',
+      });
+    } else {
+      posthog.capture('navbar_mobile_link_clicked', {
+        destination: item.href,
+        item_name: item.name,
+        location: 'navbar',
+        source: 'marketing_site',
+      });
+    }
+    onClose();
+  };
+
   if (isAnchor) {
     return (
       <a
@@ -155,7 +220,7 @@ function MobileMenuItem({
           e.preventDefault();
           const element = document.getElementById(item.href.substring(1));
           element?.scrollIntoView({ behavior: 'smooth' });
-          onClose();
+          handleClick();
         }}
       >
         {item.name}
@@ -164,13 +229,19 @@ function MobileMenuItem({
   }
 
   return (
-    <Link
+    <MetricLink
       className="underline-offset-4 hover:text-primary/80 transition-colors text-primary/60"
       href={item.href}
-      onClick={onClose}
+      metric="navbar_mobile_link_clicked"
+      properties={{
+        destination: item.href,
+        item_name: item.name,
+        location: 'navbar',
+        source: 'marketing_site',
+      }}
     >
       {item.name}
-    </Link>
+    </MetricLink>
   );
 }
 
@@ -209,10 +280,18 @@ function MobileMenuContent({
           >
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <Link className="flex items-center gap-3" href="/">
+                <MetricLink
+                  className="flex items-center gap-3"
+                  href="/"
+                  metric="navbar_mobile_logo_clicked"
+                  properties={{
+                    destination: '/',
+                    location: 'navbar',
+                  }}
+                >
                   <Icons.logo className="size-7 md:size-10" />
                   <p className="text-lg font-semibold text-primary">Unhook</p>
-                </Link>
+                </MetricLink>
                 <button
                   className="border border-border rounded-md p-1 cursor-pointer"
                   onClick={onClose}
@@ -252,24 +331,52 @@ function MobileMenuContent({
               </motion.ul>
 
               <div className="flex flex-col gap-2">
-                <Link
+                <MetricLink
                   className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
                   href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
+                  metric="navbar_mobile_create_webhook_clicked"
+                  properties={{
+                    destination:
+                      '/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url',
+                    location: 'navbar',
+                    medium: 'mobile-menu',
+                    source: 'marketing_site',
+                  }}
                 >
                   Create Webhook URL
-                </Link>
+                </MetricLink>
                 <SignedIn>
                   <Button asChild className="rounded-full" variant="outline">
-                    <Link href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard">
+                    <MetricLink
+                      href="/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard"
+                      metric="navbar_mobile_dashboard_clicked"
+                      properties={{
+                        destination:
+                          '/app/dashboard?utm_source=marketing-site&utm_medium=navbar-dashboard',
+                        location: 'navbar',
+                        medium: 'mobile-menu',
+                        source: 'marketing_site',
+                      }}
+                    >
                       Dashboard
-                    </Link>
+                    </MetricLink>
                   </Button>
                 </SignedIn>
                 <SignedOut>
                   <Button asChild className="rounded-full" variant="outline">
-                    <Link href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in">
+                    <MetricLink
+                      href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in"
+                      metric="navbar_mobile_sign_in_clicked"
+                      properties={{
+                        destination:
+                          '/app/onboarding?utm_source=marketing-site&utm_medium=navbar-sign-in',
+                        location: 'navbar',
+                        medium: 'mobile-menu',
+                        source: 'marketing_site',
+                      }}
+                    >
                       Sign In
-                    </Link>
+                    </MetricLink>
                   </Button>
                 </SignedOut>
               </div>
@@ -289,14 +396,48 @@ function RightSideControls({
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
 }) {
+  const handleGitHubStarsClick = () => {
+    posthog.capture('navbar_github_stars_clicked', {
+      location: 'navbar',
+      repo: 'unhook-sh/unhook',
+      source: 'marketing_site',
+    });
+  };
+
+  const handleThemeToggle = () => {
+    posthog.capture('navbar_theme_toggled', {
+      location: 'navbar',
+      source: 'marketing_site',
+    });
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent, action: () => void) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      action();
+    }
+  };
+
   return (
     <div className="flex flex-row items-center gap-1 md:gap-3 shrink-0">
       <DesktopActionButtons />
-      <GitHubStarsButtonWrapper
-        className="rounded-full"
-        repo="unhook-sh/unhook"
-      />
-      <ThemeToggle className="rounded-full" mode="toggle" />
+      <div
+        className="border-none bg-transparent p-0 cursor-pointer"
+        onClick={handleGitHubStarsClick}
+        onKeyDown={(e) => handleKeyDown(e, handleGitHubStarsClick)}
+      >
+        <GitHubStarsButtonWrapper
+          className="rounded-full"
+          repo="unhook-sh/unhook"
+        />
+      </div>
+      <div
+        className="border-none bg-transparent p-0 cursor-pointer"
+        onClick={handleThemeToggle}
+        onKeyDown={(e) => handleKeyDown(e, handleThemeToggle)}
+      >
+        <ThemeToggle className="rounded-full" mode="toggle" />
+      </div>
       <MobileMenuToggle isOpen={isDrawerOpen} onToggle={toggleDrawer} />
     </div>
   );
@@ -419,6 +560,48 @@ const ListItem = React.forwardRef<
     comingSoon?: boolean;
   }
 >(({ className, title, children, comingSoon, ...props }, ref) => {
+  const handleClick = () => {
+    if (comingSoon) {
+      posthog.capture('navbar_navigation_coming_soon_clicked', {
+        item_title: title,
+        location: 'navbar',
+        source: 'marketing_site',
+      });
+    } else if (props.href) {
+      posthog.capture('navbar_navigation_link_clicked', {
+        destination: props.href,
+        item_title: title,
+        location: 'navbar',
+        source: 'marketing_site',
+      });
+    }
+  };
+
+  if (comingSoon) {
+    return (
+      <li>
+        <NavigationMenuLink asChild>
+          <button
+            className={cn(
+              'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground w-full text-left',
+              className,
+            )}
+            onClick={handleClick}
+            type="button"
+          >
+            <div className="text-sm font-medium leading-none flex items-center gap-2">
+              {title}
+              <Badge variant="outline">Coming Soon</Badge>
+            </div>
+            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              {children}
+            </p>
+          </button>
+        </NavigationMenuLink>
+      </li>
+    );
+  }
+
   return (
     <li>
       <NavigationMenuLink asChild>
@@ -427,13 +610,11 @@ const ListItem = React.forwardRef<
             'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
             className,
           )}
-          // biome-ignore lint/style/noParameterAssign: not sure
           ref={ref}
           {...props}
         >
           <div className="text-sm font-medium leading-none flex items-center gap-2">
             {title}
-            {comingSoon && <Badge variant="outline">Coming Soon</Badge>}
           </div>
           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
             {children}
@@ -446,20 +627,37 @@ const ListItem = React.forwardRef<
 ListItem.displayName = 'ListItem';
 
 function NavigationMenuSection() {
+  const handleMenuTrigger = (menuName: string) => {
+    posthog.capture('navbar_navigation_menu_opened', {
+      location: 'navbar',
+      menu_name: menuName,
+      source: 'marketing_site',
+    });
+  };
+
   return (
     <NavigationMenu className="hidden md:block">
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="rounded-full">
+          <NavigationMenuTrigger
+            className="rounded-full"
+            onClick={() => handleMenuTrigger('products')}
+          >
             Products
           </NavigationMenuTrigger>
           <NavigationMenuContent className="bg-background">
             <ul className="grid gap-3 p-6 md:w-[600px] lg:w-[700px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-4">
                 <NavigationMenuLink asChild>
-                  <Link
+                  <MetricLink
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/10 to-primary/5 p-6 no-underline outline-none focus:shadow-md"
                     href="/app/onboarding"
+                    metric="navbar_platform_link_clicked"
+                    properties={{
+                      destination: '/app/onboarding',
+                      location: 'navbar',
+                      source: 'marketing_site',
+                    }}
                   >
                     <Icons.logo className="w-full h-full mb-2" />
                     <div className="mb-2 mt-4 text-lg font-medium">
@@ -469,7 +667,7 @@ function NavigationMenuSection() {
                       Test webhooks locally, share URLs with your team, and
                       monitor everything in real-time.
                     </p>
-                  </Link>
+                  </MetricLink>
                 </NavigationMenuLink>
               </li>
               <ListItem
@@ -498,7 +696,10 @@ function NavigationMenuSection() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="rounded-full">
+          <NavigationMenuTrigger
+            className="rounded-full"
+            onClick={() => handleMenuTrigger('solutions')}
+          >
             Solutions
           </NavigationMenuTrigger>
           <NavigationMenuContent className="bg-background">
@@ -550,7 +751,10 @@ function NavigationMenuSection() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="rounded-full">
+          <NavigationMenuTrigger
+            className="rounded-full"
+            onClick={() => handleMenuTrigger('resources')}
+          >
             Resources
           </NavigationMenuTrigger>
           <NavigationMenuContent className="bg-background">

@@ -10,6 +10,7 @@ import { debug } from '@unhook/logger';
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
+import type { AnalyticsService } from '../services/analytics.service';
 
 const log = debug('unhook:vscode:request-details-webview');
 
@@ -25,12 +26,17 @@ export class RequestDetailsWebviewProvider {
   private _devServerUrl?: string;
   private _currentRequestData: RequestType | null = null;
   private _currentEventData: EventTypeWithRequest | null = null;
+  private _analyticsService?: AnalyticsService;
 
   constructor(private readonly _extensionUri: vscode.Uri) {
     // In development mode, set up file watching
     if (ConfigManager.getInstance().isDevelopment()) {
       this._devServerUrl = 'http://localhost:5173';
     }
+  }
+
+  public setAnalyticsService(analyticsService: AnalyticsService) {
+    this._analyticsService = analyticsService;
   }
 
   public async show({
@@ -41,6 +47,14 @@ export class RequestDetailsWebviewProvider {
     event: EventType;
   }) {
     log('Showing request details', { requestId: request.id });
+
+    // Track request details view
+    this._analyticsService?.track('webview_request_details_viewed', {
+      event_id: event.id,
+      event_name: event.originRequest?.body ? 'has_body' : 'no_body',
+      request_id: request.id,
+      source: event.source || 'unknown',
+    });
 
     // Sanitize headers in request and response if present
     if (
@@ -110,6 +124,14 @@ export class RequestDetailsWebviewProvider {
               });
             }
             break;
+          case 'webview_interaction':
+            // Track webview interactions from React components
+            this._analyticsService?.track('webview_interaction', {
+              action: message.action,
+              component: message.component,
+              ...message.properties,
+            });
+            break;
           default:
             log('Unknown message type from webview', { type: message.type });
         }
@@ -122,6 +144,12 @@ export class RequestDetailsWebviewProvider {
     this._panel.onDidDispose(
       () => {
         log('Panel disposed');
+
+        // Track panel disposal
+        this._analyticsService?.track('webview_panel_disposed', {
+          panel_type: 'request_details',
+        });
+
         this._panel = undefined;
       },
       null,
@@ -131,6 +159,15 @@ export class RequestDetailsWebviewProvider {
 
   public async showEvent(event: EventTypeWithRequest) {
     log('Showing event details', { eventId: event.id });
+
+    // Track event details view
+    this._analyticsService?.track('webview_event_details_viewed', {
+      event_id: event.id,
+      event_name: event.originRequest?.body ? 'has_body' : 'no_body',
+      request_count: event.requests?.length || 0,
+      source: event.source || 'unknown',
+      status: event.status,
+    });
 
     // Sanitize headers in event if present
     if (
@@ -192,6 +229,14 @@ export class RequestDetailsWebviewProvider {
               });
             }
             break;
+          case 'webview_interaction':
+            // Track webview interactions from React components
+            this._analyticsService?.track('webview_interaction', {
+              action: message.action,
+              component: message.component,
+              ...message.properties,
+            });
+            break;
           default:
             log('Unknown message type from webview', { type: message.type });
         }
@@ -204,6 +249,12 @@ export class RequestDetailsWebviewProvider {
     this._panel.onDidDispose(
       () => {
         log('Panel disposed');
+
+        // Track panel disposal
+        this._analyticsService?.track('webview_panel_disposed', {
+          panel_type: 'event_details',
+        });
+
         this._panel = undefined;
       },
       null,

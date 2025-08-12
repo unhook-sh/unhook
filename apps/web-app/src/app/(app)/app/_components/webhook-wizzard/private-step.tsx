@@ -1,4 +1,4 @@
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Card } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
 import { Label } from '@unhook/ui/label';
@@ -36,14 +36,15 @@ export function PrivateStep({ value, onChange }: PrivateStepProps) {
                 Private webhooks are available on our paid plans. Upgrade to
                 enable this feature.
               </p>
-              <Button
+              <MetricButton
                 className="mt-2"
+                metric="private_webhook_pricing_clicked"
                 onClick={handleUpgrade}
                 size="sm"
                 variant="default"
               >
                 View Pricing
-              </Button>
+              </MetricButton>
             </div>
           </div>
         </Card>

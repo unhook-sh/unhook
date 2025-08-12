@@ -1,9 +1,9 @@
 'use client';
 
 import { useOrganizationList } from '@clerk/nextjs';
+import { MetricLink } from '@unhook/analytics/components';
 import { Button } from '@unhook/ui/components/button';
 import { cn } from '@unhook/ui/lib/utils';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { WebhookWizard } from '../../_components/webhook-wizzard/wizzard';
 import { AuthCodeLoginButton } from '../../auth-code/_components/auth-code-login-button';
@@ -74,11 +74,18 @@ export function SetActiveAndRedirect(props: {
                   disabled={!isSetupComplete}
                   variant="secondary"
                 >
-                  <Link href={props.redirectTo ?? '/app/dashboard'}>
+                  <MetricLink
+                    href={props.redirectTo ?? '/app/dashboard'}
+                    metric="onboarding_complete_setup_clicked"
+                    properties={{
+                      destination: props.redirectTo ?? '/app/dashboard',
+                      location: 'onboarding',
+                    }}
+                  >
                     {isSetupComplete
                       ? 'Complete Setup'
                       : 'Waiting for events...'}
-                  </Link>
+                  </MetricLink>
                 </Button>
               )}
             </>

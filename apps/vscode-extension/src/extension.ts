@@ -63,14 +63,18 @@ export async function activate(context: vscode.ExtensionContext) {
   const firstTimeUserService = new FirstTimeUserService(context);
   firstTimeUserService.setAuthStore(authStore);
 
-  // Register auth commands and provider
-  const { authProvider, signInCommand, signOutCommand, cancelAuthCommand } =
-    registerAuthCommands(context, authStore);
-
-  // Register analytics provider
+  // Register analytics provider first
   const { provider: analyticsProvider, disposable: analyticsDisposable } =
     AnalyticsProvider.register(context, authStore);
   context.subscriptions.push(analyticsDisposable);
+
+  // Register auth commands and provider
+  const { authProvider, signInCommand, signOutCommand, cancelAuthCommand } =
+    registerAuthCommands(
+      context,
+      authStore,
+      analyticsProvider.getAnalyticsService(),
+    );
 
   // Track extension activation
   analyticsProvider
@@ -190,28 +194,57 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(...pollingDisposables);
 
   // Register config panel commands
-  registerConfigPanelCommands(context, configProvider);
+  registerConfigPanelCommands(
+    context,
+    configProvider,
+    analyticsProvider.getAnalyticsService(),
+  );
 
   // Set up quick pick
   const quickPick = EventQuickPick.getInstance();
   quickPick.setAuthStore(authStore);
+  quickPick.setAnalyticsService(analyticsProvider.getAnalyticsService());
 
   // Register the custom URI scheme handler
   registerUriHandler(context, authStore, log, authProvider);
 
   // Register commands
-  registerOutputCommands(context, outputDestination);
+  registerOutputCommands(
+    context,
+    outputDestination,
+    analyticsProvider.getAnalyticsService(),
+  );
   registerQuickPickCommand(context);
-  registerSettingsCommands(context, authStore);
+  registerSettingsCommands(
+    context,
+    authStore,
+    analyticsProvider.getAnalyticsService(),
+  );
   registerDeliveryCommands(context);
-  registerWebhookAccessCommands(context, authStore);
-  registerConfigCommands(context, authStore);
-  registerSignInNotificationCommands(context, signInNotificationService);
+  registerWebhookAccessCommands(
+    context,
+    authStore,
+    analyticsProvider.getAnalyticsService(),
+  );
+  registerConfigCommands(
+    context,
+    authStore,
+    analyticsProvider.getAnalyticsService(),
+  );
+  registerSignInNotificationCommands(
+    context,
+    signInNotificationService,
+    analyticsProvider.getAnalyticsService(),
+  );
 
   // Register the new command to show the Quick Pick from the status bar
   const showQuickPickCommand = vscode.commands.registerCommand(
     'unhook.showQuickPick',
     () => {
+      // Track quick pick show from status bar
+      analyticsProvider
+        .getAnalyticsService()
+        .track('quick_pick_show_from_status_bar');
       EventQuickPick.getInstance().showQuickPick();
     },
   );
@@ -268,6 +301,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // Initialize the request details webview provider
   requestDetailsWebviewProvider = new RequestDetailsWebviewProvider(
     context.extensionUri,
+  );
+  requestDetailsWebviewProvider.setAnalyticsService(
+    analyticsProvider.getAnalyticsService(),
   );
   context.subscriptions.push(requestDetailsWebviewProvider);
 

@@ -1,9 +1,9 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { useHasActiveSubscription } from '@unhook/stripe/guards/client';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -140,24 +140,26 @@ export function InvoicesSection() {
                   </div>
                   <div className="flex items-center gap-2">
                     {invoice.hostedInvoiceUrl && (
-                      <Button
+                      <MetricButton
+                        metric="invoices_section_view_invoice_clicked"
                         onClick={() => handleViewInvoice(invoice)}
                         size="sm"
                         variant="outline"
                       >
                         <Icons.ExternalLink className="mr-2 size-3" />
                         View
-                      </Button>
+                      </MetricButton>
                     )}
                     {invoice.invoicePdf && (
-                      <Button
+                      <MetricButton
+                        metric="invoices_section_download_invoice_clicked"
                         onClick={() => handleDownloadInvoice(invoice)}
                         size="sm"
                         variant="outline"
                       >
                         <Icons.Download className="mr-2 size-3" />
                         Download
-                      </Button>
+                      </MetricButton>
                     )}
                   </div>
                 </div>

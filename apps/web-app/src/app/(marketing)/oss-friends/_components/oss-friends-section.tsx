@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -309,7 +309,17 @@ export function OSSFriendsSection() {
           </motion.p>
 
           <motion.div variants={fadeInUpVariants}>
-            <Button asChild className="rounded-full" size="lg">
+            <MetricButton
+              asChild
+              className="rounded-full"
+              metric="oss_friends_view_unhook_github_clicked"
+              properties={{
+                destination: 'https://github.com/unhook-sh/unhook',
+                location: 'oss_friends_section',
+                source: 'marketing_site',
+              }}
+              size="lg"
+            >
               <a
                 href="https://github.com/unhook-sh/unhook"
                 rel="noopener noreferrer"
@@ -317,7 +327,7 @@ export function OSSFriendsSection() {
               >
                 View Unhook on GitHub
               </a>
-            </Button>
+            </MetricButton>
           </motion.div>
         </motion.div>
 
@@ -400,11 +410,22 @@ export function OSSFriendsSection() {
             If you're building an open source project that helps developers,
             we'd love to feature you here.
           </P>
-          <Button asChild className="rounded-full" variant="outline">
+          <MetricButton
+            asChild
+            className="rounded-full"
+            metric="oss_friends_get_featured_clicked"
+            properties={{
+              destination:
+                'mailto:chris.watts.t@gmail.com?subject=OSS Friends Feature Request',
+              location: 'oss_friends_section',
+              source: 'marketing_site',
+            }}
+            variant="outline"
+          >
             <a href="mailto:chris.watts.t@gmail.com?subject=OSS Friends Feature Request">
               Get in Touch
             </a>
-          </Button>
+          </MetricButton>
         </motion.div>
       </div>
     </section>

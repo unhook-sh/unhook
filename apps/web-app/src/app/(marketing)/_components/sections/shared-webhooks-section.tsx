@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { CodeBlock, CodeBlockCode } from '@unhook/ui/magicui/code-block';
 import { File, Folder, Tree } from '@unhook/ui/magicui/file-tree';
@@ -9,6 +9,7 @@ import { Terminal } from '@unhook/ui/magicui/terminal';
 import { Copy, FileText, Share2, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from 'next-themes';
+import posthog from 'posthog-js';
 
 const unhookConfigCode = `webhookId: wh_1bad2
 
@@ -38,6 +39,20 @@ const staggerContainer = {
 
 export function SharedWebhooksSection() {
   const { theme } = useTheme();
+
+  const handleCTAClick = () => {
+    posthog.capture('shared_webhooks_cta_clicked', {
+      location: 'shared_webhooks_section',
+      source: 'marketing_site',
+    });
+  };
+
+  const handleCopyClick = () => {
+    posthog.capture('shared_webhooks_config_copied', {
+      location: 'shared_webhooks_section',
+      source: 'marketing_site',
+    });
+  };
 
   return (
     <section className="w-full py-20 relative">
@@ -139,12 +154,14 @@ export function SharedWebhooksSection() {
             </motion.div>
 
             <motion.div variants={fadeInUpVariants}>
-              <Button
+              <MetricButton
                 className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all ease-out active:scale-95 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
+                metric="shared_webhooks_section_cta_clicked"
+                onClick={handleCTAClick}
                 size="lg"
               >
                 Try Team Webhooks Free
-              </Button>
+              </MetricButton>
             </motion.div>
           </motion.div>
 
@@ -191,13 +208,15 @@ export function SharedWebhooksSection() {
 
               {/* Copy Button */}
               <div className="absolute top-4 right-4">
-                <Button
+                <MetricButton
                   className="h-8 w-8 p-0 bg-accent hover:bg-accent/50 border-border"
+                  metric="shared_webhooks_section_copy_clicked"
+                  onClick={handleCopyClick}
                   size="sm"
                   variant="ghost"
                 >
                   <Copy className="w-4 h-4" />
-                </Button>
+                </MetricButton>
               </div>
             </motion.div>
 

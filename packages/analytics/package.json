@@ -1,10 +1,11 @@
 {
   "dependencies": {
-    "@clerk/chrome-extension": "2.5.17",
-    "@clerk/nextjs": "6.30.0",
-    "@sentry/nextjs": "10.3.0",
+    "@clerk/chrome-extension": "2.5.18",
+    "@clerk/nextjs": "6.30.1",
+    "@sentry/nextjs": "10.5.0",
     "@t3-oss/env-core": "0.13.8",
     "@t3-oss/env-nextjs": "0.13.8",
+    "@unhook/ui": "workspace:*",
     "@vercel/analytics": "1.5.0",
     "@vercel/speed-insights": "1.2.0",
     "nextjs-google-analytics": "2.3.7",
@@ -17,7 +18,7 @@
   "devDependencies": {
     "@types/aws-lambda": "8.10.152",
     "@types/chrome": "0.1.3",
-    "@types/react": "19.1.9",
+    "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@unhook/tsconfig": "workspace:*",
     "next": "15.4.2-canary.34",
@@ -25,6 +26,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./components": "./src/components/index.tsx",
     "./posthog/chrome-extension": "./src/posthog/chrome-extension.tsx",
     "./posthog/client": "./src/posthog/client.tsx",
     "./posthog/server": "./src/posthog/server.ts",

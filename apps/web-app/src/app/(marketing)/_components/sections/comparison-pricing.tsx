@@ -1,13 +1,14 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { NeonGradientCard } from '@unhook/ui/magicui/neon-gradient-card';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { Check, Star } from 'lucide-react';
 import { motion } from 'motion/react';
+import posthog from 'posthog-js';
 
 interface PricingPlan {
   name: string;
@@ -28,6 +29,16 @@ export function ComparisonPricing({
   competitorPricing,
   competitor,
 }: ComparisonPricingProps) {
+  const handleUnhookCTAClick = (planName: string, planPrice: string) => {
+    posthog.capture('comparison_pricing_unhook_cta_clicked', {
+      competitor: competitor,
+      location: 'comparison_pricing_section',
+      plan_name: planName,
+      plan_price: planPrice,
+      source: 'marketing_site',
+    });
+  };
+
   return (
     <section className="w-full py-20">
       <div className="container mx-auto px-6">
@@ -86,13 +97,25 @@ export function ComparisonPricing({
                           <Star className="w-4 h-4 mr-1" />
                           Most Popular
                         </Badge>
-                        <PricingPlanContent isPopular={true} plan={plan} />
+                        <PricingPlanContent
+                          isPopular={true}
+                          onCTAClick={() =>
+                            handleUnhookCTAClick(plan.name, plan.price)
+                          }
+                          plan={plan}
+                        />
                       </div>
                     </NeonGradientCard>
                   ) : (
                     <Card className="relative">
                       <CardContent className="p-6">
-                        <PricingPlanContent isPopular={false} plan={plan} />
+                        <PricingPlanContent
+                          isPopular={false}
+                          onCTAClick={() =>
+                            handleUnhookCTAClick(plan.name, plan.price)
+                          }
+                          plan={plan}
+                        />
                       </CardContent>
                     </Card>
                   )}
@@ -150,9 +173,14 @@ export function ComparisonPricing({
                           </li>
                         ))}
                       </ul>
-                      <Button className="w-full" disabled variant="outline">
+                      <MetricButton
+                        className="w-full"
+                        disabled
+                        metric="comparison_pricing_competitor_plan_clicked"
+                        variant="outline"
+                      >
                         {competitor} Plan
-                      </Button>
+                      </MetricButton>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -229,9 +257,14 @@ export function ComparisonPricing({
 interface PricingPlanContentProps {
   plan: PricingPlan;
   isPopular: boolean;
+  onCTAClick: () => void;
 }
 
-function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
+function PricingPlanContent({
+  plan,
+  isPopular,
+  onCTAClick,
+}: PricingPlanContentProps) {
   return (
     <>
       <div className="flex items-baseline gap-2 mb-4">
@@ -252,7 +285,7 @@ function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
         ))}
       </ul>
       {isPopular ? (
-        <ShimmerButton className="w-full">
+        <ShimmerButton className="w-full" onClick={onCTAClick}>
           {plan.price === '$0'
             ? 'Start Free'
             : plan.price === 'Custom'
@@ -260,8 +293,10 @@ function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
               : 'Start Trial'}
         </ShimmerButton>
       ) : (
-        <Button
+        <MetricButton
           className="w-full"
+          metric="comparison_pricing_competitor_cta_clicked"
+          onClick={onCTAClick}
           variant={plan.price === '$0' ? 'outline' : 'default'}
         >
           {plan.price === '$0'
@@ -269,7 +304,7 @@ function PricingPlanContent({ plan, isPopular }: PricingPlanContentProps) {
             : plan.price === 'Custom'
               ? 'Contact Sales'
               : 'Start Trial'}
-        </Button>
+        </MetricButton>
       )}
     </>
   );

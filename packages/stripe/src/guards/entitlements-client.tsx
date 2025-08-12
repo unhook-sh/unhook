@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrganization } from '@clerk/nextjs';
-import Link from 'next/link';
+import { MetricLink } from '@unhook/analytics';
 import {
   createContext,
   type ReactNode,
@@ -165,12 +165,17 @@ export function EntitlementRequired({
       <div className="p-4 border border-dashed border-muted-foreground/25 rounded-lg bg-muted/50">
         <div className="text-center space-y-2">
           <p className="text-sm text-muted-foreground">{upgradeMessage}</p>
-          <Link
+          <MetricLink
             className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
             href={upgradeUrl}
+            metric="entitlement_required_upgrade_clicked"
+            properties={{
+              entitlement,
+              location: 'entitlement_required',
+            }}
           >
             Upgrade Plan
-          </Link>
+          </MetricLink>
         </div>
       </div>
     );

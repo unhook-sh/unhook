@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import {
   Dialog,
   DialogContent,
@@ -70,19 +70,24 @@ export function CreateWebhookDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button
+            <MetricButton
+              metric="create_webhook_cancel_clicked"
               onClick={() => onOpenChange(false)}
               type="button"
               variant="outline"
             >
               Cancel
-            </Button>
-            <Button disabled={isSubmitting} type="submit">
+            </MetricButton>
+            <MetricButton
+              disabled={isSubmitting}
+              metric="create_webhook_submit_clicked"
+              type="submit"
+            >
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Create Webhook
-            </Button>
+            </MetricButton>
           </DialogFooter>
         </form>
       </DialogContent>

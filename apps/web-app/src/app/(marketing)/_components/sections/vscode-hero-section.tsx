@@ -1,10 +1,10 @@
 'use client';
 
+import { MetricLink } from '@unhook/analytics/components';
 import { AnimatedBeam } from '@unhook/ui/magicui/animated-beam';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import { useRef } from 'react';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
@@ -225,19 +225,33 @@ export function VSCodeHeroSection() {
             className="flex flex-col md:flex-row items-center gap-2.5 flex-wrap justify-center"
             variants={fadeInUpVariants}
           >
-            <Link href={hero.cta.primary.href}>
+            <MetricLink
+              href={hero.cta.primary.href}
+              metric="vscode_hero_primary_cta_clicked"
+              properties={{
+                cta_text: hero.cta.primary.text,
+                location: 'vscode_hero_section',
+                source: 'marketing_site',
+              }}
+            >
               <ShimmerButton className="shadow-2xl">
                 <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
                   {hero.cta.primary.text}
                 </span>
               </ShimmerButton>
-            </Link>
-            <Link
+            </MetricLink>
+            <MetricLink
               className="h-10 flex items-center justify-center w-48 px-5 text-sm font-normal tracking-wide text-primary rounded-full transition-all ease-out active:scale-95 bg-white dark:bg-background border border-[#E5E7EB] dark:border-[#27272A] hover:bg-white/80 dark:hover:bg-background/80"
               href={hero.cta.secondary.href}
+              metric="vscode_hero_secondary_cta_clicked"
+              properties={{
+                cta_text: hero.cta.secondary.text,
+                location: 'vscode_hero_section',
+                source: 'marketing_site',
+              }}
             >
               {hero.cta.secondary.text}
-            </Link>
+            </MetricLink>
           </motion.div>
         </motion.div>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -80,9 +80,6 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
       <div className="flex h-screen w-full flex-col bg-background text-foreground">
         <header className="flex h-14 items-center justify-between border-b px-4">
           <div className="flex items-center gap-2">
-            <Button onClick={handleBack} size="icon" variant="ghost">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
             <Skeleton className="h-6 w-40" />
           </div>
           <div className="flex items-center gap-2">
@@ -111,9 +108,13 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
         <p className="text-muted-foreground">
           The webhook you are looking for does not exist or has been deleted.
         </p>
-        <Button className="mt-4" onClick={handleBack}>
+        <MetricButton
+          className="mt-4"
+          metric="webhook_detail_back_clicked"
+          onClick={handleBack}
+        >
           Back to Webhooks
-        </Button>
+        </MetricButton>
       </div>
     );
   }
@@ -122,9 +123,14 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
     <div className="flex h-screen w-full flex-col bg-background text-foreground">
       <header className="flex h-14 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
-          <Button onClick={handleBack} size="icon" variant="ghost">
+          <MetricButton
+            metric="webhook_detail_back_button_clicked"
+            onClick={handleBack}
+            size="icon"
+            variant="ghost"
+          >
             <ArrowLeft className="h-4 w-4" />
-          </Button>
+          </MetricButton>
           <h1 className="text-lg font-semibold">{webhook.id}</h1>
           <Badge
             className={
@@ -139,48 +145,56 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 rounded-md border bg-background p-1">
-            <Button
+            <MetricButton
               className="h-7 gap-1 text-xs"
               data-active={timeRange === '1h'}
+              metric="webhook_detail_time_range_1h_clicked"
               onClick={() => setTimeRange('1h')}
               size="sm"
               variant="ghost"
             >
               1h
-            </Button>
-            <Button
+            </MetricButton>
+            <MetricButton
               className="h-7 gap-1 text-xs"
               data-active={timeRange === '12h'}
+              metric="webhook_detail_time_range_12h_clicked"
               onClick={() => setTimeRange('12h')}
               size="sm"
               variant="ghost"
             >
               12h
-            </Button>
-            <Button
+            </MetricButton>
+            <MetricButton
               className="h-7 gap-1 text-xs"
               data-active={timeRange === '24h'}
+              metric="webhook_detail_time_range_24h_clicked"
               onClick={() => setTimeRange('24h')}
               size="sm"
               variant="ghost"
             >
               24h
-            </Button>
-            <Button
+            </MetricButton>
+            <MetricButton
               className="h-7 gap-1 text-xs"
               data-active={timeRange === '7d'}
+              metric="webhook_detail_time_range_7d_clicked"
               onClick={() => setTimeRange('7d')}
               size="sm"
               variant="ghost"
             >
               7d
-            </Button>
+            </MetricButton>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="outline">
+              <MetricButton
+                metric="webhook_detail_more_menu_opened"
+                size="icon"
+                variant="outline"
+              >
                 <MoreVertical className="h-4 w-4" />
-              </Button>
+              </MetricButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {webhook.status === 'active' ? (
@@ -302,14 +316,15 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
+                            <MetricButton
                               className="h-6 w-6"
+                              metric="webhook_detail_copy_id_clicked"
                               onClick={() => handleCopyUrl(webhook.id)}
                               size="icon"
                               variant="ghost"
                             >
                               <Copy className="h-3 w-3" />
-                            </Button>
+                            </MetricButton>
                           </TooltipTrigger>
                           <TooltipContent>Copy ID</TooltipContent>
                         </Tooltip>
@@ -335,8 +350,9 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
+                            <MetricButton
                               className="h-6 w-6"
+                              metric="webhook_detail_copy_url_clicked"
                               onClick={() =>
                                 handleCopyUrl(webhook.deliveredAddress)
                               }
@@ -344,7 +360,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               variant="ghost"
                             >
                               <Copy className="h-3 w-3" />
-                            </Button>
+                            </MetricButton>
                           </TooltipTrigger>
                           <TooltipContent>Copy URL</TooltipContent>
                         </Tooltip>
@@ -352,8 +368,9 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
+                            <MetricButton
                               className="h-6 w-6"
+                              metric="webhook_detail_open_url_clicked"
                               onClick={() =>
                                 window.open(webhook.deliveredAddress, '_blank')
                               }
@@ -361,7 +378,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               variant="ghost"
                             >
                               <ExternalLink className="h-3 w-3" />
-                            </Button>
+                            </MetricButton>
                           </TooltipTrigger>
                           <TooltipContent>Open URL</TooltipContent>
                         </Tooltip>
@@ -383,8 +400,9 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
+                            <MetricButton
                               className="h-6 w-6"
+                              metric="webhook_detail_copy_https_url_clicked"
                               onClick={() =>
                                 handleCopyUrl(
                                   webhook.deliveredAddress.replace(
@@ -397,7 +415,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               variant="ghost"
                             >
                               <Copy className="h-3 w-3" />
-                            </Button>
+                            </MetricButton>
                           </TooltipTrigger>
                           <TooltipContent>Copy URL</TooltipContent>
                         </Tooltip>
@@ -405,8 +423,9 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
+                            <MetricButton
                               className="h-6 w-6"
+                              metric="webhook_detail_open_https_url_clicked"
                               onClick={() =>
                                 window.open(
                                   webhook.deliveredAddress.replace(
@@ -420,7 +439,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                               variant="ghost"
                             >
                               <ExternalLink className="h-3 w-3" />
-                            </Button>
+                            </MetricButton>
                           </TooltipTrigger>
                           <TooltipContent>Open URL</TooltipContent>
                         </Tooltip>
@@ -485,13 +504,14 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                 <CardTitle className="text-sm font-medium">
                   Recent Requests
                 </CardTitle>
-                <Button
+                <MetricButton
+                  metric="webhook_detail_view_all_requests_clicked"
                   onClick={() => setActiveTab('requests')}
                   size="sm"
                   variant="outline"
                 >
                   View All
-                </Button>
+                </MetricButton>
               </CardHeader>
               <CardContent>
                 <WebhookRequestsTable limit={5} webhookId={id} />
@@ -540,7 +560,9 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       type="number"
                       value={webhook.localPort}
                     />
-                    <Button>Update</Button>
+                    <MetricButton metric="webhook_detail_update_port_clicked">
+                      Update
+                    </MetricButton>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     The local port your service is running on.
@@ -565,12 +587,13 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
                       associated data.
                     </p>
                   </div>
-                  <Button
+                  <MetricButton
+                    metric="webhook_detail_delete_webhook_clicked"
                     onClick={() => setShowDeleteDialog(true)}
                     variant="destructive"
                   >
                     Delete
-                  </Button>
+                  </MetricButton>
                 </div>
               </CardContent>
             </Card>

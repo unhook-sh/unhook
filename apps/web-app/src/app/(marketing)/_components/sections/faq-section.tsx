@@ -1,14 +1,27 @@
+'use client';
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@unhook/ui/accordion';
+import posthog from 'posthog-js';
 import { SectionHeader } from '~/app/(marketing)/_components/section-header';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 export function FAQSection() {
   const { faqSection } = siteConfig;
+
+  const handleAccordionChange = (value: string) => {
+    if (value) {
+      posthog.capture('faq_question_expanded', {
+        location: 'faq_section',
+        question: value,
+        source: 'marketing_site',
+      });
+    }
+  };
 
   return (
     <section
@@ -28,6 +41,7 @@ export function FAQSection() {
         <Accordion
           className="w-full border-b-0 grid gap-2"
           collapsible
+          onValueChange={handleAccordionChange}
           type="single"
         >
           {faqSection.faQitems.map((faq) => (

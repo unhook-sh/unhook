@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
 import { ConfigManager } from '../config.manager';
 import { env } from '../env';
+import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
 import { FirstTimeUserService } from '../services/first-time-user.service';
 
 export function registerSettingsCommands(
   context: vscode.ExtensionContext,
   _authStore?: AuthStore,
+  analyticsService?: AnalyticsService,
 ) {
   // Command to open settings
   const openSettingsCommand = vscode.commands.registerCommand(
@@ -49,6 +51,12 @@ export function registerSettingsCommands(
 
       if (newPath !== undefined) {
         await config.update('configFilePath', newPath, true);
+
+        // Track config file path setting
+        analyticsService?.track('config_file_path_set', {
+          new_path: newPath,
+        });
+
         vscode.window.showInformationMessage(
           `Config file path set to ${newPath}`,
         );
@@ -77,6 +85,11 @@ export function registerSettingsCommands(
       const currentValue = config.get('output.autoShow');
       await config.update('output.autoShow', !currentValue, true);
 
+      // Track auto-show output setting change
+      analyticsService?.track('auto_show_output_toggled', {
+        new_value: !currentValue,
+      });
+
       vscode.window.showInformationMessage(
         `Auto-show output ${!currentValue ? 'enabled' : 'disabled'}`,
       );
@@ -93,6 +106,11 @@ export function registerSettingsCommands(
       );
       const currentValue = config.get('events.autoClear');
       await config.update('events.autoClear', !currentValue, true);
+
+      // Track auto-clear events setting change
+      analyticsService?.track('auto_clear_events_toggled', {
+        new_value: !currentValue,
+      });
 
       vscode.window.showInformationMessage(
         `Auto-clear webhook events ${!currentValue ? 'enabled' : 'disabled'}`,
@@ -114,6 +132,11 @@ export function registerSettingsCommands(
         !currentValue,
         true,
       );
+
+      // Track notifications setting change
+      analyticsService?.track('notifications_toggled', {
+        new_value: !currentValue,
+      });
 
       vscode.window.showInformationMessage(
         `Event notifications ${!currentValue ? 'enabled' : 'disabled'}`,

@@ -1,15 +1,18 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
+import type { WebhookType } from '@unhook/db/schema';
 import { useSubscription } from '@unhook/db/supabase/client';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import { P } from '@unhook/ui/custom/typography';
 import { formatNumber } from '@unhook/ui/lib/format-number';
 import { toast } from '@unhook/ui/sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { AnimatePresence, motion } from 'motion/react';
+import posthog from 'posthog-js';
+import { useState } from 'react';
 
 // Animation variants for the cards
 const cardVariants = {
@@ -38,6 +41,14 @@ export function WebhooksList() {
   const { mutateAsync: deleteWebhook } = api.webhooks.delete.useMutation();
   const queryClient = useQueryClient();
 
+  // Track webhooks list view
+  useState(() => {
+    posthog.capture('webhooks_list_viewed', {
+      location: 'webhooks_page',
+      webhook_count: webhooks.length,
+    });
+  });
+
   useSubscription({
     event: '*',
     onDelete: () => {
@@ -60,6 +71,60 @@ export function WebhooksList() {
     },
     table: 'webhooks',
   });
+
+  const handleWebhookDelete = async (webhook: WebhookType) => {
+    // Track webhook deletion attempt
+    posthog.capture('webhook_deletion_attempted', {
+      location: 'webhooks_list',
+      request_count: webhook.requestCount,
+      webhook_id: webhook.id,
+      webhook_name: webhook.name || `tun_${webhook.id}`,
+      webhook_status: webhook.status,
+    });
+
+    try {
+      await deleteWebhook({ id: webhook.id });
+      await queryClient.invalidateQueries({
+        queryKey: ['webhooks', 'all'],
+      });
+
+      // Track successful webhook deletion
+      posthog.capture('webhook_deleted_successfully', {
+        location: 'webhooks_list',
+        request_count: webhook.requestCount,
+        webhook_id: webhook.id,
+        webhook_name: webhook.name || `tun_${webhook.id}`,
+        webhook_status: webhook.status,
+      });
+
+      toast.success('Webhook deleted', {
+        description: 'The webhook has been deleted successfully.',
+      });
+    } catch (_error) {
+      // Track webhook deletion failure
+      posthog.capture('webhook_deletion_failed', {
+        error: _error instanceof Error ? _error.message : 'Unknown error',
+        location: 'webhooks_list',
+        request_count: webhook.requestCount,
+        webhook_id: webhook.id,
+        webhook_name: webhook.name || `tun_${webhook.id}`,
+        webhook_status: webhook.status,
+      });
+
+      toast.error('Failed to delete webhook', {
+        description: 'Please try again.',
+      });
+    }
+  };
+
+  const handleWebhookSettings = (webhook: WebhookType) => {
+    posthog.capture('webhook_settings_accessed', {
+      location: 'webhooks_list',
+      webhook_id: webhook.id,
+      webhook_name: webhook.name || `tun_${webhook.id}`,
+      webhook_status: webhook.status,
+    });
+  };
 
   if (!webhooks.length) {
     return (
@@ -138,31 +203,22 @@ export function WebhooksList() {
               </div>
 
               <div className="flex items-center justify-end gap-2">
-                <Button size="sm" variant="ghost">
+                <MetricButton
+                  metric="webhooks_list_settings_clicked"
+                  onClick={() => handleWebhookSettings(webhook)}
+                  size="sm"
+                  variant="ghost"
+                >
                   <Icons.Settings size="sm" variant="muted" />
-                </Button>
-                <Button
-                  onClick={async () => {
-                    try {
-                      await deleteWebhook({ id: webhook.id });
-                      await queryClient.invalidateQueries({
-                        queryKey: ['webhooks', 'all'],
-                      });
-                      toast.success('Webhook deleted', {
-                        description:
-                          'The webhook has been deleted successfully.',
-                      });
-                    } catch (_error) {
-                      toast.error('Failed to delete webhook', {
-                        description: 'Please try again.',
-                      });
-                    }
-                  }}
+                </MetricButton>
+                <MetricButton
+                  metric="webhooks_list_delete_clicked"
+                  onClick={() => handleWebhookDelete(webhook)}
                   size="sm"
                   variant="ghost"
                 >
                   <Icons.Trash size="sm" variant="destructive" />
-                </Button>
+                </MetricButton>
               </div>
             </div>
           </motion.div>

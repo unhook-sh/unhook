@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
-import { Button } from '@unhook/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import {
 } from '@unhook/ui/dialog';
 import { toast } from '@unhook/ui/sonner';
 import { Trash2 } from 'lucide-react';
+import posthog from 'posthog-js';
 
 interface DeleteEventDialogProps {
   eventId: string;
@@ -35,15 +36,26 @@ export function DeleteEventDialog({
   });
 
   const handleDelete = () => {
+    // Track the event deletion
+    posthog.capture('events_deleted', {
+      event_id: eventId,
+      event_name: eventName,
+    });
+
     deleteEvent.mutate({ id: eventId });
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="h-8 w-8 p-0" size="sm" variant="ghost">
+        <MetricButton
+          className="h-8 w-8 p-0"
+          metric="delete_event_dialog_trigger_clicked"
+          size="sm"
+          variant="ghost"
+        >
           <Trash2 className="size-4" />
-        </Button>
+        </MetricButton>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -54,13 +66,14 @@ export function DeleteEventDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button
+          <MetricButton
             disabled={deleteEvent.isPending}
+            metric="delete_event_confirm_clicked"
             onClick={handleDelete}
             variant="destructive"
           >
             {deleteEvent.isPending ? 'Deleting...' : 'Delete Event'}
-          </Button>
+          </MetricButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

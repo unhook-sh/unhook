@@ -1,11 +1,12 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { AnimatedShinyText } from '@unhook/ui/magicui/animated-shiny-text';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { WordFadeIn } from '@unhook/ui/magicui/word-fade-in';
 import { motion } from 'motion/react';
+import posthog from 'posthog-js';
 import { BLUR_FADE_DELAY } from '../../_lib/config';
 
 interface ComparisonHeroProps {
@@ -21,6 +22,20 @@ export function ComparisonHero({
   description,
   competitorLogo,
 }: ComparisonHeroProps) {
+  const handleTryUnhookFreeClick = () => {
+    posthog.capture('comparison_hero_try_unhook_free_clicked', {
+      location: 'comparison_hero_section',
+      source: 'marketing_site',
+    });
+  };
+
+  const handleViewFullComparisonClick = () => {
+    posthog.capture('comparison_hero_view_full_comparison_clicked', {
+      location: 'comparison_hero_section',
+      source: 'marketing_site',
+    });
+  };
+
   return (
     <section
       className="w-full py-20 lg:py-32 relative overflow-hidden"
@@ -103,12 +118,21 @@ export function ComparisonHero({
             initial={{ opacity: 0, y: 20 }}
             transition={{ delay: BLUR_FADE_DELAY * 5, duration: 0.5 }}
           >
-            <ShimmerButton className="px-8 py-3 text-lg font-semibold">
+            <ShimmerButton
+              className="px-8 py-3 text-lg font-semibold"
+              onClick={handleTryUnhookFreeClick}
+            >
               Try Unhook Free
             </ShimmerButton>
-            <Button className="px-8" size="lg" variant="outline">
+            <MetricButton
+              className="px-8"
+              metric="comparison_hero_view_full_comparison_clicked"
+              onClick={handleViewFullComparisonClick}
+              size="lg"
+              variant="outline"
+            >
               View Full Comparison
-            </Button>
+            </MetricButton>
           </motion.div>
         </div>
       </div>

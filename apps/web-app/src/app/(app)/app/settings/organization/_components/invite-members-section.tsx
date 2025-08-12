@@ -1,6 +1,7 @@
 'use client';
 
 import { useOrganization, useUser } from '@clerk/nextjs';
+import { MetricButton, MetricLink } from '@unhook/analytics/components';
 import {
   Entitled,
   NotEntitled,
@@ -19,7 +20,6 @@ import {
   SelectValue,
 } from '@unhook/ui/select';
 import { toast } from '@unhook/ui/sonner';
-import Link from 'next/link';
 import { useState } from 'react';
 
 export function InviteMembersSection() {
@@ -183,18 +183,29 @@ export function InviteMembersSection() {
             </div>
           </div>
           <Entitled entitlement="unlimited_developers">
-            <Button
+            <MetricButton
               disabled={isInviting || !email.trim()}
+              metric="invite_members_section_invite_clicked"
               onClick={handleInvite}
+              properties={{
+                location: 'invite_members_section',
+              }}
             >
               {isInviting ? 'Sending...' : 'Invite'}
-            </Button>
+            </MetricButton>
           </Entitled>
           <NotEntitled entitlement="unlimited_developers">
             <Button asChild>
-              <Link href="/app/settings/billing">
+              <MetricLink
+                href="/app/settings/billing"
+                metric="invite_members_section_upgrade_clicked"
+                properties={{
+                  destination: '/app/settings/billing',
+                  location: 'invite_members_section',
+                }}
+              >
                 Upgrade to invite members
-              </Link>
+              </MetricLink>
             </Button>
           </NotEntitled>
         </CardContent>
@@ -227,14 +238,18 @@ export function InviteMembersSection() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
+                      <MetricButton
                         disabled={isRevokingInvitation}
+                        metric="invite_members_section_revoke_clicked"
                         onClick={() => handleRevokeInvitation(invitation)}
+                        properties={{
+                          location: 'invite_members_section',
+                        }}
                         size="sm"
                         variant="destructive"
                       >
                         Revoke
-                      </Button>
+                      </MetricButton>
                     </div>
                   </div>
                 ))}

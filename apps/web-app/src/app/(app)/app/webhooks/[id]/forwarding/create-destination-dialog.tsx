@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Icons } from '@unhook/ui/custom/icons';
 import {
   Dialog,
@@ -110,10 +110,10 @@ export function CreateDestinationDialog() {
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button>
+        <MetricButton metric="create_destination_dialog_trigger_clicked">
           <Icons.Plus className="mr-2" size="sm" />
           Create Destination
-        </Button>
+        </MetricButton>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
@@ -292,19 +292,24 @@ export function CreateDestinationDialog() {
         </div>
 
         <DialogFooter>
-          <Button
+          <MetricButton
             disabled={loading}
+            metric="create_destination_cancel_clicked"
             onClick={() => setOpen(false)}
             variant="outline"
           >
             Cancel
-          </Button>
-          <Button disabled={loading || !name || !type} onClick={handleSubmit}>
+          </MetricButton>
+          <MetricButton
+            disabled={loading || !name || !type}
+            metric="create_destination_submit_clicked"
+            onClick={handleSubmit}
+          >
             {loading && (
               <Icons.Spinner className="mr-2 animate-spin" size="sm" />
             )}
             Create Destination
-          </Button>
+          </MetricButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,8 +1,8 @@
 'use client';
+import { MetricLink } from '@unhook/analytics/components';
 import { Button } from '@unhook/ui/button';
 import { MagicCard } from '@unhook/ui/magicui/magic-card';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
 export function CTASection() {
@@ -46,9 +46,18 @@ export function CTASection() {
                   size="lg"
                   variant="secondary"
                 >
-                  <Link href={ctaSection.button.href}>
+                  <MetricLink
+                    href={ctaSection.button.href}
+                    metric="cta_section_button_clicked"
+                    properties={{
+                      button_href: ctaSection.button.href,
+                      button_text: ctaSection.button.text,
+                      location: 'cta_section',
+                      source: 'marketing_site',
+                    }}
+                  >
                     {ctaSection.button.text}
-                  </Link>
+                  </MetricLink>
                 </Button>
               </div>
             </div>

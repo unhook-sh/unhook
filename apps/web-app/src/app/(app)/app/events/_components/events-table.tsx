@@ -1,9 +1,9 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
 import { Skeleton } from '@unhook/ui/skeleton';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@unhook/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
 import { Eye, Play } from 'lucide-react';
+import posthog from 'posthog-js';
 import { useState } from 'react';
 
 import { DeleteEventDialog } from './delete-event-dialog';
@@ -71,11 +72,21 @@ export function EventsTable() {
   const [_selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const handleViewEvent = (eventId: string) => {
+    // Track the event view action
+    posthog.capture('events_page_event_view_clicked', {
+      event_id: eventId,
+      source: 'events_table',
+    });
     setSelectedEventId(eventId);
     // TODO: Navigate to event details page
   };
 
   const handleReplayEvent = (eventId: string) => {
+    // Track the event replay action
+    posthog.capture('events_page_event_replay_clicked', {
+      event_id: eventId,
+      source: 'events_table',
+    });
     // TODO: Implement event replay functionality
     console.log('Replay event:', eventId);
   };
@@ -144,27 +155,29 @@ export function EventsTable() {
                     <div className="flex items-center gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          <MetricButton
                             className="h-8 w-8 p-0"
+                            metric="events_table_view_event_clicked"
                             onClick={() => handleViewEvent(event.id)}
                             size="sm"
                             variant="ghost"
                           >
                             <Eye className="size-4" />
-                          </Button>
+                          </MetricButton>
                         </TooltipTrigger>
                         <TooltipContent>View Details</TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          <MetricButton
                             className="h-8 w-8 p-0"
+                            metric="events_table_replay_event_clicked"
                             onClick={() => handleReplayEvent(event.id)}
                             size="sm"
                             variant="ghost"
                           >
                             <Play className="size-4" />
-                          </Button>
+                          </MetricButton>
                         </TooltipTrigger>
                         <TooltipContent>Replay Event</TooltipContent>
                       </Tooltip>

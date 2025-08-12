@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import {
   Dialog,
@@ -134,10 +134,10 @@ export function CreateForwardingRuleDialog({
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button>
+        <MetricButton metric="create_forwarding_rule_dialog_trigger_clicked">
           <Icons.Plus className="mr-2" size="sm" />
           Create Rule
-        </Button>
+        </MetricButton>
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -249,13 +249,14 @@ export function CreateForwardingRuleDialog({
                     placeholder="e.g., payment.succeeded"
                     value={eventNameInput}
                   />
-                  <Button
+                  <MetricButton
+                    metric="create_forwarding_rule_add_event_name_clicked"
                     onClick={addEventName}
                     type="button"
                     variant="secondary"
                   >
                     Add
-                  </Button>
+                  </MetricButton>
                 </div>
                 {eventNames.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -280,8 +281,9 @@ export function CreateForwardingRuleDialog({
                 <Label>HTTP Methods</Label>
                 <div className="flex flex-wrap gap-2">
                   {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((method) => (
-                    <Button
+                    <MetricButton
                       key={method}
+                      metric="create_forwarding_rule_toggle_method_clicked"
                       onClick={() => {
                         if (methods.includes(method)) {
                           setMethods(methods.filter((m) => m !== method));
@@ -294,7 +296,7 @@ export function CreateForwardingRuleDialog({
                       variant={methods.includes(method) ? 'default' : 'outline'}
                     >
                       {method}
-                    </Button>
+                    </MetricButton>
                   ))}
                 </div>
               </div>
@@ -314,13 +316,14 @@ export function CreateForwardingRuleDialog({
                     placeholder="e.g., ^/api/webhooks/stripe"
                     value={pathPatternInput}
                   />
-                  <Button
+                  <MetricButton
+                    metric="create_forwarding_rule_add_path_pattern_clicked"
                     onClick={addPathPattern}
                     type="button"
                     variant="secondary"
                   >
                     Add
-                  </Button>
+                  </MetricButton>
                 </div>
                 {pathPatterns.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -380,22 +383,24 @@ function transform({ event, request, body, headers }) {
         </div>
 
         <DialogFooter>
-          <Button
+          <MetricButton
             disabled={loading}
+            metric="create_forwarding_rule_cancel_clicked"
             onClick={() => setOpen(false)}
             variant="outline"
           >
             Cancel
-          </Button>
-          <Button
+          </MetricButton>
+          <MetricButton
             disabled={loading || !name || !destinationId}
+            metric="create_forwarding_rule_submit_clicked"
             onClick={handleSubmit}
           >
             {loading && (
               <Icons.Spinner className="mr-2 animate-spin" size="sm" />
             )}
             Create Rule
-          </Button>
+          </MetricButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

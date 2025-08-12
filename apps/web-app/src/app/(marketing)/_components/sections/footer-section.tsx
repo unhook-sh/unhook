@@ -1,9 +1,9 @@
 'use client';
 
 import { ChevronRightIcon } from '@radix-ui/react-icons';
+import { MetricLink } from '@unhook/analytics/components';
 import { useMediaQuery } from '@unhook/ui/hooks/use-media-query';
 import { FlickeringGrid } from '@unhook/ui/magicui/flickering-grid';
-import Link from 'next/link';
 import { Icons } from '~/app/(marketing)/_components/icons';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
 
@@ -16,10 +16,19 @@ export function FooterSection() {
     <footer className="w-full pb-0" id="footer">
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,320px)_1fr] gap-y-10 md:gap-x-16 p-10 items-start">
         <div className="flex flex-col items-start gap-y-5 max-w-xs mx-0">
-          <Link className="flex items-center gap-2" href="/">
+          <MetricLink
+            className="flex items-center gap-2"
+            href="/"
+            metric="footer_logo_clicked"
+            properties={{
+              destination: '/',
+              location: 'footer_section',
+              source: 'marketing_site',
+            }}
+          >
             <Icons.logo className="size-12" />
             <p className="text-xl font-semibold text-primary">Unhook AI</p>
-          </Link>
+          </MetricLink>
           <p className="tracking-tight text-muted-foreground font-medium">
             {siteConfig.hero.description}
           </p>
@@ -46,7 +55,17 @@ export function FooterSection() {
                     className="group inline-flex cursor-pointer items-center justify-start gap-1 text-[15px]/snug text-muted-foreground"
                     key={link.id}
                   >
-                    <Link href={link.url}>{link.title}</Link>
+                    <MetricLink
+                      href={link.url}
+                      metric="footer_link_clicked"
+                      properties={{
+                        destination: link.url,
+                        location: 'footer_section',
+                        source: 'marketing_site',
+                      }}
+                    >
+                      {link.title}
+                    </MetricLink>
                     <div className="flex size-4 items-center justify-center border border-border rounded translate-x-0 transform opacity-0 transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:opacity-100">
                       <ChevronRightIcon className="size-4" />
                     </div>

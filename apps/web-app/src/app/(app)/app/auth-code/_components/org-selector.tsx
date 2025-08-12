@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import {
   Command,
   CommandGroup,
@@ -76,9 +76,10 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
-        <Button
+        <MetricButton
           aria-expanded={open}
           className="w-full justify-between"
+          metric="auth_code_org_selector_clicked"
           ref={triggerRef}
           variant="outline"
         >
@@ -88,7 +89,7 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
               )?.organization.name
             : 'Select an organization...'}
           <ChevronsUpDown className="opacity-50 ml-2" size="sm" />
-        </Button>
+        </MetricButton>
       </PopoverTrigger>
       <PopoverContent
         className="p-0"

@@ -1,8 +1,9 @@
 'use client';
 
+import { MetricLink } from '@unhook/analytics/components';
 import { ScriptCopyBtn } from '@unhook/ui/magicui/script-copy-btn';
 import { motion } from 'motion/react';
-import Link from 'next/link';
+import posthog from 'posthog-js';
 import { Suspense } from 'react';
 import { HeroTerminalSection } from '~/app/(marketing)/_components/sections/hero-terminal-section';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
@@ -62,10 +63,19 @@ export function HeroSection() {
             variants={fadeInUpVariants}
           >
             {hero.badgeUrl ? (
-              <Link className="flex items-center gap-2" href={hero.badgeUrl}>
+              <MetricLink
+                className="flex items-center gap-2"
+                href={hero.badgeUrl}
+                metric="hero_badge_clicked"
+                properties={{
+                  badge_text: hero.badge,
+                  badge_url: hero.badgeUrl,
+                  location: 'hero_section',
+                }}
+              >
                 {hero.badgeIcon}
                 {hero.badge}
-              </Link>
+              </MetricLink>
             ) : (
               <>
                 {hero.badgeIcon}
@@ -100,21 +110,38 @@ export function HeroSection() {
               commandMap={commandMap}
               darkTheme="none"
               lightTheme="none"
-              showMultiplePackageOptions={true}
+              onCopy={() => {
+                posthog.capture('hero_command_copied', {
+                  command_type: 'cli_install',
+                  location: 'hero_section',
+                });
+              }}
             />
             <div className="flex flex-col md:flex-row items-center gap-2.5 flex-wrap justify-center">
-              <Link
+              <MetricLink
                 className="bg-secondary h-9 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-48 px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
                 href={hero.cta.primary.href}
+                metric="hero_cta_clicked"
+                properties={{
+                  cta_text: hero.cta.primary.text,
+                  location: 'hero_section',
+                  source: 'marketing_site',
+                }}
               >
                 {hero.cta.primary.text}
-              </Link>
-              <Link
+              </MetricLink>
+              <MetricLink
                 className="h-10 flex items-center justify-center w-48 px-5 text-sm font-normal tracking-wide text-primary rounded-full transition-all ease-out active:scale-95 bg-white dark:bg-background border border-[#E5E7EB] dark:border-[#27272A] hover:bg-white/80 dark:hover:bg-background/80"
                 href={hero.cta.secondary.href}
+                metric="hero_secondary_cta_clicked"
+                properties={{
+                  cta_text: hero.cta.secondary.text,
+                  location: 'hero_section',
+                  source: 'marketing_site',
+                }}
               >
                 {hero.cta.secondary.text}
-              </Link>
+              </MetricLink>
             </div>
           </motion.div>
         </motion.div>

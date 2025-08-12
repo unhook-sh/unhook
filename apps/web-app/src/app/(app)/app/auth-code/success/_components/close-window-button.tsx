@@ -1,10 +1,14 @@
 'use client';
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 
 export function CloseWindowButton() {
   return (
-    <Button autoFocus onClick={() => window.close()}>
+    <MetricButton
+      autoFocus
+      metric="auth_code_success_close_window_clicked"
+      onClick={() => window.close()}
+    >
       Close
-    </Button>
+    </MetricButton>
   );
 }

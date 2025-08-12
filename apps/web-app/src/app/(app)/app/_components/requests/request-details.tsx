@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import type { RequestTypeWithEventType } from '@unhook/db/schema';
-import { Button } from '@unhook/ui/button';
 import { cn } from '@unhook/ui/lib/utils';
 import { ScrollArea } from '@unhook/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
@@ -33,8 +33,9 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
       <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">Request Details</h3>
-          <Button
+          <MetricButton
             className="h-6 w-6 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
+            metric="request_details_expand_clicked"
             onClick={() => setIsExpanded(!isExpanded)}
             size="sm"
             variant="ghost"
@@ -44,25 +45,27 @@ export function RequestDetails({ request, onClose }: LogDetailsProps) {
             ) : (
               <ChevronUp className="h-4 w-4" />
             )}
-          </Button>
+          </MetricButton>
         </div>
         <div className="flex items-center gap-2">
-          <Button
+          <MetricButton
             className="h-6 w-6 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
+            metric="request_details_copy_clicked"
             onClick={() => handleCopy(request)}
             size="sm"
             variant="ghost"
           >
             <Copy className="h-4 w-4" />
-          </Button>
-          <Button
+          </MetricButton>
+          <MetricButton
             className="h-6 w-6 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800"
+            metric="request_details_close_clicked"
             onClick={onClose}
             size="sm"
             variant="ghost"
           >
             <X className="h-4 w-4" />
-          </Button>
+          </MetricButton>
         </div>
       </div>
 

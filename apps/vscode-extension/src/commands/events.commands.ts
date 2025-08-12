@@ -21,6 +21,8 @@ export function registerEventCommands(
     'unhook.events.refresh',
     () => {
       log('Refreshing webhook events');
+      // Track refresh action
+      provider.getAnalyticsService()?.track('events_refresh');
       provider.refresh();
     },
   );
@@ -58,6 +60,10 @@ export function registerEventCommands(
           }
         }
         isCollapsed = !isCollapsed;
+        // Track collapse/expand action
+        provider
+          .getAnalyticsService()
+          ?.track(isCollapsed ? 'events_expand_all' : 'events_collapse_all');
       },
     ),
   );
@@ -78,6 +84,15 @@ export function registerEventCommands(
           const eventName =
             extractEventName(item.event.originRequest?.body) || 'Unknown';
           const source = item.event.source || 'Unknown';
+
+          // Track event replay action
+          provider.getAnalyticsService()?.track('event_replay', {
+            event_id: item.event.id,
+            event_name: eventName,
+            event_type: 'event',
+            source: source,
+          });
+
           vscode.window.showInformationMessage(
             `Replaying event: ${eventName} from ${source}...`,
           );
@@ -130,6 +145,15 @@ export function registerEventCommands(
 
           const eventDataString = JSON.stringify(eventData, null, 2);
           await vscode.env.clipboard.writeText(eventDataString);
+
+          // Track event copy action
+          provider.getAnalyticsService()?.track('event_copy', {
+            event_id: item.event.id,
+            event_name:
+              extractEventName(item.event.originRequest?.body) || 'Unknown',
+            source: item.event.source || 'Unknown',
+          });
+
           vscode.window.showInformationMessage(
             'Event data copied to clipboard',
           );
@@ -147,6 +171,14 @@ export function registerEventCommands(
       async (item: EventItem) => {
         try {
           log('Opening event details', { eventId: item.event.id });
+
+          // Track event view action
+          provider.getAnalyticsService()?.track('event_view', {
+            event_id: item.event.id,
+            event_name:
+              extractEventName(item.event.originRequest?.body) || 'Unknown',
+            source: item.event.source || 'Unknown',
+          });
 
           // Show the event details in a panel
           await requestDetailsWebviewProvider.showEvent(item.event);
@@ -206,6 +238,16 @@ export function registerEventCommands(
 
           log('Opening request details (optimistic render)', {
             requestId: item.request.id,
+          });
+
+          // Track request view action
+          provider.getAnalyticsService()?.track('request_view', {
+            event_id: item.parent.event.id,
+            event_name:
+              extractEventName(item.parent.event.originRequest?.body) ||
+              'Unknown',
+            request_id: item.request.id,
+            source: item.parent.event.source || 'Unknown',
           });
 
           // 1) Show immediately with existing data for instant UI
@@ -282,6 +324,15 @@ export function registerEventCommands(
             extractEventName(item.parent.event.originRequest?.body) ||
             'Unknown';
           const source = item.parent.event.source || 'Unknown';
+
+          // Track request replay action
+          provider.getAnalyticsService()?.track('request_replay', {
+            event_id: item.parent.event.id,
+            event_name: eventName,
+            event_type: 'request',
+            request_id: item.request.id,
+            source: source,
+          });
 
           // Show a loading message with event name and source
           vscode.window.showInformationMessage(
@@ -370,6 +421,13 @@ export function registerEventCommands(
 
             if (filterText !== undefined) {
               provider.setFilter(filterText);
+
+              // Track filter usage
+              provider.getAnalyticsService()?.track('events_filter', {
+                action: filterText ? 'applied' : 'cleared',
+                filter_text: filterText,
+              });
+
               if (filterText) {
                 vscode.window.showInformationMessage(
                   `Filter applied: "${filterText}"`,

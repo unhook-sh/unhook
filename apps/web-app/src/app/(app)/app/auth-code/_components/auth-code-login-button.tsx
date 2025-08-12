@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useAction } from 'next-safe-action/hooks';
 import posthog from 'posthog-js';
@@ -70,7 +70,12 @@ export function AuthCodeLoginButton({
   return (
     <div className="flex flex-col gap-2">
       {!error && (
-        <Button autoFocus disabled={isPending || disabled} onClick={onLogin}>
+        <MetricButton
+          autoFocus
+          disabled={isPending || disabled}
+          metric="auth_code_login_grant_access_clicked"
+          onClick={onLogin}
+        >
           {isPending ? (
             <>
               <Icons.Spinner className="mr-2" size="sm" variant="muted" />
@@ -82,17 +87,22 @@ export function AuthCodeLoginButton({
               {text ?? 'Grant Access'}
             </>
           )}
-        </Button>
+        </MetricButton>
       )}
       {/* <span className="text-sm text-muted-foreground">
         This will generate a secure token valid for 30 days.
       </span> */}
       {error && (
         <div className="flex flex-col gap-2">
-          <Button className="w-full" onClick={onLogin} variant="destructive">
+          <MetricButton
+            className="w-full"
+            metric="auth_code_login_try_again_clicked"
+            onClick={onLogin}
+            variant="destructive"
+          >
             <Icons.ArrowRight className="mr-2" size="sm" />
             Try Again
-          </Button>
+          </MetricButton>
           <span className="text-sm text-destructive">{error}</span>
         </div>
       )}

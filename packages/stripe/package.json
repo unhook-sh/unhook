@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@unhook/analytics": "workspace:*",
     "next": "15.4.2-canary.34",
     "stripe": "18.4.0"
   },

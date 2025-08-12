@@ -5,6 +5,7 @@ import { Button } from '@unhook/ui/button';
 import { Card, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import { trackHeaderInteraction } from '../../lib/analytics';
 
 export interface RequestHeaderProps {
   data: RequestTypeWithEventType;
@@ -57,7 +58,16 @@ export function RequestHeader({
           <Button
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
             disabled={isReplaying}
-            onClick={onReplay}
+            onClick={() => {
+              trackHeaderInteraction('replay_button_clicked', {
+                event_id: data.event?.id,
+                event_name: eventName,
+                is_replaying: isReplaying,
+                request_id: data.id,
+                source: source,
+              });
+              onReplay();
+            }}
           >
             <Icons.Play className="mr-2" size="sm" />
             {isReplaying ? 'Replaying...' : 'Replay Event'}

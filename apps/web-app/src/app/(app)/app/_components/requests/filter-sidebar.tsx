@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Checkbox } from '@unhook/ui/checkbox';
 import {
   Collapsible,
@@ -27,9 +27,13 @@ export function FilterSidebar() {
       <SidebarHeader className="border-b p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Filters</h2>
-          <Button size="sm" variant="ghost">
+          <MetricButton
+            metric="filter_sidebar_reset_clicked"
+            size="sm"
+            variant="ghost"
+          >
             Reset
-          </Button>
+          </MetricButton>
         </div>
       </SidebarHeader>
       <SidebarContent>

@@ -2,6 +2,7 @@
 
 import { cn } from '@unhook/ui/lib/utils';
 import { motion } from 'motion/react';
+import posthog from 'posthog-js';
 
 interface PricingTabsProps {
   activeTab: 'yearly' | 'monthly';
@@ -14,6 +15,17 @@ export function PricingTabs({
   setActiveTab,
   className,
 }: PricingTabsProps) {
+  const handleTabChange = (tab: 'yearly' | 'monthly') => {
+    if (tab !== activeTab) {
+      posthog.capture('billing_cycle_changed', {
+        from_billing_cycle: activeTab,
+        location: 'pricing_section',
+        to_billing_cycle: tab,
+      });
+      setActiveTab(tab);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -30,7 +42,7 @@ export function PricingTabs({
             },
           )}
           key={tab}
-          onClick={() => setActiveTab(tab as 'yearly' | 'monthly')}
+          onClick={() => handleTabChange(tab as 'yearly' | 'monthly')}
           type="button"
         >
           {activeTab === tab && (

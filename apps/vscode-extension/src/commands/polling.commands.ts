@@ -17,6 +17,8 @@ export function registerPollingCommands(
       log('Start polling command executed');
       const pollingService = eventsProvider.getPollingService();
       if (pollingService) {
+        // Track polling start
+        eventsProvider.getAnalyticsService()?.track('polling_started');
         pollingService.startPolling();
         vscode.window.showInformationMessage('Polling started');
       } else {
@@ -33,6 +35,8 @@ export function registerPollingCommands(
       log('Pause polling command executed');
       const pollingService = eventsProvider.getPollingService();
       if (pollingService) {
+        // Track polling pause
+        eventsProvider.getAnalyticsService()?.track('polling_paused');
         pollingService.pausePolling();
         vscode.window.showInformationMessage('Polling paused');
       } else {
@@ -49,6 +53,8 @@ export function registerPollingCommands(
       log('Resume polling command executed');
       const pollingService = eventsProvider.getPollingService();
       if (pollingService) {
+        // Track polling resume
+        eventsProvider.getAnalyticsService()?.track('polling_resumed');
         pollingService.resumePolling();
         vscode.window.showInformationMessage('Polling resumed');
       } else {
@@ -65,6 +71,8 @@ export function registerPollingCommands(
       log('Stop polling command executed');
       const pollingService = eventsProvider.getPollingService();
       if (pollingService) {
+        // Track polling stop
+        eventsProvider.getAnalyticsService()?.track('polling_stopped');
         pollingService.stopPolling();
         vscode.window.showInformationMessage('Polling stopped');
       } else {
@@ -82,9 +90,13 @@ export function registerPollingCommands(
       const pollingService = eventsProvider.getPollingService();
       if (pollingService) {
         if (pollingService.isPolling()) {
+          // Track polling pause
+          eventsProvider.getAnalyticsService()?.track('polling_toggled_pause');
           pollingService.pausePolling();
           vscode.window.showInformationMessage('Polling paused');
         } else {
+          // Track polling resume
+          eventsProvider.getAnalyticsService()?.track('polling_toggled_resume');
           pollingService.resumePolling();
           vscode.window.showInformationMessage('Polling resumed');
         }

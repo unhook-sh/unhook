@@ -1,10 +1,12 @@
 import * as vscode from 'vscode';
+import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
 import { createConfigContentWithWebhookId } from '../utils/config-templates';
 
 export function registerConfigCommands(
   context: vscode.ExtensionContext,
   authStore?: AuthStore,
+  analyticsService?: AnalyticsService,
 ) {
   const createConfigCommand = vscode.commands.registerCommand(
     'unhook.createConfig',
@@ -77,6 +79,13 @@ export function registerConfigCommands(
         // Open the created file
         const document = await vscode.workspace.openTextDocument(configUri);
         await vscode.window.showTextDocument(document);
+
+        // Track config file creation
+        analyticsService?.track('config_file_created', {
+          filename: filename,
+          has_webhook_id: !!authStore?.user,
+          workspace: targetFolder.name,
+        });
 
         vscode.window.showInformationMessage(
           `Created ${filename} in ${targetFolder.name}`,
@@ -478,6 +487,13 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
         await config.update('apiUrl', 'https://unhook.sh', true);
         await config.update('dashboardUrl', 'https://unhook.sh', true);
 
+        // Track server URL configuration
+        analyticsService?.track('server_urls_configured', {
+          api_url: 'https://unhook.sh',
+          dashboard_url: 'https://unhook.sh',
+          type: 'cloud',
+        });
+
         vscode.window.showInformationMessage(
           'Server URLs configured for Unhook cloud service. Please restart the extension for changes to take effect.',
         );
@@ -506,6 +522,13 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
         // Update configuration
         await config.update('apiUrl', apiUrl, true);
         await config.update('dashboardUrl', dashboardUrl || apiUrl, true);
+
+        // Track server URL configuration
+        analyticsService?.track('server_urls_configured', {
+          api_url: apiUrl,
+          dashboard_url: dashboardUrl || apiUrl,
+          type: 'self_hosted',
+        });
 
         vscode.window.showInformationMessage(
           'Self-hosted server URLs configured. Please restart the extension for changes to take effect.',

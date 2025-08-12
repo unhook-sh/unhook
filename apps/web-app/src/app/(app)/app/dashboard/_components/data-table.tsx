@@ -48,8 +48,8 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table';
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   type ChartConfig,
   ChartContainer,
@@ -117,16 +117,17 @@ function DragHandle({ id }: { id: number }) {
   });
 
   return (
-    <Button
+    <MetricButton
       {...attributes}
       {...listeners}
       className="text-muted-foreground size-7 hover:bg-transparent"
+      metric="data_table_drag_handle_clicked"
       size="icon"
       variant="ghost"
     >
       <IconGripVertical className="text-muted-foreground size-3" />
       <span className="sr-only">Drag to reorder</span>
-    </Button>
+    </MetricButton>
   );
 }
 
@@ -283,14 +284,15 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
+          <MetricButton
             className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+            metric="data_table_actions_menu_opened"
             size="icon"
             variant="ghost"
           >
             <IconDotsVertical />
             <span className="sr-only">Open menu</span>
-          </Button>
+          </MetricButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
           <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -432,12 +434,16 @@ export function DataTable({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline">
+              <MetricButton
+                metric="data_table_columns_customize_clicked"
+                size="sm"
+                variant="outline"
+              >
                 <IconLayoutColumns />
                 <span className="hidden lg:inline">Customize Columns</span>
                 <span className="lg:hidden">Columns</span>
                 <IconChevronDown />
-              </Button>
+              </MetricButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               {table
@@ -463,10 +469,14 @@ export function DataTable({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button size="sm" variant="outline">
+          <MetricButton
+            metric="data_table_add_section_clicked"
+            size="sm"
+            variant="outline"
+          >
             <IconPlus />
             <span className="hidden lg:inline">Add Section</span>
-          </Button>
+          </MetricButton>
         </div>
       </div>
       <TabsContent
@@ -559,45 +569,50 @@ export function DataTable({
               {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
-              <Button
+              <MetricButton
                 className="hidden h-8 w-8 p-0 lg:flex"
                 disabled={!table.getCanPreviousPage()}
+                metric="data_table_first_page_clicked"
                 onClick={() => table.setPageIndex(0)}
+                size="icon"
                 variant="outline"
               >
                 <span className="sr-only">Go to first page</span>
                 <IconChevronsLeft />
-              </Button>
-              <Button
+              </MetricButton>
+              <MetricButton
                 className="size-8"
                 disabled={!table.getCanPreviousPage()}
+                metric="data_table_previous_page_clicked"
                 onClick={() => table.previousPage()}
                 size="icon"
                 variant="outline"
               >
                 <span className="sr-only">Go to previous page</span>
                 <IconChevronLeft />
-              </Button>
-              <Button
+              </MetricButton>
+              <MetricButton
                 className="size-8"
                 disabled={!table.getCanNextPage()}
+                metric="data_table_next_page_clicked"
                 onClick={() => table.nextPage()}
                 size="icon"
                 variant="outline"
               >
                 <span className="sr-only">Go to next page</span>
                 <IconChevronRight />
-              </Button>
-              <Button
+              </MetricButton>
+              <MetricButton
                 className="hidden size-8 lg:flex"
                 disabled={!table.getCanNextPage()}
+                metric="data_table_last_page_clicked"
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 size="icon"
                 variant="outline"
               >
                 <span className="sr-only">Go to last page</span>
                 <IconChevronsRight />
-              </Button>
+              </MetricButton>
             </div>
           </div>
         </div>
@@ -641,9 +656,13 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   return (
     <Drawer direction={isMobile ? 'bottom' : 'right'}>
       <DrawerTrigger asChild>
-        <Button className="text-foreground w-fit px-0 text-left" variant="link">
+        <MetricButton
+          className="text-foreground w-fit px-0 text-left"
+          metric="data_table_item_view_clicked"
+          variant="link"
+        >
           {item.header}
-        </Button>
+        </MetricButton>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="gap-1">
@@ -798,9 +817,16 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
           </form>
         </div>
         <DrawerFooter>
-          <Button>Submit</Button>
+          <MetricButton metric="data_table_form_submit_clicked">
+            Submit
+          </MetricButton>
           <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
+            <MetricButton
+              metric="data_table_form_done_clicked"
+              variant="outline"
+            >
+              Done
+            </MetricButton>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

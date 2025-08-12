@@ -11,6 +11,7 @@ import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { Check, X } from 'lucide-react';
 import { motion } from 'motion/react';
+import posthog from 'posthog-js';
 
 interface FeatureItem {
   feature: string;
@@ -33,6 +34,14 @@ export function ComparisonFeatures({
   features,
   competitor,
 }: ComparisonFeaturesProps) {
+  const handleCTAClick = () => {
+    posthog.capture('comparison_features_cta_clicked', {
+      competitor: competitor,
+      location: 'comparison_features_section',
+      source: 'marketing_site',
+    });
+  };
+
   return (
     <section className="w-full py-20">
       <div className="container mx-auto px-6">
@@ -164,7 +173,10 @@ export function ComparisonFeatures({
           initial={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.8 }}
         >
-          <ShimmerButton className="px-8 py-3 text-lg font-semibold">
+          <ShimmerButton
+            className="px-8 py-3 text-lg font-semibold"
+            onClick={handleCTAClick}
+          >
             Try Unhook Free Today
           </ShimmerButton>
         </motion.div>

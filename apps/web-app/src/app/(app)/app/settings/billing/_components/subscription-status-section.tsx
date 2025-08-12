@@ -1,6 +1,7 @@
 'use client';
 
 import { IconCurrencyDollar, IconInfoCircle } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import {
   SubscriptionActive,
@@ -8,7 +9,6 @@ import {
   useHasActiveSubscription,
   useHasPastDueSubscription,
 } from '@unhook/stripe/guards/client';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -229,19 +229,24 @@ export function SubscriptionStatusSection() {
 
         <div className="pt-4">
           {hasActiveSubscription || hasPastDueSubscription ? (
-            <Button
+            <MetricButton
               disabled={isManagingBilling}
+              metric="subscription_status_manage_billing_clicked"
               onClick={handleManageBilling}
               variant="outline"
             >
               <IconCurrencyDollar className="mr-2 size-4" />
               {isManagingBilling ? 'Opening...' : 'Manage Billing'}
-            </Button>
+            </MetricButton>
           ) : (
-            <Button disabled={isSubscribing} onClick={handleSubscribe}>
+            <MetricButton
+              disabled={isSubscribing}
+              metric="subscription_status_subscribe_clicked"
+              onClick={handleSubscribe}
+            >
               <IconCurrencyDollar className="mr-2 size-4" />
               {isSubscribing ? 'Redirecting...' : 'Subscribe Now'}
-            </Button>
+            </MetricButton>
           )}
         </div>
       </CardContent>

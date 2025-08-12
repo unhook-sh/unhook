@@ -1,7 +1,7 @@
 'use client';
 
 import { useClerk } from '@clerk/nextjs';
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { useSearchParams } from 'next/navigation';
 
 export function SignInDifferentAccountButton() {
@@ -13,8 +13,9 @@ export function SignInDifferentAccountButton() {
   }`;
 
   return (
-    <Button
+    <MetricButton
       className="w-fit"
+      metric="auth_code_sign_in_different_account_clicked"
       onClick={() =>
         signOut({
           redirectUrl,
@@ -23,6 +24,6 @@ export function SignInDifferentAccountButton() {
       variant="link"
     >
       Sign in with different account
-    </Button>
+    </MetricButton>
   );
 }

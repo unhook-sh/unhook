@@ -1,9 +1,9 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
 import { Skeleton } from '@unhook/ui/skeleton';
 import {
@@ -16,7 +16,7 @@ import {
 } from '@unhook/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
 import { Eye, Play } from 'lucide-react';
-import Link from 'next/link';
+import posthog from 'posthog-js';
 
 function SkeletonRow() {
   return (
@@ -65,13 +65,27 @@ export function RecentEventsTable() {
   });
 
   const handleViewEvent = (eventId: string) => {
+    // Track the event view action
+    posthog.capture('dashboard_event_view_clicked', {
+      event_id: eventId,
+      source: 'recent_events_table',
+    });
     // Navigate to the events page with the specific event
     window.location.href = `/app/events?eventId=${eventId}`;
   };
 
   const handleReplayEvent = (eventId: string) => {
+    // Track the event replay action
+    posthog.capture('dashboard_event_replay_clicked', {
+      event_id: eventId,
+      source: 'recent_events_table',
+    });
     // TODO: Implement event replay functionality
     console.log('Replay event:', eventId);
+  };
+
+  const handleViewAllEvents = () => {
+    window.location.href = '/app/events';
   };
 
   return (
@@ -83,9 +97,14 @@ export function RecentEventsTable() {
             Latest 50 webhook events from your organization
           </p>
         </div>
-        <Button asChild size="sm" variant="outline">
-          <Link href="/app/events">View All Events</Link>
-        </Button>
+        <MetricButton
+          metric="dashboard_view_all_events_clicked"
+          onClick={handleViewAllEvents}
+          size="sm"
+          variant="outline"
+        >
+          View All Events
+        </MetricButton>
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -147,27 +166,29 @@ export function RecentEventsTable() {
                     <div className="flex items-center gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          <MetricButton
                             className="h-8 w-8 p-0"
+                            metric="recent_events_table_view_event_clicked"
                             onClick={() => handleViewEvent(event.id)}
                             size="sm"
                             variant="ghost"
                           >
                             <Eye className="size-4" />
-                          </Button>
+                          </MetricButton>
                         </TooltipTrigger>
                         <TooltipContent>View Details</TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          <MetricButton
                             className="h-8 w-8 p-0"
+                            metric="recent_events_table_replay_event_clicked"
                             onClick={() => handleReplayEvent(event.id)}
                             size="sm"
                             variant="ghost"
                           >
                             <Play className="size-4" />
-                          </Button>
+                          </MetricButton>
                         </TooltipTrigger>
                         <TooltipContent>Replay Event</TooltipContent>
                       </Tooltip>

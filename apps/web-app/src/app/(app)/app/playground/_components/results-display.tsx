@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
@@ -111,7 +111,12 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
               open={expandedResults.has(result.id)}
             >
               <CollapsibleTrigger asChild>
-                <Button className="h-auto p-0" size="sm" variant="ghost">
+                <MetricButton
+                  className="h-auto p-0"
+                  metric="playground_results_view_payload_clicked"
+                  size="sm"
+                  variant="ghost"
+                >
                   <Icons.ChevronDown
                     className={`mr-1 transition-transform ${
                       expandedResults.has(result.id) ? 'rotate-180' : ''
@@ -119,7 +124,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                     size="sm"
                   />
                   View Payload
-                </Button>
+                </MetricButton>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-2">
                 <pre className="bg-muted p-3 rounded text-xs overflow-x-auto">

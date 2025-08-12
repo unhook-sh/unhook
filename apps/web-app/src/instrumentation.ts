@@ -7,7 +7,6 @@ export function register() {
 export const onRequestError: Instrumentation.onRequestError = async (
   err,
   request,
-  context,
 ) => {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     const { posthog } = await import('@unhook/analytics/posthog/server');

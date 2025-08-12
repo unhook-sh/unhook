@@ -5,10 +5,11 @@ import {
   IconChartBar,
   IconSettings,
 } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
+import posthog from 'posthog-js';
 import { useState } from 'react';
 import { EventTypeSelector } from './event-type-selector';
 import { JsonEditor } from './json-editor';
@@ -40,6 +41,14 @@ export function WebhookPlayground() {
     if (!selectedWebhookId || !selectedService || !selectedEventType) {
       return;
     }
+
+    // Track the webhook send action
+    posthog.capture('playground_webhook_sent', {
+      event_type: selectedEventType,
+      payload_size: jsonPayload.length,
+      service: selectedService,
+      webhook_id: selectedWebhookId,
+    });
 
     setIsSending(true);
     try {
@@ -149,9 +158,10 @@ export function WebhookPlayground() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Button
+            <MetricButton
               className="w-full"
               disabled={!canSend || isSending}
+              metric="playground_webhook_send_clicked"
               onClick={handleSend}
             >
               {isSending ? (
@@ -165,7 +175,7 @@ export function WebhookPlayground() {
                   Send Webhook
                 </>
               )}
-            </Button>
+            </MetricButton>
 
             {!canSend && (
               <p className="mt-2 text-sm text-muted-foreground">

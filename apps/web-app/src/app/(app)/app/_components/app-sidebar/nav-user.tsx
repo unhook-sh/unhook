@@ -6,6 +6,7 @@ import {
   IconCheck,
   IconCurrencyDollar,
 } from '@tabler/icons-react';
+import { MetricLink } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@unhook/ui/avatar';
 import {
@@ -31,7 +32,6 @@ import {
   SunIcon,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useState } from 'react';
@@ -167,16 +167,30 @@ export function NavUser() {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem asChild>
-                <Link href={'/app/settings/billing'}>
+                <MetricLink
+                  href={'/app/settings/billing'}
+                  metric="nav_user_billing_clicked"
+                  properties={{
+                    destination: '/app/settings/billing',
+                    location: 'nav_user',
+                  }}
+                >
                   <IconCurrencyDollar className="mr-1 size-4" />
                   <span>Billing</span>
-                </Link>
+                </MetricLink>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href={'/app/settings/organization'}>
+                <MetricLink
+                  href={'/app/settings/organization'}
+                  metric="nav_user_team_clicked"
+                  properties={{
+                    destination: '/app/settings/organization',
+                    location: 'nav_user',
+                  }}
+                >
                   <Users className="mr-1 size-4" />
                   <span>Team</span>
-                </Link>
+                </MetricLink>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {

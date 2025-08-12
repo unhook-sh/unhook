@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricLink } from '@unhook/analytics/components';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import React, { useRef, useState } from 'react';
 
 export interface NavItem {
@@ -143,7 +143,15 @@ export function NavMenu({ navs }: { navs?: NavItem[] }) {
                   {item.name}
                 </a>
               ) : (
-                <Link href={item.href}>{item.name}</Link>
+                <MetricLink
+                  href={item.href}
+                  metric="nav_menu_item_clicked"
+                  properties={{
+                    location: 'nav_menu',
+                  }}
+                >
+                  {item.name}
+                </MetricLink>
               )}
             </li>
           );

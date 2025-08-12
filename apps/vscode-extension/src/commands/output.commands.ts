@@ -1,14 +1,18 @@
 import type { VSCodeOutputDestination } from '@unhook/logger/destinations/vscode-output';
 import * as vscode from 'vscode';
+import type { AnalyticsService } from '../services/analytics.service';
 
 export function registerOutputCommands(
   context: vscode.ExtensionContext,
   outputDestination: VSCodeOutputDestination,
+  analyticsService?: AnalyticsService,
 ) {
   // Register Focus Output command
   const focusOutputCommand = vscode.commands.registerCommand(
     'unhook.focusOutput',
     () => {
+      // Track output focus
+      analyticsService?.track('output_focused');
       outputDestination.show();
     },
   );
@@ -18,6 +22,8 @@ export function registerOutputCommands(
   const clearOutputCommand = vscode.commands.registerCommand(
     'unhook.clearOutput',
     () => {
+      // Track output clear
+      analyticsService?.track('output_cleared');
       outputDestination.clear();
     },
   );
@@ -27,6 +33,9 @@ export function registerOutputCommands(
   const toggleOutputCommand = vscode.commands.registerCommand(
     'unhook.toggleOutput',
     () => {
+      // Track output toggle
+      analyticsService?.track('output_toggled');
+
       // Since we can't directly check if the output is visible,
       // we'll just toggle it by showing/hiding
       outputDestination.show();

@@ -1,8 +1,8 @@
 'use client';
 
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Skeleton } from '@unhook/ui/skeleton';
 import { useAction } from 'next-safe-action/hooks';
@@ -106,7 +106,8 @@ export function MyOrganizationsSection() {
                         );
                       })()}
                     </Badge>
-                    <Button
+                    <MetricButton
+                      metric="my_organizations_leave_clicked"
                       onClick={() =>
                         openLeaveDialog({
                           id: membership.organization.id,
@@ -117,7 +118,7 @@ export function MyOrganizationsSection() {
                       variant="destructive"
                     >
                       Leave
-                    </Button>
+                    </MetricButton>
                   </div>
                 </div>
               ))}

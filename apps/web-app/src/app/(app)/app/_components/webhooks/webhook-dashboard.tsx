@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import { Input } from '@unhook/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
 import { Plus, Search } from 'lucide-react';
@@ -47,10 +47,13 @@ export function WebhookDashboard() {
               value={searchQuery}
             />
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <MetricButton
+            metric="webhook_dashboard_create_clicked"
+            onClick={() => setIsCreateDialogOpen(true)}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Create Webhook
-          </Button>
+          </MetricButton>
         </div>
       </header>
 

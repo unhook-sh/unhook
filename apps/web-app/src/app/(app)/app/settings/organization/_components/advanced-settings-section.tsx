@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@unhook/ui/button';
+import { MetricButton } from '@unhook/analytics/components';
 import {
   Card,
   CardContent,
@@ -54,12 +54,13 @@ export function AdvancedSettingsSection() {
                 organization and remove all data.
               </CardDescription>
             </div>
-            <Button
+            <MetricButton
+              metric="advanced_settings_delete_organization_clicked"
               onClick={() => setIsDeleteDialogOpen(true)}
               variant="destructive"
             >
               Delete Organization
-            </Button>
+            </MetricButton>
           </div>
         </CardContent>
       </Card>

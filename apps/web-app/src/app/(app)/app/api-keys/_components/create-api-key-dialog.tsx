@@ -1,8 +1,8 @@
 'use client';
 
 import { IconPlus } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
-import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
 import {
   Dialog,
@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from '@unhook/ui/dialog';
 import { Input } from '@unhook/ui/input';
+import posthog from 'posthog-js';
 import { useState } from 'react';
 
 export function CreateApiKeyDialog() {
@@ -31,6 +32,11 @@ export function CreateApiKeyDialog() {
     if (!name.trim()) return;
 
     try {
+      // Track the API key creation
+      posthog.capture('api_keys_created', {
+        api_key_name: name.trim(),
+      });
+
       await createApiKey.mutateAsync({ name });
 
       // Reset form and close dialog
@@ -49,10 +55,10 @@ export function CreateApiKeyDialog() {
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button>
+        <MetricButton metric="create_api_key_dialog_trigger_clicked">
           <IconPlus />
           Create API Key
-        </Button>
+        </MetricButton>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -76,15 +82,17 @@ export function CreateApiKeyDialog() {
         </div>
 
         <DialogFooter>
-          <Button
+          <MetricButton
             disabled={createApiKey.isPending}
+            metric="create_api_key_cancel_clicked"
             onClick={handleCancel}
             variant="outline"
           >
             Cancel
-          </Button>
-          <Button
+          </MetricButton>
+          <MetricButton
             disabled={!name.trim() || createApiKey.isPending}
+            metric="create_api_key_submit_clicked"
             onClick={handleCreate}
           >
             {createApiKey.isPending ? (
@@ -95,7 +103,7 @@ export function CreateApiKeyDialog() {
             ) : (
               'Create'
             )}
-          </Button>
+          </MetricButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

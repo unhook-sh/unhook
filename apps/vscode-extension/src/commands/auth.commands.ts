@@ -1,6 +1,7 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { UnhookAuthProvider } from '../providers/auth.provider';
+import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
 
 const log = debug('unhook:vscode:auth-commands');
@@ -8,6 +9,7 @@ const log = debug('unhook:vscode:auth-commands');
 export function registerAuthCommands(
   context: vscode.ExtensionContext,
   authStore: AuthStore,
+  analyticsService?: AnalyticsService,
 ) {
   // Register auth provider
   const { provider, disposable: authProviderDisposable } =
@@ -33,11 +35,22 @@ export function registerAuthCommands(
         log('Authentication session result:', { hasSession: !!session });
         if (session) {
           log('Sign-in successful from command');
+
+          // Track successful sign-in
+          analyticsService?.track('auth_sign_in_success', {
+            method: 'vscode_authentication',
+          });
+
           vscode.window.showInformationMessage(
             'Successfully signed in to Unhook',
           );
         } else {
           log('No session returned from authentication');
+
+          // Track failed sign-in
+          analyticsService?.track('auth_sign_in_failed', {
+            reason: 'no_session_returned',
+          });
         }
       } catch (error) {
         log('Sign-in command failed:', error);
@@ -61,6 +74,10 @@ export function registerAuthCommands(
       try {
         // Always try to sign out, regardless of session state
         await provider.removeSession('current');
+
+        // Track sign out action
+        analyticsService?.track('auth_sign_out_success');
+
         vscode.window.showInformationMessage(
           'Successfully signed out of Unhook',
         );
@@ -78,6 +95,10 @@ export function registerAuthCommands(
     'unhook.cancelAuth',
     () => {
       log('unhook.cancelAuth command triggered');
+
+      // Track auth cancellation
+      analyticsService?.track('auth_sign_in_cancelled');
+
       provider.cancelPendingAuth();
       vscode.window.showInformationMessage('Authentication canceled');
     },

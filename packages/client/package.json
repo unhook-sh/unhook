@@ -4,7 +4,7 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.54.0",
+    "@supabase/supabase-js": "2.55.0",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",

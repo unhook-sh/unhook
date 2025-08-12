@@ -1,8 +1,8 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import type { RequestTypeWithEventType } from '@unhook/db/schema';
-import { Button } from '@unhook/ui/button';
 import { Input } from '@unhook/ui/input';
 import {
   Tooltip,
@@ -83,9 +83,14 @@ export function RequestView() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button onClick={() => refetch()} size="icon" variant="outline">
+                <MetricButton
+                  metric="request_view_refresh_clicked"
+                  onClick={() => refetch()}
+                  size="icon"
+                  variant="outline"
+                >
                   <RefreshCw className="h-4 w-4" />
-                </Button>
+                </MetricButton>
               </TooltipTrigger>
               <TooltipContent>Refresh</TooltipContent>
             </Tooltip>
@@ -93,18 +98,21 @@ export function RequestView() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
+                <MetricButton
+                  metric="request_view_filter_toggle_clicked"
                   onClick={toggleFilters}
                   size="icon"
                   variant={showFilters ? 'default' : 'outline'}
                 >
                   <Filter className="h-4 w-4" />
-                </Button>
+                </MetricButton>
               </TooltipTrigger>
               <TooltipContent>Filter</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button variant="default">Live</Button>
+          <MetricButton metric="request_view_live_clicked" variant="default">
+            Live
+          </MetricButton>
         </div>
       </header>
 

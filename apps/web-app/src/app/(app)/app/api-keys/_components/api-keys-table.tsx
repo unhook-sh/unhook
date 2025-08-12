@@ -1,8 +1,8 @@
 'use client';
 
 import { IconEye, IconEyeOff, IconPencil } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
-import { Button } from '@unhook/ui/button';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
 import { TimeDisplay } from '@unhook/ui/custom/time-display';
 import * as Editable from '@unhook/ui/diceui/editable-input';
@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@unhook/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
+import posthog from 'posthog-js';
 import { useState } from 'react';
 import { maskApiKey } from '~/lib/mask-api-key';
 import { DeleteApiKeyDialog } from './delete-api-key-dialog';
@@ -59,9 +60,15 @@ export function ApiKeysTable() {
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
 
   const toggleKeyVisibility = (id: string) => {
+    const newVisibility = !showKeys[id];
+    // Track the API key visibility toggle
+    posthog.capture('api_keys_visibility_toggled', {
+      api_key_id: id,
+      new_visibility: newVisibility,
+    });
     setShowKeys((prev) => ({
       ...prev,
-      [id]: !prev[id],
+      [id]: newVisibility,
     }));
   };
 
@@ -76,6 +83,12 @@ export function ApiKeysTable() {
   }) => {
     const trimmedName = newName.trim();
     if (trimmedName && trimmedName !== '' && trimmedName !== oldName) {
+      // Track the API key name update
+      posthog.capture('api_keys_name_updated', {
+        api_key_id: apiKeyId,
+        new_name: trimmedName,
+        old_name: oldName,
+      });
       updateApiKey.mutate({ id: apiKeyId, name: trimmedName });
       toast.success('API key name updated');
     }
@@ -124,9 +137,14 @@ export function ApiKeysTable() {
                         <Editable.Input className="px-1.5 py-1" />
                       </Editable.Area>
                       <Editable.Trigger asChild>
-                        <Button className="size-7" size="icon" variant="ghost">
+                        <MetricButton
+                          className="size-7"
+                          metric="api_keys_table_edit_name_clicked"
+                          size="icon"
+                          variant="ghost"
+                        >
                           <IconPencil />
-                        </Button>
+                        </MetricButton>
                       </Editable.Trigger>
                     </Editable.Root>
                   </TableCell>
@@ -142,8 +160,9 @@ export function ApiKeysTable() {
                             : maskApiKey(apiKey.key)
                         }
                       />
-                      <Button
+                      <MetricButton
                         className="h-8 w-8 p-0"
+                        metric="api_keys_table_toggle_visibility_clicked"
                         onClick={() => toggleKeyVisibility(apiKey.id)}
                         size="sm"
                         variant="ghost"
@@ -153,7 +172,7 @@ export function ApiKeysTable() {
                         ) : (
                           <IconEyeOff size="sm" />
                         )}
-                      </Button>
+                      </MetricButton>
                       <CopyButton
                         className="h-8 w-8 p-0"
                         size="sm"

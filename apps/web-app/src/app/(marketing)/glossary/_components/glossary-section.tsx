@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -460,7 +460,17 @@ export function GlossarySection() {
           </motion.p>
 
           <motion.div variants={fadeInUpVariants}>
-            <Button asChild className="rounded-full" size="lg">
+            <MetricButton
+              asChild
+              className="rounded-full"
+              metric="glossary_view_documentation_clicked"
+              properties={{
+                destination: 'https://docs.unhook.sh',
+                location: 'glossary_section',
+                source: 'marketing_site',
+              }}
+              size="lg"
+            >
               <a
                 href="https://docs.unhook.sh"
                 rel="noopener noreferrer"
@@ -468,7 +478,7 @@ export function GlossarySection() {
               >
                 View Documentation
               </a>
-            </Button>
+            </MetricButton>
           </motion.div>
         </motion.div>
 
@@ -629,9 +639,18 @@ export function GlossarySection() {
             Start building with Unhook today and get real-time webhook testing
             and management.
           </P>
-          <Button asChild className="rounded-full">
+          <MetricButton
+            asChild
+            className="rounded-full"
+            metric="glossary_get_started_clicked"
+            properties={{
+              destination: '/app/onboarding',
+              location: 'glossary_section',
+              source: 'marketing_site',
+            }}
+          >
             <a href="/app/onboarding">Get Started with Unhook</a>
-          </Button>
+          </MetricButton>
         </motion.div>
       </div>
     </section>

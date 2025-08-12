@@ -74,11 +74,11 @@ export const createCheckoutSessionAction = action.action(async () => {
   // Create checkout session
   const session = await createCheckoutSession({
     billingInterval: BILLING_INTERVALS.MONTHLY,
-    cancelUrl: `${origin}/${org.clerkOrgId}/billing?canceled=true`,
+    cancelUrl: `${origin}/app/settings/billing?canceled=true`,
     customerId,
     orgId,
     planType: PLAN_TYPES.TEAM,
-    successUrl: `${origin}/${org.clerkOrgId}/billing?success=true`,
+    successUrl: `${origin}/app/settings/billing?success=true`,
   });
 
   // Redirect to Stripe Checkout

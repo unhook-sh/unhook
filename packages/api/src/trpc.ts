@@ -58,13 +58,6 @@ export const createTRPCRouter = t.router;
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
   const start = Date.now();
-
-  if (t._config.isDev) {
-    // artificial delay in dev 100-500ms
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
-
   const result = await next();
 
   const end = Date.now();
@@ -73,6 +66,15 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const analyticsMiddleware = t.middleware(async ({ next, path }) => {
+  const start = Date.now();
+  const result = await next();
+
+  const end = Date.now();
+  log(`[TRPC] ${path} took ${end - start}ms to execute`);
+
+  return result;
+});
 /**
  * Public (unauthed) procedure
  *
@@ -103,5 +105,6 @@ const isAuthed = t.middleware(({ next, ctx }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure
+  .use(analyticsMiddleware)
   .use(timingMiddleware)
   .use(isAuthed);

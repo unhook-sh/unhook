@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -147,9 +147,13 @@ export function DestinationsList() {
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="sm" variant="ghost">
+                      <MetricButton
+                        metric="destinations_list_actions_menu_opened"
+                        size="sm"
+                        variant="ghost"
+                      >
                         <Icons.MoreVertical size="sm" />
-                      </Button>
+                      </MetricButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>

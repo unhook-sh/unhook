@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.30.0",
+    "@clerk/nextjs": "6.30.1",
     "@t3-oss/env-core": "0.13.8",
     "@t3-oss/env-nextjs": "0.13.8",
-    "@tanstack/react-query": "5.84.2",
+    "@tanstack/react-query": "5.85.0",
     "@trpc/client": "11.4.4",
     "@trpc/react-query": "11.4.4",
     "@trpc/server": "11.4.4",
@@ -22,7 +22,7 @@
     "zod-to-json-schema": "3.24.6"
   },
   "devDependencies": {
-    "@types/react": "19.1.9",
+    "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@unhook/tsconfig": "workspace:*",
     "typescript": "5.9.2"

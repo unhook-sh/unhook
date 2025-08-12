@@ -1,6 +1,7 @@
 'use client';
 
 import type { Icon } from '@tabler/icons-react';
+import { MetricLink } from '@unhook/analytics';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -27,10 +28,17 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <a href={item.url}>
+                <MetricLink
+                  href={item.url}
+                  metric="navigation_external_link_clicked"
+                  properties={{
+                    link_title: item.title,
+                    url: item.url,
+                  }}
+                >
                   <item.icon />
                   <span>{item.title}</span>
-                </a>
+                </MetricLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

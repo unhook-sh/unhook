@@ -1,10 +1,10 @@
 'use client';
 
+import { MetricLink } from '@unhook/analytics/components';
 import { AnimatedBeam } from '@unhook/ui/magicui/animated-beam';
 import { BorderBeam } from '@unhook/ui/magicui/border-beam';
 import { ShimmerButton } from '@unhook/ui/magicui/shimmer-button';
 import { motion } from 'motion/react';
-import Link from 'next/link';
 import { useRef } from 'react';
 
 const fadeInUpVariants = {
@@ -277,19 +277,31 @@ export function JetBrainsHeroSection() {
             className="flex flex-col md:flex-row items-center gap-2.5 flex-wrap justify-center"
             variants={fadeInUpVariants}
           >
-            <Link href="https://plugins.jetbrains.com/plugin/unhook">
+            <MetricLink
+              href="https://plugins.jetbrains.com/plugin/unhook"
+              metric="jetbrains_hero_install_plugin_clicked"
+              properties={{
+                location: 'jetbrains_hero_section',
+                source: 'marketing_site',
+              }}
+            >
               <ShimmerButton className="shadow-2xl">
                 <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
                   Install Plugin
                 </span>
               </ShimmerButton>
-            </Link>
-            <Link
+            </MetricLink>
+            <MetricLink
               className="h-10 flex items-center justify-center w-48 px-5 text-sm font-normal tracking-wide text-primary rounded-full transition-all ease-out active:scale-95 bg-white dark:bg-background border border-[#E5E7EB] dark:border-[#27272A] hover:bg-white/80 dark:hover:bg-background/80"
               href="https://docs.unhook.sh/jetbrains"
+              metric="jetbrains_hero_documentation_clicked"
+              properties={{
+                location: 'jetbrains_hero_section',
+                source: 'marketing_site',
+              }}
             >
               View Documentation
-            </Link>
+            </MetricLink>
           </motion.div>
         </motion.div>
       </div>

@@ -5,6 +5,9 @@ export function registerQuickPickCommand(context: vscode.ExtensionContext) {
   const quickPickCommand = vscode.commands.registerCommand(
     'unhook.quickPick',
     () => {
+      // Track quick pick usage
+      // Note: We can't access analytics service here directly, but the analytics provider
+      // already tracks command executions automatically
       EventQuickPick.getInstance().showQuickPick();
     },
   );

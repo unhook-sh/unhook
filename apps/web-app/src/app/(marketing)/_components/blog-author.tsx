@@ -1,6 +1,6 @@
+import { MetricLink } from '@unhook/analytics/components';
 import { formatDate } from '@unhook/ui/lib/format-date';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export default function Author({
   name,
@@ -51,11 +51,15 @@ export default function Author({
   }
 
   return (
-    <Link
+    <MetricLink
       className="group flex items-center space-x-3"
       href={`https://twitter.com/${twitterUsername}`}
-      rel="noopener noreferrer"
-      target="_blank"
+      metric="blog_author_clicked"
+      properties={{
+        location: 'blog_author',
+        name,
+        twitterUsername,
+      }}
     >
       <Image
         alt={name}
@@ -68,6 +72,6 @@ export default function Author({
         <p className="font-semibold text-gray-700">{name}</p>
         <p className="text-sm text-gray-500">@{twitterUsername}</p>
       </div>
-    </Link>
+    </MetricLink>
   );
 }

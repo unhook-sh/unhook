@@ -9,6 +9,7 @@ import {
 } from '@unhook/ui/collapsible';
 import { Icons } from '@unhook/ui/custom/icons';
 import { useState } from 'react';
+import { trackRequestCardInteraction } from '../../lib/analytics';
 import { JsonViewer } from '../json-viewer';
 
 interface RequestCardProps {
@@ -53,22 +54,56 @@ function getMethodColor(method?: string) {
 export function RequestCard({ request, event, index }: RequestCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const handleExpandChange = (expanded: boolean) => {
+    setIsExpanded(expanded);
+    trackRequestCardInteraction('request_card_expanded', {
+      destination_name: request.destination?.name,
+      event_id: event.id,
+      expanded,
+      request_id: request.id,
+      status: request.status,
+    });
+  };
+
   const copyUrl = () => {
-    if (request.destination?.url)
+    if (request.destination?.url) {
       navigator.clipboard.writeText(request.destination.url);
+      trackRequestCardInteraction('destination_url_copied', {
+        destination_name: request.destination?.name,
+        event_id: event.id,
+        request_id: request.id,
+        url_length: request.destination.url.length,
+      });
+    }
   };
   const copyRequestBody = () => {
     const body = event?.originRequest?.body;
-    if (body) navigator.clipboard.writeText(body);
+    if (body) {
+      navigator.clipboard.writeText(body);
+      trackRequestCardInteraction('request_body_copied', {
+        body_length: body.length,
+        destination_name: request.destination?.name,
+        event_id: event.id,
+        request_id: request.id,
+      });
+    }
   };
   const copyResponseBody = () => {
     const body = request.response?.body;
-    if (body) navigator.clipboard.writeText(String(body));
+    if (body) {
+      navigator.clipboard.writeText(String(body));
+      trackRequestCardInteraction('response_body_copied', {
+        body_length: String(body).length,
+        destination_name: request.destination?.name,
+        event_id: event.id,
+        request_id: request.id,
+      });
+    }
   };
 
   return (
     <Card className="border border-border hover:border-accent transition-colors">
-      <Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
+      <Collapsible onOpenChange={handleExpandChange} open={isExpanded}>
         <CollapsibleTrigger asChild>
           <div className="p-4 cursor-pointer hover:bg-accent/50 transition-colors">
             <div className="flex items-center justify-between">

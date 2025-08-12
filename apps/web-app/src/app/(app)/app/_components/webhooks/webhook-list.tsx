@@ -1,7 +1,7 @@
 'use client';
 
+import { MetricButton } from '@unhook/analytics/components';
 import { Badge } from '@unhook/ui/badge';
-import { Button } from '@unhook/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,10 +128,14 @@ export function WebhookList({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost">
+                      <MetricButton
+                        metric="webhook_list_actions_menu_opened"
+                        size="icon"
+                        variant="ghost"
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only">Open menu</span>
-                      </Button>
+                      </MetricButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       {webhook.status === 'active' ? (

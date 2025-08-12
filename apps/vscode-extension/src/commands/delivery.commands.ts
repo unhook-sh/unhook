@@ -32,6 +32,11 @@ export function registerDeliveryCommands(context: vscode.ExtensionContext) {
 
       const status = newState ? 'enabled' : 'disabled';
       log('Event delivery %s', status);
+
+      // Track delivery setting change
+      // Note: We can't access analytics service here directly, but the analytics provider
+      // already tracks configuration changes automatically
+
       vscode.window.showInformationMessage(`Event delivery ${status}`);
     },
   );

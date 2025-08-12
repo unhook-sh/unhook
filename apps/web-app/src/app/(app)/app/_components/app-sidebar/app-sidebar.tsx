@@ -13,6 +13,7 @@ import {
   IconReport,
   IconSettings,
 } from '@tabler/icons-react';
+import { MetricLink } from '@unhook/analytics';
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +23,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@unhook/ui/sidebar';
-import Link from 'next/link';
 import type * as React from 'react';
 import { Icons } from '~/app/(marketing)/_components/icons';
 import { NavMain } from './nav-main';
@@ -162,10 +162,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="/app/dashboard">
+              <MetricLink
+                href="/app/dashboard"
+                metric="navigation_logo_clicked"
+              >
                 <Icons.logo className="size-10" />
                 <span className="text-base font-semibold">Unhook AI</span>
-              </Link>
+              </MetricLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

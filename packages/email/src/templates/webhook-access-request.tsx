@@ -85,10 +85,7 @@ export const WebhookAccessRequestEmail = ({
 
           <Text style={footerText}>
             You can also manage all access requests in your{' '}
-            <Link href={dashboardUrl} style={link}>
-              Unhook dashboard
-            </Link>
-            .
+            <Link href={dashboardUrl}>Unhook dashboard</Link>.
           </Text>
 
           <Text style={footerText}>
@@ -220,9 +217,4 @@ const footerText = {
   lineHeight: '20px',
   marginBottom: '8px',
   padding: '0 48px',
-};
-
-const link = {
-  color: '#3b82f6',
-  textDecoration: 'underline',
 };

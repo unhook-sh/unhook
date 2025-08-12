@@ -1,9 +1,9 @@
 'use client';
 
 import { IconAlertTriangle, IconCheck, IconRefresh } from '@tabler/icons-react';
+import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { useHasActiveSubscription } from '@unhook/stripe/guards/client';
-import { Button } from '@unhook/ui/button';
 import {
   Card,
   CardContent,
@@ -146,8 +146,9 @@ export function SubscriptionManagementSection() {
             {/* Action Buttons */}
             <div className="flex gap-2 pt-4">
               {subscriptionDetails.cancelAtPeriodEnd ? (
-                <Button
+                <MetricButton
                   disabled={isReactivating}
+                  metric="subscription_management_reactivate_clicked"
                   onClick={handleReactivateSubscription}
                   variant="outline"
                 >
@@ -157,16 +158,17 @@ export function SubscriptionManagementSection() {
                   {isReactivating
                     ? 'Reactivating...'
                     : 'Reactivate Subscription'}
-                </Button>
+                </MetricButton>
               ) : (
-                <Button
+                <MetricButton
                   disabled={isCanceling}
+                  metric="subscription_management_cancel_clicked"
                   onClick={handleCancelSubscription}
                   variant="outline"
                 >
                   <Icons.X className="mr-2 size-4" />
                   {isCanceling ? 'Canceling...' : 'Cancel Subscription'}
-                </Button>
+                </MetricButton>
               )}
             </div>
 

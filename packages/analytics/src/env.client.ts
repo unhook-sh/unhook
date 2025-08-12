@@ -11,6 +11,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_ENV: z.string(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string(),
+    NEXT_PUBLIC_VERCEL_ENV: z.string().optional(),
   },
 
   extends: [vercel()],
@@ -22,6 +23,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.NEXT_PUBLIC_VERCEL_ENV,
     NODE_ENV: process.env.NODE_ENV,
   },
   shared: {

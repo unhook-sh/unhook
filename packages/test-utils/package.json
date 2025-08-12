@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@clerk/backend": "2.7.0",
+    "@clerk/backend": "2.7.1",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
     "drizzle-orm": "0.44.4"

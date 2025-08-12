@@ -249,6 +249,105 @@ export class AnalyticsService implements vscode.Disposable {
   }
 
   /**
+   * Track user interaction with events
+   */
+  trackEventInteraction(action: string, properties?: Record<string, unknown>) {
+    this.track('event_interaction', {
+      action,
+      ...properties,
+    });
+  }
+
+  /**
+   * Track user interaction with requests
+   */
+  trackRequestInteraction(
+    action: string,
+    properties?: Record<string, unknown>,
+  ) {
+    this.track('request_interaction', {
+      action,
+      ...properties,
+    });
+  }
+
+  /**
+   * Track configuration file operations
+   */
+  trackConfigOperation(
+    operation: string,
+    properties?: Record<string, unknown>,
+  ) {
+    this.track('config_operation', {
+      operation,
+      ...properties,
+    });
+  }
+
+  /**
+   * Track authentication actions
+   */
+  trackAuthAction(action: string, properties?: Record<string, unknown>) {
+    this.track('auth_action', {
+      action,
+      ...properties,
+    });
+  }
+
+  /**
+   * Track polling operations
+   */
+  trackPollingOperation(
+    operation: string,
+    properties?: Record<string, unknown>,
+  ) {
+    this.track('polling_operation', {
+      operation,
+      ...properties,
+    });
+  }
+
+  /**
+   * Track delivery settings changes
+   */
+  trackDeliverySettingChange(setting: string, value: unknown) {
+    this.track('delivery_setting_changed', {
+      setting,
+      value,
+    });
+  }
+
+  /**
+   * Track quick pick usage
+   */
+  trackQuickPickUsage(action: string, properties?: Record<string, unknown>) {
+    this.track('quick_pick_used', {
+      action,
+      ...properties,
+    });
+  }
+
+  /**
+   * Track webhook access requests
+   */
+  trackWebhookAccessRequest(properties?: Record<string, unknown>) {
+    this.track('webhook_access_requested', {
+      ...properties,
+    });
+  }
+
+  /**
+   * Track settings changes
+   */
+  trackSettingChange(setting: string, value: unknown, category: string) {
+    this.track('setting_changed', {
+      category,
+      setting,
+      value,
+    });
+  }
+
+  /**
    * Track extension activation
    */
   trackActivation(activationTime: number) {

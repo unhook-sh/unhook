@@ -185,10 +185,16 @@ export class RequestDetailsWebviewProvider {
     if (this._panel) {
       log('Revealing existing panel');
       this._panel.reveal(vscode.ViewColumn.One);
-      this._panel.webview.postMessage({
-        data: this._currentEventData,
-        type: 'eventData',
-      });
+
+      // Add a small delay to ensure the webview is ready, then send the data
+      setTimeout(() => {
+        log('Sending event data to existing panel after delay');
+        this._panel?.webview.postMessage({
+          data: this._currentEventData,
+          type: 'eventData',
+        });
+      }, 100);
+
       return;
     }
 
@@ -223,10 +229,158 @@ export class RequestDetailsWebviewProvider {
             log('Webview is ready, sending event data');
             // If we have event data, send it to the webview
             if (this._currentEventData) {
+              log('Sending current event data to ready webview', {
+                eventId: this._currentEventData.id,
+              });
               this._panel?.webview.postMessage({
                 data: this._currentEventData,
                 type: 'eventData',
               });
+            } else {
+              log('No current event data to send to ready webview');
+            }
+            break;
+          case 'webview_interaction':
+            // Track webview interactions from React components
+            this._analyticsService?.track('webview_interaction', {
+              action: message.action,
+              component: message.component,
+              ...message.properties,
+            });
+            break;
+          case 'openRequestDetails':
+            log('Opening request details from event details webview', {
+              data: message.data,
+            });
+            // Extract request and event data from the message
+            {
+              const { request, event } = message.data;
+              if (request && event) {
+                // Show the request details
+                this.showRequestFromEvent(request, event);
+              } else {
+                log('Invalid request details data received', {
+                  data: message.data,
+                });
+              }
+            }
+            break;
+          default:
+            log('Unknown message type from webview', { type: message.type });
+        }
+      },
+      null,
+      this._disposables,
+    );
+
+    // Reset when the panel is disposed
+    this._panel.onDidDispose(
+      () => {
+        log('Panel disposed');
+
+        // Track panel disposal
+        this._analyticsService?.track('webview_panel_disposed', {
+          panel_type: 'event_details',
+        });
+
+        this._panel = undefined;
+      },
+      null,
+      this._disposables,
+    );
+  }
+
+  public async showRequestFromEvent(request: RequestType, event: EventType) {
+    log('Showing request details from event', {
+      eventId: event.id,
+      requestId: request.id,
+    });
+
+    // Track request details view from event
+    this._analyticsService?.track('webview_request_details_viewed_from_event', {
+      event_id: event.id,
+      request_id: request.id,
+      source: event.source || 'unknown',
+    });
+
+    // Sanitize headers in request and response if present
+    if (
+      event?.originRequest?.headers &&
+      typeof event.originRequest.headers === 'object'
+    ) {
+      event.originRequest.headers = sanitizeHeaders(
+        event.originRequest.headers as Record<string, unknown>,
+      ) as Record<string, string>;
+    }
+    if (
+      request?.response?.headers &&
+      typeof request.response.headers === 'object'
+    ) {
+      request.response.headers = sanitizeHeaders(
+        request.response.headers as Record<string, unknown>,
+      ) as Record<string, string>;
+    }
+
+    this._currentRequestData = request;
+    this._currentEventData = null;
+
+    // If we already have a panel, show it
+    if (this._panel) {
+      log('Revealing existing panel for request details');
+      this._panel.reveal(vscode.ViewColumn.One);
+
+      // Add a small delay to ensure the webview is ready, then send the data
+      setTimeout(() => {
+        log('Sending request data to existing panel after delay');
+        this._panel?.webview.postMessage({
+          data: this._currentRequestData,
+          type: 'requestData',
+        });
+      }, 100);
+
+      return;
+    }
+
+    // Otherwise, create a new panel
+    log('Creating new panel for request details');
+    this._panel = vscode.window.createWebviewPanel(
+      'unhookRequestDetails',
+      'Request Details',
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          this._extensionUri,
+          vscode.Uri.joinPath(
+            this._extensionUri,
+            'dist',
+            'request-details-webview',
+          ),
+        ],
+        retainContextWhenHidden: true,
+      },
+    );
+
+    this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
+
+    // Handle messages from the webview
+    this._panel.webview.onDidReceiveMessage(
+      (message) => {
+        log('Received message from webview', { message });
+        switch (message.type) {
+          case 'ready':
+            log('Webview is ready, sending request data');
+            // If we have request data, send it to the webview
+            if (this._currentRequestData) {
+              log('Sending current request data to ready webview', {
+                requestId: this._currentRequestData.id,
+              });
+              this._panel?.webview.postMessage({
+                data: this._currentRequestData,
+                type: 'requestData',
+              });
+            } else {
+              log('No current request data to send to ready webview');
             }
             break;
           case 'webview_interaction':
@@ -252,7 +406,7 @@ export class RequestDetailsWebviewProvider {
 
         // Track panel disposal
         this._analyticsService?.track('webview_panel_disposed', {
-          panel_type: 'event_details',
+          panel_type: 'request_details',
         });
 
         this._panel = undefined;
@@ -310,7 +464,7 @@ export class RequestDetailsWebviewProvider {
   <div id="root">
     <div id="initial-loader">
       <div class="spinner" aria-hidden="true"></div>
-      <div class="text" aria-live="polite">Loading request panel…</div>
+      <div class="text" aria-live="polite">Loading Unhook panel…</div>
     </div>
   </div>
   <script type="module">

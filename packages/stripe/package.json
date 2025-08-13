@@ -17,7 +17,7 @@
   "name": "@unhook/stripe",
   "private": true,
   "scripts": {
-    "build": "echo 'Skipping populate-ids due to missing Stripe environment variables'",
+    "build": "bun run populate-ids",
     "clean": "git clean -xdf .turbo node_modules dist",
     "delete-subscriptions": "bun run ./scripts/delete-customer-subscriptions.ts",
     "dev": "bun run build && tsc --watch",

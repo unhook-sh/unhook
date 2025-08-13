@@ -423,6 +423,17 @@ export class RequestDetailsWebviewProvider {
     if (ConfigManager.getInstance().isDevelopment() && this._devServerUrl) {
       log('Using development mode with Vite dev server');
 
+      // Normalize and derive dev server hosts
+      const devUrl = new URL(this._devServerUrl);
+      const port = devUrl.port || '5173';
+      const host = devUrl.hostname || 'localhost';
+      const httpHostUrl = `http://${host}:${port}`;
+      const httpLocalhostUrl = `http://localhost:${port}`;
+      const httpZeroUrl = `http://0.0.0.0:${port}`;
+      const wsHostUrl = `ws://${host}:${port}`;
+      const wsLocalhostUrl = `ws://localhost:${port}`;
+      const wsZeroUrl = `ws://0.0.0.0:${port}`;
+
       // Create a simple HTML that loads from the Vite dev server
       const html = `<!DOCTYPE html>
 <html lang="en">
@@ -430,11 +441,11 @@ export class RequestDetailsWebviewProvider {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none';
-    img-src ${webview.cspSource} https: http://localhost:5173;
-    script-src 'unsafe-inline' 'unsafe-eval' ${webview.cspSource} http://localhost:5173;
-    style-src 'unsafe-inline' ${webview.cspSource} http://localhost:5173;
-    connect-src ${webview.cspSource} http://localhost:5173 ws://localhost:5173;
-    font-src ${webview.cspSource} http://localhost:5173;">
+    img-src ${webview.cspSource} https: ${httpHostUrl} ${httpLocalhostUrl} ${httpZeroUrl};
+    script-src 'unsafe-inline' 'unsafe-eval' ${webview.cspSource} ${httpHostUrl} ${httpLocalhostUrl} ${httpZeroUrl};
+    style-src 'unsafe-inline' ${webview.cspSource} ${httpHostUrl} ${httpLocalhostUrl} ${httpZeroUrl};
+    connect-src ${webview.cspSource} ${httpHostUrl} ${httpLocalhostUrl} ${httpZeroUrl} ${wsHostUrl} ${wsLocalhostUrl} ${wsZeroUrl};
+    font-src ${webview.cspSource} ${httpHostUrl} ${httpLocalhostUrl} ${httpZeroUrl};">
   <title>Unhook</title>
   <base href="/">
   <style>
@@ -468,14 +479,14 @@ export class RequestDetailsWebviewProvider {
     </div>
   </div>
   <script type="module">
-    import RefreshRuntime from 'http://localhost:5173/@react-refresh'
+    import RefreshRuntime from '${httpHostUrl}/@react-refresh'
     RefreshRuntime.injectIntoGlobalHook(window)
     window.$RefreshReg$ = () => {}
     window.$RefreshSig$ = () => (type) => type
     window.__vite_plugin_react_preamble_installed__ = true
   </script>
-  <script type="module" src="http://localhost:5173/@vite/client"></script>
-  <script type="module" src="http://localhost:5173/main.tsx"></script>
+  <script type="module" src="${httpHostUrl}/@vite/client"></script>
+  <script type="module" src="${httpHostUrl}/main.tsx"></script>
 </body>
 </html>`;
 

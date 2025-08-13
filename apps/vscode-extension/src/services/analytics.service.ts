@@ -154,9 +154,13 @@ export class AnalyticsService implements vscode.Disposable {
     } else {
       setUser(null);
 
-      if (trackTransitions && this._previousIsSignedIn) {
-        this.track('user_signed_out');
-      }
+      // Don't automatically track user_signed_out on auth state changes
+      // This event is now only tracked when users explicitly log out via:
+      // - auth_sign_out_success (unhook.signOut command)
+      // - quick_pick_sign_out (quick pick selection)
+      // 
+      // This prevents tracking session expiration, token invalidation, etc.
+      // as user logout events
     }
 
     this._previousIsSignedIn = currentlySignedIn;

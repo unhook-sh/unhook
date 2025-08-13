@@ -195,8 +195,8 @@ export function NavUser() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  // Track user sign out event
-                  posthog.capture('user_signed_out', {
+                  // Track user logout action
+                  posthog.capture('user_logout_clicked', {
                     source: 'nav_user_dropdown',
                     user_id: user.id,
                     email: user.emailAddresses[0]?.emailAddress,

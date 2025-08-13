@@ -79,7 +79,7 @@ You can also use the command palette to change your analytics preference:
 ### Authentication
 - `user_signed_in` - When a user signs in
   - Properties: `method`
-- `user_signed_out` - When a user signs out
+- `user_signed_out` - ~~When a user signs out~~ **DEPRECATED**: Use `auth_sign_out_success` or `quick_pick_sign_out` instead
 
 ### Commands
 All commands are automatically tracked with:

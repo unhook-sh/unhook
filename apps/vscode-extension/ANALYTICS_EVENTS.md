@@ -43,7 +43,7 @@ This document outlines all the PostHog analytics events being tracked in the Unh
     - `method`: Authentication method (e.g., "vscode")
   - Location: Analytics service
 
-- **`user_signed_out`** - When user transitions to signed-out state
+- **`user_signed_out`** - ~~When user transitions to signed-out state~~ **DEPRECATED**: This event was automatically tracked on any auth state change. Now use `auth_sign_out_success` or `quick_pick_sign_out` for explicit logout tracking.
   - Properties: None
   - Location: Analytics service
 

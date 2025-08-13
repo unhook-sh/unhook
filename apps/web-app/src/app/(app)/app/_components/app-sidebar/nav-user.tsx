@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import posthog from 'posthog-js';
 import { useState } from 'react';
 import { NewOrgDialog } from './new-org-dialog';
 
@@ -194,6 +195,12 @@ export function NavUser() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
+                  // Track user logout action
+                  posthog.capture('user_logout_clicked', {
+                    email: user.emailAddresses[0]?.emailAddress,
+                    source: 'nav_user_dropdown',
+                    user_id: user.id,
+                  });
                   signOut();
                 }}
               >

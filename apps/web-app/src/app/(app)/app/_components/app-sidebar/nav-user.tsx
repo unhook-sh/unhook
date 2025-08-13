@@ -36,6 +36,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useState } from 'react';
 import { NewOrgDialog } from './new-org-dialog';
+import posthog from 'posthog-js';
 
 export function NavUser() {
   const { setTheme } = useTheme();
@@ -194,6 +195,12 @@ export function NavUser() {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
+                  // Track user sign out event
+                  posthog.capture('user_signed_out', {
+                    source: 'nav_user_dropdown',
+                    user_id: user.id,
+                    email: user.emailAddresses[0]?.emailAddress,
+                  });
                   signOut();
                 }}
               >

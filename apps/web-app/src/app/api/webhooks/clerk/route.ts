@@ -11,7 +11,9 @@ import { handleOrganizationMembershipDeleted } from './organization-membership-d
 import { handleOrganizationMembershipUpdated } from './organization-membership-updated';
 import { handleOrganizationUpdated } from './organization-updated';
 import { handleSessionCreated } from './session-created';
+import { handleSessionEnded } from './session-ended';
 import { handleUserCreated } from './user-created';
+import { handleUserDeleted } from './user-deleted';
 import { handleUserUpdated } from './user-updated';
 
 export async function POST(request: Request) {
@@ -74,8 +76,14 @@ export async function POST(request: Request) {
     case 'user.updated':
       response = await handleUserUpdated(event);
       break;
+    case 'user.deleted':
+      response = await handleUserDeleted(event);
+      break;
     case 'session.created':
       response = await handleSessionCreated(event);
+      break;
+    case 'session.ended':
+      response = await handleSessionEnded(event);
       break;
     case 'organization.created':
       response = await handleOrganizationCreated(event);

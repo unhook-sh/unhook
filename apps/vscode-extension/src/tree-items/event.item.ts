@@ -42,7 +42,13 @@ export class EventItem extends vscode.TreeItem {
         ? vscode.TreeItemCollapsibleState.Collapsed
         : vscode.TreeItemCollapsibleState.None;
     super(eventName, collapsibleState);
-    this.description = `${event.source} • ${formatDistance(event.timestamp, new Date(), { addSuffix: true })}`;
+    // Get source display text - show source URL when source is '*'
+    const sourceDisplay =
+      event.source === '*'
+        ? event.originRequest?.sourceUrl || 'Unknown Source'
+        : event.source || 'Unknown Source';
+
+    this.description = `${sourceDisplay} • ${formatDistance(event.timestamp, new Date(), { addSuffix: true })}`;
     const lastRequest = event.requests?.[0];
 
     // If there are no requests yet, use a default icon based on event status

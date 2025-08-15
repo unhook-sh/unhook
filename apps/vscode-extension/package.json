@@ -510,8 +510,10 @@
   },
   "dependencies": {
     "@unhook/client": "workspace:*",
+    "@unhook/zustand": "workspace:*",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
+    "js-yaml": "4.1.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "shiki": "3.9.2",
@@ -523,6 +525,7 @@
     "@tailwindcss/postcss": "4.1.11",
     "@types/bun": "1.2.20",
     "@types/glob": "9.0.0",
+    "@types/js-yaml": "4.0.9",
     "@types/node": "24.2.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",

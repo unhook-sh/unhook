@@ -4,6 +4,7 @@ import type {
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import { useEffect, useState } from 'react';
+
 import { ErrorState } from './components/error-state';
 import { EventDetails } from './components/event-details';
 import { LoadingState } from './components/loading-state';
@@ -19,6 +20,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Only set up message handling once
+
     const messageHandler = (
       event: MessageEvent<{
         data: RequestTypeWithEventType | EventTypeWithRequest;
@@ -27,25 +30,19 @@ function App() {
     ) => {
       try {
         const message = event.data;
-        console.log('Webview received message:', message);
-        console.log('Message type:', message.type);
-        console.log('Message data:', message.data);
 
         switch (message.type) {
           case 'requestData':
-            console.log('Setting request data:', message.data);
             setRequestData(message.data as RequestTypeWithEventType);
             setEventData(null);
             setError(null);
             break;
           case 'eventData':
-            console.log('Setting event data:', message.data);
             setEventData(message.data as EventTypeWithRequest);
             setRequestData(null);
             setError(null);
             break;
           case 'openRequestDetails':
-            console.log('Opening request details:', message.data);
             // Send message to extension to open request details
             vscode.postMessage({
               data: message.data,
@@ -53,7 +50,7 @@ function App() {
             });
             break;
           default:
-            console.log('Unknown message type:', message.type);
+          // Unknown message type; ignore
         }
       } catch (error) {
         console.error('Error processing message:', error);
@@ -63,13 +60,12 @@ function App() {
 
     window.addEventListener('message', messageHandler);
     log('Sending ready message to extension');
-    console.log('Sending ready message to extension');
     vscode.postMessage({ type: 'ready' });
 
     return () => {
       window.removeEventListener('message', messageHandler);
     };
-  }, []);
+  }, []); // Remove isReady dependency to prevent re-runs
 
   if (error) return <ErrorState error={error} />;
   if (requestData) return <RequestDetails data={requestData} />;

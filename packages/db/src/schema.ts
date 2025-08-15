@@ -345,7 +345,6 @@ export const RequestPayloadSchema = z.object({
   clientIp: z.string(),
   contentType: z.string(),
   headers: z.record(z.string()),
-  id: z.string(),
   method: z.string(),
   size: z.number(),
   sourceUrl: z.string(),

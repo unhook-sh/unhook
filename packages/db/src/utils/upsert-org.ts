@@ -151,7 +151,6 @@ async function createExampleEventAndRequest({
           'user-agent': 'ExampleWebhookClient/1.0',
           'x-webhook-signature': 'sha256=abc123...',
         },
-        id: 'example-request-123',
         method: 'POST',
         size: 245,
         sourceUrl: 'https://api.example.com/webhooks',

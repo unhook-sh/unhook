@@ -1,5 +1,6 @@
 import { extractBody } from '@unhook/client/utils/extract-body';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
+import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
 import { eventsTreeView, requestDetailsWebviewProvider } from '../extension';
@@ -72,7 +73,7 @@ export function registerEventCommands(
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'unhook.replayEvent',
-      async (item: EventItem) => {
+      async (item?: EventItem | { event: EventTypeWithRequest }) => {
         try {
           if (isDeliveryPaused()) {
             vscode.window.showWarningMessage(
@@ -81,13 +82,31 @@ export function registerEventCommands(
             return;
           }
 
+          // Extract event data from parameter or get from webview provider
+          let event: EventTypeWithRequest;
+          if (item) {
+            // Called from tree view with EventItem
+            event = 'event' in item ? item.event : item;
+          } else {
+            // Called from webview - get current event from provider
+            const currentEvent =
+              requestDetailsWebviewProvider?.getCurrentEvent();
+            if (!currentEvent) {
+              vscode.window.showErrorMessage(
+                'No event data available for replay',
+              );
+              return;
+            }
+            event = currentEvent;
+          }
+
           const eventName =
-            extractEventName(item.event.originRequest?.body) || 'Unknown';
-          const source = item.event.source || 'Unknown';
+            extractEventName(event.originRequest?.body) || 'Unknown';
+          const source = event.source || 'Unknown';
 
           // Track event replay action
           provider.getAnalyticsService()?.track('event_replay', {
-            event_id: item.event.id,
+            event_id: event.id,
             event_name: eventName,
             event_type: 'event',
             source: source,
@@ -105,20 +124,61 @@ export function registerEventCommands(
           const authStore = provider.authStore;
           if (!authStore) throw new Error('Not authenticated');
           await authStore.api.events.updateEventStatus.mutate({
-            eventId: item.event.id,
-            retryCount: (item.event.retryCount ?? 0) + 1,
+            eventId: event.id,
+            retryCount: (event.retryCount ?? 0) + 1,
             status: 'processing',
           });
 
-          // Use the delivery service for consistent behavior and optimistic UI updates
-          await provider.deliveryService.handleRealtimeEventDelivery(
-            item.event,
-            config,
-          );
+          // For replay with polling, create new request records for all destinations
+          // and process them immediately to simulate a new webhook event
+          for (const destination of config.destination) {
+            // Create a new request record for replay with a unique timestamp
+            const newRequest = await authStore.api.requests.create.mutate({
+              apiKeyId: event.apiKeyId ?? undefined,
+              destination: {
+                name: destination.name,
+                url: String(destination.url),
+              },
+              destinationName: destination.name,
+              destinationUrl: String(destination.url),
+              eventId: event.id,
+              responseTimeMs: 0,
+              source: event.source || 'unknown',
+              status: 'pending',
+              timestamp: new Date(Date.now() + Math.random()), // Ensure unique timestamp
+              webhookId: event.webhookId,
+            });
+
+            // Process the new request immediately using the delivery service
+            await provider.deliveryService.handleSingleRequestReplay(
+              newRequest,
+              event,
+              config,
+            );
+          }
 
           vscode.window.showInformationMessage(
             `Event ${eventName} from ${source} replayed successfully`,
           );
+
+          // Refresh the webview to show the updated event data with new delivery attempts
+          if (requestDetailsWebviewProvider) {
+            try {
+              // Fetch the updated event data to get the new requests
+              const updatedEvent =
+                await authStore.api.events.byIdWithRequests.query({
+                  id: event.id,
+                });
+
+              if (updatedEvent) {
+                // Update the webview with the fresh event data
+                await requestDetailsWebviewProvider.showEvent(updatedEvent);
+              }
+            } catch (refreshError) {
+              log('Failed to refresh webview after replay:', refreshError);
+              // Don't fail the replay operation if refresh fails
+            }
+          }
         } catch (error) {
           vscode.window.showErrorMessage(`Failed to replay event: ${error}`);
         }
@@ -241,13 +301,19 @@ export function registerEventCommands(
           });
 
           // Track request view action
+          // Get source display text - show source URL when source is '*'
+          const sourceDisplay =
+            item.parent.event.source === '*'
+              ? item.parent.event.originRequest?.sourceUrl || 'Unknown Source'
+              : item.parent.event.source || 'Unknown Source';
+
           provider.getAnalyticsService()?.track('request_view', {
             event_id: item.parent.event.id,
             event_name:
               extractEventName(item.parent.event.originRequest?.body) ||
               'Unknown',
             request_id: item.request.id,
-            source: item.parent.event.source || 'Unknown',
+            source: sourceDisplay,
           });
 
           // 1) Show immediately with existing data for instant UI
@@ -323,7 +389,11 @@ export function registerEventCommands(
           const eventName =
             extractEventName(item.parent.event.originRequest?.body) ||
             'Unknown';
-          const source = item.parent.event.source || 'Unknown';
+          // Get source display text - show source URL when source is '*'
+          const sourceDisplay =
+            item.parent.event.source === '*'
+              ? item.parent.event.originRequest?.sourceUrl || 'Unknown Source'
+              : item.parent.event.source || 'Unknown Source';
 
           // Track request replay action
           provider.getAnalyticsService()?.track('request_replay', {
@@ -331,12 +401,12 @@ export function registerEventCommands(
             event_name: eventName,
             event_type: 'request',
             request_id: item.request.id,
-            source: source,
+            source: sourceDisplay,
           });
 
           // Show a loading message with event name and source
           vscode.window.showInformationMessage(
-            `Replaying request: ${eventName} from ${source}...`,
+            `Replaying request: ${eventName} from ${sourceDisplay}...`,
           );
 
           // Get the API and config from the provider

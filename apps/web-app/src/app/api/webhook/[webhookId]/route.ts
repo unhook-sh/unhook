@@ -3,7 +3,6 @@ import { filterHeaders } from '@unhook/client/utils/headers';
 import { trackApiKeyUsage } from '@unhook/db';
 import { db } from '@unhook/db/client';
 import { Events, Orgs, type RequestPayload, Webhooks } from '@unhook/db/schema';
-import { createId } from '@unhook/id';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -291,15 +290,40 @@ export async function POST(
     const referer = propertyReferer || headerReferer;
     const host = req.headers.get('host');
 
-    // Determine the most likely source URL
-    const sourceUrl = origin || referer || `https://${host}` || requestUrl;
+    // Determine the most likely source URL with intelligent fallback
+    // Filter out invalid origins like 'about:client' from Postman or browser extensions
+    const isValidOrigin = (url: string | null): url is string => {
+      if (!url) return false;
+      // Reject non-HTTP(S) URLs and special browser schemes
+      if (
+        url.startsWith('about:') ||
+        url.startsWith('chrome:') ||
+        url.startsWith('moz:') ||
+        url.startsWith('file:')
+      ) {
+        return false;
+      }
+      // Reject invalid URLs
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const sourceUrl = (() => {
+      if (isValidOrigin(origin)) return origin;
+      if (isValidOrigin(referer)) return referer;
+      if (host) return `https://${host}`;
+      return requestUrl || 'unknown';
+    })();
 
     const request: RequestPayload = {
       body: bodyBase64,
       clientIp: req.headers.get('x-forwarded-for') ?? 'unknown',
       contentType: req.headers.get('content-type') ?? 'text/plain',
       headers,
-      id: createId({ prefix: 'req' }),
       method: req.method,
       size: body?.length ?? 0,
       sourceUrl,

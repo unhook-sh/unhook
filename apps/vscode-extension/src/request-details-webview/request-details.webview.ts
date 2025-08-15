@@ -39,6 +39,10 @@ export class RequestDetailsWebviewProvider {
     this._analyticsService = analyticsService;
   }
 
+  public getCurrentEvent(): EventTypeWithRequest | null {
+    return this._currentEventData;
+  }
+
   public async show({
     request,
     event,
@@ -115,12 +119,37 @@ export class RequestDetailsWebviewProvider {
         log('Received message from webview', { message });
         switch (message.type) {
           case 'ready':
-            log('Webview is ready, sending request data');
-            // If we have request data, send it to the webview
+            log('Webview is ready, sending current data');
+            // Send whatever data we currently have (request or event)
             if (this._currentRequestData) {
+              log('Sending current request data to ready webview');
               this._panel?.webview.postMessage({
                 data: this._currentRequestData,
                 type: 'requestData',
+              });
+            } else if (this._currentEventData) {
+              log('Sending current event data to ready webview');
+              this._panel?.webview.postMessage({
+                data: this._currentEventData,
+                type: 'eventData',
+              });
+            } else {
+              log('No current data to send to ready webview');
+            }
+            break;
+          case 'setupMcpServer':
+            // Trigger MCP server setup via existing command
+            vscode.commands.executeCommand('unhook.configureApiKey');
+            break;
+          case 'replayEvent':
+            // Handle event replay from webview
+            log('Received replay event request from webview', {
+              eventId: message.data?.event?.id,
+            });
+            if (message.data?.event) {
+              // Execute the replay event command
+              vscode.commands.executeCommand('unhook.replayEvent', {
+                event: message.data.event,
               });
             }
             break;
@@ -130,6 +159,38 @@ export class RequestDetailsWebviewProvider {
               action: message.action,
               component: message.component,
               ...message.properties,
+            });
+            break;
+          case 'zustand:patch':
+            // Handle Zustand state persistence from webview
+            log('Received Zustand patch from webview', {
+              payload: message.payload,
+            });
+            Object.entries(message.payload as Record<string, unknown>).forEach(
+              ([key, value]) => {
+                // Store in extension context for persistence
+                // Note: We need access to the extension context here
+                // For now, we'll log the state changes
+                log('Zustand state change', { key, value });
+              },
+            );
+            break;
+          case 'zustand:request_state':
+            // Send current persisted state back to webview
+            log('Sending persisted state to webview');
+            // Note: We need access to the extension context here
+            // For now, we'll send default values
+            this._panel?.webview.postMessage({
+              payload: {
+                eventDetails: {
+                  activeTab: 'payload',
+                  showAiPrompt: false,
+                },
+                payloadFormat: 'json', // Default value
+                sidebarCollapsed: false, // Default value
+                theme: 'system', // Default value
+              },
+              type: 'zustand:hydrate',
             });
             break;
           default:
@@ -238,6 +299,45 @@ export class RequestDetailsWebviewProvider {
               });
             } else {
               log('No current event data to send to ready webview');
+            }
+            break;
+          case 'setupMcpServer':
+            // Trigger MCP server setup via existing command
+            vscode.commands.executeCommand('unhook.configureApiKey');
+            break;
+          case 'replayEvent':
+            // Handle event replay from webview
+            log('Received replay event request from webview', {
+              eventId: message.data?.event?.id,
+            });
+            if (message.data?.event) {
+              // Execute the replay event command
+              vscode.commands.executeCommand('unhook.replayEvent', {
+                event: message.data.event,
+              });
+            }
+            break;
+          case 'replayEventFromEvent':
+            // Handle event replay from event header (uses current event data)
+            log('Received replay event from event header', {
+              eventId: this._currentEventData?.id,
+            });
+            if (this._currentEventData) {
+              // Execute the replay event command with current event data
+              vscode.commands.executeCommand('unhook.replayEvent', {
+                event: this._currentEventData,
+              });
+            }
+            break;
+          case 'refreshEventData':
+            // Handle event data refresh request from webview
+            log('Received refresh event data request from webview', {
+              eventId: this._currentEventData?.id,
+            });
+            if (this._currentEventData) {
+              // Trigger a refresh of the events data
+              // This will update the tree view and potentially the webview
+              vscode.commands.executeCommand('unhook.events.refresh');
             }
             break;
           case 'webview_interaction':
@@ -369,8 +469,8 @@ export class RequestDetailsWebviewProvider {
         log('Received message from webview', { message });
         switch (message.type) {
           case 'ready':
-            log('Webview is ready, sending request data');
-            // If we have request data, send it to the webview
+            log('Webview is ready, sending current data');
+            // Send whatever data we currently have (request or event)
             if (this._currentRequestData) {
               log('Sending current request data to ready webview', {
                 requestId: this._currentRequestData.id,
@@ -379,8 +479,32 @@ export class RequestDetailsWebviewProvider {
                 data: this._currentRequestData,
                 type: 'requestData',
               });
+            } else if (this._currentEventData) {
+              log('Sending current event data to ready webview', {
+                eventId: this._currentEventData.id,
+              });
+              this._panel?.webview.postMessage({
+                data: this._currentEventData,
+                type: 'eventData',
+              });
             } else {
-              log('No current request data to send to ready webview');
+              log('No current data to send to ready webview');
+            }
+            break;
+          case 'setupMcpServer':
+            // Trigger MCP server setup via existing command
+            vscode.commands.executeCommand('unhook.configureApiKey');
+            break;
+          case 'replayEvent':
+            // Handle event replay from webview
+            log('Received replay event request from webview', {
+              eventId: message.data?.event?.id,
+            });
+            if (message.data?.event) {
+              // Execute the replay event command
+              vscode.commands.executeCommand('unhook.replayEvent', {
+                event: message.data.event,
+              });
             }
             break;
           case 'webview_interaction':
@@ -389,6 +513,38 @@ export class RequestDetailsWebviewProvider {
               action: message.action,
               component: message.component,
               ...message.properties,
+            });
+            break;
+          case 'zustand:patch':
+            // Handle Zustand state persistence from webview
+            log('Received Zustand patch from webview', {
+              payload: message.payload,
+            });
+            Object.entries(message.payload as Record<string, unknown>).forEach(
+              ([key, value]) => {
+                // Store in extension context for persistence
+                // Note: We need access to the extension context here
+                // For now, we'll log the state changes
+                log('Zustand state change', { key, value });
+              },
+            );
+            break;
+          case 'zustand:request_state':
+            // Send current persisted state back to webview
+            log('Sending persisted state to webview');
+            // Note: We need access to the extension context here
+            // For now, we'll send default values
+            this._panel?.webview.postMessage({
+              payload: {
+                eventDetails: {
+                  activeTab: 'payload',
+                  showAiPrompt: false,
+                },
+                payloadFormat: 'json', // Default value
+                sidebarCollapsed: false, // Default value
+                theme: 'system', // Default value
+              },
+              type: 'zustand:hydrate',
             });
             break;
           default:

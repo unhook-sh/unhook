@@ -3,6 +3,7 @@
 import { api } from '@unhook/api/react';
 import { extractBody } from '@unhook/client/utils/extract-body';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
+import { getSourceDisplayText } from '@unhook/client/utils/source-display';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
@@ -152,7 +153,7 @@ export function RealTimeEventStream({
                     </Badge>
                     <div className="flex items-center gap-1 text-xs">
                       <span className="font-mono text-muted-foreground">
-                        {event.source || 'webhook'}
+                        {getSourceDisplayText(event)}
                       </span>
                       {(() => {
                         const eventName = extractEventName(

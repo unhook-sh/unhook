@@ -3,5 +3,5 @@
 export * from './date-range-picker';
 export * from './detail-text-block';
 export * from './portal';
-export * from './time-display';
+export * from './timezone-display';
 export * from './typography';

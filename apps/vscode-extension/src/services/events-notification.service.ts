@@ -43,8 +43,12 @@ export class EventsNotificationService {
         );
         const eventName =
           extractEventName(event.originRequest?.body) || 'Unknown';
-        const source = event.source || 'Unknown';
-        const message = `Webhook Event: ${eventName} from ${source}`;
+        // Get source display text - show source URL when source is '*'
+        const sourceDisplay =
+          event.source === '*'
+            ? event.originRequest?.sourceUrl || 'Unknown Source'
+            : event.source || 'Unknown Source';
+        const message = `Webhook Event: ${eventName} from ${sourceDisplay}`;
         vscode.window.showInformationMessage(message);
       }
     }

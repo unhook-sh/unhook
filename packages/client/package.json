@@ -29,7 +29,8 @@
     "./utils/delivery": "./src/utils/delivery.ts",
     "./utils/extract-body": "./src/utils/extract-body.ts",
     "./utils/extract-event-name": "./src/utils/extract-event-name.ts",
-    "./utils/headers": "./src/utils/headers.ts"
+    "./utils/headers": "./src/utils/headers.ts",
+    "./utils/source-display": "./src/utils/source-display.ts"
   },
   "files": [
     "dist",

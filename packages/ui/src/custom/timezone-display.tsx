@@ -19,7 +19,7 @@ interface TimeDisplayProps {
   showSeconds?: boolean;
 }
 
-export function TimeDisplay({
+export function TimezoneDisplay({
   date,
   children,
   showRelative = false,
@@ -67,7 +67,7 @@ export function TimeDisplay({
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <Button className="p-0" variant="link">
+        <Button className="p-0 whitespace-nowrap" variant="link">
           {timeDisplay}
         </Button>
       </HoverCardTrigger>
@@ -82,7 +82,7 @@ export function TimeDisplay({
                 Relative
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground font-mono">
+                <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
                   {formatRelativeTime(dateObj)}
                 </span>
                 <CopyButton
@@ -90,21 +90,21 @@ export function TimeDisplay({
                   size="sm"
                   successMessage="Relative time copied"
                   text={formatRelativeTime(dateObj)}
-                  variant="ghost"
+                  variant="outline"
                 />
               </div>
             </div>
           )}
           {showLocal && (
             <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center rounded bg-muted px-2 py-1 text-xs font-medium space-x-2">
-                <span className="font-semibold">Your Device</span>
+              <span className="inline-flex items-center rounded bg-muted px-2 py-1 text-xs font-medium space-x-2 whitespace-nowrap">
+                <span>Your Device</span>
                 <span className="text-muted-foreground">
                   {getTimezoneAbbreviation(dateObj)}
                 </span>
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground font-mono">
+                <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
                   {formatLocalTime(dateObj)}
                 </span>
                 <CopyButton
@@ -123,7 +123,7 @@ export function TimeDisplay({
                 UTC
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground font-mono">
+                <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
                   {format(
                     new Date(
                       dateObj.getTime() - dateObj.getTimezoneOffset() * 60000,

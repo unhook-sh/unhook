@@ -3,8 +3,9 @@
 import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
+import { getSourceDisplayText } from '@unhook/client/utils/source-display';
 import { Badge } from '@unhook/ui/badge';
-import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import { TimezoneDisplay } from '@unhook/ui/custom/timezone-display';
 import { Skeleton } from '@unhook/ui/skeleton';
 import {
   Table,
@@ -131,7 +132,7 @@ export function RecentEventsTable() {
               events.data?.map((event) => (
                 <TableRow key={event.id}>
                   <TableCell className="font-mono text-sm">
-                    <TimeDisplay date={event.timestamp} />
+                    <TimezoneDisplay date={event.timestamp} />
                   </TableCell>
                   <TableCell className="max-w-[200px]">
                     <Tooltip>
@@ -149,7 +150,7 @@ export function RecentEventsTable() {
                   </TableCell>
                   <TableCell>
                     <div className="font-mono text-sm text-muted-foreground">
-                      {event.source}
+                      {getSourceDisplayText(event)}
                     </div>
                   </TableCell>
                   <TableCell>

@@ -134,7 +134,8 @@ code {
     "Courier New",
     monospace
   );
-  font-size: var(--vscode-editor-font-size, 13px);
+  /* font-size: var(--vscode-editor-font-size, 12px); */
+  font-size: var(--vscode-font-size, 11px);
   background-color: var(--vscode-textBlockQuote-background, var(--muted));
 }
 
@@ -177,7 +178,33 @@ a:hover {
 }
 
 /* Shiki container adjustments to blend with theme */
+/* Ensure Shiki never paints its own background so it inherits the parent */
 .shiki,
-.shiki span {
+.shiki pre,
+.shiki code,
+.shiki .line,
+.shiki span,
+pre.shiki,
+pre.shiki code {
+  font-size: var(--vscode-font-size, 12px);
+  background: transparent !important;
   background-color: transparent !important;
+}
+
+/* Override Shiki's inline background styles */
+.shiki[style*="background-color"] {
+  background-color: transparent !important;
+}
+
+.shiki pre[style*="background-color"] {
+  background-color: transparent !important;
+}
+
+/* Specific override for payload tab Shiki container */
+.bg-muted .shiki {
+  background-color: var(--vscode-textBlockQuote-background, var(--muted)) !important;
+}
+
+.bg-muted .shiki pre {
+  background-color: var(--vscode-textBlockQuote-background, var(--muted)) !important;
 }

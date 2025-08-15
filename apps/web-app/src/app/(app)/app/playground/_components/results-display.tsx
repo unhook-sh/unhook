@@ -8,7 +8,7 @@ import {
   CollapsibleTrigger,
 } from '@unhook/ui/collapsible';
 import { Icons } from '@unhook/ui/custom/icons';
-import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import { TimezoneDisplay } from '@unhook/ui/custom/timezone-display';
 import { ScrollArea } from '@unhook/ui/scroll-area';
 import { useState } from 'react';
 
@@ -79,7 +79,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                   {result.eventType}
                 </span>
               </div>
-              <TimeDisplay date={result.timestamp} />
+              <TimezoneDisplay date={result.timestamp} />
             </div>
 
             <div className="text-sm text-muted-foreground">

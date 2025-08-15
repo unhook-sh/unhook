@@ -56,7 +56,6 @@ const mockEvent: EventTypeWithRequest = {
     clientIp: '127.0.0.1',
     contentType: 'application/json',
     headers: {},
-    id: 'req1',
     method: 'POST',
     size: 100,
     sourceUrl: 'http://example.com',

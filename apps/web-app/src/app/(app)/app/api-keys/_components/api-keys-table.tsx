@@ -4,7 +4,7 @@ import { IconEye, IconEyeOff, IconPencil } from '@tabler/icons-react';
 import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
-import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import { TimezoneDisplay } from '@unhook/ui/custom/timezone-display';
 import * as Editable from '@unhook/ui/diceui/editable-input';
 import { Input } from '@unhook/ui/input';
 import { Skeleton } from '@unhook/ui/skeleton';
@@ -182,11 +182,11 @@ export function ApiKeysTable() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <TimeDisplay date={apiKey.createdAt} />
+                    <TimezoneDisplay date={apiKey.createdAt} />
                   </TableCell>
                   <TableCell>
                     {apiKey.lastUsage ? (
-                      <TimeDisplay date={apiKey.lastUsage.createdAt} />
+                      <TimezoneDisplay date={apiKey.lastUsage.createdAt} />
                     ) : (
                       'Never'
                     )}

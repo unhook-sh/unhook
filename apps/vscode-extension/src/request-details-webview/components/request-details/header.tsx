@@ -4,7 +4,7 @@ import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import { Card, CardHeader, CardTitle } from '@unhook/ui/card';
 import { Icons } from '@unhook/ui/custom/icons';
-import { TimeDisplay } from '@unhook/ui/custom/time-display';
+import { TimezoneDisplay } from '@unhook/ui/custom/timezone-display';
 import { trackHeaderInteraction } from '../../lib/analytics';
 
 export interface RequestHeaderProps {
@@ -83,7 +83,7 @@ export function RequestHeader({
             <Icons.Calendar size="sm" />
             <span>
               {data.timestamp ? (
-                <TimeDisplay date={data.timestamp} showRelative={true} />
+                <TimezoneDisplay date={data.timestamp} showRelative={true} />
               ) : (
                 'No timestamp'
               )}

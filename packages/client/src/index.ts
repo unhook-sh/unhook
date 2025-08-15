@@ -70,6 +70,7 @@ export * from './connection-manager';
 export * from './types';
 export * from './utils/extract-body';
 export * from './utils/headers';
+export * from './utils/source-display';
 export * from './utils/try-decode-base64';
 export * from './utils/try-parse-json';
 export * from './webhook-handler';

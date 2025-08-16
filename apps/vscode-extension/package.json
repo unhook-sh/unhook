@@ -529,7 +529,7 @@
     "@types/node": "24.2.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
-    "@types/vscode": "1.102.0",
+    "@types/vscode": "1.96.0",
     "@unhook/db": "workspace:*",
     "@unhook/test-utils": "workspace:*",
     "@vitejs/plugin-react": "5.0.0",

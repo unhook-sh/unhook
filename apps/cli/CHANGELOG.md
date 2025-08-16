@@ -1,5 +1,14 @@
 # @unhook/cli
 
+## 0.13.23
+
+### Patch Changes
+
+- [`d132950`](https://github.com/unhook-sh/unhook/commit/d132950f911a2eee192cda7795a9017c265cd429) Thanks [@seawatts](https://github.com/seawatts)! - Update webpanel for viewing events
+
+- Updated dependencies [[`d132950`](https://github.com/unhook-sh/unhook/commit/d132950f911a2eee192cda7795a9017c265cd429)]:
+  - @unhook/client@0.5.23
+
 ## 0.13.22
 
 ### Patch Changes

@@ -36,7 +36,6 @@ function createTestEvent({ webhookId }: { webhookId: string }): TestEvent {
       headers: {
         'Content-Type': 'application/json',
       },
-      id: createId({ prefix: 'req' }),
       method: 'POST',
       size: 100,
       sourceUrl: 'https://example.com',

@@ -4,6 +4,7 @@ import type {
   EventType,
   EventTypeWithRequest,
   RequestType,
+  RequestTypeWithEventType,
 } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
 // The module 'vscode' contains the VS Code extensibility API
@@ -24,7 +25,7 @@ export class RequestDetailsWebviewProvider {
   private _panel?: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
   private _devServerUrl?: string;
-  private _currentRequestData: RequestType | null = null;
+  private _currentRequestData: RequestTypeWithEventType | null = null;
   private _currentEventData: EventTypeWithRequest | null = null;
   private _analyticsService?: AnalyticsService;
 
@@ -77,7 +78,10 @@ export class RequestDetailsWebviewProvider {
         request.response.headers as Record<string, unknown>,
       ) as Record<string, string>;
     }
-    this._currentRequestData = request;
+    this._currentRequestData = {
+      ...request,
+      event: event,
+    } as RequestTypeWithEventType;
     this._currentEventData = null;
 
     // If we already have a panel, show it
@@ -317,6 +321,24 @@ export class RequestDetailsWebviewProvider {
               });
             }
             break;
+          case 'replayRequest':
+            // Handle request replay from webview
+            log('Received replay request from webview', {
+              requestId: message.data?.request?.id,
+            });
+            if (message.data?.request && this._currentEventData) {
+              // Create a mock RequestItem structure that the command expects
+              const mockRequestItem = {
+                parent: { event: this._currentEventData },
+                request: message.data.request,
+              };
+              // Execute the replay request command
+              vscode.commands.executeCommand(
+                'unhook.replayRequest',
+                mockRequestItem,
+              );
+            }
+            break;
           case 'replayEventFromEvent':
             // Handle event replay from event header (uses current event data)
             log('Received replay event from event header', {
@@ -358,6 +380,10 @@ export class RequestDetailsWebviewProvider {
               if (request && event) {
                 // Show the request details
                 this.showRequestFromEvent(request, event);
+              } else if (event && !request) {
+                // Going back to event details from request details
+                log('Going back to event details', { eventId: event.id });
+                this.showEvent(event);
               } else {
                 log('Invalid request details data received', {
                   data: message.data,
@@ -421,7 +447,10 @@ export class RequestDetailsWebviewProvider {
       ) as Record<string, string>;
     }
 
-    this._currentRequestData = request;
+    this._currentRequestData = {
+      ...request,
+      event: event,
+    } as RequestTypeWithEventType;
     this._currentEventData = null;
 
     // If we already have a panel, show it

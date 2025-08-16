@@ -5,6 +5,13 @@ import type { RequestType } from '@unhook/db/schema';
 import { Badge } from '@unhook/ui/badge';
 import { Button } from '@unhook/ui/button';
 import { Icons } from '@unhook/ui/custom/icons';
+import { TimezoneDisplay } from '@unhook/ui/custom/timezone-display';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@unhook/ui/tooltip';
 import { vscode } from '../../lib/vscode';
 import { useEvent } from './event-context';
 
@@ -13,7 +20,7 @@ interface DeliveriesTabProps {
 }
 
 export function DeliveriesTab({ requests }: DeliveriesTabProps) {
-  const { source, timestamp, isRetry, retryAttempt } = useEvent();
+  const { event } = useEvent();
 
   if (requests.length === 0) {
     return (
@@ -54,6 +61,9 @@ export function DeliveriesTab({ requests }: DeliveriesTabProps) {
                   Status
                 </th>
                 <th className="text-left p-2 font-medium text-foreground">
+                  Delivered At
+                </th>
+                <th className="text-left p-2 font-medium text-foreground">
                   Response Time
                 </th>
                 <th className="text-left p-2 font-medium text-foreground">
@@ -77,32 +87,8 @@ export function DeliveriesTab({ requests }: DeliveriesTabProps) {
                     // Send message to open request details
                     vscode.postMessage({
                       data: {
-                        event: {
-                          isRetry,
-                          requests: requests.map((req) => ({
-                            createdAt: req.createdAt,
-                            destinationUrl: req.destinationUrl,
-                            failedReason: req.failedReason,
-                            id: req.id,
-                            response: req.response,
-                            responseTimeMs: req.responseTimeMs,
-                            status: req.status,
-                            timestamp: req.timestamp,
-                          })),
-                          retryAttempt,
-                          source,
-                          timestamp,
-                        },
-                        request: {
-                          createdAt: request.createdAt,
-                          destinationUrl: request.destinationUrl,
-                          failedReason: request.failedReason,
-                          id: request.id,
-                          response: request.response,
-                          responseTimeMs: request.responseTimeMs,
-                          status: request.status,
-                          timestamp: request.timestamp,
-                        },
+                        event: event,
+                        request: request,
                       },
                       type: 'openRequestDetails',
                     });
@@ -130,6 +116,14 @@ export function DeliveriesTab({ requests }: DeliveriesTabProps) {
                     </div>
                   </td>
                   <td className="px-4 py-3">
+                    <div className="text-sm">
+                      <TimezoneDisplay
+                        date={request.createdAt}
+                        showRelative={true}
+                      />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span
                         className={`text-sm font-mono ${request.responseTimeMs > 2000 ? 'text-warning font-medium' : 'text-muted-foreground'}`}
@@ -148,19 +142,56 @@ export function DeliveriesTab({ requests }: DeliveriesTabProps) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="max-w-80">
-                      <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all">
-                        {(() => {
-                          if (request.response?.body) {
-                            const extractedResponseBody = extractBody(
-                              request.response.body,
-                            );
-                            return (
-                              extractedResponseBody || request.response.body
-                            );
-                          }
-                          return JSON.stringify(request.response, null, 2);
-                        })()}
-                      </pre>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="text-xs font-mono text-foreground cursor-help">
+                              {(() => {
+                                if (request.response?.body) {
+                                  const extractedResponseBody = extractBody(
+                                    request.response.body,
+                                  );
+                                  const fullResponse =
+                                    extractedResponseBody ||
+                                    request.response.body;
+                                  // Truncate to first 100 characters
+                                  return fullResponse.length > 100
+                                    ? `${fullResponse.substring(0, 100)}...`
+                                    : fullResponse;
+                                }
+                                const fullResponse = JSON.stringify(
+                                  request.response,
+                                  null,
+                                  2,
+                                );
+                                return fullResponse.length > 100
+                                  ? `${fullResponse.substring(0, 100)}...`
+                                  : fullResponse;
+                              })()}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-96 p-3">
+                            <div className="text-xs font-mono text-foreground max-h-64 overflow-y-auto">
+                              {(() => {
+                                if (request.response?.body) {
+                                  const extractedResponseBody = extractBody(
+                                    request.response.body,
+                                  );
+                                  return (
+                                    extractedResponseBody ||
+                                    request.response.body
+                                  );
+                                }
+                                return JSON.stringify(
+                                  request.response,
+                                  null,
+                                  2,
+                                );
+                              })()}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </td>
                 </tr>

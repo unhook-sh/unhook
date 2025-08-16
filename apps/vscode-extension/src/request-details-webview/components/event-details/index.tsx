@@ -28,7 +28,11 @@ export function EventDetails({ data }: EventDetailsProps) {
           <EventHeader onShowAiPrompt={() => setShowAiPrompt(true)} />
 
           {/* AI Prompt Dialog */}
-          <AiPromptDialog onOpenChange={setShowAiPrompt} open={showAiPrompt} />
+          <AiPromptDialog
+            event={data}
+            onOpenChange={setShowAiPrompt}
+            open={showAiPrompt}
+          />
 
           {/* Tabs */}
           <EventTabs />

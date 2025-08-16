@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.36
+
+### Patch Changes
+
+- [`f320f88`](https://github.com/unhook-sh/unhook/commit/f320f88ffeeb707c4e4d9a7a975cff7bf2f363d4) Thanks [@seawatts](https://github.com/seawatts)! - Fix issue with vscode version
+
 ## 0.2.35
 
 ### Patch Changes

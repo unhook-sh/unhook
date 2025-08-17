@@ -1,5 +1,12 @@
 # @unhook/integ-test
 
+## 0.0.19
+
+### Patch Changes
+
+- Updated dependencies [[`756ca33`](https://github.com/unhook-sh/unhook/commit/756ca339bc771e780e0b7d67dbf29979c5b21f22)]:
+  - @unhook/client@0.5.24
+
 ## 0.0.18
 
 ### Patch Changes

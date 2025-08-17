@@ -63,13 +63,17 @@ export const WebhookAccessRequestEmail = ({
             <Text style={webhookIdStyle}>ID: {webhookId}</Text>
           </Section>
 
-          {message && (
+          {message ? (
             <>
               <Text style={messageLabel}>Message from requester:</Text>
               <Section style={messageSection}>
                 <Text style={messageText}>{message}</Text>
               </Section>
             </>
+          ) : (
+            <Text style={text}>
+              No additional message was provided with this request.
+            </Text>
           )}
 
           <Section style={buttonContainer}>

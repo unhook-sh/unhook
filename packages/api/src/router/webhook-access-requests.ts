@@ -140,6 +140,22 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
 
       // Send email notification to webhook owner(s)
       if (envServer.RESEND_API_KEY) {
+        // Get all organization members who should be notified
+        const orgMembers = await ctx.db.query.OrgMembers.findMany({
+          where: eq(OrgMembers.orgId, webhook.orgId),
+          with: {
+            user: true,
+          },
+        });
+
+        const adminEmails = orgMembers
+          .filter(
+            (member) =>
+              member.user?.email &&
+              (member.role === 'admin' || member.role === 'superAdmin'),
+          )
+          .map((member) => member.user.email);
+
         try {
           const emailClient = createEmailClient({
             apiKey: envServer.RESEND_API_KEY,
@@ -147,34 +163,27 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
             replyTo: envServer.EMAIL_REPLY_TO,
           });
 
-          // Get all organization members who should be notified
-          const orgMembers = await ctx.db.query.OrgMembers.findMany({
-            where: eq(OrgMembers.orgId, webhook.orgId),
-            with: {
-              user: true,
-            },
-          });
-
-          const adminEmails = orgMembers
-            .filter(
-              (member) =>
-                member.user?.email &&
-                (member.role === 'admin' || member.role === 'superAdmin'),
-            )
-            .map((member) => member.user.email);
-
           if (adminEmails.length > 0) {
-            if (!accessRequest) return;
+            console.log('Sending access request email to admins:', {
+              adminEmails,
+              requesterEmail: user.email,
+              requesterName:
+                user.firstName && user.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : user.email,
+              webhookId: webhook.id,
+              webhookName: webhook.name,
+            });
 
-            if (!input.requesterMessage) return;
+            if (adminEmails.length === 0 || !accessRequest) return;
 
             await emailClient.send({
               subject: `New webhook access request for ${webhook.name}`,
               template: React.createElement(WebhookAccessRequestEmail, {
-                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${webhook.id}/access-requests?action=approve&id=${accessRequest.id}`,
-                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${webhook.id}/access-requests`,
-                message: input.requesterMessage,
-                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/webhooks/${webhook.id}/access-requests?action=reject&id=${accessRequest.id}`,
+                approveUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/settings/organization?action=approve&id=${accessRequest.id}`,
+                dashboardUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/dashboard`,
+                message: input.requesterMessage || undefined,
+                rejectUrl: `${envClient.NEXT_PUBLIC_API_URL}/app/settings/organization?action=reject&id=${accessRequest.id}`,
                 requesterEmail: user.email,
                 requesterName:
                   user.firstName && user.lastName
@@ -185,10 +194,25 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
               }),
               to: adminEmails,
             });
+
+            console.log('Access request email sent successfully');
+          } else {
+            console.log('No admin emails found for webhook:', {
+              orgId: webhook.orgId,
+              orgMembersCount: orgMembers.length,
+              webhookId: webhook.id,
+            });
           }
         } catch (error) {
           // Log error but don't fail the request
-          console.error('Failed to send access request email:', error);
+          console.error('Failed to send access request email:', {
+            adminEmails: adminEmails,
+            error: error instanceof Error ? error.message : String(error),
+            hasEmailFrom: !!envServer.EMAIL_FROM,
+            hasResendKey: !!envServer.RESEND_API_KEY,
+            requesterId: ctx.auth.userId,
+            webhookId: webhook.id,
+          });
         }
       }
 
@@ -304,16 +328,16 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
 
       // Send email notification to requester
       if (envServer.RESEND_API_KEY && updatedRequest) {
+        // Get requester details
+        const requester = await ctx.db.query.Users.findFirst({
+          where: eq(Users.id, accessRequest.requesterId),
+        });
+
         try {
           const emailClient = createEmailClient({
             apiKey: envServer.RESEND_API_KEY,
             from: envServer.EMAIL_FROM,
             replyTo: envServer.EMAIL_REPLY_TO,
-          });
-
-          // Get requester details
-          const requester = await ctx.db.query.Users.findFirst({
-            where: eq(Users.id, accessRequest.requesterId),
           });
 
           if (requester?.email) {
@@ -339,7 +363,14 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
           }
         } catch (error) {
           // Log error but don't fail the request
-          console.error('Failed to send access response email:', error);
+          console.error('Failed to send access response email:', {
+            error: error instanceof Error ? error.message : String(error),
+            hasEmailFrom: !!envServer.EMAIL_FROM,
+            hasResendKey: !!envServer.RESEND_API_KEY,
+            requesterEmail: requester?.email,
+            requestId: input.id,
+            status: input.status,
+          });
         }
       }
 

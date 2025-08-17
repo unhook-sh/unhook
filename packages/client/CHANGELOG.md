@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.5.24
+
+### Patch Changes
+
+- [`756ca33`](https://github.com/unhook-sh/unhook/commit/756ca339bc771e780e0b7d67dbf29979c5b21f22) Thanks [@seawatts](https://github.com/seawatts)! - Fix auth for vscode
+
 ## 0.5.23
 
 ### Patch Changes

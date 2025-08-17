@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.37
+
+### Patch Changes
+
+- [`756ca33`](https://github.com/unhook-sh/unhook/commit/756ca339bc771e780e0b7d67dbf29979c5b21f22) Thanks [@seawatts](https://github.com/seawatts)! - Fix auth for vscode
+
+- Updated dependencies [[`756ca33`](https://github.com/unhook-sh/unhook/commit/756ca339bc771e780e0b7d67dbf29979c5b21f22)]:
+  - @unhook/client@0.5.24
+
 ## 0.2.36
 
 ### Patch Changes

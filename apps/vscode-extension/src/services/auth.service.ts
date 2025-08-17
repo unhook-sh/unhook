@@ -173,6 +173,7 @@ export class AuthStore implements vscode.Disposable {
     await this.setSupabaseTokenInternal({ token: null });
     await this.setSessionIdInternal({ sessionId: null });
     this.setUserInternal(null);
+    // This will trigger EventsProvider to clear cached events via onDidChangeAuth
     this._onDidChangeAuth.fire();
     log('User signed out');
   }

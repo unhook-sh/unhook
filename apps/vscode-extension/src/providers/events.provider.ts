@@ -159,11 +159,41 @@ export class EventsProvider
       },
     );
     this.authStore.onDidChangeAuth(() => {
+      // Clear cached events when authentication changes to prevent showing other orgs' events
+      // This handles cases like: sign out, sign in with different account, token changes, etc.
+      this.clearCachedEvents();
       this.refresh();
       this.handlePollingConnection();
     });
     this.refresh();
     this.handlePollingConnection();
+  }
+
+  /**
+   * Clears all cached events and resets loading state
+   * This ensures users can't see events from other organizations after switching accounts
+   *
+   * Called automatically when:
+   * - User signs out
+   * - User signs in with a different account
+   * - Authentication state changes (token validation, session changes, etc.)
+   */
+  private clearCachedEvents(): void {
+    log('Clearing cached events due to authentication change');
+    this.events = [];
+    this.previousEvents = [];
+    this.hasLoadedEvents = false;
+    this.isFetching = false;
+  }
+
+  /**
+   * Public method to clear cached events
+   * Useful for manual clearing or when called from other services
+   */
+  public clearEvents(): void {
+    log('Manually clearing cached events');
+    this.clearCachedEvents();
+    this.refresh();
   }
 
   public setConfigProvider(configProvider: ConfigProvider) {

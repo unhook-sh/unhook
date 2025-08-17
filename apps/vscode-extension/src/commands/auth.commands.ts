@@ -20,6 +20,23 @@ export function registerAuthCommands(
     'unhook.signIn',
     async () => {
       log('unhook.signIn command triggered');
+
+      // Check if user is already signed in
+      if (authStore.isSignedIn) {
+        vscode.window.showInformationMessage(
+          'You are already signed in to Unhook',
+        );
+        return;
+      }
+
+      // Check if authentication is already in progress
+      if (provider.isAuthPending()) {
+        vscode.window.showInformationMessage(
+          'Authentication is already in progress. Please complete the sign-in process in your browser or wait for it to complete.',
+        );
+        return;
+      }
+
       try {
         // Cancel any existing pending authentication before starting a new one
         provider.cancelPendingAuth();
@@ -104,17 +121,64 @@ export function registerAuthCommands(
     },
   );
 
+  // Register retry auth command (for recovery from auth issues)
+  const retryAuthCommand = vscode.commands.registerCommand(
+    'unhook.retryAuth',
+    async () => {
+      log('unhook.retryAuth command triggered');
+
+      try {
+        // Cancel any existing auth and start fresh
+        provider.cancelPendingAuth();
+
+        // Wait a moment before starting new auth
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Start new authentication
+        const session = await vscode.authentication.getSession(
+          'unhook',
+          ['openid', 'email', 'profile'],
+          {
+            createIfNone: true,
+          },
+        );
+
+        if (session) {
+          vscode.window.showInformationMessage(
+            'Authentication retry successful',
+          );
+          analyticsService?.track('auth_retry_success');
+        } else {
+          vscode.window.showWarningMessage(
+            'Authentication retry failed. Please try again.',
+          );
+          analyticsService?.track('auth_retry_failed');
+        }
+      } catch (error) {
+        log('Auth retry command failed:', error);
+        vscode.window.showErrorMessage(
+          `Failed to retry authentication: ${(error as Error).message}`,
+        );
+        analyticsService?.track('auth_retry_error', {
+          error: (error as Error).message,
+        });
+      }
+    },
+  );
+
   // Add commands to extension context
   context.subscriptions.push(
     signInCommand,
     signOutCommand,
     cancelAuthCommand,
+    retryAuthCommand,
     authProviderDisposable,
   );
 
   return {
     authProvider: provider,
     cancelAuthCommand,
+    retryAuthCommand,
     signInCommand,
     signOutCommand,
   };

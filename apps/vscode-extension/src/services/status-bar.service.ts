@@ -212,14 +212,26 @@ export class StatusBarService implements vscode.Disposable {
       const isAuthPending = this.authProvider?.isAuthPending() ?? false;
 
       if (isAuthPending) {
-        this.statusBarItem.text = '$(close) Cancel Sign In...';
+        this.statusBarItem.text = '$(sync~spin) Signing in to Unhook...';
         this.statusBarItem.tooltip =
-          'Authentication in progress • Click to cancel sign in to Unhook';
+          'Authentication in progress • Please complete the sign-in process in your browser\nClick to cancel if needed';
         this.statusBarItem.command = 'unhook.cancelAuth';
       } else {
-        this.statusBarItem.text = '$(sign-in) Sign in to Unhook';
-        this.statusBarItem.tooltip = 'Click to sign in to Unhook';
-        this.statusBarItem.command = 'unhook.signIn';
+        // Check if there was a recent authentication failure
+        const hasRecentAuthFailure =
+          this.authStore.sessionId === null &&
+          this.authStore.authToken === null;
+
+        if (hasRecentAuthFailure) {
+          this.statusBarItem.text = '$(error) Sign in to Unhook';
+          this.statusBarItem.tooltip =
+            'Authentication failed • Click to sign in again or use retry command';
+          this.statusBarItem.command = 'unhook.signIn';
+        } else {
+          this.statusBarItem.text = '$(sign-in) Sign in to Unhook';
+          this.statusBarItem.tooltip = 'Click to sign in to Unhook';
+          this.statusBarItem.command = 'unhook.signIn';
+        }
       }
     }
 

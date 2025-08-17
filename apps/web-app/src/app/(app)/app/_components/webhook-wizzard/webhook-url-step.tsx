@@ -19,7 +19,7 @@ export function WebhookUrlStep({
   apiUrl,
 }: WebhookUrlStepProps) {
   const serviceName = source || 'webhook provider';
-  const curlCommand = `curl -X POST ${apiUrl}/${webhookId}?source=${source || 'unhook_example'} -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'`;
+  const curlCommand = `curl -X POST ${apiUrl}/${webhookId}?source=${source || 'unhook_curl'} -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'`;
 
   return (
     <div className="space-y-4">
@@ -50,7 +50,7 @@ export function WebhookUrlStep({
         <div className="flex items-start gap-2 w-full">
           <Textarea
             aria-label="Curl test command"
-            className="w-full font-mono text-sm resize-none"
+            className="w-full font-mono text-xs resize-none"
             readOnly
             rows={3}
             value={curlCommand}

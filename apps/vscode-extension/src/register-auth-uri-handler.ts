@@ -63,9 +63,22 @@ export function registerUriHandler(
             log('Auth completion successful');
           } catch (error) {
             log('Error completing auth:', error);
-            vscode.window.showErrorMessage(
-              `Failed to complete authentication: ${(error as Error).message}`,
-            );
+
+            // Provide more specific error messages
+            let errorMessage = 'Failed to complete authentication';
+            if (error instanceof Error) {
+              if (error.message.includes('timeout')) {
+                errorMessage =
+                  'Authentication timed out. Please try signing in again.';
+              } else if (error.message.includes('network')) {
+                errorMessage =
+                  'Network error during authentication. Please check your connection and try again.';
+              } else {
+                errorMessage = `Authentication failed: ${error.message}`;
+              }
+            }
+
+            vscode.window.showErrorMessage(errorMessage);
           }
         } else if (!authProvider) {
           log('No auth provider available for completing authentication');

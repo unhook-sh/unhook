@@ -138,13 +138,20 @@ export class UnhookAuthProvider implements AuthenticationProvider {
           this._onDidChangePendingAuth.fire();
 
           // Set a timeout in case the auth flow fails
-          setTimeout(() => {
-            if (this._pendingAuth) {
-              log('Authentication timed out after 2 minutes');
-              this.clearPendingAuth();
-              reject(new Error('Authentication timed out'));
-            }
-          }, 120000); // 2 minute timeout
+          setTimeout(
+            () => {
+              if (this._pendingAuth) {
+                log('Authentication timed out after 15 minutes');
+                this.clearPendingAuth();
+                reject(
+                  new Error(
+                    'Authentication timed out. Please try signing in again.',
+                  ),
+                );
+              }
+            },
+            15 * 60 * 1000,
+          ); // 15 minutes timeout
         },
       );
 
@@ -201,6 +208,13 @@ export class UnhookAuthProvider implements AuthenticationProvider {
   }
 
   /**
+   * Check if there's an active session available
+   */
+  public hasActiveSession(): boolean {
+    return this.authStore.isSignedIn;
+  }
+
+  /**
    * Public method to clear pending authentication state
    * This can be called when user cancels authentication
    */
@@ -221,6 +235,78 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     }
   }
 
+  /**
+   * Attempt to restore authentication session from stored credentials
+   * This can be useful when the user returns to VS Code after authentication
+   */
+  public async restoreSession(): Promise<boolean> {
+    log('Attempting to restore authentication session');
+
+    try {
+      // Check if we have stored credentials
+      if (!this.authStore.isSignedIn || !this.authStore.sessionId) {
+        log('No stored credentials to restore');
+        return false;
+      }
+
+      // Validate the existing session
+      const isValid = await this.authStore.validateSession(false);
+      if (isValid) {
+        log('Session restored successfully');
+        return true;
+      }
+
+      log('Stored session is invalid, cannot restore');
+      return false;
+    } catch (error) {
+      log('Failed to restore session:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Attempt to recover authentication state when returning from web app
+   * This method can be called when the user completes auth on the web app
+   * but the VS Code extension doesn't have the pending auth state
+   */
+  public async attemptAuthRecovery(code: string): Promise<boolean> {
+    log('Attempting authentication recovery with code');
+
+    try {
+      // Try to exchange the auth code directly
+      const { authToken, sessionId, user } =
+        await this.authStore.exchangeAuthCode({ code });
+
+      log('Auth recovery successful:', {
+        hasAuthToken: !!authToken,
+        hasSessionId: !!sessionId,
+        userId: user.id,
+      });
+
+      const session: vscode.AuthenticationSession = {
+        accessToken: authToken,
+        account: {
+          id: user.id,
+          label: user.email ?? '',
+        },
+        id: sessionId,
+        scopes: UnhookAuthProvider.SCOPES,
+      };
+
+      // Fire session change event to notify VS Code
+      this._onDidChangeSessions.fire({
+        added: [session],
+        changed: [],
+        removed: [],
+      });
+
+      return true;
+    } catch (error) {
+      log('Auth recovery failed:', error);
+      return false;
+    }
+  }
+
   // Method to be called by the URI handler when auth is complete
   async completeAuth(code: string): Promise<void> {
     log(
@@ -229,8 +315,25 @@ export class UnhookAuthProvider implements AuthenticationProvider {
     );
 
     if (!this._pendingAuth) {
-      log('No pending auth flow found');
-      // No pending auth flow - this might happen if the user tries to auth without clicking the button
+      log(
+        'No pending auth flow found, but attempting to complete auth directly',
+      );
+
+      // Even if there's no pending auth, try to complete the authentication
+      // This handles cases where the user completed auth on the web app but the
+      // pending auth state was cleared due to timeout or other issues
+      const recoverySuccessful = await this.attemptAuthRecovery(code);
+
+      if (recoverySuccessful) {
+        // Show success message
+        vscode.window.showInformationMessage(
+          'Successfully signed in to Unhook',
+        );
+        log('Auth completion successful without pending auth state');
+        return;
+      }
+
+      // Show the original error message since we couldn't complete auth
       vscode.window.showWarningMessage(
         'No pending authentication request found. Please try signing in again.',
       );

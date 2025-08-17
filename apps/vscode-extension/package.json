@@ -133,6 +133,12 @@
       },
       {
         "category": "Unhook",
+        "command": "unhook.retryAuth",
+        "icon": "$(refresh)",
+        "title": "Retry Authentication"
+      },
+      {
+        "category": "Unhook",
         "command": "unhook.requestWebhookAccess",
         "icon": "$(unlock)",
         "title": "Request Webhook Access"

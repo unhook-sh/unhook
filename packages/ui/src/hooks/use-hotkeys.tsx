@@ -31,7 +31,7 @@ export function useHotkeys(
               key,
               (event: KeyboardEvent) => {
                 if (!isEventTargetInputOrTextArea(event.target)) {
-                  // @ts-ignore
+                  // @ts-expect-error
                   handler(event);
                 }
               },

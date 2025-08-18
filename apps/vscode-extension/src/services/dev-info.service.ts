@@ -281,7 +281,9 @@ export class DevInfoService implements vscode.Disposable {
   }
 
   public dispose(): void {
-    this.disposables.forEach((disposable) => disposable.dispose());
+    this.disposables.forEach((disposable) => {
+      disposable.dispose();
+    });
     this.disposables = [];
   }
 }

@@ -98,7 +98,7 @@ export const configSchema = z
             message: `Invalid delivery.destination: "${
               f.destination
             }".\n- Allowed values: [${[...validNames]
-              .map((n) => `\"${n}\"`)
+              .map((n) => `"${n}"`)
               .join(
                 ', ',
               )}]\n- Please ensure every 'delivery.destination' matches a 'destination[].name'.\nSee https://docs.unhook.sh/config for examples.`,

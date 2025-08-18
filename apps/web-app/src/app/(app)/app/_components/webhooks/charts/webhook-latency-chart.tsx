@@ -82,7 +82,7 @@ export function WebhookLatencyChart({
         let avgLatency = Math.floor(Math.random() * 50) + 80;
 
         // Add some patterns - higher latency during peak hours
-        const hourNum = Number.parseInt(hour);
+        const hourNum = Number.parseInt(hour, 10);
         if (hourNum >= 9 && hourNum <= 17) {
           avgLatency += 20;
         }

@@ -430,7 +430,9 @@ export class EventsProvider
     this.configManager.dispose();
 
     // Dispose all event listeners
-    this.disposables.forEach((disposable) => disposable.dispose());
+    this.disposables.forEach((disposable) => {
+      disposable.dispose();
+    });
     this.disposables = [];
   }
 

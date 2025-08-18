@@ -73,7 +73,7 @@ export function WebhookConnectionsChart({
         let connections = Math.floor(Math.random() * 10) + 5;
 
         // Add some patterns - more connections during business hours
-        const hourNum = Number.parseInt(hour);
+        const hourNum = Number.parseInt(hour, 10);
         if (hourNum >= 9 && hourNum <= 17) {
           connections += 10;
         }

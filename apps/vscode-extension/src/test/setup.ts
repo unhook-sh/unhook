@@ -12,9 +12,9 @@ mock.module('vscode', () => {
     private listeners: unknown[] = [];
 
     fire(data: unknown) {
-      this.listeners.forEach((listener) =>
-        (listener as (data: unknown) => void)(data),
-      );
+      this.listeners.forEach((listener) => {
+        (listener as (data: unknown) => void)(data);
+      });
     }
 
     get event() {
@@ -52,7 +52,9 @@ mock.module('vscode', () => {
 
       static from(...disposables: unknown[]) {
         return new MockDisposableClass(() =>
-          disposables.forEach((d) => (d as MockDisposable).dispose()),
+          disposables.forEach((d) => {
+            (d as MockDisposable).dispose();
+          }),
         );
       }
     },

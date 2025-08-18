@@ -2,7 +2,7 @@ import { posthog } from '@unhook/analytics/posthog/server';
 import { filterHeaders } from '@unhook/client/utils/headers';
 import { trackApiKeyUsage } from '@unhook/db';
 import { db } from '@unhook/db/client';
-import { Events, Orgs, type RequestPayload, Webhooks } from '@unhook/db/schema';
+import { Events, type RequestPayload, Webhooks } from '@unhook/db/schema';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -378,31 +378,31 @@ export async function POST(
     });
 
     // Record usage for billing
-    try {
-      // Get the organization's Stripe customer ID
-      const org = await db.query.Orgs.findFirst({
-        where: eq(Orgs.id, webhook.orgId),
-      });
+    // try {
+    // Get the organization's Stripe customer ID
+    // const org = await db.query.Orgs.findFirst({
+    //   where: eq(Orgs.id, webhook.orgId),
+    // });
 
-      if (org?.stripeCustomerId && org?.stripeSubscriptionStatus === 'active') {
-        // Record the webhook event usage to Stripe
-        // await recordUsage({
-        //   customerId: org.stripeCustomerId,
-        //   idempotencyKey: event.id,
-        //   quantity: 1, // Use event ID for idempotency
-        // });
-      }
-    } catch (error) {
-      // Log error but don't fail the webhook request
-      console.error('Failed to record usage:', error);
-      posthog.captureException(error, userId, {
-        properties: {
-          eventId: event.id,
-          orgId: webhook.orgId,
-          webhookId,
-        },
-      });
-    }
+    // if (org?.stripeCustomerId && org?.stripeSubscriptionStatus === 'active') {
+    // Record the webhook event usage to Stripe
+    // await recordUsage({
+    //   customerId: org.stripeCustomerId,
+    //   idempotencyKey: event.id,
+    //   quantity: 1, // Use event ID for idempotency
+    // });
+    // }
+    // } catch (error) {
+    // Log error but don't fail the webhook request
+    // console.error('Failed to record usage:', error);
+    // posthog.captureException(error, userId, {
+    //   properties: {
+    //     eventId: event.id,
+    //     orgId: webhook.orgId,
+    //     webhookId,
+    //   },
+    // });
+    // }
 
     return NextResponse.json(
       {

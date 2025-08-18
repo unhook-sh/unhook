@@ -56,6 +56,11 @@ export class EventQuickPick {
     if (this.authStore?.isSignedIn) {
       items.push(
         {
+          description: 'Create a new webhook',
+          detail: 'Create a new webhook and update configuration',
+          label: '$(add) Create New Webhook',
+        },
+        {
           description: 'Create a new event',
           detail: 'Add a new event to the list',
           label: '$(add) Add New Event',
@@ -70,8 +75,10 @@ export class EventQuickPick {
 
     // Add configuration items
     items.push({
-      description: 'Create unhook.yml configuration file',
-      detail: 'Generate a new Unhook configuration file for your project',
+      description:
+        'Create unhook.yml configuration file with webhook selection',
+      detail:
+        'Choose a webhook and generate a new Unhook configuration file for your project',
       label: '$(new-file) Create Configuration File',
     });
 
@@ -123,6 +130,11 @@ export class EventQuickPick {
           // Track quick pick add event action
           this.analyticsService?.track('quick_pick_add_event');
           await vscode.commands.executeCommand('unhook.addEvent');
+          break;
+        case '$(add) Create New Webhook':
+          // Track quick pick create webhook action
+          this.analyticsService?.track('quick_pick_create_webhook');
+          await vscode.commands.executeCommand('unhook.createWebhook');
           break;
         case '$(refresh) Refresh Events':
           // Track quick pick refresh events action

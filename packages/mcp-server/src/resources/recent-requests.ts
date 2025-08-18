@@ -9,7 +9,7 @@ export function registerRecentRequestsResource(
 ) {
   const caller = createCaller(context);
 
-  // @ts-ignore
+  // @ts-expect-error
   server.registerResource(
     'recent-requests',
     'webhook://requests/recent',

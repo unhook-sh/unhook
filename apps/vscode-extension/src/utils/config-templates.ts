@@ -85,3 +85,49 @@ delivery:
     destination: local
 `;
 }
+
+/**
+ * Creates a complete configuration content with a specific webhook ID
+ * @param webhookId - The specific webhook ID to use
+ * @returns The configuration content with the webhook ID
+ */
+export function createConfigContentWithSpecificWebhookId(
+  webhookId: string,
+): string {
+  const configManager = ConfigManager.getInstance();
+  const apiUrl = configManager.getApiUrl();
+
+  return `# Unhook Webhook Configuration
+#
+# For more information, visit: https://docs.unhook.sh/configuration
+#
+# Copy the following URL in your services:
+# ${apiUrl}/${webhookId}
+#
+# Optionally, you can attach ?source=Clerk to the URL.
+# Clerk: ${apiUrl}/${webhookId}?source=clerk
+# Stripe: ${apiUrl}/${webhookId}?source=stripe
+# etc...
+#
+# Schema:
+#   webhookId: string                    # Unique identifier for your webhook
+#   destination:                         # Array of destination endpoints
+#     - name: string                     # Name of the endpoint
+#       url: string|URL|RemotePattern    # URL to forward webhooks to
+#       ping?: boolean|string|URL        # Optional ping configuration
+#   delivery:                             # Array of delivery rules
+#     - source?: string                  # Optional source filter (default: *)
+#       destination: string              # Name of the destination from 'destination' array
+
+# Test Curl:
+# curl -X POST ${apiUrl}/${webhookId}?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
+
+webhookId: ${webhookId}
+destination:
+  - name: local
+    url: http://localhost:3000/api/webhooks
+delivery:
+  - source: '*'
+    destination: local
+`;
+}

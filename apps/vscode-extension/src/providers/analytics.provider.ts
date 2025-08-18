@@ -140,7 +140,9 @@ export class AnalyticsProvider implements vscode.Disposable {
     }
 
     // Dispose all event handlers
-    this.disposables.forEach((d) => d.dispose());
+    this.disposables.forEach((d) => {
+      d.dispose();
+    });
     this.disposables = [];
 
     // Dispose analytics service

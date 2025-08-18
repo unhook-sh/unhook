@@ -144,7 +144,9 @@ export class WebhookAuthorizationService implements vscode.Disposable {
     this._onAccessAlreadyGranted.dispose();
 
     // Clean up all disposables
-    this.disposables.forEach((disposable) => disposable.dispose());
+    this.disposables.forEach((disposable) => {
+      disposable.dispose();
+    });
     this.disposables = [];
   }
 }

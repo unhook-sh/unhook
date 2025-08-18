@@ -334,7 +334,7 @@ export function registerCreateTestEventTool(
 ) {
   const caller = createCaller(context);
 
-  // @ts-ignore
+  // @ts-expect-error
   server.registerTool(
     'create_test_event',
     {

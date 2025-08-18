@@ -14,7 +14,7 @@
     "@faker-js/faker": "9.9.0",
     "@testcontainers/postgresql": "11.5.1",
     "@types/express": "5.0.3",
-    "@types/node": "24.2.1",
+    "@types/node": "24.3.0",
     "@types/ws": "8.18.1",
     "@unhook/tsconfig": "workspace:*",
     "@vitest/coverage-v8": "3.2.4",

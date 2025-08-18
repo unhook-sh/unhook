@@ -11,6 +11,7 @@ import { registerPollingCommands } from './commands/polling.commands';
 import { registerQuickPickCommand } from './commands/quick-pick.commands';
 import { registerSettingsCommands } from './commands/settings.commands';
 import { registerSignInNotificationCommands } from './commands/sign-in-notification.commands';
+import { registerWebhookCommands } from './commands/webhook.commands';
 import { registerWebhookAccessCommands } from './commands/webhook-access.commands';
 import { ConfigManager } from './config.manager';
 import { setupFirstTimeUserHandler } from './handlers/first-time-user.handler';
@@ -62,6 +63,19 @@ export async function activate(context: vscode.ExtensionContext) {
   // Initialize first-time user service
   const firstTimeUserService = new FirstTimeUserService(context);
   firstTimeUserService.setAuthStore(authStore);
+  firstTimeUserService.setupWorkspaceChangeListener();
+
+  // Check if we should show first-time prompts in the current workspace
+  if (authStore.isSignedIn) {
+    // Add a small delay to ensure everything is initialized
+    log('Setting up initial workspace config prompt check with 2 second delay');
+    setTimeout(async () => {
+      log('Executing initial workspace config prompt check');
+      await firstTimeUserService.checkAndShowWorkspaceConfigPromptsIfNeeded();
+    }, 2000);
+  }
+
+  setupFirstTimeUserHandler(authStore, firstTimeUserService);
 
   // Register analytics provider first
   const { provider: analyticsProvider, disposable: analyticsDisposable } =
@@ -125,13 +139,25 @@ export async function activate(context: vscode.ExtensionContext) {
   // Set auth store and provider on status bar service
   statusBarService.setAuthStore(authStore);
   statusBarService.setAuthProvider(authProvider);
-  setupFirstTimeUserHandler(authStore, firstTimeUserService);
 
   // Listen for delivery setting changes
   const _configChangeListener = vscode.workspace.onDidChangeConfiguration(
     (e) => {
       if (e.affectsConfiguration('unhook.delivery.enabled')) {
         statusBarService.update();
+      }
+    },
+  );
+
+  // Listen for workspace folder changes to check first-time user status
+  const _workspaceChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(
+    async () => {
+      // Check if we should show first-time prompts in the new workspace
+      if (authStore.isSignedIn) {
+        log(
+          'Workspace folders changed, checking if should show workspace config prompts',
+        );
+        await firstTimeUserService.checkAndShowWorkspaceConfigPromptsIfNeeded();
       }
     },
   );
@@ -144,6 +170,7 @@ export async function activate(context: vscode.ExtensionContext) {
     signInCommand,
     signOutCommand,
     cancelAuthCommand,
+    _workspaceChangeListener,
   );
 
   // Initialize webhook events provider
@@ -226,10 +253,16 @@ export async function activate(context: vscode.ExtensionContext) {
     authStore,
     analyticsProvider.getAnalyticsService(),
   );
+  registerWebhookCommands(
+    context,
+    authStore,
+    analyticsProvider.getAnalyticsService(),
+  );
   registerConfigCommands(
     context,
     authStore,
     analyticsProvider.getAnalyticsService(),
+    firstTimeUserService,
   );
   registerSignInNotificationCommands(
     context,

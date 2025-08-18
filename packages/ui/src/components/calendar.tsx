@@ -63,6 +63,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        // biome-ignore lint/correctness/noNestedComponentDefinitions: w/e
         Chevron: ({ ...props }) => <Chevron {...props} />,
       }}
       showOutsideDays={showOutsideDays}

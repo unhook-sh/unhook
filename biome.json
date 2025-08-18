@@ -14,21 +14,21 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
-      "!dist/**",
-      "!**/dist/**",
-      "!node_modules/**",
-      "!**/node_modules/**",
-      "!**/.next/**",
-      "!**/.react-email/**",
-      "!**/baml_client/**",
-      "!**/.turbo/**",
+      "!dist",
+      "!**/dist",
+      "!node_modules",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/.react-email",
+      "!**/baml_client",
+      "!**/.turbo",
       "!**/*.min.*",
       "!bun.lock",
-      "!**/.vscode-test/**",
-      "!**/build/**",
-      "!**/.git/**",
-      "!**/coverage/**",
-      "!**/.nyc_output/**"
+      "!**/.vscode-test",
+      "!**/build",
+      "!**/.git",
+      "!**/coverage",
+      "!**/.nyc_output"
     ]
   },
   "formatter": {
@@ -57,12 +57,11 @@
           "level": "warn"
         },
         "useExhaustiveDependencies": "warn",
-        "useHookAtTopLevel": "error"
+        "useHookAtTopLevel": "error",
+        "useUniqueElementIds": "off"
       },
       "nursery": {
-        "noNestedComponentDefinitions": "off",
-        "useIndexOf": "error",
-        "useUniqueElementIds": "off"
+        "recommended": true
       },
       "recommended": true,
       "style": {
@@ -91,7 +90,8 @@
         "useSingleVarDeclarator": "error"
       },
       "suspicious": {
-        "noExplicitAny": "error"
+        "noExplicitAny": "error",
+        "noUnknownAtRules": "off"
       }
     }
   },

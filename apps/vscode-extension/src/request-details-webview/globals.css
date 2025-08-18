@@ -1,4 +1,5 @@
 /* Import the UI package's global styles */
+/* biome-ignore-all lint/complexity/noImportantStyles: w/e */
 @import "../../../../packages/ui/src/styles/globals.css";
 
 /* VSCode-specific overrides with fallbacks */

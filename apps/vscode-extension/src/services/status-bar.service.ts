@@ -203,7 +203,7 @@ export class StatusBarService implements vscode.Disposable {
           this.updatePollingStatus(deliveryIcon, deliveryStatus);
         } else {
           this.statusBarItem.text = `$(check) Unhook ${deliveryIcon}`;
-          this.statusBarItem.tooltip = `Unhook connected • Event forwarding ${deliveryStatus}\nClick to open Quick Actions`;
+          this.statusBarItem.tooltip = `Unhook connected • Event forwarding ${deliveryStatus}\nClick to open Quick Actions (Create webhooks, manage events, etc.)`;
           this.statusBarItem.command = 'unhook.showQuickPick';
         }
       }
@@ -347,7 +347,9 @@ export class StatusBarService implements vscode.Disposable {
     } else if (isPolling) {
       tooltipParts.push('Click to pause polling');
     } else {
-      tooltipParts.push('Click to start polling');
+      tooltipParts.push(
+        'Click to open Quick Actions (Create webhooks, manage events, etc.)',
+      );
     }
 
     this.statusBarItem.tooltip = tooltipParts.join('\n');
@@ -374,7 +376,7 @@ export class StatusBarService implements vscode.Disposable {
       return;
     }
 
-    this.statusBarItem.command = 'unhook.startPolling';
+    this.statusBarItem.command = 'unhook.showQuickPick';
   }
 
   /**

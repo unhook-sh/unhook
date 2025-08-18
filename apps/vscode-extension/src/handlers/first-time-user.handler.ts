@@ -9,46 +9,19 @@ export function setupFirstTimeUserHandler(
   firstTimeUserService: FirstTimeUserService,
 ): void {
   let previousAuthState = authStore.isSignedIn;
-  log('Setting up first-time user handler', {
+  log('Setting up workspace config handler', {
     initialAuthState: previousAuthState,
   });
 
   // Check if user is already signed in during initialization
   if (previousAuthState) {
     log(
-      'User is already signed in during initialization, checking if first-time user',
+      'User is already signed in during initialization, checking if workspace needs config',
     );
     firstTimeUserService
-      .isFirstTimeUser()
-      .then((isFirstTime) => {
-        log('First-time user check result (initialization)', { isFirstTime });
-        if (isFirstTime) {
-          log('User is first-time user and already signed in, showing prompts');
-          // Show analytics consent prompt first, then unhook.yml prompt
-          setTimeout(async () => {
-            // Check if we've already asked for analytics consent
-            const hasAskedForConsent =
-              await firstTimeUserService.hasAskedForAnalyticsConsent();
-            log('Analytics consent check (initialization)', {
-              hasAskedForConsent,
-            });
-            if (!hasAskedForConsent) {
-              log('Showing analytics consent prompt (initialization)');
-              await firstTimeUserService.promptForAnalyticsConsent();
-            }
-
-            // Show unhook.yml prompt after a short delay
-            setTimeout(() => {
-              log('Showing unhook.yml creation prompt (initialization)');
-              firstTimeUserService.promptForUnhookYmlCreation();
-            }, 500);
-          }, 1000);
-        } else {
-          log('User is not first-time user (initialization), skipping prompts');
-        }
-      })
+      .checkAndShowWorkspaceConfigPromptsIfNeeded()
       .catch((error) => {
-        log('Error checking first-time user status (initialization)', {
+        log('Error checking workspace config status (initialization)', {
           error,
         });
       });
@@ -64,37 +37,12 @@ export function setupFirstTimeUserHandler(
 
     // Check if user just signed in (transition from not signed in to signed in)
     if (!previousAuthState && currentAuthState) {
-      log('User signed in, checking if first-time user');
-      // Check if first-time user
+      log('User signed in, checking if workspace needs config');
+      // Check if workspace needs config and show prompts if needed
       firstTimeUserService
-        .isFirstTimeUser()
-        .then((isFirstTime) => {
-          log('First-time user check result', { isFirstTime });
-          if (isFirstTime) {
-            log('User is first-time user, showing prompts');
-            // Show analytics consent prompt first, then unhook.yml prompt
-            setTimeout(async () => {
-              // Check if we've already asked for analytics consent
-              const hasAskedForConsent =
-                await firstTimeUserService.hasAskedForAnalyticsConsent();
-              log('Analytics consent check', { hasAskedForConsent });
-              if (!hasAskedForConsent) {
-                log('Showing analytics consent prompt');
-                await firstTimeUserService.promptForAnalyticsConsent();
-              }
-
-              // Show unhook.yml prompt after a short delay
-              setTimeout(() => {
-                log('Showing unhook.yml creation prompt');
-                firstTimeUserService.promptForUnhookYmlCreation();
-              }, 500);
-            }, 1000);
-          } else {
-            log('User is not first-time user, skipping prompts');
-          }
-        })
+        .checkAndShowWorkspaceConfigPromptsIfNeeded()
         .catch((error) => {
-          log('Error checking first-time user status', { error });
+          log('Error checking workspace config status', { error });
         });
     }
 

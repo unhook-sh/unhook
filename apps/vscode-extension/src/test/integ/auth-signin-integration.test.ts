@@ -106,7 +106,9 @@ suite('Auth Sign-In Integration Test', () => {
 
     // Log the debugging steps for reference
     console.log('\n=== Debugging Guide for Sign-In Issues ===');
-    debuggingSteps.forEach((step) => console.log(step));
+    debuggingSteps.forEach((step) => {
+      console.log(step);
+    });
     console.log('==========================================\n');
   });
 });

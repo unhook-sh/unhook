@@ -4,8 +4,7 @@
   },
   "cSpell.words": ["Omni", "openai"],
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.biome": "explicit"
   },
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
@@ -40,5 +39,11 @@
     "twx\\(.*?\\).*?`([^`]*)",
     ["twx\\.[^`]+\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
     ["twx\\(.*?\\).*?\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ]
+  ],
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#043f34",
+    "titleBar.activeForeground": "#ffffff",
+    "titleBar.inactiveBackground": "#043f34",
+    "titleBar.inactiveForeground": "#e5e7eb"
+  }
 }

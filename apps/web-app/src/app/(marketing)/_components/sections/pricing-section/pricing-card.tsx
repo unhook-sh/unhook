@@ -25,6 +25,66 @@ interface PricingCardProps {
   billingCycle: 'monthly' | 'yearly';
 }
 
+const PriceDisplay = ({
+  tier,
+  billingCycle,
+  teamPrice,
+  teamSeats,
+}: {
+  tier: (typeof siteConfig.pricing.pricingItems)[0];
+  billingCycle: 'monthly' | 'yearly';
+  teamPrice: number;
+  teamSeats: number;
+}) => {
+  if (tier.name === 'Team') {
+    return (
+      <TeamPriceDisplay
+        betaFree={tier.betaFree}
+        billingCycle={billingCycle}
+        price={teamPrice}
+        seats={teamSeats}
+      />
+    );
+  }
+
+  const price = billingCycle === 'yearly' ? tier.yearlyPrice : tier.price;
+
+  if (tier.betaFree) {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-semibold line-through text-muted-foreground">
+            {price}
+          </span>
+          <span className="text-4xl font-semibold text-primary">Free</span>
+          <span className="text-base text-muted-foreground font-medium">
+            /{billingCycle === 'yearly' ? 'month' : 'month'}
+          </span>
+        </div>
+        <span className="mt-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wide">
+          during beta
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <motion.span
+      animate={{ filter: 'blur(0px)', opacity: 1, x: 0 }}
+      className="text-4xl font-semibold"
+      initial={{
+        filter: 'blur(5px)',
+        opacity: 0,
+        x: billingCycle === 'yearly' ? -10 : 10,
+      }}
+      key={price}
+      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+    >
+      {price}
+    </motion.span>
+  );
+};
+
 export const PricingCard = memo(function PricingCard({
   tier,
   billingCycle,
@@ -125,56 +185,6 @@ export const PricingCard = memo(function PricingCard({
       new_seats: seats,
       plan_name: tier.name,
     });
-  };
-
-  const PriceDisplay = () => {
-    if (tier.name === 'Team') {
-      return (
-        <TeamPriceDisplay
-          betaFree={tier.betaFree}
-          billingCycle={billingCycle}
-          price={teamPrice}
-          seats={teamSeats}
-        />
-      );
-    }
-
-    const price = billingCycle === 'yearly' ? tier.yearlyPrice : tier.price;
-
-    if (tier.betaFree) {
-      return (
-        <div className="flex flex-col items-center">
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold line-through text-muted-foreground">
-              {price}
-            </span>
-            <span className="text-4xl font-semibold text-primary">Free</span>
-            <span className="text-base text-muted-foreground font-medium">
-              /{billingCycle === 'yearly' ? 'month' : 'month'}
-            </span>
-          </div>
-          <span className="mt-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wide">
-            during beta
-          </span>
-        </div>
-      );
-    }
-
-    return (
-      <motion.span
-        animate={{ filter: 'blur(0px)', opacity: 1, x: 0 }}
-        className="text-4xl font-semibold"
-        initial={{
-          filter: 'blur(5px)',
-          opacity: 0,
-          x: billingCycle === 'yearly' ? -10 : 10,
-        }}
-        key={price}
-        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-      >
-        {price}
-      </motion.span>
-    );
   };
 
   const renderButton = () => {
@@ -325,7 +335,12 @@ export const PricingCard = memo(function PricingCard({
           )}
         </p>
         <div className="flex items-baseline mt-2">
-          <PriceDisplay />
+          <PriceDisplay
+            billingCycle={billingCycle}
+            teamPrice={teamPrice}
+            teamSeats={teamSeats}
+            tier={tier}
+          />
         </div>
         {tier.name !== 'Team' && (
           <p className="text-sm mt-2">{tier.description}</p>

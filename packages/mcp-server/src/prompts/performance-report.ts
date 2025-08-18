@@ -7,7 +7,7 @@ export const performanceReportSchema = {
 };
 
 export function registerPerformanceReportPrompt(server: McpServer) {
-  // @ts-ignore
+  // @ts-expect-error
   server.registerPrompt(
     'performance_report',
     {

@@ -23,5 +23,5 @@ destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks/clerk
 delivery:
-  - source: clerk
+  - source: '*'
     destination: localhost

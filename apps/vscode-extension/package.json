@@ -151,6 +151,12 @@
       },
       {
         "category": "Unhook",
+        "command": "unhook.createWebhook",
+        "icon": "$(add)",
+        "title": "Create New Webhook"
+      },
+      {
+        "category": "Unhook",
         "command": "unhook.configureServerUrls",
         "icon": "$(settings-gear)",
         "title": "Configure Server URLs"
@@ -223,6 +229,150 @@
         "command": "unhook.togglePolling",
         "icon": "$(sync)",
         "title": "Toggle Polling"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.triggerFirstTimePrompts",
+        "icon": "$(bell)",
+        "title": "Trigger First-Time Prompts"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.triggerFirstTimePromptsIfNeeded",
+        "icon": "$(bell-dot)",
+        "title": "Check and Trigger First-Time Prompts If Needed"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkFirstTimeStatus",
+        "icon": "$(question)",
+        "title": "Check Workspace Config Status"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.resetFirstTimeState",
+        "icon": "$(debug-restart)",
+        "title": "Reset First-Time User State"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.markAsExistingUser",
+        "icon": "$(check)",
+        "title": "Mark As Existing User"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkConfigFile",
+        "icon": "$(file)",
+        "title": "Check Config File In Workspace"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.autoMarkAsExistingUser",
+        "icon": "$(pass)",
+        "title": "Auto-Mark As Existing User If Config Exists"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkAndShowFirstTimePrompts",
+        "icon": "$(bell)",
+        "title": "Check And Show Workspace Config Prompts"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkWorkspaceStatus",
+        "icon": "$(workspace-trusted)",
+        "title": "Check Workspace Status"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.shouldShowPrompts",
+        "icon": "$(inspect)",
+        "title": "Should Show First-Time Prompts?"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkAnalyticsConsent",
+        "icon": "$(graph)",
+        "title": "Check Analytics Consent"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.askAnalyticsConsent",
+        "icon": "$(megaphone)",
+        "title": "Ask For Analytics Consent"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.askUnhookYmlCreation",
+        "icon": "$(new-file)",
+        "title": "Ask To Create unhook.yml"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkWebhooks",
+        "icon": "$(link-external)",
+        "title": "Check User Webhooks"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkOverallStatus",
+        "icon": "$(pulse)",
+        "title": "Check Overall First-Time Status"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkApiKeyStatus",
+        "icon": "$(key)",
+        "title": "Check API Key Status"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.createApiKey",
+        "icon": "$(add)",
+        "title": "Create New API Key"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.testWebhookCreation",
+        "icon": "$(debug)",
+        "title": "Test Webhook Creation Process"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.debugApiKeyIssue",
+        "icon": "$(search)",
+        "title": "Debug API Key Issue"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.testWebhookSelection",
+        "icon": "$(list-selection)",
+        "title": "Test Webhook Selection Interface"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.doNotShowWorkspaceConfigPrompts",
+        "icon": "$(eye-closed)",
+        "title": "Disable Workspace Config Prompts"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.resetDoNotShowWorkspaceConfigPrompts",
+        "icon": "$(eye)",
+        "title": "Enable Workspace Config Prompts"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.checkDoNotShowAgainStatus",
+        "icon": "$(info)",
+        "title": "Check Workspace Config Prompts Status"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.resetPromptFlags",
+        "icon": "$(refresh)",
+        "title": "Reset Prompt Flags (Debug)"
       }
     ],
     "configuration": {
@@ -374,6 +524,11 @@
         "command": "unhook.cancelAuth",
         "key": "escape",
         "when": "unhook.auth.pending"
+      },
+      {
+        "command": "unhook.createWebhook",
+        "key": "ctrl+shift+w",
+        "when": "unhook.auth.signedIn"
       }
     ],
     "languages": [
@@ -437,6 +592,11 @@
     "menus": {
       "view/item/context": [
         {
+          "command": "unhook.createWebhook",
+          "group": "inline",
+          "when": "view == unhook.events"
+        },
+        {
           "command": "unhook.copyEvent",
           "group": "inline",
           "when": "view == unhook.events && viewItem == unhook.event"
@@ -479,8 +639,13 @@
           "when": "view == unhook.events"
         },
         {
-          "command": "unhook.events.filter",
+          "command": "unhook.createWebhook",
           "group": "navigation@1",
+          "when": "view == unhook.events"
+        },
+        {
+          "command": "unhook.events.filter",
+          "group": "navigation@2",
           "when": "view == unhook.events"
         },
         {
@@ -528,11 +693,11 @@
   },
   "description": "Webhook Development",
   "devDependencies": {
-    "@tailwindcss/postcss": "4.1.11",
+    "@tailwindcss/postcss": "4.1.12",
     "@types/bun": "1.2.20",
     "@types/glob": "9.0.0",
     "@types/js-yaml": "4.0.9",
-    "@types/node": "24.2.1",
+    "@types/node": "24.3.0",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@types/vscode": "1.96.0",
@@ -547,11 +712,11 @@
     "glob": "11.0.3",
     "globals": "16.3.0",
     "mocha": "11.7.1",
-    "msw": "^2.10.4",
+    "msw": "^2.10.5",
     "msw-trpc": "^2.0.1",
     "ovsx": "0.10.5",
     "postcss": "8.5.6",
-    "tailwindcss": "4.1.11",
+    "tailwindcss": "4.1.12",
     "tsup": "8.5.0",
     "typescript": "5.9.2",
     "vite": "7.1.2",

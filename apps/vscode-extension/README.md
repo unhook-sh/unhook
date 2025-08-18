@@ -45,6 +45,14 @@ Unhook is the open-source platform that makes testing and collaborating on webho
 
 Create an `unhook.yml` file in your workspace root:
 
+**Option 1: Use the VS Code Extension (Recommended)**
+- Click the Unhook icon in the Activity Bar
+- Select "Create Configuration File" from the Quick Actions menu
+- Choose your workspace folder
+- Select a webhook from your account (or create one if none exist)
+- The extension will automatically generate the configuration file
+
+**Option 2: Manual Creation**
 ```yaml
 webhookId: wh_your_webhook_id
 destination:
@@ -61,6 +69,25 @@ delivery:
 - Create a webhook URL at [unhook.sh/app](https://unhook.sh/app)
 - Configure your webhook provider to use the Unhook URL
 - View events in the VS Code sidebar as they arrive
+
+### 5. Create Webhooks from VS Code (New!)
+
+You can now create new webhooks directly from VS Code:
+
+- **Quick Access**: Click the "Create New Webhook" button in the Events sidebar
+- **Command Palette**: Press `Ctrl+Shift+P` and type "Unhook: Create New Webhook"
+- **Keyboard Shortcut**: Use `Ctrl+Shift+W` (when signed in)
+- **Status Bar**: Click the Unhook status bar item and select "Create New Webhook"
+- **Context Menu**: Right-click in the Events panel and select "Create New Webhook"
+
+The extension will:
+1. Prompt you for a webhook name
+2. Create the webhook via the Unhook API
+3. Automatically update your local configuration file
+4. Copy the webhook URL to your clipboard
+5. Open the configuration file for review
+
+This makes it easy to set up new webhook endpoints without leaving your development environment!
 
 ---
 
@@ -244,6 +271,16 @@ You can specify a custom configuration file path in VS Code settings:
 | `unhook.events.refresh` | Refresh events list |
 | `unhook.events.filter` | Filter events |
 | `unhook.quickPick` | Show Quick Pick interface |
+| `unhook.createWebhook` | Create a new webhook and update configuration |
+
+### Webhook Management Commands
+
+| Command | Description |
+|---------|-------------|
+| `unhook.createWebhook` | Create a new webhook and update configuration |
+| `unhook.createConfig` | Create unhook.yml configuration file |
+| `unhook.configureServerUrls` | Configure server URLs for cloud or self-hosted |
+| `unhook.configureApiKey` | Setup MCP Server with API key |
 
 ### Event Actions
 
@@ -275,6 +312,15 @@ You can specify a custom configuration file path in VS Code settings:
 | `unhook.resumePolling` | Resume polling |
 | `unhook.stopPolling` | Stop polling |
 | `unhook.togglePolling` | Toggle polling |
+
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Command | Description |
+|----------|---------|-------------|
+| `Ctrl+Shift+W` | `unhook.createWebhook` | Create a new webhook (when signed in) |
+| `Escape` | `unhook.cancelAuth` | Cancel authentication (when pending) |
 
 ---
 

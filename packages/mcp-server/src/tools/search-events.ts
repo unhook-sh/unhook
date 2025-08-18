@@ -14,7 +14,6 @@ export const searchEventsSchema = {
 export function registerSearchEventsTool(server: McpServer, context: Context) {
   const caller = createCaller(context);
 
-  // @ts-expect-error
   server.registerTool(
     'search_events',
     {

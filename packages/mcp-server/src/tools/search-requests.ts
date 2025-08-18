@@ -18,7 +18,6 @@ export function registerSearchRequestsTool(
 ) {
   const api = createCaller(context);
 
-  // @ts-expect-error
   server.registerTool(
     'search_requests',
     {

@@ -15,7 +15,6 @@ export function registerAnalyzeRequestTool(
 ) {
   const caller = createCaller(context);
 
-  // @ts-expect-error
   server.registerTool(
     'analyze_request',
     {

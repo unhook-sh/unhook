@@ -9,7 +9,6 @@ export function registerWebhooksListResource(
 ) {
   const caller = createCaller(context);
 
-  // @ts-expect-error
   server.registerResource(
     'webhooks-list',
     'webhook://webhooks/list',

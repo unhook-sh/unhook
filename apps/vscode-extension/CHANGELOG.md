@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.2.38
+
+### Patch Changes
+
+- [`e524984`](https://github.com/unhook-sh/unhook/commit/e524984072f5a6af4d721f23be29e207b3cd4714) Thanks [@seawatts](https://github.com/seawatts)! - Add new vscode commands to create new webhook
+
+- Updated dependencies [[`e524984`](https://github.com/unhook-sh/unhook/commit/e524984072f5a6af4d721f23be29e207b3cd4714)]:
+  - @unhook/client@0.5.25
+
 ## 0.2.37
 
 ### Patch Changes

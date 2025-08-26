@@ -1,5 +1,11 @@
 # @unhook/client
 
+## 0.6.0
+
+### Minor Changes
+
+- [`a8b6b5b`](https://github.com/unhook-sh/unhook/commit/a8b6b5bd4fd6660f49dbbc2999003f76b0acc51b) Thanks [@seawatts](https://github.com/seawatts)! - Change webhookId to webhookUrl
+
 ## 0.5.25
 
 ### Patch Changes

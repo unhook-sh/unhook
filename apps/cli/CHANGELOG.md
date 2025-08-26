@@ -1,5 +1,12 @@
 # @unhook/cli
 
+## 0.14.1
+
+### Patch Changes
+
+- Updated dependencies [[`23769c8`](https://github.com/unhook-sh/unhook/commit/23769c8a919e65afd7908123abacfa2648a0f5a6)]:
+  - @unhook/client@0.6.1
+
 ## 0.14.0
 
 ### Minor Changes

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@unhook/ui/card';
+import { CloseWindowButton } from './close-window-button';
 
-export default function CliTokenSuccessPage() {
+export function CloseWindowCard() {
   return (
     <Card className="w-full">
       <CardHeader className="space-y-1">
@@ -8,7 +9,7 @@ export default function CliTokenSuccessPage() {
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
         <div>You can now close this page.</div>
-        {/* <CloseWindowButton /> */}
+        <CloseWindowButton />
       </CardContent>
     </Card>
   );

@@ -8,10 +8,20 @@ import {
 } from '@unhook/ui/card';
 import { useState } from 'react';
 import { AuthCodeLoginButton } from './auth-code-login-button';
+import { CloseWindowCard } from './close-wind-card';
 import { OrgSelectorProvider } from './org-selector';
 
 export function AuthCodeContent() {
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (isAuthenticated) {
+    return <CloseWindowCard />;
+  }
 
   return (
     <Card className="w-full">
@@ -24,7 +34,10 @@ export function AuthCodeContent() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <OrgSelectorProvider onSelect={setSelectedOrg} />
-        <AuthCodeLoginButton disabled={!selectedOrg} />
+        <AuthCodeLoginButton
+          disabled={!selectedOrg}
+          onSuccess={handleAuthSuccess}
+        />
       </CardContent>
     </Card>
   );

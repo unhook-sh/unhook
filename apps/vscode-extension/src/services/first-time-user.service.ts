@@ -139,6 +139,12 @@ export class FirstTimeUserService {
       return false;
     }
 
+    // Check if user is signed in - if not, don't show prompts
+    if (!this.authStore?.isSignedIn) {
+      log('Not showing workspace config prompts - user is not signed in');
+      return false;
+    }
+
     // Always show prompts if there's no config file in the workspace
     // This is about workspace configuration, not user onboarding
     const hasConfig = await this.hasConfigurationFile();
@@ -148,6 +154,7 @@ export class FirstTimeUserService {
     log('Checking if should show workspace config prompts', {
       doNotShowAgain,
       hasConfig,
+      isSignedIn: this.authStore.isSignedIn,
       reason: 'No configuration file found in workspace',
       shouldShow,
     });
@@ -168,6 +175,10 @@ export class FirstTimeUserService {
 
     if (shouldShow) {
       await this.checkAndShowWorkspaceConfigPromptsIfNeeded();
+    } else if (!this.authStore?.isSignedIn) {
+      log(
+        'User is not signed in - workspace config prompts will be shown after sign-in',
+      );
     }
   }
 
@@ -194,63 +205,76 @@ export class FirstTimeUserService {
 
     log('Showing workspace config prompts for new workspace');
 
-    // Clear any existing timeout
-    if (this.promptTimeout) {
-      clearTimeout(this.promptTimeout);
-    }
-
-    // Show analytics consent prompt first (only if not asked before), then config creation prompt
-    this.promptTimeout = setTimeout(async () => {
-      try {
-        // Check if we've already asked for analytics consent
-        const hasAskedForConsent = await this.hasAskedForAnalyticsConsent();
-        log('Analytics consent check', { hasAskedForConsent });
-        if (!hasAskedForConsent) {
-          log('Showing analytics consent prompt');
-          await this.promptForAnalyticsConsent();
-        }
-
-        // Show config creation prompt after a short delay
-        setTimeout(() => {
-          log('Showing workspace config creation prompt');
-          this.promptForWorkspaceConfigCreation();
-        }, 500);
-      } finally {
-        // Reset flag after prompts are shown
-        this.isShowingPrompts = false;
-      }
-    }, 1000);
+    // Use the common prompt flow
+    await this.showPromptSequence('regular');
   }
 
   async forceShowFirstTimePrompts(): Promise<void> {
     log('Force showing first-time prompts for user');
 
+    // Check if user is signed in - if not, don't show prompts
+    if (!this.authStore?.isSignedIn) {
+      log('Cannot force show first-time prompts - user is not signed in');
+      return;
+    }
+
+    // Use the common prompt flow
+    await this.showPromptSequence('forced');
+  }
+
+  /**
+   * Common method to show the prompt sequence (analytics consent + workspace config)
+   * @param mode - 'regular' for normal flow, 'forced' for forced prompts
+   */
+  private async showPromptSequence(mode: 'regular' | 'forced'): Promise<void> {
     // Clear any existing timeout
     if (this.promptTimeout) {
       clearTimeout(this.promptTimeout);
     }
 
-    // Set flag to prevent duplicates
-    this.isShowingPrompts = true;
-
     // Show analytics consent prompt first, then config creation prompt
     this.promptTimeout = setTimeout(async () => {
       try {
-        // Check if we've already asked for analytics consent
-        const hasAskedForConsent = await this.hasAskedForAnalyticsConsent();
-        log('Analytics consent check (forced)', { hasAskedForConsent });
-        if (!hasAskedForConsent) {
-          log('Showing analytics consent prompt (forced)');
-          await this.promptForAnalyticsConsent();
+        // Double-check auth state before showing prompts
+        if (!this.authStore?.isSignedIn) {
+          log(`User is no longer signed in, skipping ${mode} prompts`);
+          return;
         }
 
-        // Show config creation prompt after a short delay
+        // Check if we've already asked for analytics consent
+        const hasAskedForConsent = await this.hasAskedForAnalyticsConsent();
+        log(`Analytics consent check (${mode})`, { hasAskedForConsent });
+
+        if (!hasAskedForConsent) {
+          log(`Showing analytics consent prompt (${mode})`);
+          // Temporarily clear the flag to allow analytics consent to show
+          this.isShowingPrompts = false;
+          await this.promptForAnalyticsConsent();
+          // Re-set the flag after analytics consent
+          this.isShowingPrompts = true;
+          // After analytics consent, add a delay before showing config prompt
+          // This ensures proper flow and user experience
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+
+        // Double-check auth state again before showing config prompt
+        if (!this.authStore?.isSignedIn) {
+          log(
+            `User signed out while showing analytics consent, skipping config prompt (${mode})`,
+          );
+          return;
+        }
+
+        // Show config creation prompt (with delay only if analytics consent was shown)
+        const configDelay = hasAskedForConsent ? 500 : 0;
         setTimeout(() => {
-          log('Showing workspace config creation prompt (forced)');
+          log(`Showing workspace config creation prompt (${mode})`);
           this.promptForWorkspaceConfigCreation();
-        }, 500);
-      } finally {
-        // Reset flag after prompts are shown
+          // Reset flag AFTER the config prompt is actually shown
+          this.isShowingPrompts = false;
+        }, configDelay);
+      } catch (error) {
+        log(`Error showing ${mode} prompts, resetting flag`, { error });
         this.isShowingPrompts = false;
       }
     }, 1000);
@@ -304,6 +328,20 @@ export class FirstTimeUserService {
   }
 
   async promptForAnalyticsConsent(): Promise<boolean> {
+    // Check if user is signed in - if not, don't ask for consent
+    if (!this.authStore?.isSignedIn) {
+      log('Cannot show analytics consent prompt - user is not signed in');
+      return false;
+    }
+
+    // Additional safeguard: check if we're already showing prompts
+    if (this.isShowingPrompts) {
+      log(
+        'Already showing prompts, skipping duplicate analytics consent prompt',
+      );
+      return false;
+    }
+
     // Check if VS Code telemetry is disabled - if so, don't ask for consent
     if (!vscode.env.isTelemetryEnabled) {
       log('VS Code telemetry is disabled, skipping analytics consent prompt');
@@ -353,11 +391,27 @@ export class FirstTimeUserService {
   }
 
   async promptForWorkspaceConfigCreation(): Promise<void> {
+    // Check if user is signed in - if not, don't show prompt
+    if (!this.authStore?.isSignedIn) {
+      log(
+        'Cannot show workspace config creation prompt - user is not signed in',
+      );
+      return;
+    }
+
     // Check if there's already a configuration file
     const hasConfig = await this.hasConfigurationFile();
     if (hasConfig) {
       log(
         'Configuration file already exists, skipping workspace config creation prompt',
+      );
+      return;
+    }
+
+    // Additional safeguard: check if we're already showing prompts
+    if (this.isShowingPrompts) {
+      log(
+        'Already showing prompts, skipping duplicate workspace config creation prompt',
       );
       return;
     }
@@ -560,7 +614,7 @@ export class FirstTimeUserService {
       }
 
       vscode.window.showInformationMessage(
-        `Created unhook.yml with webhook ID: ${selectedWebhookId}`,
+        `Created unhook.yml with webhook URL: ${webhookUrl}\n\nTo view webhook events, open the Unhook panel from the sidebar.`,
       );
 
       log('Created unhook.yml configuration file');

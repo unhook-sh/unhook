@@ -65,15 +65,8 @@ export async function activate(context: vscode.ExtensionContext) {
   firstTimeUserService.setAuthStore(authStore);
   firstTimeUserService.setupWorkspaceChangeListener();
 
-  // Check if we should show first-time prompts in the current workspace
-  if (authStore.isSignedIn) {
-    // Add a small delay to ensure everything is initialized
-    log('Setting up initial workspace config prompt check with 2 second delay');
-    setTimeout(async () => {
-      log('Executing initial workspace config prompt check');
-      await firstTimeUserService.checkAndShowWorkspaceConfigPromptsIfNeeded();
-    }, 2000);
-  }
+  // Note: First-time user prompts are now handled entirely by the handler
+  // to prevent duplicate calls and ensure proper sequencing
 
   setupFirstTimeUserHandler(authStore, firstTimeUserService);
 

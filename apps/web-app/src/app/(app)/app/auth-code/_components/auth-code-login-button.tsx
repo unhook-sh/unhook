@@ -11,10 +11,12 @@ export function AuthCodeLoginButton({
   disabled,
   loadingText,
   text,
+  onSuccess,
 }: {
   disabled?: boolean;
   loadingText?: string;
   text?: string;
+  onSuccess?: () => void;
 }) {
   const [error, setError] = useState<string>();
 
@@ -34,6 +36,11 @@ export function AuthCodeLoginButton({
           error: 'no_token_generated',
         });
         return;
+      }
+
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
       }
 
       const currentUrl = new URL(window.location.href);
@@ -65,7 +72,7 @@ export function AuthCodeLoginButton({
       setError('Failed to authenticate. Please try again.');
       posthog?.captureException(error);
     }
-  }, [executeAsync]);
+  }, [executeAsync, onSuccess]);
 
   return (
     <div className="flex flex-col gap-2">

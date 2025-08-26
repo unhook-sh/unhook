@@ -37,7 +37,10 @@ export function registerEventCommands(
       provider.getAnalyticsService()?.track('events_panel_show');
 
       // Show the Events panel by executing the workbench view command
-      vscode.commands.executeCommand('workbench.view.extension.unhook.events');
+      // The correct format is: workbench.view.extension.{extensionName}.{viewId}
+      vscode.commands.executeCommand(
+        'workbench.view.extension.unhook-vscode.unhook.events',
+      );
     },
   );
 

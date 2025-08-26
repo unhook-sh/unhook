@@ -14,25 +14,18 @@ export function setupFirstTimeUserHandler(
   });
 
   // Check if user is already signed in during initialization
+  // Add a delay to ensure everything is properly initialized
   if (previousAuthState) {
     log(
-      'User is already signed in during initialization, checking if workspace needs config',
+      'User is already signed in during initialization, checking if workspace needs config with 2 second delay',
     );
-    firstTimeUserService
-      .checkAndShowWorkspaceConfigPromptsIfNeeded()
-      .catch((error) => {
-        log('Error checking workspace config status (initialization)', {
-          error,
-        });
-      });
+    setTimeout(async () => {
+      await firstTimeUserService.checkAndShowWorkspaceConfigPromptsIfNeeded();
+    }, 2000);
   }
 
-  // Also check when the handler is first set up, regardless of auth state
-  // This handles the case where a user opens a new workspace without being signed in yet
-  log('Performing initial workspace check regardless of auth state');
-  firstTimeUserService.forceCheckWorkspaceStatus().catch((error) => {
-    log('Error during initial workspace check', { error });
-  });
+  // Note: Removed the immediate forceCheckWorkspaceStatus call to prevent duplicate prompts
+  // The handler now only triggers prompts when explicitly needed (auth state changes, etc.)
 
   authStore.onDidChangeAuth(() => {
     const currentAuthState = authStore.isSignedIn;

@@ -76,5 +76,5 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",
-  "version": "0.5.25"
+  "version": "0.6.0"
 }

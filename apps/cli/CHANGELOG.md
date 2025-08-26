@@ -1,5 +1,16 @@
 # @unhook/cli
 
+## 0.14.0
+
+### Minor Changes
+
+- [`a8b6b5b`](https://github.com/unhook-sh/unhook/commit/a8b6b5bd4fd6660f49dbbc2999003f76b0acc51b) Thanks [@seawatts](https://github.com/seawatts)! - Change webhookId to webhookUrl
+
+### Patch Changes
+
+- Updated dependencies [[`a8b6b5b`](https://github.com/unhook-sh/unhook/commit/a8b6b5bd4fd6660f49dbbc2999003f76b0acc51b)]:
+  - @unhook/client@0.6.0
+
 ## 0.13.25
 
 ### Patch Changes

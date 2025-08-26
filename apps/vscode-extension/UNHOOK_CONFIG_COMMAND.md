@@ -38,7 +38,7 @@ When executed, the command will:
 # Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration
 
-webhookId: wh_example
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: local
     url: http://localhost:3000/api/webhooks
@@ -50,7 +50,7 @@ delivery:
 ```yaml
 # Unhook Self-Hosted Configuration
 
-webhookId: wh_example
+webhookUrl: https://your-domain.com/your-org/your-webhook-name
 
 server:
   apiUrl: https://api.your-domain.com

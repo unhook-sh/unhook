@@ -181,7 +181,7 @@ export const siteConfig = {
     backgroundImage: '/agent-cta-background.png',
     button: {
       href: '/app/onboarding?utm_source=marketing-site&utm_medium=cta-button',
-      text: 'Create Your Webhook URL Today',
+      text: 'Install Extension Today',
     },
     id: 'cta',
     subtext: 'Start testing webhooks in minutes',
@@ -415,7 +415,7 @@ export const siteConfig = {
     cta: {
       primary: {
         href: '/app/onboarding?utm_source=marketing-site&utm_medium=hero-cta',
-        text: 'Create Webhook URL',
+        text: 'Install Extension',
       },
       secondary: {
         href: 'https://docs.unhook.sh',
@@ -423,7 +423,7 @@ export const siteConfig = {
       },
     },
     description:
-      'Open source toolkit for webhook development. Test, debug, webhooks and AI agents with your team - all from your local environment.',
+      'Open source toolkit for webhook development. Install the extension in your editor to test, debug, and monitor webhooks with your team - all from your local environment.',
     title: 'AI-Powered Webhook Development',
   },
   keywords: [
@@ -472,7 +472,7 @@ export const siteConfig = {
     pricingItems: [
       {
         buttonColor: 'bg-accent text-primary',
-        buttonText: 'Create Webhook URL',
+        buttonText: 'Install Extension',
         description: 'Perfect for individual developers',
         features: [
           'CLI & Editor extension access',

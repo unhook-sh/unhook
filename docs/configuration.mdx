@@ -9,7 +9,7 @@ The `unhook.yml` file is the primary way to configure Unhook. It supports the fo
 
 ```typescript
 interface WebhookConfig {
-  webhookId: string;  // Required: Your unique webhook ID
+  webhookUrl: string;  // Required: Your unique webhook URL
   clientId?: string;  // Optional: Unique client identifier
   debug?: boolean;    // Optional: Enable debug mode
   telemetry?: boolean; // Optional: Enable telemetry
@@ -57,8 +57,8 @@ interface HeaderConfig {
 Here's a basic configuration example:
 
 ```yaml
-# Required: Your unique webhook ID
-webhookId: wh_your_webhook_id
+# Required: Your unique webhook URL
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 # Optional: Enable debug mode
 debug: false
@@ -90,7 +90,7 @@ delivery:
 Configure multiple endpoints for different webhook types:
 
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: stripe-endpoint
     url: http://localhost:3000/api/webhooks/stripe
@@ -119,7 +119,7 @@ delivery:
 Configure health checks for your endpoints:
 
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: your-endpoint
     url: http://localhost:3000/api/webhooks
@@ -137,7 +137,7 @@ destination:
 Configure URLs with different formats:
 
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: simple-url
     url: http://localhost:3000/api/webhooks
@@ -157,7 +157,7 @@ destination:
 Configure webhook sources with advanced options:
 
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 source:
   - name: stripe
     secret: whsec_your_stripe_secret
@@ -190,7 +190,7 @@ delivery:
 Configure Unhook to work with self-hosted instances:
 
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 server:
   apiUrl: https://your-unhook-instance.com/api
   dashboardUrl: https://your-unhook-instance.com
@@ -208,7 +208,7 @@ All configuration options can be set via environment variables:
 
 ```bash
 # Core settings
-WEBHOOK_ID=wh_your_webhook_id
+WEBHOOK_URL=https://unhook.sh/your-org/your-webhook-name
 WEBHOOK_CLIENT_ID=your_client_id
 WEBHOOK_DEBUG=true
 WEBHOOK_TELEMETRY=true
@@ -240,7 +240,7 @@ WEBHOOK_SERVER_DASHBOARD_URL=https://your-instance.com
 Teams can share a single webhook configuration:
 
 ```yaml
-webhookId: wh_team_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-team-webhook
 destination:
   - name: dev1
     url: http://localhost:3000/api/webhooks
@@ -263,7 +263,7 @@ delivery:
 Each developer can have their own configuration:
 
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 clientId: dev1  # Unique client ID
 destination:
   - name: local
@@ -282,7 +282,7 @@ Unhook supports multiple configuration file formats:
 ### YAML (Recommended)
 ```yaml
 # unhook.yml or unhook.yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: local
     url: http://localhost:3000/api/webhooks
@@ -294,7 +294,7 @@ delivery:
 ### JSON
 ```json
 {
-  "webhookId": "wh_your_webhook_id",
+  "webhookUrl": "https://unhook.sh/your-org/your-webhook-name",
   "destination": [
     {
       "name": "local",
@@ -314,7 +314,7 @@ delivery:
 ```javascript
 // unhook.config.js or unhook.config.ts
 module.exports = {
-  webhookId: 'wh_your_webhook_id',
+  webhookUrl: 'https://unhook.sh/your-org/your-webhook-name',
   destination: [
     {
       name: 'local',

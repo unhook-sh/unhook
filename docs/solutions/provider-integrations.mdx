@@ -52,7 +52,7 @@ The most popular payment processor with comprehensive webhook support.
 **Configuration:**
 ```yaml
 # unhook.yaml
-webhookId: "wh_stripe_prod"
+webhookUrl: "https://unhook.sh/your-org/your-stripe-webhook"
 destination:
   - name: "stripe-handler"
     url: "http://localhost:3000/api/webhooks/stripe"
@@ -65,7 +65,7 @@ delivery:
 
 **Stripe Dashboard Setup:**
 1. Go to Stripe Dashboard → Webhooks
-2. Add endpoint: `https://unhook.sh/wh_stripe_prod`
+2. Add endpoint: `https://unhook.sh/your-org/your-stripe-webhook`
 3. Select events to listen for
 4. Save webhook
 
@@ -82,7 +82,7 @@ PayPal's webhook system for payment notifications.
 **Configuration:**
 ```yaml
 # unhook.yaml
-webhookId: "wh_paypal_prod"
+webhookUrl: "https://unhook.sh/your-org/your-paypal-webhook"
 destination:
   - name: "paypal-handler"
     url: "http://localhost:3000/api/webhooks/paypal"
@@ -109,7 +109,7 @@ GitHub webhooks for repository events and actions.
 **Configuration:**
 ```yaml
 # unhook.yaml
-webhookId: "wh_github_repo"
+webhookUrl: "https://unhook.sh/your-org/your-github-webhook"
 destination:
   - name: "github-handler"
     url: "http://localhost:3000/api/webhooks/github"
@@ -122,7 +122,7 @@ delivery:
 
 **GitHub Repository Setup:**
 1. Go to repository Settings → Webhooks
-2. Add webhook: `https://unhook.sh/wh_github_repo`
+2. Add webhook: `https://unhook.sh/your-org/your-github-webhook`
 3. Select events to listen for
 4. Set content type to `application/json`
 5. Save webhook
@@ -154,7 +154,7 @@ Modern authentication platform with comprehensive webhook support.
 **Configuration:**
 ```yaml
 # unhook.yaml
-webhookId: "wh_clerk_auth"
+webhookUrl: "https://unhook.sh/your-org/your-clerk-webhook"
 destination:
   - name: "clerk-handler"
     url: "http://localhost:3000/api/webhooks/clerk"
@@ -167,7 +167,7 @@ delivery:
 
 **Clerk Dashboard Setup:**
 1. Go to Clerk Dashboard → Webhooks
-2. Add endpoint: `https://unhook.sh/wh_clerk_auth`
+2. Add endpoint: `https://unhook.sh/your-org/your-clerk-webhook`
 3. Select events to listen for
 4. Save webhook
 
@@ -218,7 +218,7 @@ Shopify webhooks for store events.
 **Configuration:**
 ```yaml
 # unhook.yaml
-webhookId: "wh_shopify_store"
+webhookUrl: "https://unhook.sh/your-org/your-shopify-webhook"
 destination:
   - name: "shopify-handler"
     url: "http://localhost:3000/api/webhooks/shopify"
@@ -237,7 +237,7 @@ Unhook supports any webhook-enabled service through generic webhook handling:
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_custom_service"
+webhookUrl: "https://unhook.sh/your-org/your-custom-webhook"
 destination:
   - name: "custom-handler"
     url: "http://localhost:3000/api/webhooks/custom"
@@ -330,7 +330,7 @@ Filter events by type for specific providers:
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_stripe_filtered"
+webhookUrl: "https://unhook.sh/your-org/your-stripe-filtered-webhook"
 destination:
   - name: "stripe-payments"
     url: "http://localhost:3000/api/webhooks/stripe/payments"
@@ -360,7 +360,7 @@ Handle multiple providers in a single configuration:
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_multi_provider"
+webhookUrl: "https://unhook.sh/your-org/your-multi-provider-webhook"
 destination:
   - name: "stripe-handler"
     url: "http://localhost:3000/api/webhooks/stripe"
@@ -387,7 +387,7 @@ Different providers for different environments:
 
 ```yaml
 # unhook.dev.yaml
-webhookId: "wh_dev"
+webhookUrl: "https://unhook.sh/your-org/your-dev-webhook"
 destination:
   - name: "stripe-test"
     url: "http://localhost:3000/api/webhooks/stripe"
@@ -399,7 +399,7 @@ delivery:
     destination: "stripe-test"
 
 # unhook.prod.yaml
-webhookId: "wh_prod"
+webhookUrl: "https://unhook.sh/your-org/your-prod-webhook"
 destination:
   - name: "stripe-live"
     url: "http://localhost:3000/api/webhooks/stripe"
@@ -419,7 +419,7 @@ Test provider integrations locally:
 
 ```bash
 # Start webhook listener
-unhook listen --port 3000 --webhook-id wh_stripe_test
+unhook listen --port 3000 --webhook-url https://unhook.sh/your-org/your-stripe-test-webhook
 
 # Test with curl
 curl -X POST http://localhost:3000/api/webhooks/stripe \

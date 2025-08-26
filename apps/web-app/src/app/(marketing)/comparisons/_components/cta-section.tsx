@@ -55,7 +55,7 @@ export function CTASection() {
                       location: 'comparisons_cta',
                     }}
                   >
-                    Create Webhook URL
+                    Install Extension
                   </MetricLink>
                 </MetricButton>
                 <MetricButton

@@ -1,12 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
-import { upsertOrg } from '@unhook/db';
 import { redirect } from 'next/navigation';
-import { SetActiveAndRedirect } from './_components/set-active-and-redirect';
+import { OnboardingForm } from './_components/onboarding-form';
 
 export default async function Page(props: {
   searchParams: Promise<{
     redirectTo?: string;
     source?: string;
+    orgName?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -16,22 +16,23 @@ export default async function Page(props: {
     return redirect('/');
   }
 
-  if (!orgId) {
-    try {
-      await upsertOrg({
-        name: 'Personal',
-        userId: userId ?? '',
-      });
-    } catch (error) {
-      console.error('Failed to create organization:', error);
-      return <div>Failed to create organization</div>;
-    }
+  // If user already has an organization, redirect to dashboard
+  if (orgId) {
+    return redirect('/app/dashboard');
+  }
+
+  // If orgName is provided, create the organization and redirect to webhook wizard
+  if (searchParams.orgName) {
+    // This will be handled by the form component
+    return redirect('/app/webhooks/create');
   }
 
   return (
-    <SetActiveAndRedirect
-      redirectTo={searchParams.redirectTo}
-      source={searchParams.source}
-    />
+    <div className="container mx-auto max-w-2xl py-8">
+      <OnboardingForm
+        redirectTo={searchParams.redirectTo}
+        source={searchParams.source}
+      />
+    </div>
   );
 }

@@ -85,7 +85,7 @@ export const configSchema = z
       .optional(),
     telemetry: z.boolean().default(true).optional(),
     version: z.string().optional(),
-    webhookId: z.string(),
+    webhookUrl: z.string(),
   })
   .superRefine((data, ctx) => {
     // Runtime validation: ensure all delivery.destination values exist in destination[].name
@@ -148,7 +148,7 @@ export async function loadConfig(configPath: string): Promise<WebhookConfig> {
     destination: [] as Array<
       z.infer<typeof configSchema>['destination'][number]
     >,
-    webhookId: '',
+    webhookUrl: '',
   };
 
   if (configPath) {

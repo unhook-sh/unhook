@@ -96,7 +96,7 @@ export class TestApiServer {
     });
 
     // Webhook receiver endpoint
-    this.app.all('/wh/:webhookId', async (req, res) => {
+    this.app.all('/:webhookId', async (req, res) => {
       // Mock webhook reception
       const event = {
         body: req.body,

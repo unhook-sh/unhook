@@ -325,7 +325,7 @@ export const createTestEventSchema = {
   eventType: z.string(),
   provider: z.enum(['stripe', 'github', 'clerk', 'custom']),
   source: z.string().optional(),
-  webhookId: z.string(),
+  webhookUrl: z.string(),
 };
 
 export function registerCreateTestEventTool(
@@ -349,11 +349,11 @@ export function registerCreateTestEventTool(
 
       try {
         // Get webhook info
-        const webhook = await caller.webhooks.byId({ id: args.webhookId });
+        const webhook = await caller.webhooks.byUrl({ url: args.webhookUrl });
         if (!webhook) {
           return {
             content: [
-              { text: `Webhook ${args.webhookId} not found`, type: 'text' },
+              { text: `Webhook ${args.webhookUrl} not found`, type: 'text' },
             ],
           };
         }
@@ -442,7 +442,7 @@ export function registerCreateTestEventTool(
             event_type: args.eventType,
             execution_time_ms: executionTime,
             provider: args.provider,
-            webhook_id: args.webhookId,
+            webhook_url: args.webhookUrl,
           },
           userId,
           organizationId,

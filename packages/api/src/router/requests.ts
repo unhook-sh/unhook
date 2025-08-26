@@ -1,12 +1,14 @@
 import {
   CreateRequestTypeSchema,
+  Orgs,
   Requests,
   type RequestType,
   type RequestTypeWithEventType,
+  Webhooks,
 } from '@unhook/db/schema';
+import { parseWebhookUrl } from '@unhook/utils';
 import { and, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
-
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const requestsRouter = createTRPCRouter({
@@ -119,15 +121,36 @@ export const requestsRouter = createTRPCRouter({
       return request || null;
     }),
 
-  byWebhookId: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
+  byWebhookUrl: protectedProcedure
+    .input(z.object({ webhookUrl: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      // Parse webhookUrl to get orgName and webhookName
+      const { orgName, webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      // First, find the organization by name
+      const org = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.name, orgName),
+      });
+
+      if (!org) {
+        throw new Error('Organization not found');
+      }
+
+      // Then find the webhook by name within that organization
+      const webhook = await ctx.db.query.Webhooks.findFirst({
+        where: and(eq(Webhooks.name, webhookName), eq(Webhooks.orgId, org.id)),
+      });
+
+      if (!webhook) {
+        throw new Error('Webhook not found');
+      }
 
       const requests = await ctx.db.query.Requests.findMany({
         orderBy: [desc(Requests.createdAt)],
         where: and(
-          eq(Requests.webhookId, input.webhookId),
+          eq(Requests.webhookId, webhook.id),
           eq(Requests.orgId, ctx.auth.orgId),
         ),
       });
@@ -135,15 +158,36 @@ export const requestsRouter = createTRPCRouter({
       return requests satisfies RequestType[];
     }),
 
-  byWebhookIdWithEvents: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
+  byWebhookUrlWithEvents: protectedProcedure
+    .input(z.object({ webhookUrl: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      // Parse webhook URL to extract org name and webhook name
+      const { orgName, webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      // First, find the organization by name
+      const org = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.name, orgName),
+      });
+
+      if (!org) {
+        throw new Error('Organization not found');
+      }
+
+      // Then find the webhook by name within that organization
+      const webhook = await ctx.db.query.Webhooks.findFirst({
+        where: and(eq(Webhooks.name, webhookName), eq(Webhooks.orgId, org.id)),
+      });
+
+      if (!webhook) {
+        throw new Error('Webhook not found');
+      }
 
       const requests = await ctx.db.query.Requests.findMany({
         orderBy: [desc(Requests.createdAt)],
         where: and(
-          eq(Requests.webhookId, input.webhookId),
+          eq(Requests.webhookId, webhook.id),
           eq(Requests.orgId, ctx.auth.orgId),
         ),
         with: { event: true },

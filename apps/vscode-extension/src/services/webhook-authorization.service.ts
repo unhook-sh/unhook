@@ -6,7 +6,7 @@ const log = debug('unhook:vscode:webhook-authorization');
 
 export interface WebhookAuthorizationState {
   isUnauthorized: boolean;
-  webhookId: string | null;
+  webhookUrl: string | null;
   hasPendingRequest: boolean;
 }
 
@@ -24,7 +24,7 @@ export class WebhookAuthorizationService implements vscode.Disposable {
   private state: WebhookAuthorizationState = {
     hasPendingRequest: false,
     isUnauthorized: false,
-    webhookId: null,
+    webhookUrl: null,
   };
 
   private disposables: vscode.Disposable[] = [];
@@ -45,20 +45,20 @@ export class WebhookAuthorizationService implements vscode.Disposable {
   }
 
   async handleAuthorizationError(
-    webhookId: string,
+    webhookUrl: string,
     authStore: AuthStore,
   ): Promise<void> {
-    log('Handling authorization error for webhook', { webhookId });
+    log('Handling authorization error for webhook', { webhookUrl });
 
     this.state.isUnauthorized = true;
-    this.state.webhookId = webhookId;
+    this.state.webhookUrl = webhookUrl;
 
     // Check if there's already a pending request
-    if (authStore.isSignedIn && webhookId) {
+    if (authStore.isSignedIn && webhookUrl) {
       try {
         const pendingRequest =
           await authStore.api.webhookAccessRequests.checkPendingRequest.query({
-            webhookId,
+            webhookUrl,
           });
         this.state.hasPendingRequest = !!pendingRequest;
         log('Pending request check', {
@@ -77,7 +77,7 @@ export class WebhookAuthorizationService implements vscode.Disposable {
     log('Handling authorization success');
 
     this.state.isUnauthorized = false;
-    this.state.webhookId = null;
+    this.state.webhookUrl = null;
     this.state.hasPendingRequest = false;
 
     this._onDidChangeAuthorizationState.fire(this.getState());
@@ -90,8 +90,8 @@ export class WebhookAuthorizationService implements vscode.Disposable {
   }
 
   async requestAccess(authStore: AuthStore, message?: string): Promise<void> {
-    if (!this.state.webhookId) {
-      throw new Error('No webhook ID found');
+    if (!this.state.webhookUrl) {
+      throw new Error('No webhook URL found');
     }
 
     if (!authStore.isSignedIn) {
@@ -100,13 +100,13 @@ export class WebhookAuthorizationService implements vscode.Disposable {
 
     log('Requesting webhook access', {
       hasMessage: !!message,
-      webhookId: this.state.webhookId,
+      webhookUrl: this.state.webhookUrl,
     });
 
     try {
       await authStore.api.webhookAccessRequests.create.mutate({
         requesterMessage: message,
-        webhookId: this.state.webhookId,
+        webhookUrl: this.state.webhookUrl,
       });
 
       // Update state to show pending request

@@ -56,7 +56,7 @@ export class PollingService implements vscode.Disposable {
 
   // Event tracking
   private lastEventIds = new Set<string>();
-  private currentWebhookId: string | null = null;
+  private currentWebhookUrl: string | null = null;
 
   constructor(options: PollingServiceOptions) {
     this.authStore = options.authStore;
@@ -97,7 +97,7 @@ export class PollingService implements vscode.Disposable {
   /**
    * Start polling for events
    */
-  public startPolling(webhookId?: string): void {
+  public startPolling(webhookUrl?: string): void {
     if (this.state.isPolling) {
       log('Polling already active, skipping start request');
       return;
@@ -108,7 +108,7 @@ export class PollingService implements vscode.Disposable {
       return;
     }
 
-    this.currentWebhookId = webhookId || null;
+    this.currentWebhookUrl = webhookUrl || null;
     this.state.isPolling = true;
     this.state.isPaused = false;
     this.state.consecutiveErrors = 0;
@@ -118,7 +118,7 @@ export class PollingService implements vscode.Disposable {
 
     log('Starting polling', {
       interval: this.state.pollingInterval,
-      webhookId: this.currentWebhookId,
+      webhookUrl: this.currentWebhookUrl,
     });
 
     this.scheduleNextPoll();
@@ -134,7 +134,7 @@ export class PollingService implements vscode.Disposable {
     this.clearTimers();
     this.state.isPolling = false;
     this.state.isPaused = false;
-    this.currentWebhookId = null;
+    this.currentWebhookUrl = null;
 
     this.emitStateChange();
   }
@@ -256,23 +256,23 @@ export class PollingService implements vscode.Disposable {
    * Perform a single poll for events
    */
   private async performPoll(): Promise<void> {
-    if (!this.authStore.isSignedIn || !this.currentWebhookId) {
-      log('Cannot poll: not signed in or no webhook ID');
+    if (!this.authStore.isSignedIn || !this.currentWebhookUrl) {
+      log('Cannot poll: not signed in or no webhook URL');
       return;
     }
 
     try {
       log('Performing poll', {
         lastEventTime: this.state.lastEventTime,
-        webhookId: this.currentWebhookId,
+        webhookUrl: this.currentWebhookUrl,
       });
 
       this.state.lastPollTime = new Date();
 
       // Fetch events from the API
-      const events = await this.authStore.api.events.byWebhookId.query({
+      const events = await this.authStore.api.events.byWebhookUrl.query({
         lastEventTime: this.state.lastEventTime?.toISOString(),
-        webhookId: this.currentWebhookId,
+        webhookUrl: this.currentWebhookUrl,
       });
 
       // Check for new events by comparing event IDs

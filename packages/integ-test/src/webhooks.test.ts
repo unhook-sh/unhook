@@ -269,23 +269,20 @@ describe('Webhook Lifecycle Integration Tests', () => {
       );
 
       // Send a test webhook request
-      const response = await fetch(
-        `${testApiServer.getUrl()}/wh/${webhook.id}`,
-        {
-          body: JSON.stringify({
-            data: {
-              id: '123',
-              name: 'Test Data',
-            },
-            event: 'test.webhook',
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKeyId,
+      const response = await fetch(`${testApiServer.getUrl()}/${webhook.id}`, {
+        body: JSON.stringify({
+          data: {
+            id: '123',
+            name: 'Test Data',
           },
-          method: 'POST',
+          event: 'test.webhook',
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': webhook.apiKeyId,
         },
-      );
+        method: 'POST',
+      });
 
       expect(response.ok).toBe(true);
       const result = await response.json();
@@ -305,18 +302,15 @@ describe('Webhook Lifecycle Integration Tests', () => {
         'X-Webhook-Signature': 'sha256=abcdef123456',
       };
 
-      const response = await fetch(
-        `${testApiServer.getUrl()}/wh/${webhook.id}`,
-        {
-          body: JSON.stringify({ test: true }),
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKeyId,
-            ...customHeaders,
-          },
-          method: 'POST',
+      const response = await fetch(`${testApiServer.getUrl()}/${webhook.id}`, {
+        body: JSON.stringify({ test: true }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': webhook.apiKeyId,
+          ...customHeaders,
         },
-      );
+        method: 'POST',
+      });
 
       expect(response.ok).toBe(true);
     });
@@ -345,17 +339,14 @@ describe('Webhook Lifecycle Integration Tests', () => {
         data: 'x'.repeat(2048), // 2KB of data
       };
 
-      const response = await fetch(
-        `${testApiServer.getUrl()}/wh/${webhook.id}`,
-        {
-          body: JSON.stringify(largePayload),
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': webhook.apiKeyId,
-          },
-          method: 'POST',
+      const response = await fetch(`${testApiServer.getUrl()}/${webhook.id}`, {
+        body: JSON.stringify(largePayload),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': webhook.apiKeyId,
         },
-      );
+        method: 'POST',
+      });
 
       // The API should still accept the request but may truncate storage
       expect(response.ok).toBe(true);

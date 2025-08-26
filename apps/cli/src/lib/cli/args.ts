@@ -46,10 +46,10 @@ export async function parseArgs(): Promise<CliState> {
             'Set the source name or URL for incoming webhooks (e.g., "stripe").',
           type: 'string',
         },
-        webhook: {
+        webhookUrl: {
           alias: 'w',
           description:
-            'Specify a webhook ID to use (optional; usually auto-generated).',
+            'Specify a webhook URL to use (e.g., https://unhook.sh/my-org/my-webhook).',
           type: 'string',
         },
       },
@@ -109,6 +109,6 @@ export async function parseArgs(): Promise<CliState> {
     source: parsedConfig.source as string,
     verbose: parsedConfig.verbose,
     version: parsedConfig.version,
-    webhookId: parsedConfig.webhook as string,
+    webhookUrl: parsedConfig.webhookUrl as string,
   };
 }

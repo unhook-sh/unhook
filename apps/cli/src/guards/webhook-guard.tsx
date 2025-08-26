@@ -16,24 +16,24 @@ interface WebhookAuthorizedProps {
 export const WebhookAuthorized: FC<WebhookAuthorizedProps> = ({ children }) => {
   const isAuthorizedForWebhook = useWebhookStore.use.isAuthorizedForWebhook();
   const isCheckingWebhook = useWebhookStore.use.isCheckingWebhook();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
 
   log('WebhookAuthorized render', {
     isAuthorizedForWebhook,
     isCheckingWebhook,
-    webhookId,
+    webhookUrl,
   });
 
-  if (!webhookId || isCheckingWebhook || !isAuthorizedForWebhook) {
+  if (!webhookUrl || isCheckingWebhook || !isAuthorizedForWebhook) {
     log('WebhookAuthorized - not rendering children', {
       isAuthorizedForWebhook,
       isCheckingWebhook,
-      reason: !webhookId
-        ? 'no webhook ID'
+      reason: !webhookUrl
+        ? 'no webhook URL'
         : isCheckingWebhook
           ? 'checking webhook'
           : 'not authorized',
-      webhookId,
+      webhookUrl,
     });
     return null;
   }
@@ -53,31 +53,31 @@ export const WebhookUnauthorized: FC<WebhookUnauthorizedProps> = ({
 }) => {
   const isAuthorizedForWebhook = useWebhookStore.use.isAuthorizedForWebhook();
   const isCheckingWebhook = useWebhookStore.use.isCheckingWebhook();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
 
   log('WebhookUnauthorized render', {
     isAuthorizedForWebhook,
-    webhookId,
+    webhookUrl,
   });
 
   if (isCheckingWebhook) {
     log('WebhookUnauthorized - not rendering children', {
       reason: 'checking webhook',
-      webhookId,
+      webhookUrl,
     });
     return null;
   }
 
-  if (!webhookId) {
+  if (!webhookUrl) {
     log('WebhookUnauthorized - not rendering children', {
-      reason: 'no webhook ID',
-      webhookId,
+      reason: 'no webhook URL',
+      webhookUrl,
     });
     return null;
   }
 
   if (isAuthorizedForWebhook) {
-    log('User is not authorized for webhook:', webhookId);
+    log('User is not authorized for webhook:', webhookUrl);
     return null;
   }
 
@@ -93,18 +93,18 @@ interface WebhookCheckingProps {
  */
 export const WebhookChecking: FC<WebhookCheckingProps> = ({ children }) => {
   const isCheckingWebhook = useWebhookStore.use.isCheckingWebhook();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
 
   log('WebhookChecking render', {
     isCheckingWebhook,
-    webhookId,
+    webhookUrl,
   });
 
-  if (!webhookId || !isCheckingWebhook) {
+  if (!webhookUrl || !isCheckingWebhook) {
     log('WebhookChecking - not rendering children', {
       isCheckingWebhook,
-      reason: !webhookId ? 'no webhook ID' : 'not checking webhook',
-      webhookId,
+      reason: !webhookUrl ? 'no webhook URL' : 'not checking webhook',
+      webhookUrl,
     });
     return null;
   }

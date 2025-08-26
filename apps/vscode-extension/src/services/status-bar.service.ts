@@ -141,23 +141,86 @@ export class StatusBarService implements vscode.Disposable {
     }
 
     try {
-      // Get webhook ID from config
+      // Get webhook URL from config
       const configManager = ConfigManager.getInstance();
-      const webhookId = configManager.getConfig()?.webhookId;
+      const webhookUrl = configManager.getConfig()?.webhookUrl;
 
-      if (!webhookId) {
+      if (!webhookUrl) {
+        return;
+      }
+
+      // Validate webhook URL format before making API call
+      try {
+        const url = new URL(webhookUrl);
+        // Basic validation - ensure it's a valid URL with a path
+        if (!url.pathname || url.pathname === '/') {
+          log('Invalid webhook URL format - missing path', { webhookUrl });
+          const action = await vscode.window.showErrorMessage(
+            `Invalid webhook URL format: ${webhookUrl}\n\n` +
+              'Expected format: https://your-domain.com/org-name/webhook-name\n\n' +
+              'Please update your unhook.yml configuration file with a valid webhook URL.',
+            'Fix Configuration',
+          );
+
+          if (action === 'Fix Configuration') {
+            await vscode.commands.executeCommand('unhook.fixConfiguration');
+          }
+          return;
+        }
+
+        // Additional validation for localhost URLs - check if it looks like a webhook URL
+        if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+          // For localhost, check if the path has at least 2 segments (org/webhook)
+          const pathSegments = url.pathname.split('/').filter(Boolean);
+          if (pathSegments.length < 2) {
+            log('Localhost URL missing org/webhook structure', {
+              pathSegments,
+              webhookUrl,
+            });
+            const action = await vscode.window.showErrorMessage(
+              `Invalid webhook URL format: ${webhookUrl}\n\n` +
+                'Localhost URLs should follow the format: http://localhost:port/org-name/webhook-name\n\n' +
+                'Please update your unhook.yml configuration file with a valid webhook URL.',
+              'Fix Configuration',
+            );
+
+            if (action === 'Fix Configuration') {
+              await vscode.commands.executeCommand('unhook.fixConfiguration');
+            }
+            return;
+          }
+
+          // For localhost URLs, skip the authorization check since they're local development URLs
+          log('Localhost webhook URL detected, skipping authorization check', {
+            webhookUrl,
+          });
+          this.authorizationService.handleAuthorizationSuccess();
+          return;
+        }
+      } catch (urlError) {
+        log('Invalid webhook URL format', { error: urlError, webhookUrl });
+        const action = await vscode.window.showErrorMessage(
+          `Invalid webhook URL format: ${webhookUrl}\n\n` +
+            'Please update your unhook.yml configuration file with a valid webhook URL.\n\n' +
+            'Expected format: https://your-domain.com/org-name/webhook-name',
+          'Create New Configuration',
+        );
+
+        if (action === 'Create New Configuration') {
+          await vscode.commands.executeCommand('unhook.createConfig');
+        }
         return;
       }
 
       // Check if user is authorized for this webhook
       const isAuthorized = await this.authStore.api.webhooks.authorized.query({
-        id: webhookId,
+        url: webhookUrl,
       });
 
       if (!isAuthorized) {
         // User is not authorized, trigger authorization error handling
         this.authorizationService.handleAuthorizationError(
-          webhookId,
+          webhookUrl,
           this.authStore,
         );
       } else {
@@ -166,6 +229,33 @@ export class StatusBarService implements vscode.Disposable {
       }
     } catch (error) {
       log('Error checking webhook authorization:', error);
+
+      // Check if it's a URL validation error from the API
+      if (
+        error instanceof Error &&
+        error.message.includes('Invalid webhook URL format')
+      ) {
+        const configManager = ConfigManager.getInstance();
+        const currentUrl = configManager.getConfig()?.webhookUrl;
+        const isLocalhost =
+          currentUrl?.includes('localhost') ||
+          currentUrl?.includes('127.0.0.1');
+
+        const action = await vscode.window.showErrorMessage(
+          'Invalid webhook URL format in your configuration.\n\n' +
+            `Current URL: ${currentUrl}\n\n` +
+            'Please update your unhook.yml file with a valid webhook URL.\n\n' +
+            (isLocalhost
+              ? 'For local development, use: http://localhost:port/org-name/webhook-name\n' +
+                'For production, use: https://unhook.sh/org-name/webhook-name'
+              : 'Expected format: https://your-domain.com/org-name/webhook-name'),
+          'Fix Configuration',
+        );
+
+        if (action === 'Fix Configuration') {
+          await vscode.commands.executeCommand('unhook.fixConfiguration');
+        }
+      }
     }
   }
 

@@ -12,12 +12,12 @@ import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 
 interface RealTimeEventStreamProps {
-  webhookId: string;
+  webhookUrl: string;
   onEventReceived?: () => void;
 }
 
 export function RealTimeEventStream({
-  webhookId,
+  webhookUrl,
   onEventReceived,
 }: RealTimeEventStreamProps) {
   const [events, setEvents] = useState<EventTypeWithRequest[]>([]);
@@ -28,8 +28,8 @@ export function RealTimeEventStream({
     data: fetchedEvents,
     isLoading,
     error,
-  } = api.events.byWebhookId.useQuery(
-    { webhookId },
+  } = api.events.byWebhookUrl.useQuery(
+    { webhookUrl },
     {
       refetchInterval: 2000, // Poll every 2 seconds
       refetchIntervalInBackground: true,

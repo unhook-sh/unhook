@@ -13,7 +13,7 @@ export class ConfigSectionItem extends vscode.TreeItem {
     this.resourceUri = vscode.Uri.parse('unhook://config');
 
     // Set description based on section type
-    if (sectionName === 'webhookId') {
+    if (sectionName === 'webhookUrl') {
       this.description = String(sectionData);
       this.collapsibleState = vscode.TreeItemCollapsibleState.None;
       this.iconPath = new vscode.ThemeIcon('key');

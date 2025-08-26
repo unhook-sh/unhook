@@ -204,7 +204,7 @@ export const PricingCard = memo(function PricingCard({
               location: 'pricing_card',
             }}
           >
-            Create Webhook URL
+            Install Extension
           </MetricLink>
         </SignedOut>
 
@@ -255,7 +255,7 @@ export const PricingCard = memo(function PricingCard({
                   {isSubscribing
                     ? 'Redirecting...'
                     : tier.betaFree
-                      ? 'Create Webhook URL'
+                      ? 'Install Extension'
                       : 'Upgrade'}
                 </button>
               )}
@@ -276,7 +276,7 @@ export const PricingCard = memo(function PricingCard({
                     location: 'pricing_card',
                   }}
                 >
-                  Create Webhook URL
+                  Install Extension
                 </MetricLink>
               </SubscriptionActive>
               <SubscriptionPastDue>
@@ -306,7 +306,7 @@ export const PricingCard = memo(function PricingCard({
                     location: 'pricing_card',
                   }}
                 >
-                  Create Webhook URL
+                  Install Extension
                 </MetricLink>
               )}
             </>

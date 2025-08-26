@@ -11,7 +11,7 @@ import { trackError, trackToolUsage } from '../analytics';
 // import type { Extra } from '../auth';
 
 export const webhookStatsSchema = {
-  webhookId: z.string(),
+  webhookUrl: z.string(),
 };
 
 export function registerWebhookStatsTool(server: McpServer, context: Context) {
@@ -24,14 +24,14 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
       inputSchema: webhookStatsSchema,
       title: 'Get Webhook Stats',
     },
-    async ({ webhookId }, extra) => {
+    async ({ webhookUrl }, extra) => {
       const startTime = Date.now();
 
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 
       try {
-        const webhook = await caller.webhooks.byId({ id: webhookId });
+        const webhook = await caller.webhooks.byUrl({ url: webhookUrl });
         if (!webhook) {
           // Track not found webhook
           trackToolUsage(
@@ -39,19 +39,21 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
             {
               execution_time_ms: Date.now() - startTime,
               webhook_found: false,
-              webhook_id: webhookId,
+              webhook_url: webhookUrl,
             },
             userId,
             organizationId,
           );
 
           return {
-            content: [{ text: `Webhook ${webhookId} not found`, type: 'text' }],
+            content: [
+              { text: `Webhook ${webhookUrl} not found`, type: 'text' },
+            ],
           };
         }
 
-        const events = await caller.events.byWebhookId({ webhookId });
-        const requests = await caller.requests.byWebhookId({ webhookId });
+        const events = await caller.events.byWebhookUrl({ webhookUrl });
+        const requests = await caller.requests.byWebhookUrl({ webhookUrl });
 
         const stats = formatWebhookStats(webhook, events, requests);
         const executionTime = Date.now() - startTime;
@@ -64,9 +66,9 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
             execution_time_ms: executionTime,
             requests_count: requests.length,
             webhook_found: true,
-            webhook_id: webhookId,
             webhook_name: webhook.name,
             webhook_status: webhook.status,
+            webhook_url: webhookUrl,
           },
           userId,
           organizationId,
@@ -82,7 +84,7 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
           {
             execution_time_ms: Date.now() - startTime,
             tool_name: 'get_webhook_stats',
-            webhook_id: webhookId,
+            webhook_url: webhookUrl,
           },
           userId,
           organizationId,

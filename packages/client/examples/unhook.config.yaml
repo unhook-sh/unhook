@@ -29,11 +29,11 @@
 # Can also be set via WEBHOOK_PORT environment variable
 port: 3000
 
-# Webhook ID for authentication with the webhook server
+# Full webhook URL for authentication with the webhook server
 # Can also be set via:
-# - WEBHOOK_WEBHOOK_ID environment variable
-# - --webhook-id command line flag
-webhookId: "t_2vCR1xwHHTLxE5m20AYewlc5y2j"
+# - WEBHOOK_WEBHOOK_URL environment variable
+# - --webhook-url command line flag
+webhookUrl: "https://unhook.sh/my-org/my-webhook"
 
 # Optional: Unique client identifier
 # Can also be set via WEBHOOK_CLIENT_ID environment variable

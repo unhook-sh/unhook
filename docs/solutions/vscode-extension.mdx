@@ -128,7 +128,7 @@ Work seamlessly with your team on webhook development:
 Create an `unhook.yaml` file in your project root:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-webhook-name"
 server:
   apiUrl: "https://app.unhook.sh"
 destination:
@@ -226,7 +226,7 @@ When webhooks fail, the extension helps you debug:
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_stripe_prod"
+webhookUrl: "https://unhook.sh/your-org/your-stripe-webhook"
 destination:
   - name: "stripe-handler"
     url: "http://localhost:3000/api/webhooks/stripe"
@@ -240,7 +240,7 @@ Monitor Stripe payment events in real-time and replay them for testing.
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_github_repo"
+webhookUrl: "https://unhook.sh/your-org/your-github-webhook"
 destination:
   - name: "github-handler"
     url: "http://localhost:3000/api/webhooks/github"
@@ -254,7 +254,7 @@ Track repository events like pushes, pull requests, and issues.
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_clerk_auth"
+webhookUrl: "https://unhook.sh/your-org/your-clerk-webhook"
 destination:
   - name: "auth-handler"
     url: "http://localhost:3000/api/webhooks/clerk"

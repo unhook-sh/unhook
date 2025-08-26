@@ -84,17 +84,17 @@ export function CopyButton({
       {copyState === 'copying' ? (
         <IconLoader2
           className="text-muted-foreground animate-spin"
-          size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
+          size={size === 'sm' ? 16 : size === 'lg' ? 20 : 18}
         />
       ) : copyState === 'copied' ? (
         <IconCheck
           className="text-primary"
-          size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
+          size={size === 'sm' ? 16 : size === 'lg' ? 20 : 18}
         />
       ) : (
         <IconCopy
           className="text-muted-foreground"
-          size={size === 'sm' ? 'xs' : size === 'lg' ? 'lg' : 'sm'}
+          size={size === 'sm' ? 16 : size === 'lg' ? 20 : 18}
         />
       )}
     </Button>

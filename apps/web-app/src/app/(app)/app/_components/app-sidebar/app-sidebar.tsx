@@ -23,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@unhook/ui/sidebar';
+import { usePathname } from 'next/navigation';
 import type * as React from 'react';
 import { Icons } from '~/app/(marketing)/_components/icons';
 import { NavMain } from './nav-main';
@@ -31,6 +32,9 @@ import { NavUser } from './nav-user';
 import { UsageCard } from './usage-card';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+  const isOnboarding = pathname?.startsWith('/app/onboarding');
+
   const data = {
     documents: [
       {
@@ -163,7 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <MetricLink
-                href="/app/dashboard"
+                href={isOnboarding ? '/app/onboarding' : '/app/dashboard'}
                 metric="navigation_logo_clicked"
               >
                 <Icons.logo className="size-10" />
@@ -174,10 +178,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        {!isOnboarding && <NavMain items={data.navMain} />}
         {/* <NavDocuments items={data.documents} /> */}
         <div className="mt-auto">
-          <UsageCard />
+          {!isOnboarding && <UsageCard />}
           <NavSecondary items={data.navSecondary} />
         </div>
       </SidebarContent>

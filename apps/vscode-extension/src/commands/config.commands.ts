@@ -1,8 +1,12 @@
+import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
 import type { FirstTimeUserService } from '../services/first-time-user.service';
-import { createConfigContentWithSpecificWebhookId } from '../utils/config-templates';
+import { createConfigContentWithSpecificWebhookUrl } from '../utils/config-templates';
+
+const log = debug('unhook:vscode:config-commands');
 
 export function registerConfigCommands(
   context: vscode.ExtensionContext,
@@ -99,12 +103,14 @@ export function registerConfigCommands(
             isExisting: true,
             label: webhook.name || 'Unnamed Webhook',
             webhookId: webhook.id,
+            webhookName: webhook.name,
           })),
           {
             description: 'Create a new webhook for this workspace',
             isExisting: false,
             label: '➕ Create New Webhook',
             webhookId: 'create_new',
+            webhookName: 'create_new',
           },
         ];
 
@@ -119,7 +125,7 @@ export function registerConfigCommands(
 
         if (webhookPick.isExisting) {
           // User selected an existing webhook
-          selectedWebhookId = webhookPick.webhookId;
+          selectedWebhookId = webhookPick.webhookName || webhookPick.webhookId;
         } else {
           // User wants to create a new webhook
           console.log('User chose to create a new webhook');
@@ -151,8 +157,29 @@ export function registerConfigCommands(
       }
 
       // Create the configuration content using the selected webhook ID
+      // We need to construct the full webhook URL first
+      let orgName = 'my-org';
+      try {
+        if (authStore) {
+          const authInfo = await authStore.api.auth.verifySessionToken.query({
+            sessionId: authStore.sessionId || '',
+            sessionTemplate: 'cli',
+          });
+          orgName = authInfo.orgName || 'my-org';
+        }
+      } catch (error) {
+        console.error(
+          'Failed to get organization name for config template:',
+          error,
+        );
+      }
+
+      const configManager = ConfigManager.getInstance();
+      const baseUrl = configManager.getApiUrl();
+      const webhookUrl = `${baseUrl}/${orgName}/${selectedWebhookId}`;
+
       const configContent =
-        createConfigContentWithSpecificWebhookId(selectedWebhookId);
+        createConfigContentWithSpecificWebhookUrl(webhookUrl);
 
       try {
         const encoder = new TextEncoder();
@@ -176,6 +203,9 @@ export function registerConfigCommands(
         vscode.window.showInformationMessage(
           `Created ${filename} in ${targetFolder.name} with webhook ID: ${selectedWebhookId}`,
         );
+
+        // Show the Events panel to help users see their webhook events
+        vscode.commands.executeCommand('unhook.showEvents');
       } catch (error) {
         vscode.window.showErrorMessage(
           `Failed to create configuration file: ${error}`,
@@ -197,20 +227,21 @@ export function registerConfigCommands(
         return;
       }
 
-      const webhookId = configManager.getConfig()?.webhookId;
-      if (!webhookId) {
+      const webhookUrl = configManager.getConfig()?.webhookUrl;
+      if (!webhookUrl) {
         vscode.window.showErrorMessage(
-          'No webhookId found in your Unhook config. Create an `unhook.yml` first.',
+          'No webhookUrl found in your Unhook config. Create an `unhook.yml` first.',
         );
         return;
       }
 
-      const webhook = await authStore.api.webhooks.byId.query({
-        id: webhookId,
+      // Extract webhook ID from the webhook URL
+      const webhook = await authStore.api.webhooks.byUrl.query({
+        url: webhookUrl,
       });
       if (!webhook) {
         vscode.window.showErrorMessage(
-          `Webhook ${webhookId} was not found or you do not have access.`,
+          `Webhook ${webhookUrl} was not found or you do not have access.`,
         );
         return;
       }
@@ -538,10 +569,12 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
     async () => {
       // Get current configuration
       const config = vscode.workspace.getConfiguration('unhook');
-      const currentApiUrl = config.get<string>('apiUrl', 'https://unhook.sh');
+      const configManager = ConfigManager.getInstance();
+      const defaultBaseUrl = configManager.getApiUrl();
+      const currentApiUrl = config.get<string>('apiUrl', defaultBaseUrl);
       const currentDashboardUrl = config.get<string>(
         'dashboardUrl',
-        'https://unhook.sh',
+        defaultBaseUrl,
       );
 
       // Ask user for configuration type
@@ -570,13 +603,13 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
 
       if (configType.value === 'cloud') {
         // Set to cloud URLs
-        await config.update('apiUrl', 'https://unhook.sh', true);
-        await config.update('dashboardUrl', 'https://unhook.sh', true);
+        await config.update('apiUrl', defaultBaseUrl, true);
+        await config.update('dashboardUrl', defaultBaseUrl, true);
 
         // Track server URL configuration
         analyticsService?.track('server_urls_configured', {
-          api_url: 'https://unhook.sh',
-          dashboard_url: 'https://unhook.sh',
+          api_url: defaultBaseUrl,
+          dashboard_url: defaultBaseUrl,
           type: 'cloud',
         });
 
@@ -588,7 +621,7 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
         const apiUrl = await vscode.window.showInputBox({
           placeHolder: 'https://api.your-domain.com',
           prompt: 'Enter the API URL for your self-hosted Unhook instance',
-          value: currentApiUrl === 'https://unhook.sh' ? '' : currentApiUrl,
+          value: currentApiUrl === defaultBaseUrl ? '' : currentApiUrl,
         });
 
         if (!apiUrl) {
@@ -600,9 +633,7 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
           prompt:
             'Enter the dashboard URL for your self-hosted Unhook instance (optional, defaults to API URL)',
           value:
-            currentDashboardUrl === 'https://unhook.sh'
-              ? ''
-              : currentDashboardUrl,
+            currentDashboardUrl === defaultBaseUrl ? '' : currentDashboardUrl,
         });
 
         // Update configuration
@@ -755,23 +786,19 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
   const checkWorkspaceStatusCommand = vscode.commands.registerCommand(
     'unhook.checkWorkspaceStatus',
     async () => {
-      const workspaceFolders = vscode.workspace.workspaceFolders;
-      if (!workspaceFolders || workspaceFolders.length === 0) {
-        vscode.window.showInformationMessage('No workspace folders open.');
-        return;
-      }
-
-      let message = 'Workspace status:\n';
-      for (const folder of workspaceFolders) {
-        message += `• ${folder.name}: ${folder.uri.fsPath}\n`;
-      }
-
       if (firstTimeUserService) {
-        const hasConfig = await firstTimeUserService.hasConfigurationFile();
-        message += `\nConfiguration file: ${hasConfig ? 'Found' : 'Not found'}`;
+        try {
+          log('Manual workspace status check triggered');
+          await firstTimeUserService.forceCheckWorkspaceStatus();
+        } catch (error) {
+          log('Error during manual workspace status check', error);
+          vscode.window.showErrorMessage('Failed to check workspace status');
+        }
+      } else {
+        vscode.window.showErrorMessage(
+          'FirstTimeUserService not initialized. Cannot check workspace status.',
+        );
       }
-
-      vscode.window.showInformationMessage(message);
     },
   );
 
@@ -870,6 +897,10 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
       }
 
       try {
+        // Get the default base URL for error messages
+        const configManager = ConfigManager.getInstance();
+        const defaultBaseUrl = configManager.getApiUrl();
+
         // Check if we can access API keys
         const apiKeys = await authStore.api.apiKeys.all.query();
 
@@ -897,12 +928,12 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
                 );
               } else {
                 vscode.window.showErrorMessage(
-                  'Failed to create API key. Please create one manually at https://unhook.sh/app/api-keys',
+                  `Failed to create API key. Please create one manually at ${defaultBaseUrl}/app/api-keys`,
                 );
               }
             } catch (error) {
               vscode.window.showErrorMessage(
-                `Failed to create API key: ${error instanceof Error ? error.message : 'Unknown error'}. Please create one manually at https://unhook.sh/app/api-keys`,
+                `Failed to create API key: ${error instanceof Error ? error.message : 'Unknown error'}. Please create one manually at ${defaultBaseUrl}/app/api-keys`,
               );
             }
           }
@@ -1069,6 +1100,7 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
                   storeResponseBody: true,
                 },
               },
+              id: 'test-webhook-vscode-extension',
               name: 'Test Webhook - VS Code Extension',
               status: 'active' as const,
             };
@@ -1189,6 +1221,7 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
             );
             const minimalPayload = {
               apiKeyId: apiKey.id,
+              id: 'debug-test-webhook',
               name: 'Debug Test Webhook',
             };
 
@@ -1258,12 +1291,14 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
             isExisting: true,
             label: webhook.name || 'Unnamed Webhook',
             webhookId: webhook.id,
+            webhookName: webhook.name,
           })),
           {
             description: 'Create a new webhook for this workspace',
             isExisting: false,
             label: '➕ Create New Webhook',
             webhookId: 'create_new',
+            webhookName: 'create_new',
           },
         ];
 
@@ -1433,6 +1468,50 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
     },
   );
 
+  const removeDoNotShowKeyCommand = vscode.commands.registerCommand(
+    'unhook.removeDoNotShowKey',
+    async () => {
+      if (firstTimeUserService) {
+        try {
+          await firstTimeUserService.removeDoNotShowKey();
+          vscode.window.showInformationMessage(
+            'Attempted to remove doNotShowWorkspaceConfigPrompts key. Check the Output panel for details.',
+          );
+        } catch (error) {
+          vscode.window.showErrorMessage(
+            `Failed to remove doNotShowWorkspaceConfigPrompts key: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      } else {
+        vscode.window.showErrorMessage(
+          'FirstTimeUserService not initialized. Cannot remove key.',
+        );
+      }
+    },
+  );
+
+  const forceClearAllFlagsCommand = vscode.commands.registerCommand(
+    'unhook.forceClearAllFlags',
+    async () => {
+      if (firstTimeUserService) {
+        try {
+          await firstTimeUserService.forceClearAllFlags();
+          vscode.window.showInformationMessage(
+            'All flags have been force cleared. Please reload the window for changes to take effect.',
+          );
+        } catch (error) {
+          vscode.window.showErrorMessage(
+            `Failed to force clear flags: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      } else {
+        vscode.window.showErrorMessage(
+          'FirstTimeUserService not initialized. Cannot force clear flags.',
+        );
+      }
+    },
+  );
+
   context.subscriptions.push(
     createConfigCommand,
     createCursorMcpServerCommand,
@@ -1463,5 +1542,7 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
     checkDoNotShowAgainStatusCommand,
     resetPromptFlagsCommand,
     checkPromptStateCommand,
+    removeDoNotShowKeyCommand,
+    forceClearAllFlagsCommand,
   );
 }

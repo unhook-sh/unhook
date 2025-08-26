@@ -2,41 +2,50 @@ import { ConfigManager } from '../config.manager';
 import type { AuthStore } from '../services/auth.service';
 
 /**
- * Gets the default webhook ID to use when no webhook is available
- * @returns The default webhook ID
+ * Gets the default webhook URL to use when no webhook is available
+ * @returns The default webhook URL
  */
-export function getDefaultWebhookId(): string {
-  return 'wh_example';
+export function getDefaultWebhookUrl(): string {
+  const configManager = ConfigManager.getInstance();
+  const baseUrl = configManager.getApiUrl();
+  return `${baseUrl}/my-org/unhook-prod`;
 }
 
 /**
- * Fetches the first webhook ID from the user's account or returns the default
+ * Fetches the first webhook URL from the user's account or returns the default
  * @param authStore - The auth store to use for API calls
- * @returns The webhook ID to use in the configuration
+ * @returns The webhook URL to use in the configuration
  */
-export async function getWebhookIdForConfig(
+export async function getWebhookUrlForConfig(
   authStore: AuthStore | undefined,
 ): Promise<string> {
-  let webhookId = getDefaultWebhookId();
+  const configManager = ConfigManager.getInstance();
+  const baseUrl = configManager.getApiUrl();
+  let webhookUrl = getDefaultWebhookUrl();
 
   if (authStore?.isSignedIn && authStore?.api) {
     try {
       const webhooks = await authStore.api.webhooks.all.query();
       if (webhooks && webhooks.length > 0 && webhooks[0]) {
-        webhookId = webhooks[0].id;
-        console.log(`Using webhook ID from account: ${webhookId}`);
+        const authInfo = await authStore.api.auth.verifySessionToken.query({
+          sessionId: authStore.sessionId || '',
+          sessionTemplate: 'cli',
+        });
+        const orgName = authInfo.orgName || 'my-org';
+        webhookUrl = `${baseUrl}/${orgName}/${webhooks[0].name}`;
+        console.log(`Using webhook URL from account: ${webhookUrl}`);
       } else {
-        console.log('No webhooks found in account, using default ID');
+        console.log('No webhooks found in account, using default URL');
       }
     } catch (error) {
       // If we can't fetch webhooks, fall back to the default
       console.warn('Failed to fetch webhooks for config template:', error);
     }
   } else {
-    console.log('User not signed in, using default webhook ID');
+    console.log('User not signed in, using default webhook URL');
   }
 
-  return webhookId;
+  return webhookUrl;
 }
 
 /**
@@ -44,10 +53,10 @@ export async function getWebhookIdForConfig(
  * @param authStore - The auth store to use for API calls
  * @returns The configuration content with the webhook ID replaced
  */
-export async function createConfigContentWithWebhookId(
+export async function createConfigContentWithWebhookUrl(
   authStore: AuthStore | undefined,
 ): Promise<string> {
-  const webhookId = await getWebhookIdForConfig(authStore);
+  const webhookUrl = await getWebhookUrlForConfig(authStore);
   const configManager = ConfigManager.getInstance();
   const apiUrl = configManager.getApiUrl();
 
@@ -56,15 +65,15 @@ export async function createConfigContentWithWebhookId(
 # For more information, visit: https://docs.unhook.sh/configuration
 #
 # Copy the following URL in your services:
-# ${apiUrl}/${webhookId}
+# ${webhookUrl}
 #
 # Optionally, you can attach ?source=Clerk to the URL.
-# Clerk: ${apiUrl}/${webhookId}?source=clerk
-# Stripe: ${apiUrl}/${webhookId}?source=stripe
+# Clerk: ${webhookUrl}?source=clerk
+# Stripe: ${webhookUrl}?source=stripe
 # etc...
 #
 # Schema:
-#   webhookId: string                    # Unique identifier for your webhook
+#   webhookUrl: string                   # Full webhook URL (e.g., ${apiUrl}/my-org/my-webhook)
 #   destination:                         # Array of destination endpoints
 #     - name: string                     # Name of the endpoint
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
@@ -74,43 +83,57 @@ export async function createConfigContentWithWebhookId(
 #       destination: string              # Name of the destination from 'destination' array
 
 # Test Curl:
-# curl -X POST ${apiUrl}/${webhookId}?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
+# curl -X POST ${webhookUrl}?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
 
-webhookId: ${webhookId}
+webhookUrl: ${webhookUrl}
 destination:
-  - name: local
+  - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
   - source: '*'
-    destination: local
+    destination: localhost
 `;
 }
 
 /**
- * Creates a complete configuration content with a specific webhook ID
- * @param webhookId - The specific webhook ID to use
- * @returns The configuration content with the webhook ID
+ * Creates a minimal YAML configuration without comments
+ * @param webhookUrl - The webhook URL to use in the configuration
+ * @returns The minimal YAML configuration content
  */
-export function createConfigContentWithSpecificWebhookId(
-  webhookId: string,
+export function createMinimalConfigContent(webhookUrl: string): string {
+  return `webhookUrl: ${webhookUrl}
+destination:
+  - name: localhost
+    url: http://localhost:3000/api/webhooks
+delivery:
+  - source: '*'
+    destination: localhost`;
+}
+
+/**
+ * Creates a complete configuration content with a specific webhook URL
+ * @param webhookUrl - The specific webhook URL to use
+ * @returns The configuration content with the webhook URL
+ */
+export function createConfigContentWithSpecificWebhookUrl(
+  webhookUrl: string,
 ): string {
   const configManager = ConfigManager.getInstance();
   const apiUrl = configManager.getApiUrl();
-
   return `# Unhook Webhook Configuration
 #
 # For more information, visit: https://docs.unhook.sh/configuration
 #
 # Copy the following URL in your services:
-# ${apiUrl}/${webhookId}
+# ${webhookUrl}
 #
 # Optionally, you can attach ?source=Clerk to the URL.
-# Clerk: ${apiUrl}/${webhookId}?source=clerk
-# Stripe: ${apiUrl}/${webhookId}?source=stripe
+# Clerk: ${webhookUrl}?source=clerk
+# Stripe: ${webhookUrl}?source=stripe
 # etc...
 #
 # Schema:
-#   webhookId: string                    # Unique identifier for your webhook
+#   webhookUrl: string                   # Full webhook URL (e.g., ${apiUrl}/my-org/my-webhook)
 #   destination:                         # Array of destination endpoints
 #     - name: string                     # Name of the endpoint
 #       url: string|URL|RemotePattern    # URL to forward webhooks to
@@ -120,14 +143,14 @@ export function createConfigContentWithSpecificWebhookId(
 #       destination: string              # Name of the destination from 'destination' array
 
 # Test Curl:
-# curl -X POST ${apiUrl}/${webhookId}?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
+# curl -X POST ${webhookUrl}?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
 
-webhookId: ${webhookId}
+webhookUrl: ${webhookUrl}
 destination:
-  - name: local
+  - name: localhost
     url: http://localhost:3000/api/webhooks
 delivery:
   - source: '*'
-    destination: local
+    destination: localhost
 `;
 }

@@ -7,16 +7,16 @@ import { Textarea } from '@unhook/ui/textarea';
 
 interface InstallationTabsProps {
   authCode: string;
-  webhookId: string;
+  webhookUrl: string;
   source: string;
 }
 
 export function InstallationTabs({
   authCode,
-  webhookId,
+  webhookUrl,
   source,
 }: InstallationTabsProps) {
-  const cliCommand = `npx @unhook/cli init --webhook ${webhookId}${
+  const cliCommand = `npx @unhook/cli init --webhook ${webhookUrl}${
     source ? ` --source ${source}` : ''
   } --code ${authCode}`;
 
@@ -121,9 +121,9 @@ export function InstallationTabs({
               <div className="flex-1">
                 <p className="text-sm font-medium">Configure the extension</p>
                 <p className="text-xs text-muted-foreground">
-                  Use webhook ID:{' '}
+                  Use webhook URL:{' '}
                   <code className="rounded bg-muted px-1 py-0.5 text-xs">
-                    {webhookId}
+                    {webhookUrl}
                   </code>
                 </p>
               </div>
@@ -233,9 +233,9 @@ export function InstallationTabs({
               <div className="flex-1">
                 <p className="text-sm font-medium">Configure the extension</p>
                 <p className="text-xs text-muted-foreground">
-                  Use webhook ID:{' '}
+                  Use webhook URL:{' '}
                   <code className="rounded bg-muted px-1 py-0.5 text-xs">
-                    {webhookId}
+                    {webhookUrl}
                   </code>
                 </p>
               </div>
@@ -333,9 +333,9 @@ export function InstallationTabs({
               <div className="flex-1">
                 <p className="text-sm font-medium">Configure the extension</p>
                 <p className="text-xs text-muted-foreground">
-                  Use webhook ID:{' '}
+                  Use webhook URL:{' '}
                   <code className="rounded bg-muted px-1 py-0.5 text-xs">
-                    {webhookId}
+                    {webhookUrl}
                   </code>
                 </p>
               </div>

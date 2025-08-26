@@ -32,13 +32,15 @@ import {
   SunIcon,
   Users,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import posthog from 'posthog-js';
 import { useState } from 'react';
 import { NewOrgDialog } from './new-org-dialog';
 
 export function NavUser() {
+  const pathname = usePathname();
+  const isOnboarding = pathname?.startsWith('/app/onboarding');
   const { setTheme } = useTheme();
   const _router = useRouter();
   const { user } = useUser();
@@ -154,45 +156,49 @@ export function NavUser() {
                     )}
                   </DropdownMenuItem>
                 ))}
-              <DropdownMenuItem
-                className="gap-2 p-2"
-                onClick={() => setNewOrgDialogOpen(true)}
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                  <Plus className="size-4" />
-                </div>
-                <div className="font-medium text-muted-foreground">
-                  New Organization
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {!isOnboarding && (
+                <>
+                  <DropdownMenuItem
+                    className="gap-2 p-2"
+                    onClick={() => setNewOrgDialogOpen(true)}
+                  >
+                    <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                      <Plus className="size-4" />
+                    </div>
+                    <div className="font-medium text-muted-foreground">
+                      New Organization
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
 
-              <DropdownMenuItem asChild>
-                <MetricLink
-                  href={'/app/settings/billing'}
-                  metric="nav_user_billing_clicked"
-                  properties={{
-                    destination: '/app/settings/billing',
-                    location: 'nav_user',
-                  }}
-                >
-                  <IconCurrencyDollar className="mr-1 size-4" />
-                  <span>Billing</span>
-                </MetricLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <MetricLink
-                  href={'/app/settings/organization'}
-                  metric="nav_user_team_clicked"
-                  properties={{
-                    destination: '/app/settings/organization',
-                    location: 'nav_user',
-                  }}
-                >
-                  <Users className="mr-1 size-4" />
-                  <span>Team</span>
-                </MetricLink>
-              </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <MetricLink
+                      href={'/app/settings/billing'}
+                      metric="nav_user_billing_clicked"
+                      properties={{
+                        destination: '/app/settings/billing',
+                        location: 'nav_user',
+                      }}
+                    >
+                      <IconCurrencyDollar className="mr-1 size-4" />
+                      <span>Billing</span>
+                    </MetricLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <MetricLink
+                      href={'/app/settings/organization'}
+                      metric="nav_user_team_clicked"
+                      properties={{
+                        destination: '/app/settings/organization',
+                        location: 'nav_user',
+                      }}
+                    >
+                      <Users className="mr-1 size-4" />
+                      <span>Team</span>
+                    </MetricLink>
+                  </DropdownMenuItem>
+                </>
+              )}
               <DropdownMenuItem
                 onClick={() => {
                   // Track user logout action
@@ -211,10 +217,12 @@ export function NavUser() {
           </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
-      <NewOrgDialog
-        onOpenChange={setNewOrgDialogOpen}
-        open={newOrgDialogOpen}
-      />
+      {!isOnboarding && (
+        <NewOrgDialog
+          onOpenChange={setNewOrgDialogOpen}
+          open={newOrgDialogOpen}
+        />
+      )}
     </>
   );
 }

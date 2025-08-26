@@ -6,9 +6,16 @@ import { Label } from '@unhook/ui/label';
 interface WebhookUrlStepProps {
   webhookUrl: string;
   source: string;
+  orgName?: string;
+  webhookName?: string;
 }
 
-export function WebhookUrlStep({ webhookUrl, source }: WebhookUrlStepProps) {
+export function WebhookUrlStep({
+  webhookUrl,
+  source,
+  orgName,
+  webhookName,
+}: WebhookUrlStepProps) {
   return (
     <div className="space-y-2">
       <div className="flex gap-1 w-full flex-col">
@@ -25,8 +32,21 @@ export function WebhookUrlStep({ webhookUrl, source }: WebhookUrlStepProps) {
       </div>
       <Alert>
         <AlertDescription>
-          Add this URL to your {source} webhook settings, to start receiving
-          webhooks.
+          {orgName ? (
+            <>
+              Your webhook is available at{' '}
+              <code className="bg-muted px-1 py-0.5 rounded text-xs">
+                https://unhook.sh/{orgName}/{webhookName}
+              </code>
+              . Add this URL to your {source} webhook settings to start
+              receiving webhooks.
+            </>
+          ) : (
+            <>
+              Add this URL to your {source} webhook settings to start receiving
+              webhooks.
+            </>
+          )}
         </AlertDescription>
       </Alert>
     </div>

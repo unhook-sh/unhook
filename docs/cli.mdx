@@ -45,7 +45,7 @@ npx @unhook/cli listen
 
 3. Use the generated webhook URL in your provider's settings:
 ```bash
-https://unhook.sh/wh_your_webhook_id
+https://unhook.sh/your_webhook_id
 ```
 
 ## Core Commands
@@ -78,7 +78,7 @@ npx @unhook/cli init --destination http://localhost:3000/api/webhooks
 npx @unhook/cli init --source stripe
 
 # With custom webhook ID
-npx @unhook/cli init --webhook wh_custom_id
+npx @unhook/cli init --webhook custom_id
 ```
 
 ### `unhook listen`
@@ -147,8 +147,8 @@ npx @unhook/cli login --code your_auth_code
 The CLI uses an `unhook.yml` file for configuration. This file should be in your project root:
 
 ```yaml
-# Required: Your unique webhook ID
-webhookId: wh_your_webhook_id
+# Required: Your unique webhook URL
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 # Optional: Enable debug mode
 debug: false
@@ -192,7 +192,7 @@ All configuration options can be set via environment variables:
 
 ```bash
 # Core settings
-WEBHOOK_ID=wh_your_webhook_id
+WEBHOOK_URL=https://unhook.sh/your-org/your-webhook-name
 WEBHOOK_DEBUG=true
 WEBHOOK_TELEMETRY=true
 
@@ -286,11 +286,11 @@ npx @unhook/cli listen
 ### Team Development
 ```bash
 # Developer 1
-npx @unhook/cli init --webhook wh_team_webhook_id
+npx @unhook/cli init --webhook team_webhook_id
 npx @unhook/cli listen
 
 # Developer 2
-npx @unhook/cli init --webhook wh_team_webhook_id
+npx @unhook/cli init --webhook team_webhook_id
 npx @unhook/cli listen
 ```
 

@@ -41,11 +41,12 @@ const config = {
       url: 'http://localhost:3000/api/webhooks/clerk',
     },
   ],
-  // Webhook ID for authentication with the webhook server
+  // Full webhook URL for authentication with the webhook server
+  // Format: https://unhook.sh/{orgName}/{webhookName}
   // Can also be set via:
-  // - WEBHOOK_WEBHOOK_ID environment variable
-  // - --webhook-id command line flag
-  webhookId: 't_2vCR1xwHHTLxE5m20AYewlc5y2j',
+  // - WEBHOOK_WEBHOOK_URL environment variable
+  // - --webhook-url command line flag
+  webhookUrl: 'https://unhook.sh/my-org/my-webhook',
 };
 
 export default config;

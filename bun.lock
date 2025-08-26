@@ -23,7 +23,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.13.23",
+      "version": "0.13.25",
       "bin": {
         "unhook": "./bin/cli.js",
       },
@@ -92,7 +92,7 @@
     },
     "apps/jetbrains-extension": {
       "name": "unhook-jetbrains",
-      "version": "0.2.24",
+      "version": "0.2.26",
       "devDependencies": {
         "@types/node": "24.3.0",
       },
@@ -103,7 +103,7 @@
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.2.36",
+      "version": "0.2.38",
       "dependencies": {
         "@unhook/client": "workspace:*",
         "@unhook/zustand": "workspace:*",
@@ -149,7 +149,7 @@
     },
     "apps/web-app": {
       "name": "@unhook/web-app",
-      "version": "0.1.30",
+      "version": "0.1.32",
       "dependencies": {
         "@clerk/elements": "0.23.54",
         "@clerk/nextjs": "6.31.1",
@@ -178,6 +178,7 @@
         "@unhook/mcp-server": "workspace:*",
         "@unhook/stripe": "workspace:*",
         "@unhook/ui": "workspace:*",
+        "@unhook/utils": "workspace:*",
         "@vercel/kv": "3.0.0",
         "color-bits": "1.1.1",
         "date-fns": "4.1.0",
@@ -290,7 +291,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.5.23",
+      "version": "0.5.25",
       "dependencies": {
         "@supabase/supabase-js": "2.55.0",
         "@t3-oss/env-core": "0.13.8",
@@ -405,7 +406,7 @@
     },
     "packages/integ-test": {
       "name": "@unhook/integ-test",
-      "version": "0.0.18",
+      "version": "0.0.20",
       "dependencies": {
         "@supabase/supabase-js": "2.55.0",
         "@unhook/api": "workspace:*",

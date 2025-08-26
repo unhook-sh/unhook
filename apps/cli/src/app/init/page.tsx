@@ -13,6 +13,8 @@ import {
 } from '~/components/form';
 import { useDimensions } from '~/hooks/use-dimensions';
 import { capture } from '~/lib/posthog';
+import { useApiStore } from '~/stores/api-store';
+import { useAuthStore } from '~/stores/auth-store';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
 import { type RouteProps, useRouterStore } from '~/stores/router-store';
@@ -23,8 +25,8 @@ const log = debug('unhook:cli:init');
 const initFormSchema = z.object({
   destination: z.string().url('Please enter a valid URL'),
   source: z.string().optional(),
-  webhookId: z.string().optional(),
   webhookName: z.string().optional(),
+  webhookUrl: z.string().optional(),
 });
 
 type InitFormValues = z.infer<typeof initFormSchema>;
@@ -37,12 +39,12 @@ export const InitPage: FC<RouteProps> = () => {
   const navigate = useRouterStore.use.navigate();
   const writeConfig = useConfigStore.use.writeConfig();
   const setConfig = useConfigStore.use.setConfig();
-  const webhookId = useCliStore.use.webhookId?.();
+  const webhookUrl = useCliStore.use.webhookUrl?.();
   const [configPath, setConfigPath] = useState<string | undefined>(undefined);
   const [webhookName] = useState('Default');
   const [selectedWebhookId, setSelectedWebhookId] = useState<
     string | undefined
-  >(webhookId ?? '');
+  >(webhookUrl ?? '');
   const [showNewWebhookInput, setShowNewWebhookInput] = useState(false);
   const NEW_WEBHOOK_VALUE = '__NEW__';
 
@@ -90,9 +92,9 @@ export const InitPage: FC<RouteProps> = () => {
       : webhookOptions;
 
   const handleSubmit = async (values: InitFormValues) => {
-    let usedWebhookId = values.webhookId;
+    let usedWebhookId = values.webhookUrl;
     // If no webhooks exist or '+ New Webhook' is selected, create one with the provided name
-    if (webhooks.length === 0 || values.webhookId === NEW_WEBHOOK_VALUE) {
+    if (webhooks.length === 0 || values.webhookUrl === NEW_WEBHOOK_VALUE) {
       const created = await useWebhookStore
         .getState()
         .createWebhook(values.webhookName || 'Default');
@@ -111,13 +113,32 @@ export const InitPage: FC<RouteProps> = () => {
         destination: values.destination,
         source: values.source,
         webhookId: usedWebhookId,
+        webhookUrl: values.webhookUrl,
       },
     });
+
+    // Get the actual organization name from the user's account
+    const { orgId } = useAuthStore.getState();
+    const { api } = useApiStore.getState();
+
+    let orgName = 'my-org'; // fallback
+    if (orgId) {
+      try {
+        const org = await api.org.current.query();
+        if (org?.name) {
+          orgName = org.name;
+        }
+      } catch (error) {
+        log('Failed to get organization name, using fallback:', error);
+      }
+    }
+
+    const webhookUrl = `https://unhook.sh/${orgName}/${usedWebhookId}`;
 
     const config = {
       delivery: [{ destination: 'default', source: values.source ?? '*' }],
       destination: [{ name: 'default', url: values.destination }],
-      webhookId: usedWebhookId,
+      webhookUrl: webhookUrl,
     } satisfies WebhookConfig;
 
     const { path } = await writeConfig(config);
@@ -140,8 +161,7 @@ export const InitPage: FC<RouteProps> = () => {
         initialValues={{
           destination: destination ?? '',
           source: source ?? '',
-          webhookId: webhookId ?? '',
-          webhookName: webhookName,
+          webhookUrl: webhookUrl ?? '',
         }}
         onSubmit={handleSubmit}
         schema={initFormSchema}
@@ -161,12 +181,12 @@ export const InitPage: FC<RouteProps> = () => {
             ) : (
               <>
                 <Box flexDirection="column" marginBottom={1}>
-                  <FormLabel id="webhookId">Select a webhook:</FormLabel>
+                  <FormLabel id="webhookUrl">Select a webhook:</FormLabel>
                   <FormSelect
                     defaultValue={
                       selectedWebhookId ?? webhookOptionsWithNew[0]?.value
                     }
-                    id="webhookId"
+                    id="webhookUrl"
                     items={webhookOptionsWithNew}
                     onSelect={(item) => {
                       setSelectedWebhookId(item.value);

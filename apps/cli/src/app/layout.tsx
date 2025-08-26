@@ -50,7 +50,7 @@ function AppContent() {
   const dimensions = useDimensions();
   const token = useAuthStore.use.authToken();
   const isValidating = useAuthStore.use.isValidatingSession();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
   const navigate = useRouterStore.use.navigate();
   const command = useCliStore.use.command?.();
   const currentPath = useRouterStore.use.currentPath();
@@ -82,7 +82,7 @@ function AppContent() {
     );
   }
 
-  if (!webhookId && currentPath !== '/init' && currentPath !== '/login') {
+  if (!webhookUrl && currentPath !== '/init' && currentPath !== '/login') {
     log('No webhook ID, navigating to /init');
     navigate('/init', { resetHistory: true });
   } else if (
@@ -113,7 +113,7 @@ function AppContent() {
           )}
         </WebhookAuthorized>
         <WebhookUnauthorized>
-          <RequestWebhookAccess webhookId={webhookId} />
+          <RequestWebhookAccess webhookUrl={webhookUrl} />
         </WebhookUnauthorized>
         <WebhookChecking>
           <Text>Verifying webhook...</Text>
@@ -126,7 +126,7 @@ function AppContent() {
 
 export const Layout: FC = () => {
   const telemetry = useConfigStore.use.telemetry?.() ?? true;
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
 
   return (
     <PostHogOptIn enableTelemetry={telemetry}>
@@ -135,7 +135,7 @@ export const Layout: FC = () => {
           <RouterProvider>
             <PostHogPageView />
             <PostHogIdentifyUser />
-            <WebhookProvider initialWebhookId={webhookId}>
+            <WebhookProvider initialWebhookUrl={webhookUrl}>
               <TRPCReactProvider sourceHeader="cli">
                 <AppContent />
               </TRPCReactProvider>

@@ -6,14 +6,34 @@ import type { WebhookClientOptions } from './types';
 import { log } from './utils/logger';
 
 export class ConnectionManager {
-  private readonly webhookId: string;
+  private readonly webhookUrl: string;
+  private readonly webhookName: string;
   private readonly metadata?: WebhookClientOptions['metadata'];
   private pingInterval?: NodeJS.Timeout;
   private isStopped = false;
 
   constructor(options: WebhookClientOptions) {
-    this.webhookId = options.webhookId;
+    this.webhookUrl = options.webhookUrl;
+    // Extract webhook name from the URL (e.g., https://unhook.sh/org/webhook-name -> webhook-name)
+    this.webhookName = this.extractWebhookNameFromUrl(options.webhookUrl);
     this.metadata = options.metadata;
+  }
+
+  private extractWebhookNameFromUrl(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+      if (pathParts.length >= 2) {
+        return pathParts.at(-1) || ''; // Last part is the webhook name
+      }
+      throw new Error('Invalid webhook URL format');
+    } catch (error) {
+      console.error('Invalid webhook URL:', {
+        error,
+        url,
+      });
+      throw new Error(`Invalid webhook URL: ${url}`);
+    }
   }
 
   /**
@@ -23,11 +43,13 @@ export class ConnectionManager {
     try {
       // Get webhook info first
       const webhook = await db.query.Webhooks.findFirst({
-        where: eq(Webhooks.id, this.webhookId),
+        where: eq(Webhooks.name, this.webhookName),
       });
 
       if (!webhook) {
-        throw new Error(`Webhook not found for webhookId: ${this.webhookId}`);
+        throw new Error(
+          `Webhook not found for webhookName: ${this.webhookName}`,
+        );
       }
 
       // Create connection record
@@ -73,7 +95,7 @@ export class ConnectionManager {
     try {
       // Get webhook info first
       const webhook = await db.query.Webhooks.findFirst({
-        where: eq(Webhooks.id, this.webhookId),
+        where: eq(Webhooks.name, this.webhookName),
       });
 
       if (!webhook) return;
@@ -116,7 +138,7 @@ export class ConnectionManager {
 
     try {
       const webhook = await db.query.Webhooks.findFirst({
-        where: eq(Webhooks.id, this.webhookId),
+        where: eq(Webhooks.name, this.webhookName),
       });
 
       if (!webhook) return;

@@ -250,6 +250,7 @@ export const authRouter = {
         return {
           authToken: sessionToken.jwt,
           orgId: session.lastActiveOrganizationId,
+          orgName: organization.name,
           user: {
             email: emailAddress?.emailAddress,
             fullName: user.fullName,

@@ -374,7 +374,7 @@ export class EventsProvider
       this.configManager.getConfig().then((config) => {
         if (config) {
           log('Config retrieved, calling handleNewEventsDelivery', {
-            configWebhookId: config.webhookId,
+            configWebhookUrl: config.webhookUrl,
             hasDelivery: !!config.delivery,
             hasDestination: !!config.destination,
           });
@@ -448,9 +448,15 @@ export class EventsProvider
 
       // Get config and create polling service
       const config = await this.configManager.getConfig();
-      const webhookId = config?.webhookId;
+      const webhookUrl = config?.webhookUrl;
 
-      if (webhookId) {
+      log('Setting up polling service', {
+        configWebhookUrl: config?.webhookUrl,
+        hasConfig: !!config,
+        webhookUrl: webhookUrl,
+      });
+
+      if (webhookUrl) {
         // Create polling service
         this.pollingService = new PollingService({
           authStore: this.authStore,
@@ -461,7 +467,7 @@ export class EventsProvider
             log('Polling state changed', {
               isPaused: state.isPaused,
               isPolling: state.isPolling,
-              webhookId: webhookId,
+              webhookUrl: webhookUrl,
             });
             // Notify dev info service of state change
             if (this.onPollingStateChange) {
@@ -477,7 +483,7 @@ export class EventsProvider
         this.disposables.push(eventSubscription);
 
         // Start polling for the webhook
-        this.pollingService.startPolling(webhookId);
+        this.pollingService.startPolling(webhookUrl);
       }
 
       // Events will be fetched when tree view becomes visible (lazy loading)
@@ -676,17 +682,20 @@ export class EventsProvider
       // Get config and webhookId
       const config = await this.getConfig();
       log('Config retrieved', {
+        configKeys: config ? Object.keys(config) : [],
+        configType: typeof config?.webhookUrl,
         hasConfig: !!config,
-        webhookId: config?.webhookId,
+        webhookUrl: config?.webhookUrl,
       });
-      const webhookId = config?.webhookId;
-      if (!webhookId) {
-        log('No webhookId found in config');
+      const webhookUrl = config?.webhookUrl;
+      if (!webhookUrl) {
+        log('No webhookUrl found in config');
         return;
       }
+      log('About to fetch events with webhookUrl', { webhookUrl });
       // Fetch events from the API (assuming events.all is the endpoint)
-      const events = await this.authStore.api.events.byWebhookId.query({
-        webhookId,
+      const events = await this.authStore.api.events.byWebhookUrl.query({
+        webhookUrl: webhookUrl,
       });
       this.updateEvents(events);
     } catch (error) {
@@ -700,9 +709,9 @@ export class EventsProvider
           error.message.indexOf('not authorized') !== -1)
       ) {
         const config = await this.getConfig();
-        if (config?.webhookId && this.authStore) {
+        if (config?.webhookUrl && this.authStore) {
           await this.authorizationService.handleAuthorizationError(
-            config.webhookId,
+            config.webhookUrl,
             this.authStore,
           );
         }

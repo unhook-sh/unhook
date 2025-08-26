@@ -61,8 +61,10 @@ export class EventsDeliveryService {
       log(`Delivering realtime event ${event.id}`);
 
       // Check if requests already exist for this event to prevent duplicate delivery
-      const existingRequests = await authStore.api.requests.byWebhookId.query({
-        webhookId: event.webhookId,
+      // Construct webhookUrl from config and event webhookId
+      const webhookUrl = config.webhookUrl;
+      const existingRequests = await authStore.api.requests.byWebhookUrl.query({
+        webhookUrl,
       });
 
       const eventRequests = existingRequests.filter(

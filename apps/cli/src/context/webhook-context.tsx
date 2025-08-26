@@ -7,24 +7,24 @@ import { useWebhookStore } from '~/stores/webhook-store';
 const log = debug('unhook:cli:webhook-context');
 
 interface WebhookContextValue {
-  webhookId: string | null;
+  webhookUrl: string | null;
 }
 
 const WebhookContext = createContext<WebhookContextValue | null>(null);
 
 interface WebhookProviderProps {
   children: React.ReactNode;
-  initialWebhookId?: string | null;
+  initialWebhookUrl?: string | null;
 }
 
 export function WebhookProvider({
   children,
-  initialWebhookId,
+  initialWebhookUrl,
 }: WebhookProviderProps) {
   const checkWebhookAuth = useWebhookStore.use.checkWebhookAuth();
   const isAuthorizedForWebhook = useWebhookStore.use.isAuthorizedForWebhook();
   const isCheckingWebhook = useWebhookStore.use.isCheckingWebhook();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
   const isSignedIn = useAuthStore.use.isSignedIn();
   const hasCheckedAuth = useRef(false);
   const isMounted = useRef(false);
@@ -32,11 +32,11 @@ export function WebhookProvider({
   // Log initial mount
   useEffect(() => {
     log('WebhookProvider mounted', {
-      initialWebhookId,
+      initialWebhookUrl,
       isAuthorizedForWebhook,
       isCheckingWebhook,
       isSignedIn,
-      webhookId,
+      webhookUrl,
     });
     isMounted.current = true;
 
@@ -51,25 +51,25 @@ export function WebhookProvider({
       isMounted.current = false;
     };
   }, [
-    initialWebhookId,
+    initialWebhookUrl,
     isSignedIn,
     isAuthorizedForWebhook,
     isCheckingWebhook,
-    webhookId,
+    webhookUrl,
   ]);
 
   // Reset hasCheckedAuth when webhook ID changes
   useEffect(() => {
     if (!isMounted.current) return;
 
-    if (webhookId !== initialWebhookId) {
-      log('Webhook ID changed, resetting auth check', {
-        newWebhookId: webhookId,
-        oldWebhookId: initialWebhookId,
+    if (webhookUrl !== initialWebhookUrl) {
+      log('Webhook URL changed, resetting auth check', {
+        newWebhookUrl: webhookUrl,
+        oldWebhookUrl: initialWebhookUrl,
       });
       hasCheckedAuth.current = false;
     }
-  }, [webhookId, initialWebhookId]);
+  }, [webhookUrl, initialWebhookUrl]);
 
   // Check webhook authorization when necessary
   useEffect(() => {
@@ -80,25 +80,25 @@ export function WebhookProvider({
       isAuthorizedForWebhook,
       isCheckingWebhook,
       isSignedIn,
-      webhookId,
+      webhookUrl,
     });
 
     if (
-      webhookId &&
+      webhookUrl &&
       isSignedIn &&
       !isAuthorizedForWebhook &&
       !isCheckingWebhook &&
       !hasCheckedAuth.current
     ) {
       log('Initiating webhook authorization check', {
-        webhookId,
+        webhookUrl,
       });
       hasCheckedAuth.current = true;
       void checkWebhookAuth().then((isAuthorized) => {
         if (!isMounted.current) return;
         log('Webhook authorization check completed', {
           isAuthorized,
-          webhookId,
+          webhookUrl,
         });
         if (!isAuthorized) {
           hasCheckedAuth.current = false;
@@ -106,7 +106,7 @@ export function WebhookProvider({
       });
     }
   }, [
-    webhookId,
+    webhookUrl,
     isSignedIn,
     isAuthorizedForWebhook,
     isCheckingWebhook,
@@ -122,12 +122,12 @@ export function WebhookProvider({
       isAuthorizedForWebhook,
       isCheckingWebhook,
       isSignedIn,
-      webhookId,
+      webhookUrl,
     });
-  }, [isSignedIn, isAuthorizedForWebhook, isCheckingWebhook, webhookId]);
+  }, [isSignedIn, isAuthorizedForWebhook, isCheckingWebhook, webhookUrl]);
 
   return (
-    <WebhookContext.Provider value={{ webhookId }}>
+    <WebhookContext.Provider value={{ webhookUrl }}>
       {children}
     </WebhookContext.Provider>
   );

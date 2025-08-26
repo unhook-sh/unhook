@@ -122,14 +122,14 @@ export function WebhookWizard({
                 <WebhookUrlStep
                   apiUrl={env.NEXT_PUBLIC_API_URL || 'https://unhook.sh'}
                   source={source}
-                  webhookId={webhook.id}
+                  webhookName={webhook.id}
                   webhookUrl={webhookUrl}
                 />
                 {showInstallationTabs && (
                   <InstallationTabs
                     authCode={authCode.id}
                     source={source}
-                    webhookId={webhook.id}
+                    webhookUrl={webhook.id}
                   />
                 )}
               </>
@@ -144,7 +144,7 @@ export function WebhookWizard({
       {webhook && authCode && !isLoading && !isCreatingAuthCode && (
         <RealTimeEventStream
           onEventReceived={handleFirstEventReceived}
-          webhookId={webhook.id}
+          webhookUrl={webhookUrl}
         />
       )}
     </div>

@@ -56,7 +56,7 @@ async function main() {
         debug: args.verbose,
         selfHosted: !!config.server?.apiUrl,
         version: args.version,
-        webhookId: config.webhookId,
+        webhookUrl: config.webhookUrl,
       },
     });
 
@@ -67,7 +67,7 @@ async function main() {
       command: args.command,
       debug: args.verbose,
       version: args.version,
-      webhookId: config.webhookId,
+      webhookUrl: config.webhookUrl,
     });
 
     const renderInstance = render(<Layout />, {

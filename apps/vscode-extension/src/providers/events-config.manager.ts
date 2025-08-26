@@ -51,7 +51,7 @@ export class EventsConfigManager {
         if (this.config) {
           log('Successfully reloaded config from cached path', {
             configPath: this.configPath,
-            webhookId: this.config.webhookId,
+            webhookUrl: this.config.webhookUrl,
           });
 
           // Update config provider if available
@@ -131,7 +131,7 @@ export class EventsConfigManager {
     this.config = await loadConfig(configPath);
     log('Config loaded successfully', {
       configPath,
-      webhookId: this.config.webhookId,
+      webhookUrl: this.config.webhookUrl,
     });
 
     // Update config provider if available

@@ -1,5 +1,7 @@
-import { SidebarInset, SidebarProvider } from '@unhook/ui/sidebar';
+import { SidebarInset } from '@unhook/ui/sidebar';
+import { cookies } from 'next/headers';
 import { AppSidebar } from './_components/app-sidebar/app-sidebar';
+import { SidebarStateProvider } from './_components/sidebar-state-provider';
 import { SiteHeader } from './_components/site-header';
 
 export default async function Layout({
@@ -7,15 +9,11 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
+
   return (
-    <SidebarProvider
-      style={
-        {
-          '--header-height': 'calc(var(--spacing) * 12)',
-          '--sidebar-width': 'calc(var(--spacing) * 72)',
-        } as React.CSSProperties
-      }
-    >
+    <SidebarStateProvider defaultOpen={defaultOpen}>
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
@@ -25,6 +23,6 @@ export default async function Layout({
           </div>
         </div>
       </SidebarInset>
-    </SidebarProvider>
+    </SidebarStateProvider>
   );
 }

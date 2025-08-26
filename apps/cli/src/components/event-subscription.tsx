@@ -14,13 +14,13 @@ export const EventSubscription = memo(function EventSubscription() {
   const deliverEvent = useEventStore.use.deliverEvent();
   const isAuthorizedForWebhook = useWebhookStore.use.isAuthorizedForWebhook();
   const isCheckingWebhook = useWebhookStore.use.isCheckingWebhook();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
 
   // Handle polling state changes
   useEffect(() => {
     const pollEvents = async () => {
-      if (isAuthorizedForWebhook && !isCheckingWebhook && webhookId) {
-        log('Starting event polling', { webhookId });
+      if (isAuthorizedForWebhook && !isCheckingWebhook && webhookUrl) {
+        log('Starting event polling', { webhookUrl });
 
         const events = await fetchEvents();
 
@@ -67,7 +67,7 @@ export const EventSubscription = memo(function EventSubscription() {
   }, [
     isAuthorizedForWebhook,
     isCheckingWebhook,
-    webhookId,
+    webhookUrl,
     fetchEvents,
     deliverEvent,
   ]);

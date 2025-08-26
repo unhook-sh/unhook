@@ -1,5 +1,6 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import type { AuthStore } from './auth.service';
 
 const log = debug('unhook:vscode:first-time-user');
@@ -152,6 +153,22 @@ export class FirstTimeUserService {
     });
 
     return shouldShow;
+  }
+
+  // Method to force check workspace status and show prompts if needed
+  async forceCheckWorkspaceStatus(): Promise<void> {
+    log('Force checking workspace status');
+
+    // Reset any existing prompt state
+    await this.resetPromptFlags();
+
+    // Check if we should show prompts
+    const shouldShow = await this.shouldShowWorkspaceConfigPrompts();
+    log('Force check result', { shouldShow });
+
+    if (shouldShow) {
+      await this.checkAndShowWorkspaceConfigPromptsIfNeeded();
+    }
   }
 
   private isShowingPrompts = false;
@@ -444,7 +461,7 @@ export class FirstTimeUserService {
         }
 
         // Use default webhook ID
-        selectedWebhookId = 'wh_example';
+        selectedWebhookId = 'unhook-prod';
       } else {
         // Let user choose from available webhooks or create a new one
         const webhookOptions = [
@@ -453,12 +470,14 @@ export class FirstTimeUserService {
             isExisting: true,
             label: webhook.name || 'Unnamed Webhook',
             webhookId: webhook.id,
+            webhookName: webhook.name,
           })),
           {
             description: 'Create a new webhook for this workspace',
             isExisting: false,
             label: '➕ Create New Webhook',
             webhookId: 'create_new',
+            webhookName: 'create_new',
           },
         ];
 
@@ -473,7 +492,7 @@ export class FirstTimeUserService {
 
         if (webhookPick.isExisting) {
           // User selected an existing webhook
-          selectedWebhookId = webhookPick.webhookId;
+          selectedWebhookId = webhookPick.webhookName || webhookPick.webhookId;
         } else {
           // User wants to create a new webhook
           log('User chose to create a new webhook');
@@ -484,12 +503,38 @@ export class FirstTimeUserService {
         }
       }
 
-      // Create the configuration content with the selected webhook ID
-      const { createConfigContentWithSpecificWebhookId } = await import(
+      // Create the configuration content with the selected webhook URL
+      const { createConfigContentWithSpecificWebhookUrl } = await import(
         '../utils/config-templates'
       );
+
+      // Get organization name for the webhook URL
+      let orgName = 'my-org';
+      try {
+        if (this.authStore) {
+          const authInfo =
+            await this.authStore.api.auth.verifySessionToken.query({
+              sessionId: this.authStore.sessionId || '',
+              sessionTemplate: 'cli',
+            });
+          orgName = authInfo.orgName || 'my-org';
+        }
+      } catch (error) {
+        console.error(
+          'Failed to get organization name for config template:',
+          error,
+        );
+      }
+
+      if (!selectedWebhookId) {
+        throw new Error('No webhook selected');
+      }
+
+      const configManager = ConfigManager.getInstance();
+      const baseUrl = configManager.getApiUrl();
+      const webhookUrl = `${baseUrl}/${orgName}/${selectedWebhookId}`;
       const configContent =
-        createConfigContentWithSpecificWebhookId(selectedWebhookId);
+        createConfigContentWithSpecificWebhookUrl(webhookUrl);
 
       // Write the template file
       const encoder = new TextEncoder();
@@ -555,6 +600,12 @@ export class FirstTimeUserService {
 
       log('Events refresh command triggered');
 
+      // Show the Events panel to help users see their webhook events
+      log('About to show Events panel');
+      vscode.commands.executeCommand('unhook.showEvents');
+
+      log('Events panel show command triggered');
+
       log('Configuration reload triggered successfully');
     } catch (error) {
       log('Failed to trigger configuration reload', error);
@@ -582,5 +633,123 @@ export class FirstTimeUserService {
       'doNotShowWorkspaceConfigPrompts',
       false,
     );
+  }
+
+  // Method to force clear all flags and reset the service state
+  async forceClearAllFlags(): Promise<void> {
+    log('Force clearing all flags and resetting service state');
+
+    // Get all current keys first
+    const allKeys = this.context.globalState.keys();
+    log('Current global state keys before clearing', { allKeys });
+
+    // Clear all global state flags - including the one without unhook. prefix
+    await this.context.globalState.update(
+      'doNotShowWorkspaceConfigPrompts',
+      false,
+    );
+    await this.context.globalState.update('unhook.firstTimeUser', undefined);
+    await this.context.globalState.update(
+      'unhook.analytics.consentAsked',
+      undefined,
+    );
+
+    // Also try to remove the key entirely
+    try {
+      await this.context.globalState.update(
+        'doNotShowWorkspaceConfigPrompts',
+        undefined,
+      );
+      log('Attempted to remove doNotShowWorkspaceConfigPrompts key entirely');
+    } catch (error) {
+      log('Could not remove doNotShowWorkspaceConfigPrompts key entirely', {
+        error,
+      });
+    }
+
+    // Reset local flags
+    this.isShowingPrompts = false;
+    if (this.promptTimeout) {
+      clearTimeout(this.promptTimeout);
+      this.promptTimeout = null;
+    }
+
+    // Verify the clearing worked
+    const afterKeys = this.context.globalState.keys();
+    const doNotShowValue = this.context.globalState.get(
+      'doNotShowWorkspaceConfigPrompts',
+    );
+    log('Global state after clearing', {
+      afterKeys,
+      doNotShowWorkspaceConfigPrompts: doNotShowValue,
+      success: doNotShowValue === false || doNotShowValue === undefined,
+    });
+
+    log('All flags cleared and service state reset');
+  }
+
+  // Method to debug all global state keys
+  async debugGlobalState(): Promise<void> {
+    const allKeys = this.context.globalState.keys();
+    log('All global state keys', { allKeys });
+
+    for (const key of allKeys) {
+      const value = this.context.globalState.get(key);
+      log(`Global state key: ${key}`, { value });
+    }
+  }
+
+  // Method to completely remove the doNotShowWorkspaceConfigPrompts key
+  async removeDoNotShowKey(): Promise<void> {
+    log('Attempting to completely remove doNotShowWorkspaceConfigPrompts key');
+
+    const beforeValue = this.context.globalState.get(
+      'doNotShowWorkspaceConfigPrompts',
+    );
+    log('Value before removal attempt', { beforeValue });
+
+    // Try different approaches to remove the key
+    try {
+      // Approach 1: Set to undefined
+      await this.context.globalState.update(
+        'doNotShowWorkspaceConfigPrompts',
+        undefined,
+      );
+      log('Set doNotShowWorkspaceConfigPrompts to undefined');
+    } catch (error) {
+      log('Could not set to undefined', { error });
+    }
+
+    try {
+      // Approach 2: Set to null
+      await this.context.globalState.update(
+        'doNotShowWorkspaceConfigPrompts',
+        null,
+      );
+      log('Set doNotShowWorkspaceConfigPrompts to null');
+    } catch (error) {
+      log('Could not set to null', { error });
+    }
+
+    try {
+      // Approach 3: Set to false (fallback)
+      await this.context.globalState.update(
+        'doNotShowWorkspaceConfigPrompts',
+        false,
+      );
+      log('Set doNotShowWorkspaceConfigPrompts to false as fallback');
+    } catch (error) {
+      log('Could not set to false', { error });
+    }
+
+    const afterValue = this.context.globalState.get(
+      'doNotShowWorkspaceConfigPrompts',
+    );
+    log('Value after removal attempts', { afterValue });
+
+    // Check if the key still exists
+    const allKeys = this.context.globalState.keys();
+    const keyExists = allKeys.includes('doNotShowWorkspaceConfigPrompts');
+    log('Key still exists after removal attempts', { allKeys, keyExists });
   }
 }

@@ -4,7 +4,6 @@ import { Box, Text, useInput } from 'ink';
 import { type FC, useState } from 'react';
 import { Ascii } from '~/components/ascii';
 import { SelectInput } from '~/components/select-input';
-import { env } from '~/env';
 import { useCliStore } from '~/stores/cli-store';
 import { useConfigStore } from '~/stores/config-store';
 import type { RouteProps } from '~/stores/router-store';
@@ -32,10 +31,9 @@ export const MenuPage: FC<RouteProps> = () => {
 
   const clientId = useConfigStore.use.clientId?.();
   const version = useCliStore.use.version();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
   const debug = useCliStore.use.verbose();
 
-  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${webhookId}`;
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   useInput((input) => {
@@ -64,7 +62,7 @@ export const MenuPage: FC<RouteProps> = () => {
         <Box flexDirection="column" marginBottom={1}>
           <Text dimColor>Version: {version}</Text>
           <Text dimColor>Client: {clientId}</Text>
-          <Text dimColor>Webhook: {webhookId}</Text>
+          <Text dimColor>Webhook: {webhookUrl}</Text>
           <Text dimColor>
             Platform: {platform()} {release()}
           </Text>

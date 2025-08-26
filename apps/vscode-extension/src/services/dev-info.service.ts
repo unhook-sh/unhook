@@ -40,7 +40,7 @@ interface DevInfo {
   };
   webhookAuthorization?: {
     isAuthorized: boolean;
-    webhookId: string | null;
+    webhookUrl: string | null;
     hasPendingRequest: boolean;
   };
   config?: {
@@ -145,9 +145,9 @@ export class DevInfoService implements vscode.Disposable {
 
     const api = this.authStore.api;
 
-    // Get webhook ID from config
+    // Get webhook ID from config URL
     const configManager = ConfigManager.getInstance();
-    const webhookId = configManager.getConfig()?.webhookId;
+    const webhookUrl = configManager.getConfig()?.webhookUrl;
 
     // Fetch all data in parallel
     const [
@@ -178,9 +178,7 @@ export class DevInfoService implements vscode.Disposable {
       // Get webhook usage statistics
       api.webhooks.usage.query(),
       // Get authorized webhooks
-      webhookId
-        ? api.webhooks.authorized.query({ id: webhookId })
-        : Promise.resolve(false),
+      api.webhooks.authorized.query({ url: webhookUrl }),
       // Get org members
       api.orgMembers.all.query(),
     ]);
@@ -240,7 +238,7 @@ export class DevInfoService implements vscode.Disposable {
     }
 
     // Set webhook authorization info
-    if (webhookId) {
+    if (webhookUrl) {
       const isAuthorized =
         authorizedWebhooks.status === 'fulfilled'
           ? authorizedWebhooks.value
@@ -250,7 +248,7 @@ export class DevInfoService implements vscode.Disposable {
       devInfo.webhookAuthorization = {
         hasPendingRequest: authState?.hasPendingRequest ?? false,
         isAuthorized,
-        webhookId,
+        webhookUrl,
       };
     }
 

@@ -137,7 +137,7 @@ describe('WebSocket Connections Integration Tests', () => {
 
       // Send a webhook request
       const response = await fetch(
-        `${testApiServer.getUrl()}/wh/${testSetup.webhook.id}`,
+        `${testApiServer.getUrl()}/${testSetup.webhook.id}`,
         {
           body: JSON.stringify({ test: 'real-time' }),
           headers: {

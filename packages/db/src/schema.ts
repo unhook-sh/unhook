@@ -132,7 +132,7 @@ export const Orgs = pgTable('orgs', {
     .$defaultFn(() => createId({ prefix: 'org' }))
     .notNull()
     .primaryKey(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   // Stripe fields
   stripeCustomerId: text('stripeCustomerId'),
   stripeSubscriptionId: text('stripeSubscriptionId'),
@@ -250,67 +250,80 @@ export type WebhookConfig = {
   };
 };
 
-export const Webhooks = pgTable('webhooks', {
-  apiKeyId: varchar('apiKeyId', { length: 128 })
-    .references(() => ApiKeys.id, {
-      onDelete: 'cascade',
-    })
-    .notNull(),
-  config: json('config')
-    .$type<WebhookConfig>()
-    .default({
-      headers: {},
-      requests: {},
-      storage: {
-        maxRequestBodySize: 1024 * 1024,
-        maxResponseBodySize: 1024 * 1024,
-        storeHeaders: true,
-        storeRequestBody: true, // 1MB
-        storeResponseBody: true, // 1MB
-      },
-    })
-    .notNull(),
-  createdAt: timestamp('createdAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).defaultNow(),
-  id: varchar('id', { length: 128 })
-    .$defaultFn(() => createId({ prefix: 'wh' }))
-    .notNull()
-    .primaryKey(),
-  isPrivate: boolean('isPrivate').notNull().default(false),
-  lastRequestAt: timestamp('lastRequestAt', {
-    mode: 'date',
-    withTimezone: true,
-  }),
-  name: text('name').notNull(),
-  orgId: varchar('orgId')
-    .references(() => Orgs.id, {
-      onDelete: 'cascade',
-    })
-    .notNull()
-    .default(requestingOrgId()),
-  requestCount: integer('requestCount').notNull().default(0),
-  status: webhookStatusEnum('status').notNull().default('active'),
-  updatedAt: timestamp('updatedAt', {
-    mode: 'date',
-    withTimezone: true,
-  }).$onUpdateFn(() => new Date()),
-  userId: varchar('userId')
-    .references(() => Users.id, {
-      onDelete: 'cascade',
-    })
-    .notNull()
-    .default(requestingUserId()),
-});
+export const Webhooks = pgTable(
+  'webhooks',
+  {
+    apiKeyId: varchar('apiKeyId', { length: 128 })
+      .references(() => ApiKeys.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    config: json('config')
+      .$type<WebhookConfig>()
+      .default({
+        headers: {},
+        requests: {},
+        storage: {
+          maxRequestBodySize: 1024 * 1024,
+          maxResponseBodySize: 1024 * 1024,
+          storeHeaders: true,
+          storeRequestBody: true, // 1MB
+          storeResponseBody: true, // 1MB
+        },
+      })
+      .notNull(),
+    createdAt: timestamp('createdAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).defaultNow(),
+    id: varchar('id', { length: 128 })
+      .$defaultFn(() => createId({ prefix: 'wh' }))
+      .notNull()
+      .primaryKey(),
+    isPrivate: boolean('isPrivate').notNull().default(false),
+    lastRequestAt: timestamp('lastRequestAt', {
+      mode: 'date',
+      withTimezone: true,
+    }),
+    name: text('name').notNull(),
+    orgId: varchar('orgId')
+      .references(() => Orgs.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(requestingOrgId()),
+    requestCount: integer('requestCount').notNull().default(0),
+    status: webhookStatusEnum('status').notNull().default('active'),
+    updatedAt: timestamp('updatedAt', {
+      mode: 'date',
+      withTimezone: true,
+    }).$onUpdateFn(() => new Date()),
+    userId: varchar('userId')
+      .references(() => Users.id, {
+        onDelete: 'cascade',
+      })
+      .notNull()
+      .default(requestingUserId()),
+  },
+  (table) => [
+    // Add unique constraint for orgId and id combination
+    unique().on(table.orgId, table.id),
+    // Add unique constraint for orgId and name combination
+    unique().on(table.orgId, table.name),
+  ],
+);
 
 export type WebhookType = typeof Webhooks.$inferSelect;
 
-export const CreateWebhookTypeSchema = createInsertSchema(Webhooks).omit({
-  createdAt: true,
-  orgId: true,
-  updatedAt: true,
-  userId: true,
+export const CreateWebhookTypeSchema = z.object({
+  apiKeyId: z.string().optional(),
+  config: z.any().optional(),
+  id: z.string().optional(),
+  isPrivate: z.boolean().optional(),
+  lastRequestAt: z.date().optional(),
+  name: z.string(),
+  requestCount: z.number().optional(),
+  status: z.enum(['active', 'inactive']).optional(),
 });
 
 export const UpdateWebhookTypeSchema = createInsertSchema(Webhooks).omit({

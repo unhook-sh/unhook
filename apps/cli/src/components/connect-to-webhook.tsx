@@ -8,15 +8,15 @@ const log = debug('unhook:cli:connect-to-webhook');
 
 export function ConnectToWebhook() {
   const connect = useConnectionStore.use.connect();
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
   const isSignedIn = useAuthStore.use.isSignedIn();
 
   useEffect(() => {
-    if (webhookId && isSignedIn) {
-      log('Connecting to webhook', { webhookId });
+    if (webhookUrl && isSignedIn) {
+      log('Connecting to webhook', { webhookUrl });
       void connect();
     }
-  }, [webhookId, connect, isSignedIn]);
+  }, [webhookUrl, connect, isSignedIn]);
 
   return null;
 }

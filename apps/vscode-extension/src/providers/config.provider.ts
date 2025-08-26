@@ -38,7 +38,7 @@ interface DevInfo {
   };
   webhookAuthorization?: {
     isAuthorized: boolean;
-    webhookId: string | null;
+    webhookUrl: string | null;
     hasPendingRequest: boolean;
   };
   config?: {
@@ -73,7 +73,7 @@ export class ConfigProvider
   }
 
   public setConfig(config: WebhookConfig | null, configPath: string) {
-    log('Setting config', { configPath, webhookId: config?.webhookId });
+    log('Setting config', { configPath, webhookUrl: config?.webhookUrl });
     this.config = config;
     this.configPath = configPath;
     if (configPath) {
@@ -178,10 +178,14 @@ export class ConfigProvider
       }
     }
 
-    // Add webhookId as a special section
-    if (this.config?.webhookId) {
+    // Add webhookUrl as a special section
+    if (this.config?.webhookUrl) {
       sections.push(
-        new ConfigSectionItem('webhookId', this.config.webhookId, this.context),
+        new ConfigSectionItem(
+          'webhookUrl',
+          this.config.webhookUrl,
+          this.context,
+        ),
       );
     }
 
@@ -232,8 +236,8 @@ export class ConfigProvider
   ): ConfigDetailItem[] {
     const details: ConfigDetailItem[] = [];
 
-    if (sectionName === 'webhookId') {
-      // webhookId is already displayed as a leaf node
+    if (sectionName === 'webhookUrl') {
+      // webhookUrl is already displayed as a leaf node
       return [];
     }
 
@@ -437,8 +441,8 @@ export class ConfigProvider
         );
         details.push(
           new ConfigDetailItem(
-            'webhookId',
-            auth.webhookId || 'none',
+            'webhookUrl',
+            auth.webhookUrl || 'none',
             this.context,
           ),
         );
@@ -692,9 +696,9 @@ export class ConfigProvider
       return;
     }
 
-    // Validate webhookId
-    if (!this.config.webhookId || this.config.webhookId.trim() === '') {
-      this.validationErrors.push('Missing or empty webhookId');
+    // Validate webhookUrl
+    if (!this.config.webhookUrl || this.config.webhookUrl.trim() === '') {
+      this.validationErrors.push('Missing or empty webhookUrl');
     }
 
     // Validate destination

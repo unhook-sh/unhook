@@ -54,7 +54,7 @@ Create an `unhook.yml` file in your workspace root:
 
 **Option 2: Manual Creation**
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: local
     url: http://localhost:3000/api/webhooks
@@ -98,8 +98,8 @@ This makes it easy to set up new webhook endpoints without leaving your developm
 The extension automatically detects Unhook configuration files in your workspace:
 
 ```yaml
-# Required: Your unique webhook ID
-webhookId: wh_your_webhook_id
+# Required: Your unique webhook URL
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 # Optional: Enable debug mode
 debug: false
@@ -331,7 +331,7 @@ You can specify a custom configuration file path in VS Code settings:
 Teams can share a single webhook configuration:
 
 ```yaml
-webhookId: wh_team_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-team-webhook
 destination:
   - name: dev1
     url: http://localhost:3000/api/webhooks

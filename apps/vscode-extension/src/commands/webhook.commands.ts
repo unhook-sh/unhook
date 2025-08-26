@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
 import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
-import { createConfigContentWithSpecificWebhookId } from '../utils/config-templates';
+import { createConfigContentWithSpecificWebhookUrl } from '../utils/config-templates';
 
 export function registerWebhookCommands(
   context: vscode.ExtensionContext,
@@ -54,14 +55,40 @@ export function registerWebhookCommands(
         return;
       }
 
+      // Get organization information first
+      let orgName = '';
+      try {
+        const authInfo = await authStore.api.auth.verifySessionToken.query({
+          sessionId: authStore.sessionId || '',
+          sessionTemplate: 'cli',
+        });
+        orgName = authInfo.orgName; // Use the actual organization name
+      } catch (error) {
+        console.error('Failed to get organization info:', error);
+        vscode.window.showErrorMessage(
+          'Failed to get organization information. Please try again.',
+        );
+        return;
+      }
+
       // Prompt for webhook name
+      const configManager = ConfigManager.getInstance();
+      const baseUrl = configManager.getApiUrl();
       const webhookName = await vscode.window.showInputBox({
-        placeHolder: 'Enter webhook name (e.g., "My Webhook")',
-        prompt: 'What would you like to name your webhook?',
-        value: 'My Webhook',
+        placeHolder: 'Enter webhook name (e.g., "unhook-prod")',
+        prompt: `What would you like to name your webhook? It will be available at ${baseUrl}/${orgName}/{webhookName}`,
+        value: 'unhook-prod',
       });
 
       if (!webhookName) {
+        return;
+      }
+
+      // Validate webhook name format
+      if (!/^[a-z0-9-]+$/.test(webhookName)) {
+        vscode.window.showErrorMessage(
+          'Webhook name can only contain lowercase letters, numbers, and hyphens. Please use a different name.',
+        );
         return;
       }
 
@@ -137,12 +164,12 @@ export function registerWebhookCommands(
                       createError,
                     );
                     throw new Error(
-                      `Failed to create API key automatically: ${createError instanceof Error ? createError.message : 'Unknown error'}. Please create one manually at https://unhook.sh/app/api-keys`,
+                      `Failed to create API key automatically: ${createError instanceof Error ? createError.message : 'Unknown error'}. Please create one manually at ${baseUrl}/app/api-keys`,
                     );
                   }
                 } else {
                   throw new Error(
-                    'No API keys found. Please create an API key at https://unhook.sh/app/api-keys first.',
+                    `No API keys found. Please create an API key at ${baseUrl}/app/api-keys first.`,
                   );
                 }
               } catch (authError) {
@@ -158,7 +185,7 @@ export function registerWebhookCommands(
 
                   // If webhooks work but API keys don't, there might be a specific issue
                   throw new Error(
-                    'API key access issue detected. Please check your permissions or create an API key manually at https://unhook.sh/app/api-keys',
+                    `API key access issue detected. Please check your permissions or create an API key manually at ${baseUrl}/app/api-keys`,
                   );
                 } catch (webhookError) {
                   console.error('Webhooks test also failed:', webhookError);
@@ -226,6 +253,7 @@ export function registerWebhookCommands(
                   storeResponseBody: true,
                 },
               },
+              id: webhookName,
               name: webhookName,
               status: 'active',
             });
@@ -248,7 +276,13 @@ export function registerWebhookCommands(
             });
 
             // Show success message with webhook URL
-            const webhookUrl = `https://unhook.sh/${webhook.id}`;
+            const webhookUrl = `${baseUrl}/${orgName}/${webhook.name}`;
+
+            // Show the final organization name in case it was modified for uniqueness
+            const finalOrgName =
+              webhook.orgId === orgName
+                ? orgName
+                : `${orgName} (renamed for uniqueness)`;
 
             // Check if user already has a config file
             const hasConfigFile =
@@ -292,17 +326,17 @@ export function registerWebhookCommands(
               result === 'Create Config' ||
               result === 'Both'
             ) {
-              await updateOrCreateConfigFile(
-                targetFolder,
-                webhook.id,
-                authStore,
+              await updateOrCreateConfigFile({
                 analyticsService,
-              );
+                authStore,
+                targetFolder,
+                webhookUrl: webhookUrl,
+              });
             }
 
             // Show webhook details
             vscode.window.showInformationMessage(
-              `Webhook ID: ${webhook.id}\nURL: ${webhookUrl}`,
+              `Webhook ID: ${webhook.id}\nURL: ${webhookUrl}\nOrganization: ${finalOrgName}`,
             );
           },
         );
@@ -329,7 +363,40 @@ export function registerWebhookCommands(
     },
   );
 
-  context.subscriptions.push(createWebhookCommand);
+  const fixConfigurationCommand = vscode.commands.registerCommand(
+    'unhook.fixConfiguration',
+    async () => {
+      // Check if user is signed in
+      if (!authStore.isSignedIn) {
+        vscode.window.showErrorMessage(
+          'Please sign in to Unhook before fixing your configuration.',
+        );
+        return;
+      }
+
+      try {
+        // Show progress indicator
+        await vscode.window.withProgress(
+          {
+            cancellable: false,
+            location: vscode.ProgressLocation.Notification,
+            title: 'Fixing Unhook configuration...',
+          },
+          async () => {
+            // Execute the create config command which will help users set up a proper configuration
+            await vscode.commands.executeCommand('unhook.createConfig');
+          },
+        );
+      } catch (error) {
+        console.error('Failed to fix configuration:', error);
+        vscode.window.showErrorMessage(
+          `Failed to fix configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+      }
+    },
+  );
+
+  context.subscriptions.push(createWebhookCommand, fixConfigurationCommand);
 }
 
 // Helper function to provide troubleshooting guidance
@@ -394,12 +461,17 @@ async function checkForExistingConfigFile(
   return false; // No existing config files found
 }
 
-async function updateOrCreateConfigFile(
-  targetFolder: vscode.WorkspaceFolder,
-  webhookId: string,
-  authStore: AuthStore,
-  analyticsService?: AnalyticsService,
-): Promise<void> {
+async function updateOrCreateConfigFile({
+  targetFolder,
+  webhookUrl,
+  authStore,
+  analyticsService,
+}: {
+  targetFolder: vscode.WorkspaceFolder;
+  webhookUrl: string;
+  authStore: AuthStore;
+  analyticsService?: AnalyticsService;
+}): Promise<void> {
   const configFiles = [
     'unhook.yml',
     'unhook.yaml',
@@ -450,13 +522,14 @@ async function updateOrCreateConfigFile(
       await updateExistingConfigFile(
         targetFolder,
         existingConfigFile,
-        webhookId,
+        webhookUrl,
+        authStore,
         analyticsService,
       );
     } else if (updateChoice.label === 'Create new config') {
       await createNewConfigFile(
         targetFolder,
-        webhookId,
+        webhookUrl,
         authStore,
         analyticsService,
       );
@@ -465,7 +538,7 @@ async function updateOrCreateConfigFile(
     // No existing config, create new one
     await createNewConfigFile(
       targetFolder,
-      webhookId,
+      webhookUrl,
       authStore,
       analyticsService,
     );
@@ -476,21 +549,42 @@ async function updateExistingConfigFile(
   targetFolder: vscode.WorkspaceFolder,
   filename: string,
   webhookId: string,
+  authStore: AuthStore,
   analyticsService?: AnalyticsService,
 ): Promise<void> {
   try {
     const configUri = vscode.Uri.joinPath(targetFolder.uri, filename);
     const document = await vscode.workspace.openTextDocument(configUri);
 
-    // Simple update: replace the webhookId line if it exists
-    let content = document.getText();
-    const webhookIdRegex = /^webhookId:\s*.+$/m;
+    // Get organization name and base URL to construct the full webhook URL
+    const configManager = ConfigManager.getInstance();
+    const baseUrl = configManager.getApiUrl();
 
-    if (webhookIdRegex.test(content)) {
-      content = content.replace(webhookIdRegex, `webhookId: ${webhookId}`);
+    // Get the actual organization name
+    let orgName = 'my-org'; // fallback
+    try {
+      const authInfo = await authStore.api.auth.verifySessionToken.query({
+        sessionId: authStore.sessionId || '',
+        sessionTemplate: 'cli',
+      });
+      if (authInfo.orgName) {
+        orgName = authInfo.orgName;
+      }
+    } catch (error) {
+      console.error('Failed to get organization name, using fallback:', error);
+    }
+
+    const webhookUrl = `${baseUrl}/${orgName}/${webhookId}`;
+
+    // Simple update: replace the webhookUrl line if it exists
+    let content = document.getText();
+    const webhookUrlRegex = /^webhookUrl:\s*.+$/m;
+
+    if (webhookUrlRegex.test(content)) {
+      content = content.replace(webhookUrlRegex, `webhookUrl: ${webhookUrl}`);
     } else {
-      // Add webhookId at the beginning if it doesn't exist
-      content = `webhookId: ${webhookId}\n\n${content}`;
+      // Add webhookUrl at the beginning if it doesn't exist
+      content = `webhookUrl: ${webhookUrl}\n\n${content}`;
     }
 
     const edit = new vscode.WorkspaceEdit();
@@ -506,12 +600,12 @@ async function updateExistingConfigFile(
     // Track config update
     analyticsService?.track('config_file_updated', {
       filename,
-      webhook_id: webhookId,
+      webhook_url: webhookUrl,
       workspace: targetFolder.name,
     });
 
     vscode.window.showInformationMessage(
-      `Updated ${filename} with new webhook ID: ${webhookId}`,
+      `Updated ${filename} with new webhook URL: ${webhookUrl}`,
     );
   } catch (error) {
     console.error('Failed to update config file:', error);
@@ -532,7 +626,28 @@ async function createNewConfigFile(
 
   try {
     // Create the configuration content with the new webhook ID
-    const configContent = createConfigContentWithSpecificWebhookId(webhookId);
+    // Get organization name for the webhook URL
+    let orgName = 'my-org';
+    try {
+      if (_authStore) {
+        const authInfo = await _authStore.api.auth.verifySessionToken.query({
+          sessionId: _authStore.sessionId || '',
+          sessionTemplate: 'cli',
+        });
+        orgName = authInfo.orgName || 'my-org';
+      }
+    } catch (error) {
+      console.error(
+        'Failed to get organization name for config template:',
+        error,
+      );
+    }
+
+    // Get the base URL from ConfigManager instead of hardcoding
+    const configManager = ConfigManager.getInstance();
+    const baseUrl = configManager.getApiUrl();
+    const webhookUrl = `${baseUrl}/${orgName}/${webhookId}`;
+    const configContent = createConfigContentWithSpecificWebhookUrl(webhookUrl);
 
     const encoder = new TextEncoder();
     await vscode.workspace.fs.writeFile(
@@ -547,14 +662,17 @@ async function createNewConfigFile(
     // Track config file creation
     analyticsService?.track('config_file_created', {
       filename,
-      has_webhook_id: true,
-      webhook_id: webhookId,
+      has_webhook_url: true,
+      webhook_url: webhookUrl,
       workspace: targetFolder.name,
     });
 
     vscode.window.showInformationMessage(
-      `Created ${filename} in ${targetFolder.name} with webhook ID: ${webhookId}`,
+      `Created ${filename} in ${targetFolder.name} with webhook URL: ${webhookUrl}`,
     );
+
+    // Show the Events panel to help users see their webhook events
+    vscode.commands.executeCommand('unhook.showEvents');
   } catch (error) {
     console.error('Failed to create configuration file:', error);
     vscode.window.showErrorMessage(

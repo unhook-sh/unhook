@@ -9,7 +9,7 @@ export type CliState = {
   code?: string;
   command?: AppRoutePath;
   path?: string;
-  webhookId?: string;
+  webhookUrl?: string;
   source?: string;
   destination?: string;
   configPath?: string;
@@ -33,7 +33,7 @@ const defaultCliState: Partial<CliState> = {
   source: undefined,
   verbose: false,
   version: '',
-  webhookId: undefined,
+  webhookUrl: undefined,
 };
 
 const store = createStore<CliStore>()((set, get) => ({
@@ -43,7 +43,8 @@ const store = createStore<CliStore>()((set, get) => ({
   // Getters for WebhookConfig fields
   getVerbose: () => get().verbose ?? false,
   getVersion: () => get().version,
-  getWebhookId: () => get().webhookId,
+
+  getWebhookUrl: () => get().webhookUrl,
 
   // Reset method to restore default state
   reset: () => set(defaultCliState as CliState),

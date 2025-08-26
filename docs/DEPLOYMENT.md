@@ -229,7 +229,7 @@ After deploying your self-hosted instance, you need to configure your developmen
 
 1. **Create Configuration File**: In your project root, create an `unhook.yaml` file:
    ```yaml
-   webhookId: 'wh_your_webhook_id'
+   webhookUrl: 'https://your-domain.com/your-org/your-webhook-name'
    server:
      apiUrl: 'https://your-domain.com'
    destination:

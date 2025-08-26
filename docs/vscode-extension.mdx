@@ -87,7 +87,7 @@ The extension will automatically look for Unhook configuration files in your wor
 
 Example `unhook.yml`:
 ```yaml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 destination:
   - name: local
     url: http://localhost:3000/api/webhooks
@@ -259,7 +259,7 @@ The extension integrates with your existing Unhook configuration:
 
 ```yaml
 # unhook.yml
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 destination:
   - name: local-dev

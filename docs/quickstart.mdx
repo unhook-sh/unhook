@@ -24,7 +24,7 @@ description: 'Get started with Unhook in under 5 minutes'
       <Step title="Configure">
         Create an `unhook.yml` file in your workspace:
         ```yaml
-        webhookId: wh_your_webhook_id
+        webhookUrl: https://unhook.sh/your-org/your-webhook-name
         destination:
           - name: local
             url: http://localhost:3000/api/webhooks
@@ -81,7 +81,7 @@ description: 'Get started with Unhook in under 5 minutes'
       <Step title="Configure Your Webhook Provider">
         Set up your webhook provider with the provided Unhook URL:
         ```bash
-        https://unhook.sh/wh_your_webhook_id
+        https://unhook.sh/your-org/your-webhook-name
         ```
       </Step>
     </Steps>
@@ -94,8 +94,8 @@ description: 'Get started with Unhook in under 5 minutes'
 Create an `unhook.yml` file in your project root:
 
 ```yaml
-# Required: Your unique webhook ID
-webhookId: wh_your_webhook_id
+# Required: Your unique webhook URL
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 # Optional: Enable debug mode
 debug: false
@@ -167,7 +167,7 @@ https://unhook.sh/wh_your_webhook_id
 3. Click "Add Endpoint"
 4. Enter your Unhook URL:
 ```bash
-https://unhook.sh/wh_your_webhook_id
+https://unhook.sh/your-org/your-webhook-name
 ```
 
 ## Team Development
@@ -176,7 +176,7 @@ https://unhook.sh/wh_your_webhook_id
 Teams can share a single webhook configuration:
 
 ```yaml
-webhookId: wh_team_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-team-webhook
 destination:
   - name: dev1
     url: http://localhost:3000/api/webhooks

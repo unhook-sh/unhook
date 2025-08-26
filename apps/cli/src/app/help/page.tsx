@@ -1,11 +1,8 @@
 import { Box, Text } from 'ink';
-import { env } from '~/env';
 import { useConfigStore } from '~/stores/config-store';
 
 export function HelpPage() {
-  const webhookId = useConfigStore.use.webhookId();
-
-  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${webhookId}`;
+  const webhookUrl = useConfigStore.use.webhookUrl();
 
   return (
     <Box flexDirection="column" padding={1}>

@@ -7,15 +7,57 @@ const isPrivateRoute = createRouteMatcher([
   '/app(.*)',
 ]);
 
+// Define routes that should be handled by Next.js pages (not webhooks)
+const isNextJsRoute = createRouteMatcher([
+  // Marketing pages
+  '/',
+  '/blog(.*)',
+  '/glossary(.*)',
+  '/oss-friends(.*)',
+  '/comparisons(.*)',
+  '/vscode(.*)',
+  '/mcp(.*)',
+  '/jetbrains(.*)',
+  '/privacy-policy(.*)',
+  '/terms-of-service(.*)',
+  // App routes
+  '/app(.*)',
+  // API routes
+  '/api(.*)',
+  // Static assets and Next.js internals
+  '/_next(.*)',
+  '/favicon.ico',
+  '/robots.txt',
+  '/sitemap.xml',
+  // Test route
+  '/test',
+]);
+
 export default clerkMiddleware(async (auth, request) => {
-  // Handle POST requests to root path with any webhook ID
+  // Handle POST requests to any path that's not in the Next.js route allowlist
   if (request.method === 'POST') {
-    const match = request.nextUrl.pathname.match(/^\/wh_([^/]+)$/);
-    if (match) {
-      const webhookId = match[1];
-      const url = new URL(`/api/webhook/wh_${webhookId}`, request.url);
-      url.search = request.nextUrl.search;
-      return NextResponse.rewrite(url);
+    const pathname = request.nextUrl.pathname;
+
+    // Skip if it's a Next.js route
+    if (isNextJsRoute(request)) {
+      // Continue with normal Next.js handling
+    } else {
+      // This is a webhook route - extract org name and webhook name from the pathname
+      // Expected format: /{orgName}/{webhookName}
+      const pathParts = pathname.replace(/^\/+|\/+$/g, '').split('/');
+
+      if (pathParts.length === 2) {
+        const [orgName, webhookName] = pathParts;
+
+        if (orgName && webhookName) {
+          const url = new URL(
+            `/api/webhook/${orgName}/${webhookName}`,
+            request.url,
+          );
+          url.search = request.nextUrl.search;
+          return NextResponse.rewrite(url);
+        }
+      }
     }
   }
 

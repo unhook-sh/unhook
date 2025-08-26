@@ -1,4 +1,8 @@
+import { db } from '@unhook/db/client';
+import { Webhooks } from '@unhook/db/schema';
 import { createClient } from '@unhook/db/supabase/server';
+import { parseWebhookUrl } from '@unhook/utils';
+import { and, eq } from 'drizzle-orm';
 import { ConnectionManager } from './connection-manager';
 import type { WebhookClientOptions } from './types';
 import { log } from './utils/logger';
@@ -12,14 +16,16 @@ export type { WebhookClientOptions } from './types';
  * Connects to Supabase and subscribes to webhook requests.
  * Delivers requests to the local service and updates the response.
  */
-export function startWebhookClient(options: WebhookClientOptions): () => void {
-  const { port, webhookId, metadata } = options;
+export async function startWebhookClient(
+  options: WebhookClientOptions,
+): Promise<() => void> {
+  const { port, webhookUrl, metadata } = options;
   let isStopped = false;
 
   log.main('Initializing webhook client with options:', {
     metadata,
     port,
-    webhookId,
+    webhookUrl,
   });
 
   // Initialize connection manager and webhook handler
@@ -35,13 +41,25 @@ export function startWebhookClient(options: WebhookClientOptions): () => void {
   connectionManager.startPinging();
 
   // Subscribe to new webhook requests
+  // Extract webhook name from URL to get the webhook ID for filtering
+  const { orgName, webhookName } = parseWebhookUrl(webhookUrl);
+
+  // Get webhook info to get the actual webhook ID for filtering
+  const webhook = await db.query.Webhooks.findFirst({
+    where: and(eq(Webhooks.name, webhookName), eq(Webhooks.orgId, orgName)),
+  });
+
+  if (!webhook) {
+    throw new Error(`Webhook not found for name: ${webhookName}`);
+  }
+
   const subscription = subscriptionClient
     .channel('webhook-requests')
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
-        filter: `id=eq.${webhookId}`,
+        filter: `webhookId=eq.${webhook.id}`,
         schema: 'public',
         table: 'requests',
       },

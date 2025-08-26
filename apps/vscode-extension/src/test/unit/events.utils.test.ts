@@ -35,7 +35,7 @@ const mockEvents = [
     timestamp: new Date('2024-01-01T10:00:00Z'),
     updatedAt: null,
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
   {
     apiKeyId: 'key1',
@@ -61,7 +61,7 @@ const mockEvents = [
     timestamp: new Date('2024-01-01T12:00:00Z'),
     updatedAt: null,
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
   {
     apiKeyId: 'key1',
@@ -87,7 +87,7 @@ const mockEvents = [
     timestamp: new Date('2024-01-01T11:00:00Z'),
     updatedAt: null,
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
 ];
 
@@ -120,7 +120,7 @@ const mockRequests = [
     status: 'completed' as const,
     timestamp: new Date('2024-01-01T10:30:00Z'),
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
   {
     apiKeyId: 'key1',
@@ -150,7 +150,7 @@ const mockRequests = [
     status: 'pending' as const,
     timestamp: new Date('2024-01-01T12:30:00Z'),
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
   {
     apiKeyId: 'key1',
@@ -180,7 +180,7 @@ const mockRequests = [
     status: 'failed' as const,
     timestamp: new Date('2024-01-01T11:30:00Z'),
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
 ];
 
@@ -285,7 +285,7 @@ describe('Events Utils', () => {
     });
 
     test('should filter events by webhookId', () => {
-      const filtered = filterEvents(mockEvents, 'wh_123');
+      const filtered = filterEvents(mockEvents, 'test-webhook');
       expect(filtered).toHaveLength(3);
     });
 

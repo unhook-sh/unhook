@@ -67,7 +67,7 @@ global.fetch = mockFetch;
 describe('startWebhookClient', () => {
   const options = {
     port: 3000,
-    webhookId: 'test-webhook-id',
+    webhookUrl: 'https://unhook.sh/test-org/test-webhook-id',
   } satisfies WebhookClientOptions;
 
   beforeEach(() => {
@@ -79,8 +79,8 @@ describe('startWebhookClient', () => {
     vi.restoreAllMocks();
   });
 
-  it('should establish HTTP/2 connection with correct parameters', () => {
-    const stopClient = startWebhookClient(options);
+  it('should establish HTTP/2 connection with correct parameters', async () => {
+    const stopClient = await startWebhookClient(options);
 
     expect(http2.connect).toHaveBeenCalledWith('https://webhook.example.com');
 
@@ -95,8 +95,8 @@ describe('startWebhookClient', () => {
     expect(client.close).toHaveBeenCalled();
   });
 
-  it('should start request stream with correct headers', () => {
-    const stopClient = startWebhookClient(options);
+  it('should start request stream with correct headers', async () => {
+    const stopClient = await startWebhookClient(options);
 
     // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
@@ -121,7 +121,7 @@ describe('startWebhookClient', () => {
   });
 
   it('should handle incoming requests and deliver them to local service', async () => {
-    const stopClient = startWebhookClient(options);
+    const stopClient = await startWebhookClient(options);
 
     // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
@@ -192,7 +192,7 @@ describe('startWebhookClient', () => {
   });
 
   it('should handle errors from local service', async () => {
-    const stopClient = startWebhookClient(options);
+    const stopClient = await startWebhookClient(options);
 
     // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
@@ -253,10 +253,10 @@ describe('startWebhookClient', () => {
     stopClient();
   });
 
-  it('should handle reconnection on connection errors', () => {
+  it('should handle reconnection on connection errors', async () => {
     vi.useFakeTimers();
 
-    const stopClient = startWebhookClient(options);
+    const stopClient = await startWebhookClient(options);
 
     // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]
@@ -279,8 +279,8 @@ describe('startWebhookClient', () => {
     stopClient();
   });
 
-  it('should cleanup resources on stop', () => {
-    const stopClient = startWebhookClient(options);
+  it('should cleanup resources on stop', async () => {
+    const stopClient = await startWebhookClient(options);
 
     // biome-ignore lint/suspicious/noExplicitAny: we're mocking a function
     const client = (http2.connect as Mock<any>).mock.results[0]

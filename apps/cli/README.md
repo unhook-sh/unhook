@@ -117,7 +117,7 @@ The CLI uses an `unhook.yml` file for configuration:
 
 ```yaml
 # Required: Your unique webhook ID
-webhookId: wh_your_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 # Optional: Enable debug mode
 debug: false
@@ -167,7 +167,7 @@ The CLI includes a beautiful interactive terminal UI that shows:
 Teams can share a single webhook configuration:
 
 ```yaml
-webhookId: wh_team_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-team-webhook
 destination:
   - name: dev1
     url: http://localhost:3000/api/webhooks

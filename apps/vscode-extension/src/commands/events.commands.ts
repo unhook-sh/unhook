@@ -28,6 +28,19 @@ export function registerEventCommands(
     },
   );
 
+  // Register show events panel command
+  const showEventsCommand = vscode.commands.registerCommand(
+    'unhook.showEvents',
+    () => {
+      log('Showing Events panel');
+      // Track show events action
+      provider.getAnalyticsService()?.track('events_panel_show');
+
+      // Show the Events panel by executing the workbench view command
+      vscode.commands.executeCommand('workbench.view.extension.unhook.events');
+    },
+  );
+
   // Add collapse/expand all command
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -450,6 +463,7 @@ export function registerEventCommands(
   );
 
   context.subscriptions.push(refreshCommand);
+  context.subscriptions.push(showEventsCommand);
 
   // Register filter command
   const filterCommand = vscode.commands.registerCommand(

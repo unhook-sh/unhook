@@ -23,9 +23,9 @@ export interface WebhookClientOptions {
    */
   port: number;
   /**
-   * API key for authentication with the webhook server.
+   * Full webhook URL for authentication with the webhook server.
    */
-  webhookId: string;
+  webhookUrl: string;
   /**
    * Metadata about the webhook client connection.
    */

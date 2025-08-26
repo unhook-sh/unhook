@@ -21,6 +21,7 @@ import posthog from 'posthog-js';
 import React, { useEffect, useState } from 'react';
 import { Icons } from '~/app/(marketing)/_components/icons';
 import { siteConfig } from '~/app/(marketing)/_lib/config';
+import { ExtensionDropdown } from './extension-dropdown';
 
 const INITIAL_WIDTH = '70rem';
 const MAX_WIDTH = '980px';
@@ -89,20 +90,7 @@ function DesktopActionButtons() {
   return (
     <div className="flex items-center space-x-4">
       <SignedOut>
-        <MetricLink
-          className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
-          href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
-          metric="navbar_create_webhook_clicked"
-          properties={{
-            destination:
-              '/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url',
-            location: 'navbar',
-            medium: 'navbar-create-webhook-url',
-            source: 'marketing_site',
-          }}
-        >
-          Create Webhook URL
-        </MetricLink>
+        <ExtensionDropdown variant="compact" />
       </SignedOut>
       <SignedIn>
         <Button
@@ -331,20 +319,7 @@ function MobileMenuContent({
               </motion.ul>
 
               <div className="flex flex-col gap-2">
-                <MetricLink
-                  className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
-                  href="/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url"
-                  metric="navbar_mobile_create_webhook_clicked"
-                  properties={{
-                    destination:
-                      '/app/onboarding?utm_source=marketing-site&utm_medium=navbar-create-webhook-url',
-                    location: 'navbar',
-                    medium: 'mobile-menu',
-                    source: 'marketing_site',
-                  }}
-                >
-                  Create Webhook URL
-                </MetricLink>
+                <ExtensionDropdown variant="compact" />
                 <SignedIn>
                   <Button asChild className="rounded-full" variant="outline">
                     <MetricLink

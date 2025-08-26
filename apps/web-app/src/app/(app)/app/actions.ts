@@ -16,10 +16,11 @@ export const upsertOrgAction = action
     z.object({
       clerkOrgId: z.string().optional(),
       name: z.string().optional(),
+      webhookId: z.string().optional(),
     }),
   )
   .action(async ({ parsedInput }) => {
-    const { clerkOrgId, name } = parsedInput;
+    const { clerkOrgId, name, webhookId } = parsedInput;
     const user = await auth();
 
     if (!user.userId) {
@@ -34,6 +35,7 @@ export const upsertOrgAction = action
     console.log('upsertOrgAction called with:', {
       clerkOrgId,
       userId: user.userId,
+      webhookId,
     });
 
     // If no clerkOrgId is provided (creating new org), check if user already has an organization
@@ -74,6 +76,13 @@ export const upsertOrgAction = action
 
     console.log('New org result:', result);
 
+    // If webhookId is provided, create a custom webhook
+    if (webhookId && result.webhook) {
+      // Update the webhook with the custom ID
+      // Note: This would require additional API calls to update the webhook
+      console.log('Custom webhook ID requested:', webhookId);
+    }
+
     return {
       apiKey: result.apiKey,
       id: result.org.id,
@@ -82,7 +91,13 @@ export const upsertOrgAction = action
     };
   });
 
-export async function createOrgAction({ name }: { name: string }) {
+export async function createOrgAction({
+  name,
+  webhookId,
+}: {
+  name: string;
+  webhookId?: string;
+}) {
   // You may want to get user info from session or context if needed
-  return upsertOrgAction({ name });
+  return upsertOrgAction({ name, webhookId });
 }

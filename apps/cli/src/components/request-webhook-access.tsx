@@ -8,13 +8,13 @@ import { TextInput } from './text-input';
 const log = debug('unhook:cli:request-webhook-access');
 
 interface RequestWebhookAccessProps {
-  webhookId: string;
+  webhookUrl: string;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
 export const RequestWebhookAccess: FC<RequestWebhookAccessProps> = ({
-  webhookId,
+  webhookUrl,
   onSuccess,
   onCancel,
 }) => {
@@ -23,7 +23,7 @@ export const RequestWebhookAccess: FC<RequestWebhookAccessProps> = ({
 
   const checkPendingRequest =
     api.webhookAccessRequests.checkPendingRequest.useQuery({
-      webhookId,
+      webhookUrl,
     });
 
   const createRequest = api.webhookAccessRequests.create.useMutation({
@@ -77,7 +77,7 @@ export const RequestWebhookAccess: FC<RequestWebhookAccessProps> = ({
   const handleSubmitRequest = () => {
     createRequest.mutate({
       requesterMessage: message || undefined,
-      webhookId,
+      webhookUrl,
     });
   };
 

@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import {
-  CreateWebhookAccessRequestSchema,
   OrgMembers,
+  Orgs,
   RespondToWebhookAccessRequestSchema,
   Users,
   WebhookAccessRequests,
@@ -12,6 +12,7 @@ import {
   WebhookAccessRequestEmail,
   WebhookAccessResponseEmail,
 } from '@unhook/email/templates';
+import { parseWebhookUrl } from '@unhook/utils';
 import { and, desc, eq, inArray } from 'drizzle-orm';
 import React from 'react';
 import { z } from 'zod';
@@ -50,13 +51,31 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
 
   // Check if user has a pending request for a webhook
   checkPendingRequest: protectedProcedure
-    .input(z.object({ webhookId: z.string() }))
+    .input(z.object({ webhookUrl: z.string() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.userId) throw new Error('User ID is required');
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+
+      const { orgName, webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      const org = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.name, orgName),
+      });
+      if (!org) throw new Error('Organization not found');
+
+      const webhook = await ctx.db.query.Webhooks.findFirst({
+        where: and(
+          eq(Webhooks.name, webhookName),
+          eq(Webhooks.orgId, ctx.auth.orgId),
+        ),
+      });
+
+      if (!webhook) throw new Error('Webhook not found');
 
       const request = await ctx.db.query.WebhookAccessRequests.findFirst({
         where: and(
-          eq(WebhookAccessRequests.webhookId, input.webhookId),
+          eq(WebhookAccessRequests.webhookId, webhook.id),
+          eq(WebhookAccessRequests.orgId, ctx.auth.orgId),
           eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
           eq(WebhookAccessRequests.status, 'pending'),
         ),
@@ -66,13 +85,25 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
     }),
   // Create a new access request
   create: protectedProcedure
-    .input(CreateWebhookAccessRequestSchema)
+    .input(
+      z.object({
+        requesterMessage: z.string().optional(),
+        webhookUrl: z.string(), // Changed from webhookId to webhookUrl
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.auth.userId) throw new Error('User ID is required');
+      if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
-      // First, check if the webhook exists
+      // Parse webhookUrl to get orgName and webhookName
+      const { webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      // Then find the webhook by name within that organization
       const webhook = await ctx.db.query.Webhooks.findFirst({
-        where: eq(Webhooks.id, input.webhookId),
+        where: and(
+          eq(Webhooks.name, webhookName),
+          eq(Webhooks.orgId, ctx.auth.orgId),
+        ),
       });
 
       if (!webhook) {
@@ -101,7 +132,7 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
       const existingRequest =
         await ctx.db.query.WebhookAccessRequests.findFirst({
           where: and(
-            eq(WebhookAccessRequests.webhookId, input.webhookId),
+            eq(WebhookAccessRequests.webhookId, webhook.id),
             eq(WebhookAccessRequests.requesterId, ctx.auth.userId),
             eq(WebhookAccessRequests.status, 'pending'),
           ),
@@ -134,7 +165,7 @@ export const webhookAccessRequestsRouter = createTRPCRouter({
           requesterEmail: user.email,
           requesterId: ctx.auth.userId,
           requesterMessage: input.requesterMessage,
-          webhookId: input.webhookId,
+          webhookId: webhook.id,
         })
         .returning();
 

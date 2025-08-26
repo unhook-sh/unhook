@@ -57,8 +57,8 @@ The fastest way to get started with Unhook is using our VS Code extension:
 3. **Configure**
    - Create an `unhook.yml` file in your workspace:
    ```yaml
-   webhookId: wh_your_webhook_id
-   destination:
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
+destination:
      - name: local
        url: http://localhost:3000/api/webhooks
    delivery:
@@ -106,7 +106,7 @@ The fastest way to get started with Unhook is using our VS Code extension:
 4. **Configure Your Webhook Provider**
    Use the webhook URL in your provider's settings:
    ```bash
-   https://unhook.sh/wh_your_webhook_id
+   https://unhook.sh/your-org/your-webhook-name
    ```
 
 ## Configuration
@@ -116,8 +116,8 @@ The fastest way to get started with Unhook is using our VS Code extension:
 The `unhook.yml` file is the primary way to configure Unhook. It supports the following structure:
 
 ```yaml
-# Required: Your unique webhook ID
-webhookId: wh_your_webhook_id
+# Required: Your unique webhook URL
+webhookUrl: https://unhook.sh/your-org/your-webhook-name
 
 # Optional: Enable debug mode
 debug: false
@@ -148,7 +148,7 @@ All configuration options can be set via environment variables:
 
 ```bash
 # Core settings
-WEBHOOK_ID=wh_your_webhook_id
+WEBHOOK_URL=https://unhook.sh/your-org/your-webhook-name
 WEBHOOK_DEBUG=true
 WEBHOOK_TELEMETRY=true
 
@@ -207,7 +207,7 @@ Options:
 Teams can share a single webhook configuration:
 
 ```yaml
-webhookId: wh_team_webhook_id
+webhookUrl: https://unhook.sh/your-org/your-team-webhook
 destination:
   - name: dev1
     url: http://localhost:3000/api/webhooks
@@ -277,7 +277,7 @@ For detailed technical information about the cross-platform implementation, see 
 2. Click "Add Endpoint"
 3. Enter your Unhook URL:
    ```bash
-   https://unhook.sh/wh_your_webhook_id
+   https://unhook.sh/your-org/your-webhook-name
    ```
 
 ### GitHub
@@ -286,7 +286,7 @@ For detailed technical information about the cross-platform implementation, see 
 3. Click "Add webhook"
 4. Enter your Unhook URL:
    ```bash
-   https://unhook.sh/wh_your_webhook_id
+   https://unhook.sh/your-org/your-webhook-name
    ```
 
 ### Clerk
@@ -295,7 +295,7 @@ For detailed technical information about the cross-platform implementation, see 
 3. Click "Add Endpoint"
 4. Enter your Unhook URL:
    ```bash
-   https://unhook.sh/wh_your_webhook_id
+   https://unhook.sh/your-org/your-webhook-name
    ```
 
 ## Security Features

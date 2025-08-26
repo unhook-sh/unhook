@@ -5,8 +5,10 @@ import {
   Orgs,
   Requests,
   UpdateEventTypeSchema,
+  Webhooks,
 } from '@unhook/db/schema';
 import { stripe } from '@unhook/stripe';
+import { parseWebhookUrl } from '@unhook/utils';
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import type Stripe from 'stripe';
 import { z } from 'zod';
@@ -62,20 +64,37 @@ export const eventsRouter = createTRPCRouter({
       return event || null;
     }),
 
-  byWebhookId: protectedProcedure
+  byWebhookUrl: protectedProcedure
     .input(
       z.object({
         lastEventTime: z.string().optional(),
         limit: z.number().optional().default(50),
         offset: z.number().optional().default(0),
-        webhookId: z.string(),
+        webhookUrl: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
 
+      // Parse webhook URL to extract org name and webhook name
+      const { orgName, webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      const org = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.name, orgName),
+      });
+      if (!org) throw new Error('Organization not found');
+
+      const webhook = await ctx.db.query.Webhooks.findFirst({
+        where: and(
+          eq(Webhooks.name, webhookName),
+          eq(Webhooks.orgId, ctx.auth.orgId),
+        ),
+      });
+
+      if (!webhook) throw new Error('Webhook not found');
+
       const whereConditions = [
-        eq(Events.webhookId, input.webhookId),
+        eq(Events.webhookId, webhook.id),
         eq(Events.orgId, ctx.auth.orgId),
       ];
 
@@ -101,13 +120,30 @@ export const eventsRouter = createTRPCRouter({
     }),
 
   count: protectedProcedure
-    .input(z.object({ webhookId: z.string().optional() }))
+    .input(z.object({ webhookUrl: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       if (!ctx.auth.orgId) throw new Error('Organization ID is required');
+      if (!input.webhookUrl) throw new Error('Webhook URL is required');
+
+      // Parse webhook URL to extract org name and webhook name
+      const { orgName, webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      const org = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.name, orgName),
+      });
+      if (!org) throw new Error('Organization not found');
+
+      const webhook = await ctx.db.query.Webhooks.findFirst({
+        where: and(
+          eq(Webhooks.name, webhookName),
+          eq(Webhooks.orgId, ctx.auth.orgId),
+        ),
+      });
+
       const whereConditions = [eq(Events.orgId, ctx.auth.orgId)];
 
-      if (input.webhookId) {
-        whereConditions.push(eq(Events.webhookId, input.webhookId));
+      if (webhook) {
+        whereConditions.push(eq(Events.webhookId, webhook.id));
       }
 
       const totalCount = await ctx.db

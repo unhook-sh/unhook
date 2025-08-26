@@ -10,11 +10,11 @@ import { fixtures } from './fixtures';
 import type { EventFixture } from './fixtures/types';
 
 async function sendWebhook(params: {
-  webhookId: string;
+  webhookUrl: string;
   fixture: EventFixture;
   status?: number;
 }) {
-  const { webhookId, fixture } = params;
+  const { webhookUrl, fixture } = params;
   const baseUrl = env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/webhook`, {
     body: JSON.stringify({
@@ -28,7 +28,7 @@ async function sendWebhook(params: {
       'Content-Type': 'application/json',
       'User-Agent': `UnhookMock/${fixture.provider}`,
       'x-unhook-endpoint': `api/mock-consumer?status=${params.status ?? 200}`,
-      'x-unhook-webhook-id': webhookId,
+      'x-unhook-webhook-url': webhookUrl,
     },
     method: 'POST',
   });
@@ -48,7 +48,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
     'selecting',
   );
   const [error, setError] = useState<string | null>(null);
-  const webhookId = useConfigStore.use.webhookId();
+  const webhookUrl = useConfigStore.use.webhookUrl();
   const navigate = useRouterStore.use.navigate();
 
   const menuItems = fixtures.map((fixture) => ({
@@ -70,13 +70,13 @@ export const CreateEventPage: FC<RouteProps> = () => {
         eventType,
         fixtureFound: !!fixture,
         provider,
-        webhookId,
+        webhookUrl,
       },
     });
   };
 
   const createEventAndRequest = async () => {
-    if (!selectedFixture || !webhookId) {
+    if (!selectedFixture || !webhookUrl) {
       const errorMessage = 'Missing required data to create event';
       setError(errorMessage);
       capture({
@@ -84,7 +84,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
         properties: {
           error: errorMessage,
           hasSelectedFixture: !!selectedFixture,
-          webhookId,
+          webhookUrl,
         },
       });
       return;
@@ -97,13 +97,13 @@ export const CreateEventPage: FC<RouteProps> = () => {
         properties: {
           eventType: selectedFixture.body.eventType,
           provider: selectedFixture.provider,
-          webhookId,
+          webhookUrl,
         },
       });
 
       await sendWebhook({
         fixture: selectedFixture,
-        webhookId,
+        webhookUrl,
       });
 
       setStatus('done');
@@ -112,7 +112,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
         properties: {
           eventType: selectedFixture.body.eventType,
           provider: selectedFixture.provider,
-          webhookId,
+          webhookUrl,
         },
       });
 
@@ -130,7 +130,7 @@ export const CreateEventPage: FC<RouteProps> = () => {
           error: errorMessage,
           eventType: selectedFixture.body.eventType,
           provider: selectedFixture.provider,
-          webhookId,
+          webhookUrl,
         },
       });
     }

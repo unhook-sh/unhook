@@ -336,7 +336,7 @@ describe('CLI Integration Tests', () => {
 
       // Send a webhook to the API
       const response = await fetch(
-        `${testApiServer.getUrl()}/wh/${testSetup.webhook.id}`,
+        `${testApiServer.getUrl()}/${testSetup.webhook.id}`,
         {
           body: JSON.stringify({
             data: { id: 'test-123' },
@@ -395,7 +395,7 @@ describe('CLI Integration Tests', () => {
 
       // Send a webhook
       const response = await fetch(
-        `${testApiServer.getUrl()}/wh/${testSetup.webhook.id}`,
+        `${testApiServer.getUrl()}/${testSetup.webhook.id}`,
         {
           body: JSON.stringify({ test: true }),
           headers: {

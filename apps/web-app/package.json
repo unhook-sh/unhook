@@ -27,6 +27,7 @@
     "@unhook/mcp-server": "workspace:*",
     "@unhook/stripe": "workspace:*",
     "@unhook/ui": "workspace:*",
+    "@unhook/utils": "workspace:*",
     "@vercel/kv": "3.0.0",
     "color-bits": "1.1.1",
     "date-fns": "4.1.0",

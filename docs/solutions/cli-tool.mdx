@@ -108,7 +108,7 @@ unhook listen --client-id dev1 --webhook-id team_webhook_id
 Create an `unhook.yaml` file in your project root:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-webhook-name"
 debug: false
 telemetry: true
 destination:
@@ -231,7 +231,7 @@ delivery:
 Configure API key authentication for private webhooks:
 
 ```yaml
-webhookId: "wh_your_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-webhook-name"
 apiKey: "your_api_key"  # Required for private webhooks
 destination:
   - name: "secure-endpoint"
@@ -244,30 +244,30 @@ destination:
 
 ```bash
 # Start listening for Stripe webhooks
-unhook listen --port 3000 --webhook-id wh_stripe_prod
+unhook listen --port 3000 --webhook-url https://unhook.sh/your-org/your-stripe-webhook
 
 # Configure in Stripe dashboard
-# Webhook URL: https://unhook.sh/wh_stripe_prod
+# Webhook URL: https://unhook.sh/your-org/your-stripe-webhook
 ```
 
 ### GitHub Webhooks
 
 ```bash
 # Start listening for GitHub webhooks
-unhook listen --port 3000 --webhook-id wh_github_repo
+unhook listen --port 3000 --webhook-url https://unhook.sh/your-org/your-github-webhook
 
 # Configure in GitHub repository settings
-# Webhook URL: https://unhook.sh/wh_github_repo
+# Webhook URL: https://unhook.sh/your-org/your-github-webhook
 ```
 
 ### Clerk Authentication
 
 ```bash
 # Start listening for Clerk webhooks
-unhook listen --port 3000 --webhook-id wh_clerk_auth
+unhook listen --port 3000 --webhook-url https://unhook.sh/your-org/your-clerk-webhook
 
 # Configure in Clerk dashboard
-# Webhook URL: https://unhook.sh/wh_clerk_auth
+# Webhook URL: https://unhook.sh/your-org/your-clerk-webhook
 ```
 
 ## Troubleshooting

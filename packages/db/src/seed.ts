@@ -38,8 +38,10 @@ await db.delete(ApiKeys);
 
 const userId = 'user_30oVYOGDYUTdXqB6HImz3XbRyTs';
 const orgId = 'org_30oVYhhebEP3q4dSFlxo8DyAxhr';
+const orgName = 'seawatts';
 const apiKeyId = 'ak_seawatts';
-const webhookId = 'wh_seawatts';
+const webhookId = 'wh_30oVYhhebEP3q4dSFlxo8DyAxht';
+const webhookName = 'unhook';
 const stripeCustomerId = 'cus_Snv28tYxHudPzx';
 const stripeSubscriptionId = 'sub_1RsJCH4hM6DbRRtOGcENjqIO';
 
@@ -142,6 +144,7 @@ await seed(db, {
         defaultValue: orgId,
       }),
       id: funcs.default({ defaultValue: orgId }),
+      name: funcs.default({ defaultValue: orgName }),
       stripeCustomerId: funcs.default({ defaultValue: stripeCustomerId }),
       stripeSubscriptionId: funcs.default({
         defaultValue: stripeSubscriptionId,
@@ -233,6 +236,7 @@ await seed(db, {
         },
       }),
       id: funcs.default({ defaultValue: webhookId }),
+      name: funcs.default({ defaultValue: webhookName }),
       orgId: funcs.default({ defaultValue: orgId }),
       port: funcs.int({ maxValue: 65535, minValue: 1024 }),
       requestCount: funcs.int({ maxValue: 1000, minValue: 0 }),

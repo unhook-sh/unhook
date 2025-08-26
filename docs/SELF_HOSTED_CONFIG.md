@@ -11,8 +11,8 @@ When running a self-hosted Unhook instance, you need to configure your developme
 Both the CLI and VS Code extension use the same configuration file. Create an `unhook.yaml` file in your project root:
 
 ```yaml
-# Your webhook ID from the self-hosted dashboard
-webhookId: 'wh_your_webhook_id'
+# Your webhook URL from the self-hosted dashboard
+webhookUrl: 'https://your-domain.com/your-org/your-webhook-name'
 
 # Server configuration for self-hosted deployment
 server:

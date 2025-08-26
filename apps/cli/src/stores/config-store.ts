@@ -18,7 +18,7 @@ const defaultConfigState: WebhookConfig = {
   delivery: [],
   destination: [],
   telemetry: true,
-  webhookId: '',
+  webhookUrl: '',
 };
 
 interface ConfigActions {
@@ -27,6 +27,7 @@ interface ConfigActions {
   watchConfig: () => Promise<void>;
   writeConfig: (config: WebhookConfig) => Promise<{ path?: string }>;
   loadConfig: () => Promise<WebhookConfig>;
+  getWebhookUrl: () => string;
 }
 
 type ConfigStore = WebhookConfig & ConfigActions;
@@ -34,6 +35,7 @@ type ConfigStore = WebhookConfig & ConfigActions;
 const store = createStore<ConfigStore>()((set, get) => ({
   ...defaultConfigState,
   getConfig: () => get(),
+  getWebhookUrl: () => get().webhookUrl,
   loadConfig: async () => {
     try {
       const configPath = await findUpConfig();
@@ -125,7 +127,7 @@ const store = createStore<ConfigStore>()((set, get) => ({
  * This file defines the configuration for your Unhook webhook.
  * For more information, visit: https://docs.unhook.sh/configuration
  *
- * @property {string} webhookId - Unique identifier for your webhook
+ * @property {string} webhookUrl - Full webhook URL (e.g., https://unhook.sh/my-org/my-webhook)
  * @property {Array<{name: string, url: string|URL|RemotePattern, ping?: boolean|string|URL|RemotePattern}>} destination - Array of destination endpoints
  * @property {Array<{source?: string, destination: string}>} delivery - Array of delivery rules
 
@@ -140,7 +142,7 @@ const store = createStore<ConfigStore>()((set, get) => ({
 import { defineWebhookConfig } from '@unhook/cli';
 
 const config = defineWebhookConfig({
-  webhookId: '${config.webhookId}',
+  webhookUrl: '${config.webhookUrl}',
   destination: ${JSON.stringify(config.destination, null, 2)},
   delivery: ${JSON.stringify(config.delivery, null, 2)},
 } as const);
@@ -152,13 +154,13 @@ export default config;
       const yamlConfig = {
         delivery: config.delivery,
         destination: config.destination,
-        webhookId: config.webhookId,
+        webhookUrl: config.webhookUrl,
       };
       content = `# Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration
 #
 # Schema:
-#   webhookId: string                    # Unique identifier for your webhook
+#   webhookUrl: string                   # Full webhook URL (e.g., https://unhook.sh/my-org/my-webhook)
 #   destination:                         # Array of destination endpoints
 #     - name: string                     # Name of the endpoint
 #       url: string|URL|RemotePattern    # URL to forward webhooks to

@@ -110,16 +110,16 @@ const store = createStore<EventStore>()((set, get) => ({
     limit?: number;
     offset?: number;
   } = {}) => {
-    const { webhookId } = useConfigStore.getState();
+    const webhookUrl = useConfigStore.getState().webhookUrl;
     const { api } = useApiStore.getState();
     const currentState = get();
-    log('Fetching events from database', { limit, offset, webhookId });
+    log('Fetching events from database', { limit, offset, webhookUrl });
 
     try {
       // Fetch requests with their associated events
       const [totalEventCount, events] = await Promise.all([
-        api.events.count.query({ webhookId }),
-        api.events.byWebhookId.query({ webhookId }),
+        api.events.count.query({ webhookUrl }),
+        api.events.byWebhookUrl.query({ webhookUrl }),
       ]);
 
       log(`Fetched ${events.length} events`);
@@ -233,9 +233,11 @@ const store = createStore<EventStore>()((set, get) => ({
         connectionId,
         eventId: request.eventId,
         method: event.originRequest.method,
+        orgId,
         originalEventId: request.eventId,
         pingEnabled: !!destination.find((t) => t.ping),
         source: request.source,
+        userId: user?.id,
         webhookId: request.webhookId,
       },
     });

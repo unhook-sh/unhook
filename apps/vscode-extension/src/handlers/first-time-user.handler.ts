@@ -27,6 +27,13 @@ export function setupFirstTimeUserHandler(
       });
   }
 
+  // Also check when the handler is first set up, regardless of auth state
+  // This handles the case where a user opens a new workspace without being signed in yet
+  log('Performing initial workspace check regardless of auth state');
+  firstTimeUserService.forceCheckWorkspaceStatus().catch((error) => {
+    log('Error during initial workspace check', { error });
+  });
+
   authStore.onDidChangeAuth(() => {
     const currentAuthState = authStore.isSignedIn;
     log('Auth state changed', {

@@ -16,10 +16,12 @@ import { maskApiKey } from '~/lib/mask-api-key';
 export function SectionCards() {
   const apiKeys = api.apiKeys.allWithLastUsage.useQuery();
   const webhooks = api.webhooks.all.useQuery();
+  const org = api.org.current.useQuery();
 
   const webhook = webhooks.data?.[0];
   const apiKey = apiKeys.data?.[0];
   const maskedApiKey = apiKey ? maskApiKey(apiKey.key) : '';
+  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${org.data?.name}/${webhook?.name}`;
   const webhookConfigComments = `
 # Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration
@@ -41,7 +43,7 @@ export function SectionCards() {
 #   pathname?: string                    # URL pathname
 #   search?: string                      # URL search params
 
-webhookId: ${webhook?.id}
+webhookUrl: ${webhookUrl}
 destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks
@@ -62,7 +64,7 @@ delivery:
             {webhook && (
               <>
                 <span className="font-mono text-sm select-all tabular-nums bg-muted px-2 py-1 rounded w-full">
-                  {env.NEXT_PUBLIC_API_URL}/{webhook?.id}
+                  {webhookUrl}
                 </span>
                 <span className="ml-2">
                   <CopyButton
@@ -85,7 +87,7 @@ delivery:
           <div className="flex flex-col gap-1 w-full">
             <div className="flex items-center gap-2">
               <span className="font-mono bg-muted p-3 rounded text-xs select-all w-full">
-                <pre>{`webhookId: ${webhook?.id}
+                <pre>{`webhookUrl: ${webhookUrl}
 destination:
   - name: localhost
     url: http://localhost:3000/api/webhooks

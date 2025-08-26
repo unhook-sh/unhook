@@ -90,14 +90,14 @@ const createConnectionStore = () => {
         return;
       }
 
-      const { webhookId } = useConfigStore.getState();
+      const webhookUrl = useConfigStore.getState().webhookUrl;
 
       if (!user?.id) {
         log('User must be authenticated to connect');
         return;
       }
 
-      if (!webhookId) {
+      if (!webhookUrl) {
         log('No webhook selected');
         return;
       }
@@ -411,8 +411,8 @@ const createConnectionStore = () => {
       });
 
       // Update webhook record with connection status
-      const { webhookId } = useConfigStore.getState();
-      if (webhookId) {
+      const webhookUrl = useConfigStore.getState().webhookUrl;
+      if (webhookUrl) {
         const _isAnyConnected = Object.values({
           ...currentState.ruleStates,
           [ruleId]: updatedRuleState,

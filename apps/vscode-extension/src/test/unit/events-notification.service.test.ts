@@ -55,7 +55,7 @@ const mockEvents: EventTypeWithRequest[] = [
     timestamp: new Date('2024-01-01T10:00:00Z'),
     updatedAt: null,
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
   {
     apiKeyId: 'key1',
@@ -80,7 +80,7 @@ const mockEvents: EventTypeWithRequest[] = [
     timestamp: new Date('2024-01-01T12:00:00Z'),
     updatedAt: null,
     userId: 'user1',
-    webhookId: 'wh_123',
+    webhookId: 'test-webhook',
   },
 ];
 

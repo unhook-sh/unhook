@@ -51,3 +51,20 @@ export const generateRandomName = (): string => {
     style: 'lowerCase',
   });
 };
+
+export const generateUniqueOrgName = (): string => {
+  // Generate a more unique name with additional randomness
+  const timestamp = Date.now().toString(36);
+  const randomSuffix = Math.random().toString(36).substring(2, 6);
+
+  return (
+    // biome-ignore lint/style/useTemplate: don't remove this
+    uniqueNamesGenerator({
+      dictionaries: [adjectives, animals],
+      length: 2,
+      seed: Date.now() + Math.random(),
+      separator: '-',
+      style: 'lowerCase',
+    }) + `-${timestamp}-${randomSuffix}`
+  );
+};

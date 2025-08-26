@@ -373,6 +373,24 @@
         "command": "unhook.resetPromptFlags",
         "icon": "$(refresh)",
         "title": "Reset Prompt Flags (Debug)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.forceClearAllFlags",
+        "icon": "$(clear-all)",
+        "title": "Force Clear All Flags (Debug)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.debugGlobalState",
+        "icon": "$(search)",
+        "title": "Debug Global State (Debug)"
+      },
+      {
+        "category": "Unhook",
+        "command": "unhook.removeDoNotShowKey",
+        "icon": "$(trash)",
+        "title": "Remove Do Not Show Key (Debug)"
       }
     ],
     "configuration": {

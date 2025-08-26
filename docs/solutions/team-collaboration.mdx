@@ -78,7 +78,7 @@ Share webhook configuration across your team:
 
 ```yaml
 # unhook.yaml (shared in repository)
-webhookId: "wh_team_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-team-webhook"
 destination:
   - name: "local"
     url: "http://localhost:3000/api/webhooks"
@@ -134,7 +134,7 @@ Manage webhook configuration centrally:
 
 ```yaml
 # Team configuration (unhooked.yaml)
-webhookId: "wh_team_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-team-webhook"
 team:
   name: "Development Team"
   members:
@@ -197,7 +197,7 @@ unhook listen --client-id prod-test --port 3000
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_team_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-team-webhook"
 destination:
   - name: "local"
     url: "http://localhost:3000/api/webhooks"
@@ -209,7 +209,7 @@ delivery:
 
 ```yaml
 # unhook.yaml
-webhookId: "wh_team_webhook_id"
+webhookUrl: "https://unhook.sh/your-org/your-team-webhook"
 clientId: "dev1"  # Unique identifier for this developer
 destination:
   - name: "stripe-handler"
@@ -230,13 +230,13 @@ delivery:
 
 ```yaml
 # unhook.dev.yaml
-webhookId: "wh_team_dev"
+webhookUrl: "https://unhook.sh/your-org/your-team-dev"
 destination:
   - name: "local"
     url: "http://localhost:3000/api/webhooks"
 
 # unhook.staging.yaml
-webhookId: "wh_team_staging"
+webhookUrl: "https://unhook.sh/your-org/your-team-staging"
 destination:
   - name: "local"
     url: "http://localhost:3001/api/webhooks"
@@ -369,7 +369,7 @@ unhook status
 
 ```yaml
 # Team Stripe configuration
-webhookId: "wh_team_stripe"
+webhookUrl: "https://unhook.sh/your-org/your-team-stripe"
 destination:
   - name: "stripe-handler"
     url: "http://localhost:3000/api/webhooks/stripe"
@@ -383,7 +383,7 @@ Configure in Stripe dashboard: `https://unhook.sh/wh_team_stripe`
 
 ```yaml
 # Team GitHub configuration
-webhookId: "wh_team_github"
+webhookUrl: "https://unhook.sh/your-org/your-team-github"
 destination:
   - name: "github-handler"
     url: "http://localhost:3000/api/webhooks/github"
@@ -397,7 +397,7 @@ Configure in GitHub repository: `https://unhook.sh/wh_team_github`
 
 ```yaml
 # Comprehensive team setup
-webhookId: "wh_team_comprehensive"
+webhookUrl: "https://unhook.sh/your-org/your-team-comprehensive"
 destination:
   - name: "stripe-handler"
     url: "http://localhost:3000/api/webhooks/stripe"

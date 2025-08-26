@@ -67,7 +67,7 @@ const mockEvent: EventTypeWithRequest = {
   timestamp: new Date('2024-01-01T10:00:00Z'),
   updatedAt: null,
   userId: 'user1',
-  webhookId: 'wh_123',
+  webhookId: 'test-webhook',
 };
 
 const mockConfig: WebhookConfig = {
@@ -83,7 +83,7 @@ const mockConfig: WebhookConfig = {
       url: 'http://localhost:3000',
     },
   ],
-  webhookId: 'wh_123',
+  webhookUrl: 'https://unhook.sh/test-org/test-webhook',
 };
 
 describe('EventsDeliveryService', () => {

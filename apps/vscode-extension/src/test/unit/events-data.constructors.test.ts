@@ -30,7 +30,7 @@ describe('Events Data Constructors', () => {
         timestamp: '2024-01-01T10:00:00Z',
         updatedAt: null,
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructEventFromRealtimeData(realtimeData);
@@ -81,7 +81,7 @@ describe('Events Data Constructors', () => {
         timestamp: '2024-01-01T10:00:00Z',
         updatedAt: null,
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructEventFromRealtimeData(minimalData);
@@ -115,7 +115,7 @@ describe('Events Data Constructors', () => {
         timestamp: '2024-01-01T10:00:00Z',
         updatedAt: null,
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructEventFromRealtimeData(failedEventData);
@@ -165,7 +165,7 @@ describe('Events Data Constructors', () => {
         status: 'completed',
         timestamp: '2024-01-01T10:30:00Z',
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructRequestFromRealtimeData(realtimeData);
@@ -213,7 +213,7 @@ describe('Events Data Constructors', () => {
         status: 'pending',
         timestamp: '2024-01-01T10:30:00Z',
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructRequestFromRealtimeData(pendingRequestData);
@@ -252,7 +252,7 @@ describe('Events Data Constructors', () => {
         status: 'failed',
         timestamp: '2024-01-01T10:30:00Z',
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructRequestFromRealtimeData(failedRequestData);
@@ -295,7 +295,7 @@ describe('Events Data Constructors', () => {
         status: 'completed',
         timestamp: '2024-01-01T10:30:00Z',
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructRequestFromRealtimeData(dataWithoutDestination);
@@ -352,7 +352,7 @@ describe('Events Data Constructors', () => {
         status: 'completed',
         timestamp: '2024-01-01T10:30:00Z',
         userId: 'user1',
-        webhookId: 'wh_123',
+        webhookId: 'test-webhook',
       };
 
       const result = constructRequestFromRealtimeData(

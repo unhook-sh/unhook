@@ -789,7 +789,7 @@
     "url": "https://github.com/sponsors/seawatts"
   },
   "type": "commonjs",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "vsce": {
     "dependencies": false,
     "yarn": false

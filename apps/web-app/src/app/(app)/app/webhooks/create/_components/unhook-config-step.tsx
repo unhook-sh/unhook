@@ -28,8 +28,6 @@ interface UnhookConfigStepProps {
 export function UnhookConfigStep({
   webhookUrl,
   source,
-  orgName,
-  webhookName,
 }: UnhookConfigStepProps) {
   const [selectedTab, setSelectedTab] = useState('cli');
 

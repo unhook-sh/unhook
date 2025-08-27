@@ -18,6 +18,7 @@ import { env } from '~/env.client';
 import { RealTimeEventStream } from '../../_components/webhook-wizzard/real-time-event-stream';
 import { WebhookUrlStep } from '../../_components/webhook-wizzard/webhook-url-step';
 import { AuthCodeLoginButton } from '../../auth-code/_components/auth-code-login-button';
+import { UnhookConfigStep } from '../../webhooks/create/_components/unhook-config-step';
 
 export default function OnboardingSuccessPage() {
   const searchParams = useSearchParams();
@@ -75,6 +76,11 @@ export default function OnboardingSuccessPage() {
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
                 <WebhookUrlStep webhookUrl={webhookUrl} />
+                <UnhookConfigStep
+                  orgName={orgName}
+                  webhookName={webhookName}
+                  webhookUrl={webhookUrl}
+                />
               </CardContent>
               <CardFooter className="flex justify-end">
                 {source ? (

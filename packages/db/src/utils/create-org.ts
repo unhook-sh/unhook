@@ -118,12 +118,6 @@ async function ensureDefaultApiKey({
       orgId,
       userId,
     })
-    .onConflictDoUpdate({
-      set: {
-        updatedAt: new Date(),
-      },
-      target: ApiKeys.key,
-    })
     .returning();
 
   if (!apiKey) {
@@ -457,16 +451,27 @@ export async function createOrg({
       }),
     ]);
 
+    // Fetch the updated organization to get the latest data including Stripe customer ID
+    const updatedOrg = await tx.query.Orgs.findFirst({
+      where: eq(Orgs.id, org.id),
+    });
+
+    if (!updatedOrg) {
+      throw new Error(
+        `Failed to fetch updated organization with ID: ${org.id}`,
+      );
+    }
+
     // Auto-subscribe to free plan
     await autoSubscribeToFreePlan({
       customerId: stripeCustomer.id,
-      orgId: org.id,
+      orgId: updatedOrg.id,
       tx,
     });
 
     // Create default API key
     const apiKey = await ensureDefaultApiKey({
-      orgId: org.id,
+      orgId: updatedOrg.id,
       tx,
       userId,
     });
@@ -478,9 +483,9 @@ export async function createOrg({
         name: apiKey.name,
       },
       org: {
-        id: org.clerkOrgId,
-        name: org.name,
-        stripeCustomerId: stripeCustomer.id,
+        id: updatedOrg.clerkOrgId,
+        name: updatedOrg.name,
+        stripeCustomerId: updatedOrg.stripeCustomerId || '',
       },
     };
   });

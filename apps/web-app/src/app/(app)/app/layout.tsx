@@ -13,7 +13,7 @@ export default async function Layout({
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
 
   return (
-    <SidebarStateProvider defaultOpen={defaultOpen}>
+    <SidebarStateProvider defaultOpen={defaultOpen ?? true}>
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />

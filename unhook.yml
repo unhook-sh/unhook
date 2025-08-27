@@ -23,7 +23,7 @@
 # Test Curl:
 # curl -X POST https://unhook.sh/my-org/my-webhook?source=test -H "Content-Type: application/json" -d '{"type": "test.command", "data": { "message": "Hello, world!" }}'
 
-webhookUrl: https://unhook.sh/my-org/my-webhook
+webhookUrl: 'https://unhook.sh/seawatts/seawatts'
 destination:
   - name: local
     url: http://localhost:3000/api/webhooks

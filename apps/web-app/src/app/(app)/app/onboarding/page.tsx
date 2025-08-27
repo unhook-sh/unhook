@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { FirstTimeOnboarding } from './_components/first-time-onboarding';
 import { OnboardingForm } from './_components/onboarding-form';
 
 export default async function Page(props: {
@@ -27,6 +28,16 @@ export default async function Page(props: {
     return redirect('/app/webhooks/create');
   }
 
+  // If no source or redirectTo, this is a first-time user from marketing page
+  if (!searchParams.source && !searchParams.redirectTo) {
+    return (
+      <div className="container mx-auto max-w-6xl py-8">
+        <FirstTimeOnboarding />
+      </div>
+    );
+  }
+
+  // Otherwise, show the regular onboarding form for users with source/redirect
   return (
     <div className="container mx-auto max-w-2xl py-8">
       <OnboardingForm

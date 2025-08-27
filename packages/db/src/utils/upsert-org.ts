@@ -260,12 +260,6 @@ async function ensureDefaultApiKey({
       orgId,
       userId,
     })
-    .onConflictDoUpdate({
-      set: {
-        updatedAt: new Date(),
-      },
-      target: ApiKeys.key,
-    })
     .returning();
 
   if (!apiKey) {
@@ -838,17 +832,28 @@ export async function upsertOrg({
       }),
     ]);
 
+    // Fetch the updated organization to get the latest data including Stripe customer ID
+    const updatedOrg = await tx.query.Orgs.findFirst({
+      where: eq(Orgs.id, org.id),
+    });
+
+    if (!updatedOrg) {
+      throw new Error(
+        `Failed to fetch updated organization with ID: ${org.id}`,
+      );
+    }
+
     // Auto-subscribe to free plan only if org doesn't already have a subscription
-    if (!org.stripeSubscriptionId) {
+    if (!updatedOrg.stripeSubscriptionId) {
       await autoSubscribeToFreePlan({
         customerId: stripeCustomer.id,
-        orgId: org.id,
+        orgId: updatedOrg.id,
         tx,
       });
     }
 
     return buildOrgResult({
-      org: { ...org, stripeCustomerId: stripeCustomer.id },
+      org: updatedOrg,
       tx,
       userId,
     });

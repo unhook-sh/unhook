@@ -20,6 +20,7 @@ import { env } from '~/env.client';
 import { InstallationTabs } from './installation-tabs';
 import { RealTimeEventStream } from './real-time-event-stream';
 import { SourceStep } from './source-step';
+import { UnhookConfigStep } from './unhook-config-step';
 import { WebhookUrlStep } from './webhook-url-step';
 
 const STEP_TITLE = 'Welcome to Unhook';
@@ -221,6 +222,12 @@ export function WebhookWizard({ orgName }: WebhookWizardProps) {
                 <InstallationTabs
                   authCode={authCode.id}
                   source={source}
+                  webhookUrl={webhookUrl}
+                />
+                <UnhookConfigStep
+                  orgName={orgName}
+                  source={source}
+                  webhookName={webhook.name}
                   webhookUrl={webhookUrl}
                 />
               </>

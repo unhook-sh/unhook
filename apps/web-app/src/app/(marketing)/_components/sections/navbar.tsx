@@ -90,7 +90,7 @@ function DesktopActionButtons() {
   return (
     <div className="flex items-center space-x-4">
       <SignedOut>
-        <ExtensionDropdown variant="compact" />
+        <ExtensionDropdown className="hidden md:flex" variant="compact" />
       </SignedOut>
       <SignedIn>
         <Button
@@ -319,7 +319,10 @@ function MobileMenuContent({
               </motion.ul>
 
               <div className="flex flex-col gap-2">
-                <ExtensionDropdown variant="compact" />
+                <ExtensionDropdown
+                  className="flex md:hidden"
+                  variant="compact"
+                />
                 <SignedIn>
                   <Button asChild className="rounded-full" variant="outline">
                     <MetricLink

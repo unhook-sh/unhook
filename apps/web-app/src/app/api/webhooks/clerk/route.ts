@@ -69,42 +69,51 @@ export async function POST(request: Request) {
   console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
 
   let response: Response | undefined;
-  switch (event.type) {
-    case 'user.created':
-      response = await handleUserCreated(event);
-      break;
-    case 'user.updated':
-      response = await handleUserUpdated(event);
-      break;
-    case 'user.deleted':
-      response = await handleUserDeleted(event);
-      break;
-    case 'session.created':
-      response = await handleSessionCreated(event);
-      break;
-    case 'session.ended':
-      response = await handleSessionEnded(event);
-      break;
-    case 'organization.created':
-      response = await handleOrganizationCreated(event);
-      break;
-    case 'organization.updated':
-      response = await handleOrganizationUpdated(event);
-      break;
-    case 'organizationMembership.created':
-      response = await handleOrganizationMembershipCreated(event);
-      break;
-    case 'organizationMembership.updated':
-      response = await handleOrganizationMembershipUpdated(event);
-      break;
-    case 'organizationMembership.deleted':
-      response = await handleOrganizationMembershipDeleted(event);
-      break;
-    case 'organizationInvitation.accepted':
-      response = await handleOrganizationInvitationAccepted(event);
-      break;
-    default:
-      response = undefined;
+  try {
+    switch (event.type) {
+      case 'user.created':
+        response = await handleUserCreated(event);
+        break;
+      case 'user.updated':
+        response = await handleUserUpdated(event);
+        break;
+      case 'user.deleted':
+        response = await handleUserDeleted(event);
+        break;
+      case 'session.created':
+        response = await handleSessionCreated(event);
+        break;
+      case 'session.ended':
+        response = await handleSessionEnded(event);
+        break;
+      case 'organization.created':
+        response = await handleOrganizationCreated(event);
+        break;
+      case 'organization.updated':
+        response = await handleOrganizationUpdated(event);
+        break;
+      case 'organizationMembership.created':
+        response = await handleOrganizationMembershipCreated(event);
+        break;
+      case 'organizationMembership.updated':
+        response = await handleOrganizationMembershipUpdated(event);
+        break;
+      case 'organizationMembership.deleted':
+        response = await handleOrganizationMembershipDeleted(event);
+        break;
+      case 'organizationInvitation.accepted':
+        response = await handleOrganizationInvitationAccepted(event);
+        break;
+      default:
+        console.log(`Unhandled webhook event type: ${event.type}`);
+        response = undefined;
+    }
+  } catch (error) {
+    console.error(`Error handling webhook event ${event.type}:`, error);
+    return new Response(
+      `Internal server error processing ${event.type} webhook: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      { status: 500 },
+    );
   }
 
   await posthog.shutdown();

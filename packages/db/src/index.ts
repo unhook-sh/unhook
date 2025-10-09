@@ -5,4 +5,5 @@ export * from 'drizzle-orm/sql';
 export * from './supabase/types';
 export * from './utils/api-key-usage';
 export * from './utils/create-org';
+export * from './utils/ensure-user';
 export * from './utils/upsert-org';

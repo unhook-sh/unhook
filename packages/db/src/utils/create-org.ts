@@ -14,7 +14,7 @@ import {
 import { eq } from 'drizzle-orm';
 import type Stripe from 'stripe';
 import { db } from '../client';
-import { ApiKeys, Orgs, Users } from '../schema';
+import { ApiKeys, OrgMembers, Orgs, Users } from '../schema';
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -93,7 +93,7 @@ async function ensureUserExists({
   return dbUser;
 }
 
-// Helper function to create default API key
+// Helper function to ensure default API key exists
 async function ensureDefaultApiKey({
   orgId,
   userId,
@@ -127,6 +127,83 @@ async function ensureDefaultApiKey({
   }
 
   return apiKey;
+}
+
+// Helper function to ensure free plan subscription
+async function ensureFreePlanSubscription({
+  customerId,
+  orgId,
+  tx,
+}: {
+  customerId: string;
+  orgId: string;
+  tx: Transaction;
+}) {
+  // Check if org already has a subscription
+  const existingOrg = await tx.query.Orgs.findFirst({
+    where: eq(Orgs.id, orgId),
+  });
+
+  if (existingOrg?.stripeSubscriptionId) {
+    console.log(
+      `Org ${orgId} already has subscription ${existingOrg.stripeSubscriptionId}`,
+    );
+    return null;
+  }
+
+  try {
+    // Get the free plan price ID
+    const freePriceId = await getFreePlanPriceId();
+    if (!freePriceId) {
+      console.error(
+        `Failed to get free plan price ID for orgId: ${orgId}, customerId: ${customerId}`,
+      );
+      return null;
+    }
+
+    // Create subscription to free plan
+    const subscription = await createSubscription({
+      billingInterval: BILLING_INTERVALS.MONTHLY,
+      customerId,
+      orgId,
+      planType: PLAN_TYPES.FREE,
+      priceId: freePriceId,
+    });
+
+    if (!subscription) {
+      console.error(
+        `Failed to create subscription for orgId: ${orgId}, customerId: ${customerId}, priceId: ${freePriceId}`,
+      );
+      return null;
+    }
+
+    // Update org with subscription info
+    await tx
+      .update(Orgs)
+      .set({
+        stripeSubscriptionId: subscription.id,
+        stripeSubscriptionStatus: subscription.status,
+        updatedAt: new Date(),
+      })
+      .where(eq(Orgs.id, orgId));
+
+    console.log(
+      `Subscribed org ${orgId} to free plan with subscription ${subscription.id}`,
+    );
+    return subscription;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(
+        `Failed to subscribe to free plan for orgId: ${orgId}, customerId: ${customerId}. Original error: ${error.message}`,
+      );
+    } else {
+      console.error(
+        `Failed to subscribe to free plan for orgId: ${orgId}, customerId: ${customerId}`,
+      );
+    }
+    // Don't throw error - org creation should still succeed
+    return null;
+  }
 }
 
 // Helper function to create org in database
@@ -170,79 +247,139 @@ async function updateOrgWithStripeCustomerId({
   stripeCustomerId: string;
   tx: Transaction;
 }) {
-  await tx
+  const [updated] = await tx
     .update(Orgs)
     .set({
       stripeCustomerId,
       updatedAt: new Date(),
     })
-    .where(eq(Orgs.id, orgId));
+    .where(eq(Orgs.id, orgId))
+    .returning();
+
+  if (!updated) {
+    throw new Error(
+      `Failed to update org ${orgId} with Stripe customer ID ${stripeCustomerId}`,
+    );
+  }
+
+  return updated;
 }
 
-// Helper function to auto-subscribe to free plan
-async function autoSubscribeToFreePlan({
-  customerId,
-  orgId,
+// Helper function to check if user already has an organization
+async function checkExistingUserOrg({
+  userId,
   tx,
 }: {
-  customerId: string;
-  orgId: string;
+  userId: string;
+  tx: Transaction;
+}) {
+  const [existingUserOrg, existingMembership] = await Promise.all([
+    // Check if user created an organization
+    tx.query.Orgs.findFirst({
+      where: eq(Orgs.createdByUserId, userId),
+    }),
+    // Check if user is a member of any organization
+    tx.query.OrgMembers.findFirst({
+      where: eq(OrgMembers.userId, userId),
+    }),
+  ]);
+
+  if (existingUserOrg || existingMembership) {
+    let existingOrg = existingUserOrg;
+
+    // If user didn't create an org but is a member, get the org they're a member of
+    if (!existingUserOrg && existingMembership) {
+      existingOrg = await tx.query.Orgs.findFirst({
+        where: eq(Orgs.id, existingMembership.orgId),
+      });
+    }
+
+    return existingOrg;
+  }
+
+  return null;
+}
+
+// Helper function to check existing Clerk organization by name
+async function checkExistingClerkOrg({
+  name,
+  client,
+  tx,
+}: {
+  name: string;
+  client: Awaited<ReturnType<typeof clerkClient>>;
   tx: Transaction;
 }) {
   try {
-    // Get the free plan price ID
-    const freePriceId = await getFreePlanPriceId();
-    if (!freePriceId) {
-      console.error(
-        `Failed to get free plan price ID for orgId: ${orgId}, customerId: ${customerId}`,
-      );
-      return null;
-    }
-
-    // Create subscription to free plan
-    const subscription = await createSubscription({
-      billingInterval: BILLING_INTERVALS.MONTHLY,
-      customerId,
-      orgId,
-      planType: PLAN_TYPES.FREE,
-      priceId: freePriceId,
+    const existingClerkOrgs = await client.organizations.getOrganizationList({
+      limit: 100,
     });
 
-    if (!subscription) {
-      console.error(
-        `Failed to create subscription for orgId: ${orgId}, customerId: ${customerId}, priceId: ${freePriceId}`,
-      );
-      return null;
-    }
-
-    // Update org with subscription info
-    await tx
-      .update(Orgs)
-      .set({
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscription.id,
-        stripeSubscriptionStatus: subscription.status,
-        updatedAt: new Date(),
-      })
-      .where(eq(Orgs.id, orgId));
-
-    console.log(
-      `Auto-subscribed org ${orgId} to free plan with subscription ${subscription.id}`,
+    const existingClerkOrg = existingClerkOrgs.data.find(
+      (org: Organization) => org.name === name,
     );
-    return subscription;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(
-        `Failed to auto-subscribe to free plan for orgId: ${orgId}, customerId: ${customerId}. Original error: ${error.message}`,
+
+    if (existingClerkOrg) {
+      console.log(
+        `Clerk organization with name "${name}" already exists. Checking if it's in our database...`,
       );
-    } else {
-      console.error(
-        `Failed to auto-subscribe to free plan for orgId: ${orgId}, customerId: ${customerId}`,
-      );
+
+      // Check if this Clerk org is already in our database
+      const existingDbOrg = await tx.query.Orgs.findFirst({
+        where: eq(Orgs.clerkOrgId, existingClerkOrg.id),
+      });
+
+      return existingDbOrg;
     }
-    // Don't throw error - org creation should still succeed
-    return null;
+  } catch (error) {
+    console.warn('Failed to check existing Clerk organizations:', error);
+    // Continue with creation - this is not critical
   }
+
+  return null;
+}
+
+// Helper function to return existing org result
+async function returnExistingOrgResult({
+  org,
+  userId,
+  tx,
+}: {
+  org: {
+    id: string;
+    clerkOrgId: string;
+    name: string;
+    stripeCustomerId?: string | null;
+  };
+  userId: string;
+  tx: Transaction;
+}) {
+  // Ensure free plan subscription
+  await ensureFreePlanSubscription({
+    customerId: org.stripeCustomerId || '',
+    orgId: org.id,
+    tx,
+  });
+
+  // Ensure default API key
+  const apiKey = await ensureDefaultApiKey({
+    orgId: org.id,
+    tx,
+    userId,
+  });
+
+  return {
+    apiKey: {
+      id: apiKey.id,
+      key: apiKey.key,
+      name: apiKey.name,
+    },
+    org: {
+      id: org.clerkOrgId,
+      name: org.name,
+      stripeCustomerId: org.stripeCustomerId || '',
+    },
+  };
 }
 
 /**
@@ -295,6 +432,37 @@ export async function createOrg({
       });
     }
 
+    // Check if user already has an organization to prevent duplicate creation
+    const existingUserOrg = await checkExistingUserOrg({ tx, userId });
+    if (existingUserOrg) {
+      console.log(
+        `User ${userId} already has an organization: ${existingUserOrg.id} (${existingUserOrg.name}). Preventing duplicate creation.`,
+      );
+      return await returnExistingOrgResult({
+        org: existingUserOrg,
+        tx,
+        userId,
+      });
+    }
+
+    // Check if a Clerk organization with this name already exists
+    const existingClerkOrg = await checkExistingClerkOrg({
+      client,
+      name,
+      tx,
+    });
+
+    if (existingClerkOrg) {
+      console.log(
+        `Found existing organization in database: ${existingClerkOrg.id}. Using it instead of creating new one.`,
+      );
+      return await returnExistingOrgResult({
+        org: existingClerkOrg,
+        tx,
+        userId,
+      });
+    }
+
     // Check if organization name already exists in database
     const existingOrgByName = await tx.query.Orgs.findFirst({
       where: eq(Orgs.name, name),
@@ -306,7 +474,7 @@ export async function createOrg({
       );
     }
 
-    // Generate unique slug
+    // Generate unique slug and create Clerk organization
     const slug = generateRandomName();
     let clerkOrg: Organization;
 
@@ -347,11 +515,6 @@ export async function createOrg({
       );
     }
 
-    // Ensure clerkOrg is assigned
-    if (!clerkOrg) {
-      throw new Error('Failed to create organization in Clerk');
-    }
-
     // Final check: Double-check that the organization wasn't created by another process
     const finalCheckOrg = await tx.query.Orgs.findFirst({
       where: eq(Orgs.clerkOrgId, clerkOrg.id),
@@ -362,26 +525,11 @@ export async function createOrg({
         'Organization was created by another process (likely webhook), using existing org:',
         finalCheckOrg.id,
       );
-
-      // Get or create API key for existing org
-      const apiKey = await ensureDefaultApiKey({
-        orgId: finalCheckOrg.id,
+      return await returnExistingOrgResult({
+        org: finalCheckOrg,
         tx,
         userId,
       });
-
-      return {
-        apiKey: {
-          id: apiKey.id,
-          key: apiKey.key,
-          name: apiKey.name,
-        },
-        org: {
-          id: finalCheckOrg.clerkOrgId,
-          name: finalCheckOrg.name,
-          stripeCustomerId: finalCheckOrg.stripeCustomerId || '',
-        },
-      };
     }
 
     // Create org in database
@@ -390,6 +538,12 @@ export async function createOrg({
       name,
       tx,
       userId,
+    });
+
+    console.log('Organization created in database:', {
+      clerkOrgId: org.clerkOrgId,
+      name: org.name,
+      orgId: org.id,
     });
 
     // Create or update Stripe customer
@@ -417,6 +571,12 @@ export async function createOrg({
         );
       }
     } catch (error) {
+      console.error('Stripe customer creation failed:', {
+        error: error instanceof Error ? error.message : String(error),
+        orgId: org.id,
+        orgName: name,
+        userEmail,
+      });
       if (error instanceof Error) {
         throw new Error(
           `Failed to create or get Stripe customer for orgId: ${org.id}, name: ${name}, email: ${userEmail}. Original error: ${error.message}`,
@@ -435,7 +595,7 @@ export async function createOrg({
     );
 
     // Run database updates and Clerk update in parallel
-    await Promise.all([
+    const [updatedOrg] = await Promise.all([
       // Update org in database with Stripe customer ID
       updateOrgWithStripeCustomerId({
         orgId: org.id,
@@ -451,25 +611,26 @@ export async function createOrg({
       }),
     ]);
 
-    // Fetch the updated organization to get the latest data including Stripe customer ID
-    const updatedOrg = await tx.query.Orgs.findFirst({
-      where: eq(Orgs.id, org.id),
-    });
-
     if (!updatedOrg) {
       throw new Error(
-        `Failed to fetch updated organization with ID: ${org.id}`,
+        `Failed to update organization with ID: ${org.id} and Stripe customer ID: ${stripeCustomer.id}`,
       );
     }
 
-    // Auto-subscribe to free plan
-    await autoSubscribeToFreePlan({
+    console.log('Organization fetched after Stripe update:', {
+      orgId: updatedOrg.id,
+      stripeCustomerId: updatedOrg.stripeCustomerId,
+      stripeSubscriptionId: updatedOrg.stripeSubscriptionId,
+    });
+
+    // Ensure free plan subscription
+    await ensureFreePlanSubscription({
       customerId: stripeCustomer.id,
       orgId: updatedOrg.id,
       tx,
     });
 
-    // Create default API key
+    // Ensure default API key
     const apiKey = await ensureDefaultApiKey({
       orgId: updatedOrg.id,
       tx,

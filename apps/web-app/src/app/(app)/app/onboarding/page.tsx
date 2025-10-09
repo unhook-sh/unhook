@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
+import { ensureUserFromClerk } from '@unhook/db';
 import { redirect } from 'next/navigation';
-import { FirstTimeOnboarding } from './_components/first-time-onboarding';
 import { OnboardingForm } from './_components/onboarding-form';
 
 export default async function Page(props: {
@@ -17,27 +17,31 @@ export default async function Page(props: {
     return redirect('/');
   }
 
+  // Proactively ensure user exists in DB before rendering form
+  // This handles the race condition where Clerk webhooks haven't completed yet
+  try {
+    await ensureUserFromClerk(userId);
+  } catch (error) {
+    console.error('Failed to ensure user exists during onboarding:', {
+      error,
+      source: searchParams.source,
+      userId,
+    });
+    // Continue anyway - the createOrg function also has user creation logic
+  }
+
   // If user already has an organization, redirect to dashboard
   if (orgId) {
     return redirect('/app/dashboard');
   }
 
-  // If orgName is provided, create the organization and redirect to webhook wizard
+  // If orgName is provided, redirect to webhook wizard
+  // The organization will be created when the user submits the form
   if (searchParams.orgName) {
-    // This will be handled by the form component
     return redirect('/app/webhooks/create');
   }
 
-  // If no source or redirectTo, this is a first-time user from marketing page
-  if (!searchParams.source && !searchParams.redirectTo) {
-    return (
-      <div className="container mx-auto max-w-6xl py-8">
-        <FirstTimeOnboarding />
-      </div>
-    );
-  }
-
-  // Otherwise, show the regular onboarding form for users with source/redirect
+  // Show onboarding form with source detection
   return (
     <div className="container mx-auto max-w-2xl py-8">
       <OnboardingForm

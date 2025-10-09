@@ -104,6 +104,8 @@ export class UnhookAuthProvider implements AuthenticationProvider {
 
     try {
       // Open browser for auth
+      // The middleware will automatically redirect new users (without orgId) to onboarding
+      // while existing users will proceed directly to auth-code
       const authUrl = new URL(
         '/app/auth-code',
         ConfigManager.getInstance().getApiUrl(),

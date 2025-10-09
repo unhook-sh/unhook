@@ -21,7 +21,7 @@ export function SectionCards() {
   const webhook = webhooks.data?.[0];
   const apiKey = apiKeys.data?.[0];
   const maskedApiKey = apiKey ? maskApiKey(apiKey.key) : '';
-  const webhookUrl = `${env.NEXT_PUBLIC_API_URL}/${org.data?.name}/${webhook?.name}`;
+  const webhookUrl = `${env.NEXT_PUBLIC_WEBHOOK_BASE_URL || env.NEXT_PUBLIC_API_URL || 'https://unhook.sh'}/${org.data?.name}/${webhook?.name}`;
   const webhookConfigComments = `
 # Unhook Webhook Configuration
 # For more information, visit: https://docs.unhook.sh/configuration

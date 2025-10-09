@@ -59,7 +59,10 @@ export function NewOrgDialog({ open, onOpenChange }: NewOrgDialogProps) {
 
   // Live URL preview
   const webhookUrl = (() => {
-    const baseUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+    const baseUrl =
+      env.NEXT_PUBLIC_WEBHOOK_BASE_URL ||
+      env.NEXT_PUBLIC_API_URL ||
+      'https://unhook.sh';
     if (!name) return `${baseUrl}/{org-name}/{webhook-name}`;
     if (!webhookName) return `${baseUrl}/${name}/{webhook-name}`;
     return `${baseUrl}/${name}/${webhookName}`;

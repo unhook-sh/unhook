@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "@clerk/backend": "2.9.1",
+    "@clerk/backend": "2.17.2",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
-    "drizzle-orm": "0.44.4"
+    "drizzle-orm": "0.44.6"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "exports": {
     ".": "./src/index.ts"

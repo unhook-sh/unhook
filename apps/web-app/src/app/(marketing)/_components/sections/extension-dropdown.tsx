@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@unhook/ui/dropdown-menu';
+import { cn } from '@unhook/ui/lib/utils';
 import { ChevronDown, Download } from 'lucide-react';
 
 function getBrandLogoUrl(domain: string) {
@@ -23,6 +24,7 @@ interface ExtensionOption {
 
 interface ExtensionDropdownProps {
   variant?: 'default' | 'compact';
+  className?: string;
 }
 
 const extensionOptions: ExtensionOption[] = [
@@ -48,6 +50,7 @@ const extensionOptions: ExtensionOption[] = [
 
 export function ExtensionDropdown({
   variant = 'default',
+  className,
 }: ExtensionDropdownProps) {
   const isCompact = variant === 'compact';
 
@@ -55,9 +58,11 @@ export function ExtensionDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className={`bg-secondary flex items-center gap-2 text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95 ${
-            isCompact ? 'h-8 w-fit px-4' : 'h-9 w-48 px-4'
-          }`}
+          className={cn(
+            'bg-secondary flex items-center gap-2 text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95',
+            isCompact ? 'h-8 w-fit px-4' : 'h-9 w-48 px-4',
+            className,
+          )}
         >
           {!isCompact && <Download className="size-4" />}
           {isCompact ? 'Install Extension' : 'Install Extension'}

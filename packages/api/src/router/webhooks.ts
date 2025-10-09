@@ -1,12 +1,13 @@
 import {
   ApiKeys,
   CreateWebhookTypeSchema,
+  OrgMembers,
   Orgs,
   UpdateWebhookTypeSchema,
   Webhooks,
 } from '@unhook/db/schema';
 import { parseWebhookUrl } from '@unhook/utils';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
@@ -113,6 +114,51 @@ export const webhooksRouter = createTRPCRouter({
       });
 
       return webhook;
+    }),
+
+  checkAccessForUserOrgs: protectedProcedure
+    .input(
+      z.object({
+        webhookUrl: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.auth.userId) throw new Error('User ID is required');
+
+      // Parse webhook URL to extract org name and webhook name
+      const { orgName, webhookName } = parseWebhookUrl(input.webhookUrl);
+
+      // Find the organization that owns this webhook
+      const webhookOwnerOrg = await ctx.db.query.Orgs.findFirst({
+        where: eq(Orgs.name, orgName),
+      });
+
+      if (!webhookOwnerOrg) {
+        return [];
+      }
+
+      // Get all organizations the user belongs to
+      const userOrgMemberships = await ctx.db.query.OrgMembers.findMany({
+        where: eq(OrgMembers.userId, ctx.auth.userId),
+      });
+
+      if (userOrgMemberships.length === 0) {
+        return [];
+      }
+
+      const userOrgIds = userOrgMemberships.map((m) => m.orgId);
+
+      // Check if any of the user's orgs have a webhook with this name
+      // A user's org has "access" if it owns the webhook (org name matches and webhook exists in that org)
+      const webhooksInUserOrgs = await ctx.db.query.Webhooks.findMany({
+        where: and(
+          eq(Webhooks.name, webhookName),
+          inArray(Webhooks.orgId, userOrgIds),
+        ),
+      });
+
+      // Return the org IDs that have this webhook
+      return webhooksInUserOrgs.map((w) => w.orgId);
     }),
 
   checkAvailability: protectedProcedure

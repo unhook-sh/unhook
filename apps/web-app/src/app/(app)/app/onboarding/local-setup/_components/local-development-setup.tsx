@@ -1,6 +1,5 @@
 'use client';
 
-import { api } from '@unhook/api/react';
 import { Alert, AlertDescription } from '@unhook/ui/alert';
 import { Badge } from '@unhook/ui/badge';
 import {
@@ -14,43 +13,37 @@ import { Button } from '@unhook/ui/components/button';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
 import { Icons } from '@unhook/ui/custom/icons';
 import { H3, H4, P } from '@unhook/ui/custom/typography';
-import { Label } from '@unhook/ui/label';
 import { Separator } from '@unhook/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unhook/ui/tabs';
 import { Textarea } from '@unhook/ui/textarea';
-import { BookOpen, FileText, HelpCircle, Home, Terminal } from 'lucide-react';
+import { BookOpen, FileText, HelpCircle, Terminal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { env } from '~/env.client';
 
-interface FirstTimeOnboardingProps {
-  orgName?: string;
-  webhookName?: string;
+interface LocalDevelopmentSetupProps {
+  orgName: string;
+  webhookName: string;
+  redirectTo?: string;
+  source?: string;
 }
 
-export function FirstTimeOnboarding({
+export function LocalDevelopmentSetup({
   orgName,
   webhookName,
-}: FirstTimeOnboardingProps) {
+  redirectTo,
+  source,
+}: LocalDevelopmentSetupProps) {
   const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState('cli');
+  // Default to VSCode tab if coming from extension, otherwise CLI
+  const [selectedTab, setSelectedTab] = useState(
+    source === 'extension' ? 'vscode' : 'cli',
+  );
 
-  const { data: webhooks } = api.webhooks.all.useQuery();
-  const { mutateAsync: createWebhook } = api.webhooks.create.useMutation();
-
-  // Get the first webhook or create a default one
-  const webhook = webhooks?.[0];
-
-  const webhookUrl = (() => {
-    if (!webhook) return '';
-    const baseUrl = env.NEXT_PUBLIC_WEBHOOK_BASE_URL || 'https://unhook.sh';
-    return `${baseUrl}/${orgName || 'org'}/${webhook.name}`;
-  })();
+  const webhookUrl = `${env.NEXT_PUBLIC_WEBHOOK_BASE_URL || env.NEXT_PUBLIC_API_URL || 'https://unhook.sh'}/${orgName}/${webhookName}`;
 
   // Generate the unhook.yml content
   const generateUnhookYml = () => {
-    if (!webhook) return '';
-
     return `# Unhook Configuration
 # This file configures how Unhook delivers webhooks to your local development environment
 
@@ -65,15 +58,15 @@ destination:
 # Define which webhook sources to accept
 delivery:
   - destination: local
-    source: "*"  # Accept all sources, or specify: "stripe", "github", "clerk", etc.
+    source: "${source || '*'}"  # Accept all sources, or specify: "stripe", "github", "clerk", etc.
 
 # Optional: Configure webhook sources with specific settings
 # source:
 #   - name: stripe
-#     secret: ${webhook.apiKeyId || 'your-stripe-webhook-secret'}
+#     secret: your-stripe-webhook-secret
 #     verification: true
 #   - name: github
-#     secret: ${webhook.apiKeyId || 'your-github-webhook-secret'}
+#     secret: your-github-webhook-secret
 #     verification: true
 
 # Optional: Server configuration
@@ -88,44 +81,26 @@ delivery:
 # telemetry: false`;
   };
 
-  const handleCreateWebhook = async () => {
-    if (!orgName) {
-      // If no org name, redirect to the main onboarding flow
-      router.push('/app/onboarding');
-      return;
-    }
-
-    try {
-      const newWebhook = await createWebhook({
-        config: {
-          headers: {},
-          requests: {},
-          storage: {
-            maxRequestBodySize: 1024 * 1024,
-            maxResponseBodySize: 1024 * 1024,
-            storeHeaders: true,
-            storeRequestBody: true,
-            storeResponseBody: true,
-          },
-        },
-        id: webhookName || 'default',
-        name: webhookName || 'default',
-        status: 'active',
-      });
-
-      if (newWebhook) {
-        // Redirect to the webhook creation page with the new webhook
-        router.push(`/app/webhooks/create?orgName=${orgName}`);
-      }
-    } catch (error) {
-      console.error('Failed to create webhook:', error);
-    }
-  };
-
   const unhookYmlContent = generateUnhookYml();
 
+  const handleContinue = () => {
+    const params = new URLSearchParams({
+      orgName,
+      webhookName,
+    });
+
+    if (redirectTo) {
+      params.append('redirectTo', redirectTo);
+    }
+    if (source) {
+      params.append('source', source);
+    }
+
+    router.push(`/app/onboarding/success?${params.toString()}`);
+  };
+
   return (
-    <div className="w-full max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       {/* Welcome Header */}
       <div className="text-center space-y-4">
         <div className="flex justify-center">
@@ -133,11 +108,11 @@ delivery:
             <Icons.Sparkles className="h-8 w-8 text-primary" />
           </div>
         </div>
-        <H3>Welcome to Unhook! 🎉</H3>
+        <H3>Local Development Setup 🚀</H3>
         <P className="text-muted-foreground max-w-2xl mx-auto">
-          You're all set up! Now let's get your first webhook running. Create a
-          configuration file and start receiving webhooks in your local
-          development environment.
+          {source === 'extension'
+            ? "Great! Your webhook is created. Here's your configuration file. You'll be redirected back to VSCode after the next step."
+            : "Great! Your webhook is created. Now let's set up your local development environment to start receiving webhooks."}
         </P>
       </div>
 
@@ -188,9 +163,7 @@ delivery:
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="text-sm font-medium">
-                  Configuration File
-                </Label>
+                <span className="text-sm font-medium">Configuration File</span>
                 <CopyButton
                   size="sm"
                   text={unhookYmlContent}
@@ -315,17 +288,15 @@ delivery:
                     is working
                   </span>
                 </div>
-                {webhookUrl && (
-                  <div className="flex gap-2">
-                    <Textarea
-                      className="font-mono text-xs resize-none"
-                      readOnly
-                      rows={1}
-                      value={webhookUrl}
-                    />
-                    <CopyButton size="sm" text={webhookUrl} variant="outline" />
-                  </div>
-                )}
+                <div className="flex gap-2">
+                  <Textarea
+                    className="font-mono text-xs resize-none"
+                    readOnly
+                    rows={1}
+                    value={webhookUrl}
+                  />
+                  <CopyButton size="sm" text={webhookUrl} variant="outline" />
+                </div>
               </div>
             </div>
           </CardContent>
@@ -379,19 +350,10 @@ delivery:
 
       {/* Action Buttons */}
       <div className="flex justify-center gap-4">
-        {!webhook ? (
-          <Button className="min-w-32" onClick={handleCreateWebhook}>
-            <Icons.Plus className="mr-2 h-4 w-4" />
-            Create First Webhook
-          </Button>
-        ) : (
-          <Button asChild className="min-w-32">
-            <a href="/app/dashboard">
-              <Home className="mr-2 h-4 w-4" />
-              Go to Dashboard
-            </a>
-          </Button>
-        )}
+        <Button className="min-w-32" onClick={handleContinue}>
+          Continue to Dashboard
+          <Icons.ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
         <Button asChild variant="outline">
           <a
             href="https://docs.unhook.sh"

@@ -4,7 +4,7 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.55.0",
+    "@supabase/supabase-js": "2.75.0",
     "@t3-oss/env-core": "0.13.8",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
@@ -12,17 +12,17 @@
     "@unhook/npm": "workspace:*",
     "@unhook/utils": "workspace:*",
     "@vercel/kv": "3.0.0",
-    "debug": "4.4.1",
-    "drizzle-orm": "0.44.4",
-    "find-up": "7.0.0",
-    "undici": "7.14.0",
+    "debug": "4.4.3",
+    "drizzle-orm": "0.44.6",
+    "find-up": "8.0.0",
+    "undici": "7.16.0",
     "yaml": "2.8.1",
-    "zod": "3.25.76"
+    "zod": "4.1.12"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "exports": {
     ".": "./src/index.ts",

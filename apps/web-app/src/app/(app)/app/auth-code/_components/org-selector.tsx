@@ -2,6 +2,8 @@
 
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
 import { MetricButton } from '@unhook/analytics/components';
+import { api } from '@unhook/api/react';
+import { Badge } from '@unhook/ui/badge';
 import {
   Command,
   CommandGroup,
@@ -18,9 +20,10 @@ import React from 'react';
 
 interface OrgSelectorProps {
   onSelect?: (orgId: string) => void;
+  webhookUrl?: string;
 }
 
-export function OrgSelector({ onSelect }: OrgSelectorProps) {
+export function OrgSelector({ onSelect, webhookUrl }: OrgSelectorProps) {
   const { organization: activeOrg } = useOrganization();
   const { setActive, userMemberships } = useOrganizationList({
     userMemberships: true,
@@ -29,6 +32,13 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<string>(activeOrg?.id || '');
   const [input, setInput] = React.useState('');
+
+  // Fetch orgs with webhook access if webhookUrl is provided
+  const { data: orgsWithAccess = [] } =
+    api.webhooks.checkAccessForUserOrgs.useQuery(
+      { webhookUrl: webhookUrl || '' },
+      { enabled: !!webhookUrl },
+    );
 
   // Update value when activeOrg changes
   React.useEffect(() => {
@@ -140,38 +150,56 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
               </Button>
             </CommandEmpty> */}
             <CommandGroup>
-              {filteredOrgs?.map((membership) => (
-                <CommandItem
-                  key={membership.organization.id}
-                  keywords={[membership.organization.name]}
-                  onSelect={async () => {
-                    setValue(membership.organization.id);
-                    setInput('');
-                    setOpen(false);
-                    if (setActive) {
-                      setActive({ organization: membership.organization });
-                    }
-                    onSelect?.(membership.organization.id);
+              {filteredOrgs?.map((membership) => {
+                const hasWebhookAccess = orgsWithAccess.includes(
+                  membership.organization.id,
+                );
 
-                    posthog.capture('cli_org_selected', {
-                      orgId: membership.organization.id,
-                      orgName: membership.organization.name,
-                    });
-                  }}
-                  value={membership.organization.id}
-                >
-                  {membership.organization.name}
-                  <Icons.Check
-                    className={cn(
-                      'ml-auto',
-                      value === membership.organization.id
-                        ? 'opacity-100'
-                        : 'opacity-0',
+                return (
+                  <CommandItem
+                    key={membership.organization.id}
+                    keywords={[membership.organization.name]}
+                    onSelect={async () => {
+                      setValue(membership.organization.id);
+                      setInput('');
+                      setOpen(false);
+                      if (setActive) {
+                        setActive({ organization: membership.organization });
+                      }
+                      onSelect?.(membership.organization.id);
+
+                      posthog.capture('cli_org_selected', {
+                        hasWebhookAccess,
+                        orgId: membership.organization.id,
+                        orgName: membership.organization.name,
+                      });
+                    }}
+                    value={membership.organization.id}
+                  >
+                    <span className="flex-1">
+                      {membership.organization.name}
+                    </span>
+                    {hasWebhookAccess && (
+                      <Badge
+                        className="gap-1 mr-2 bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20"
+                        variant="secondary"
+                      >
+                        <Icons.Check size="xs" />
+                        Has Access
+                      </Badge>
                     )}
-                    size="sm"
-                  />
-                </CommandItem>
-              ))}
+                    <Icons.Check
+                      className={cn(
+                        'ml-auto',
+                        value === membership.organization.id
+                          ? 'opacity-100'
+                          : 'opacity-0',
+                      )}
+                      size="sm"
+                    />
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>
@@ -180,10 +208,13 @@ export function OrgSelector({ onSelect }: OrgSelectorProps) {
   );
 }
 
-export function OrgSelectorProvider({ onSelect }: OrgSelectorProps) {
+export function OrgSelectorProvider({
+  onSelect,
+  webhookUrl,
+}: OrgSelectorProps) {
   return (
     <React.Suspense fallback={<div>Loading organizations...</div>}>
-      <OrgSelector onSelect={onSelect} />
+      <OrgSelector onSelect={onSelect} webhookUrl={webhookUrl} />
     </React.Suspense>
   );
 }

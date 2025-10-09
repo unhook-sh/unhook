@@ -6,12 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { AuthCodeLoginButton } from './auth-code-login-button';
 import { CloseWindowCard } from './close-wind-card';
 import { OrgSelectorProvider } from './org-selector';
 
 export function AuthCodeContent() {
+  const searchParams = useSearchParams();
+  const webhookUrl = searchParams.get('webhookUrl');
+
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -28,12 +32,16 @@ export function AuthCodeContent() {
       <CardHeader className="space-y-1">
         <CardTitle>Grant Access</CardTitle>
         <CardDescription>
-          Select or create an organization, then click the button below to
-          authenticate with Unhook.
+          {webhookUrl
+            ? 'Select an organization with access to this webhook, then click the button below to authenticate with Unhook.'
+            : 'Select or create an organization, then click the button below to authenticate with Unhook.'}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <OrgSelectorProvider onSelect={setSelectedOrg} />
+        <OrgSelectorProvider
+          onSelect={setSelectedOrg}
+          webhookUrl={webhookUrl || undefined}
+        />
         <AuthCodeLoginButton
           disabled={!selectedOrg}
           onSuccess={handleAuthSuccess}

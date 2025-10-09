@@ -1,5 +1,5 @@
 import { createOrg } from '@unhook/db';
-import { ApiKeys, OrgMembers, Orgs } from '@unhook/db/schema';
+import { OrgMembers, Orgs } from '@unhook/db/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
@@ -105,33 +105,6 @@ export const orgRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!ctx.auth.userId) {
         throw new Error('User ID is required');
-      }
-
-      try {
-        const existingOrg = await ctx.db.query.Orgs.findFirst({
-          where: eq(Orgs.name, input.name),
-        });
-
-        if (existingOrg) {
-          const apiKey = await ctx.db.query.ApiKeys.findFirst({
-            where: eq(ApiKeys.orgId, existingOrg.id),
-          });
-          return {
-            apiKey: {
-              id: apiKey?.id,
-              key: apiKey?.key,
-              name: apiKey?.name,
-            },
-            org: {
-              id: existingOrg.id,
-              name: existingOrg.name,
-              stripeCustomerId: existingOrg.stripeCustomerId,
-            },
-          };
-        }
-      } catch (error) {
-        console.error('Failed to check organization name:', error);
-        throw new Error('Failed to check organization name');
       }
 
       try {

@@ -4,6 +4,7 @@ import { useOrganization, useOrganizationList, useUser } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { api } from '@unhook/api/react';
+import { Alert, AlertDescription } from '@unhook/ui/alert';
 import {
   Card,
   CardContent,
@@ -22,7 +23,6 @@ import {
   FormMessage,
 } from '@unhook/ui/components/form';
 import { Input } from '@unhook/ui/components/input';
-import { CopyButton } from '@unhook/ui/custom/copy-button';
 import { Icons } from '@unhook/ui/custom/icons';
 import { cn } from '@unhook/ui/lib/utils';
 import { toast } from '@unhook/ui/sonner';
@@ -237,14 +237,19 @@ export function OnboardingForm({
 
   // Live URL preview
   const webhookUrl = (() => {
-    const baseUrl = env.NEXT_PUBLIC_API_URL || 'https://unhook.sh';
+    // For local development, use NEXT_PUBLIC_API_URL (localhost:3000)
+    // For production, use NEXT_PUBLIC_WEBHOOK_BASE_URL or fallback to unhook.sh
+    const baseUrl =
+      env.NEXT_PUBLIC_WEBHOOK_BASE_URL ||
+      env.NEXT_PUBLIC_API_URL ||
+      'https://unhook.sh';
     if (!orgName) return `${baseUrl}/{org-name}/{webhook-name}`;
     if (!webhookName) return `${baseUrl}/${orgName}/{webhook-name}`;
     return `${baseUrl}/${orgName}/${webhookName}`;
   })();
 
   const { mutateAsync: createWebhook } = api.webhooks.create.useMutation();
-  const { mutateAsync: createOrganization } = api.org.upsert.useMutation();
+  const { mutateAsync: createOrg } = api.org.upsert.useMutation();
 
   const handleSubmit = async (data: OnboardingFormData) => {
     if (!user) {
@@ -266,8 +271,48 @@ export function OnboardingForm({
     setIsSubmitting(true);
 
     try {
+      // Check if user already has an organization to prevent duplicate creation
+      // This prevents the issue where users would end up with multiple Stripe customers
+      // by checking for existing organizations before attempting to create new ones
+      // The createOrg function also has additional duplicate prevention logic
+      if (organization) {
+        console.log(
+          'User already has an organization, preventing duplicate creation:',
+          {
+            existingOrgId: organization.id,
+            existingOrgName: organization.name,
+            requestedOrgName: data.orgName,
+            userId: user.id,
+          },
+        );
+
+        // Update existing organization name if it's different
+        if (organization.name !== data.orgName) {
+          try {
+            await organization.update({
+              name: data.orgName,
+            });
+            console.log('Organization name updated in Clerk successfully');
+            await organization.reload();
+          } catch (error) {
+            console.error('Failed to update organization in Clerk:', error);
+            // Continue with the flow even if Clerk update fails
+          }
+        }
+
+        // Redirect to webhook creation since organization already exists
+        router.push(`/app/webhooks/create?orgName=${data.orgName}`);
+        return;
+      }
+
+      console.log('Creating new organization for user:', {
+        orgName: data.orgName,
+        userEmail: user.emailAddresses?.[0]?.emailAddress,
+        userId: user.id,
+      });
+
       // Create organization with Stripe integration
-      const orgResult = await createOrganization({
+      const orgResult = await createOrg({
         name: data.orgName,
       });
 
@@ -281,27 +326,6 @@ export function OnboardingForm({
         orgName: orgResult.org.name,
         stripeCustomerId: orgResult.org.stripeCustomerId,
       });
-
-      // Update existing Clerk organization if it exists
-      if (organization) {
-        try {
-          await organization.update({
-            name: data.orgName,
-          });
-          console.log('Organization name updated in Clerk successfully');
-
-          await organization.reload();
-
-          console.log('Organization context reloaded successfully');
-        } catch (error) {
-          console.error('Failed to update organization in Clerk:', error);
-          // Continue with the flow even if Clerk update fails
-        }
-      } else {
-        console.log(
-          'No existing Clerk organization to update - this is expected during onboarding',
-        );
-      }
 
       if (setActive) {
         await setActive({ organization: orgResult.org.id });
@@ -342,10 +366,9 @@ export function OnboardingForm({
           'Organization activated and webhook created successfully. Redirecting to your dashboard...',
       });
 
-      // Redirect to success page
+      // Redirect to local setup page
       const params = new URLSearchParams({
         orgName: data.orgName,
-        webhookId: webhook.id,
         webhookName: data.webhookName,
       });
 
@@ -356,12 +379,40 @@ export function OnboardingForm({
         params.append('source', source);
       }
 
-      router.push(`/app/onboarding/success?${params.toString()}`);
+      router.push(`/app/onboarding/local-setup?${params.toString()}`);
     } catch (error) {
-      console.error('Failed to complete setup:', error);
+      console.error('Failed to complete setup:', {
+        error,
+        orgName: data.orgName,
+        userEmail: user.emailAddresses?.[0]?.emailAddress,
+        userId: user.id,
+      });
+
+      let errorMessage = 'Please try again.';
+      if (error instanceof Error) {
+        if (
+          error.message.includes('Failed to fetch updated organization') ||
+          error.message.includes('Failed to update organization')
+        ) {
+          errorMessage =
+            'Organization setup is taking longer than expected. Please refresh the page and try again.';
+        } else if (error.message.includes('User email not found')) {
+          errorMessage =
+            'Your account setup is not complete. Please sign out and sign in again.';
+        } else if (
+          error.message.includes('Failed to retrieve user from Clerk')
+        ) {
+          errorMessage =
+            'Unable to retrieve your account information. Please refresh and try again.';
+        } else if (error.message.includes('already exists')) {
+          errorMessage = error.message;
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       toast.error('Failed to complete setup', {
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
@@ -408,153 +459,159 @@ export function OnboardingForm({
 
   return (
     <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle className="text-2xl">Welcome to Unhook! 🎉</CardTitle>
-          <CardDescription>
-            Let's set up your webhook endpoint. Choose names for your
-            organization and webhook.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form
-              className="space-y-6"
-              onSubmit={form.handleSubmit(handleSubmit)}
-            >
-              <div className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="orgName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Organization Name</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            placeholder="e.g., my-company"
-                            {...field}
-                            autoCapitalize="off"
-                            autoComplete="off"
-                            autoCorrect="off"
-                            autoFocus
-                            autoSave="off"
-                            className={getInputBorderClasses(orgNameValidation)}
-                            disabled={isSubmitting || isLoading}
-                          />
-                          {renderValidationIcon(orgNameValidation)}
-                        </div>
-                      </FormControl>
-                      <FormDescription>
-                        This will be part of your webhook URL. Use lowercase
-                        letters, numbers, and hyphens only.
-                      </FormDescription>
-                      {orgNameValidation.available === false &&
-                        orgNameValidation.message && (
-                          <p className="text-sm text-destructive">
-                            {orgNameValidation.message}
-                          </p>
-                        )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="webhookName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Webhook Name</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            placeholder="e.g., my-project"
-                            {...field}
-                            autoCapitalize="off"
-                            autoComplete="off"
-                            autoCorrect="off"
-                            autoSave="off"
-                            className={getInputBorderClasses(
-                              webhookNameValidation,
-                            )}
-                            disabled={isSubmitting || isLoading}
-                          />
-                          {renderValidationIcon(webhookNameValidation)}
-                        </div>
-                      </FormControl>
-                      <FormDescription>
-                        You will use this webhook on a per-project basis. Each
-                        project gets its own webhook endpoint that can receive
-                        events from multiple services like Stripe, GitHub,
-                        Discord, or any webhook provider. Use lowercase letters,
-                        numbers, and hyphens only.
-                      </FormDescription>
-                      {webhookNameValidation.available === false &&
-                        webhookNameValidation.message && (
-                          <p className="text-sm text-destructive">
-                            {webhookNameValidation.message}
-                          </p>
-                        )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Live URL Preview */}
-                <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <Icons.ExternalLink size="sm" variant="muted" />
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Your Webhook URL:
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      aria-label="Webhook URL"
-                      className="flex-1 font-mono text-xs"
-                      readOnly
-                      value={webhookUrl}
-                    />
-                    <CopyButton text={webhookUrl} variant="outline" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    This is where your webhooks will be received. Copy this URL
-                    and add it to your webhook provider.
-                  </p>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button
-                    className="min-w-32"
-                    disabled={
-                      isSubmitting ||
-                      isLoading ||
-                      !orgName ||
-                      !webhookName ||
-                      orgNameValidation.available === false ||
-                      webhookNameValidation.available === false
-                    }
-                    type="submit"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Icons.Spinner
-                          className="animate-spin mr-2"
-                          size="sm"
-                        />
-                        Setting up...
-                      </>
-                    ) : (
-                      'Create Webhook'
+      <div className="w-full max-w-2xl space-y-4">
+        {source === 'extension' && (
+          <Alert>
+            <Icons.FunctionSquare className="h-4 w-4" />
+            <AlertDescription>
+              Setting up Unhook for VSCode. You'll be redirected back to your
+              editor after completing setup.
+            </AlertDescription>
+          </Alert>
+        )}
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl">Welcome to Unhook! 🎉</CardTitle>
+            <CardDescription>
+              Let's set up your webhook endpoint. Choose names for your
+              organization and webhook.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                className="space-y-6"
+                onSubmit={form.handleSubmit(handleSubmit)}
+              >
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="orgName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organization Name</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              placeholder="e.g., my-company"
+                              {...field}
+                              autoCapitalize="off"
+                              autoComplete="off"
+                              autoCorrect="off"
+                              autoFocus
+                              autoSave="off"
+                              className={getInputBorderClasses(
+                                orgNameValidation,
+                              )}
+                              disabled={isSubmitting || isLoading}
+                            />
+                            {renderValidationIcon(orgNameValidation)}
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+                          This will be part of your webhook URL. Use lowercase
+                          letters, numbers, and hyphens only.
+                        </FormDescription>
+                        {orgNameValidation.available === false &&
+                          orgNameValidation.message && (
+                            <p className="text-sm text-destructive">
+                              {orgNameValidation.message}
+                            </p>
+                          )}
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  </Button>
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="webhookName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Webhook Name</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              placeholder="e.g., my-project"
+                              {...field}
+                              autoCapitalize="off"
+                              autoComplete="off"
+                              autoCorrect="off"
+                              autoSave="off"
+                              className={getInputBorderClasses(
+                                webhookNameValidation,
+                              )}
+                              disabled={isSubmitting || isLoading}
+                            />
+                            {renderValidationIcon(webhookNameValidation)}
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+                          You will use this webhook on a per-project basis. Each
+                          project gets its own webhook endpoint that can receive
+                          events from multiple services like Stripe, GitHub,
+                          Discord, or any webhook provider. Use lowercase
+                          letters, numbers, and hyphens only.
+                        </FormDescription>
+                        {webhookNameValidation.available === false &&
+                          webhookNameValidation.message && (
+                            <p className="text-sm text-destructive">
+                              {webhookNameValidation.message}
+                            </p>
+                          )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Live URL Preview */}
+                  <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
+                    <div className="flex items-center gap-2">
+                      <Icons.ExternalLink size="sm" variant="muted" />
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Your webhook will be available at:
+                      </span>
+                    </div>
+                    <div className="font-mono text-sm text-center p-2 bg-background rounded border">
+                      {webhookUrl}
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      This URL will be created after you submit the form
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Button
+                      className="min-w-32"
+                      disabled={
+                        isSubmitting ||
+                        isLoading ||
+                        !orgName ||
+                        !webhookName ||
+                        orgNameValidation.available === false ||
+                        webhookNameValidation.available === false
+                      }
+                      type="submit"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Icons.Spinner
+                            className="animate-spin mr-2"
+                            size="sm"
+                          />
+                          Setting up...
+                        </>
+                      ) : (
+                        'Create Webhook'
+                      )}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

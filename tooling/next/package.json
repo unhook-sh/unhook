@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "@million/lint": "1.0.14",
-    "@next/bundle-analyzer": "15.4.2-canary.52",
-    "@posthog/nextjs-config": "1.1.2",
-    "next": "15.4.2-canary.52"
+    "@next/bundle-analyzer": "15.5.4",
+    "@posthog/nextjs-config": "1.3.2",
+    "next": "15.5.4"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "exports": {
     "./base": "./base.mjs"

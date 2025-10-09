@@ -20,7 +20,7 @@ interface ResponseTabProps {
 
 const formatResponseBody = (
   responseBody: string,
-  format: 'raw' | 'json' | 'yaml',
+  format: 'raw' | 'json' | 'yaml' | 'html',
 ) => {
   try {
     const extractedBody = extractBody(responseBody);
@@ -57,6 +57,51 @@ const formatResponseBody = (
         // If not valid JSON, return as raw
         return extractedBody;
       }
+      case 'html': {
+        // Try to format HTML with proper indentation
+        try {
+          let formatted = extractedBody;
+
+          // Handle self-closing tags and special cases
+          formatted = formatted
+            .replace(/<(\w+)([^>]*)\/>/g, '<$1$2></$1>') // Convert self-closing tags for better formatting
+            .replace(/></g, '>\n<') // Add line breaks between tags
+            .replace(/\s+/g, ' ') // Normalize whitespace
+            .trim();
+
+          // Split into lines and format with indentation
+          const lines = formatted.split('\n');
+          const formattedLines: string[] = [];
+          let indentLevel = 0;
+
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+
+            // Decrease indent for closing tags
+            if (trimmedLine.startsWith('</')) {
+              indentLevel = Math.max(0, indentLevel - 1);
+            }
+
+            // Add current line with proper indentation
+            formattedLines.push('  '.repeat(indentLevel) + trimmedLine);
+
+            // Increase indent for opening tags (but not self-closing or closing tags)
+            if (
+              trimmedLine.startsWith('<') &&
+              !trimmedLine.startsWith('</') &&
+              !trimmedLine.endsWith('/>')
+            ) {
+              indentLevel++;
+            }
+          }
+
+          return formattedLines.join('\n');
+        } catch {
+          // If formatting fails, return as raw
+          return extractedBody;
+        }
+      }
       default: {
         return extractedBody;
       }
@@ -70,21 +115,37 @@ const formatResponseBody = (
 export function ResponseTab({ responseBody }: ResponseTabProps) {
   const { isCompleted, isFailed } = useRequest();
 
-  // Determine if the response body is valid JSON to set default format
-  const isJsonResponse = (() => {
+  // Determine the response type to set default format
+  const getResponseType = (() => {
     try {
       const extractedBody = extractBody(responseBody);
-      if (!extractedBody) return false;
-      JSON.parse(extractedBody);
-      return true;
+      if (!extractedBody) return 'raw';
+
+      // Check if it's JSON
+      try {
+        JSON.parse(extractedBody);
+        return 'json';
+      } catch {
+        // Not JSON
+      }
+
+      // Check if it's HTML
+      if (
+        extractedBody.trim().startsWith('<') &&
+        extractedBody.includes('</')
+      ) {
+        return 'html';
+      }
+
+      return 'raw';
     } catch {
-      return false;
+      return 'raw';
     }
   })();
 
-  const [bodyFormat, setBodyFormat] = useState<'raw' | 'json' | 'yaml'>(
-    isJsonResponse ? 'json' : 'raw',
-  );
+  const [bodyFormat, setBodyFormat] = useState<
+    'raw' | 'json' | 'yaml' | 'html'
+  >(getResponseType);
   const [bodyCodeEl, setBodyCodeEl] = useState<HTMLDivElement | null>(null);
 
   // Render highlighted code for response body
@@ -104,7 +165,12 @@ export function ResponseTab({ responseBody }: ResponseTabProps) {
         }
 
         const html = await codeToHtml(formatted, {
-          lang: bodyFormat === 'yaml' ? 'yaml' : 'json',
+          lang:
+            bodyFormat === 'yaml'
+              ? 'yaml'
+              : bodyFormat === 'html'
+                ? 'html'
+                : 'json',
           theme: 'github-dark-default',
         });
         if (isActive && bodyCodeEl) {
@@ -137,7 +203,7 @@ export function ResponseTab({ responseBody }: ResponseTabProps) {
         <div className="flex items-center gap-2">
           <Select
             onValueChange={(value) =>
-              setBodyFormat(value as 'raw' | 'json' | 'yaml')
+              setBodyFormat(value as 'raw' | 'json' | 'yaml' | 'html')
             }
             value={bodyFormat}
           >
@@ -148,6 +214,7 @@ export function ResponseTab({ responseBody }: ResponseTabProps) {
               <SelectItem value="raw">Raw</SelectItem>
               <SelectItem value="json">JSON</SelectItem>
               <SelectItem value="yaml">YAML</SelectItem>
+              <SelectItem value="html">HTML</SelectItem>
             </SelectContent>
           </Select>
           <CopyButton

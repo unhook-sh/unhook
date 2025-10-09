@@ -5,7 +5,7 @@
   },
   "description": "Unhook JetBrains Plugin - Webhook Development",
   "devDependencies": {
-    "@types/node": "24.3.0"
+    "@types/node": "24.7.1"
   },
   "engines": {
     "node": ">=20.12.0"

@@ -1,19 +1,18 @@
 import { debug } from '@unhook/logger';
 import * as vscode from 'vscode';
+import { ConfigManager } from '../config.manager';
+import { env } from '../env';
 import type { AnalyticsService } from '../services/analytics.service';
 import type { AuthStore } from '../services/auth.service';
-import { WebhookAuthorizationService } from '../services/webhook-authorization.service';
 
 const log = debug('unhook:vscode:webhook-access-commands');
 
 export function registerWebhookAccessCommands(
   context: vscode.ExtensionContext,
-  authStore: AuthStore,
+  _authStore: AuthStore,
   analyticsService?: AnalyticsService,
 ) {
   log('Registering webhook access commands');
-
-  const authorizationService = WebhookAuthorizationService.getInstance();
 
   // Register request webhook access command
   const requestWebhookAccessCommand = vscode.commands.registerCommand(
@@ -21,33 +20,63 @@ export function registerWebhookAccessCommands(
     async () => {
       log('Request webhook access command triggered');
 
-      const message = await vscode.window.showInputBox({
-        placeHolder: 'e.g., I need to test webhook integration for project X',
-        prompt: 'Why do you need access to this webhook? (Optional)',
-      });
+      // Get webhook URL from config
+      const configManager = ConfigManager.getInstance();
+      const webhookUrl = configManager.getConfig()?.webhookUrl;
 
-      log('User provided message for access request', {
-        hasMessage: !!message,
-        messageLength: message?.length,
+      if (!webhookUrl) {
+        vscode.window.showErrorMessage(
+          'No webhook URL found in configuration. Please set up a webhook first.',
+        );
+        return;
+      }
+
+      log('Redirecting to auth-code page to switch organization', {
+        webhookUrl,
       });
 
       try {
-        log('Calling authorization service to request access');
+        // Build auth URL with webhook URL parameter
+        const authUrl = new URL('/app/auth-code', configManager.getApiUrl());
 
-        // Track webhook access request
-        analyticsService?.track('webhook_access_requested', {
-          has_message: !!message,
-          message_length: message?.length || 0,
+        // Get editor scheme for redirect
+        const appName = vscode.env.appName.toLowerCase();
+        let editorScheme = 'vscode';
+        if (appName.includes('cursor')) {
+          editorScheme = 'cursor';
+        } else if (appName.includes('insiders')) {
+          editorScheme = 'vscode-insiders';
+        } else if (appName.includes('windsurf')) {
+          editorScheme = 'windsurf';
+        }
+
+        const redirectUri = `${editorScheme}://${env.NEXT_PUBLIC_VSCODE_EXTENSION_ID}`;
+
+        authUrl.searchParams.set('redirectTo', redirectUri);
+        authUrl.searchParams.set('source', 'extension');
+        authUrl.searchParams.set('webhookUrl', webhookUrl);
+
+        // Track webhook access redirect
+        analyticsService?.track('webhook_access_org_switch_started', {
+          has_webhook_url: !!webhookUrl,
         });
 
-        await authorizationService.requestAccess(authStore, message);
-        log('Access request completed successfully');
+        log('Opening browser for organization switch', {
+          authUrl: authUrl.toString(),
+        });
+
+        // Open browser
+        await vscode.env.openExternal(vscode.Uri.parse(authUrl.toString()));
+
+        vscode.window.showInformationMessage(
+          'Select an organization with access to this webhook in your browser.',
+        );
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error';
-        log('Failed to request access', { error: errorMessage });
+        log('Failed to redirect for org switch', { error: errorMessage });
         vscode.window.showErrorMessage(
-          `Failed to request access: ${errorMessage}`,
+          `Failed to open browser: ${errorMessage}`,
         );
       }
     },

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://github.com/QuiiBz/sherif/blob/main/packages/sherif/schema.json",
+  "ignoreRules": ["multiple-dependency-versions"]
+}

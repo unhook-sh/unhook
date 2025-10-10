@@ -237,7 +237,7 @@ export const requestsRouter = createTRPCRouter({
         requestId: z.string(),
         response: z.object({
           body: z.string(),
-          headers: z.record(z.string()),
+          headers: z.record(z.string(), z.string()),
           status: z.number(),
         }),
         responseTimeMs: z.number(),

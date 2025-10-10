@@ -3,10 +3,17 @@ import figlet from 'figlet';
 import { Text } from 'ink';
 import type { LiteralUnion } from 'type-fest';
 
+type KerningMethods =
+  | 'default'
+  | 'full'
+  | 'fitted'
+  | 'controlled smushing'
+  | 'universal smushing';
+
 type AsciiProps = {
-  font?: figlet.Fonts;
-  horizontalLayout?: figlet.KerningMethods;
-  verticalLayout?: figlet.KerningMethods;
+  font?: string;
+  horizontalLayout?: KerningMethods;
+  verticalLayout?: KerningMethods;
   text?: string;
   width?: number;
   color?: LiteralUnion<ForegroundColorName, string>;

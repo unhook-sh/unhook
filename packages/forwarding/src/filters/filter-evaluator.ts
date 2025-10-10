@@ -76,7 +76,7 @@ export async function evaluateFilters(
         const expectedValues = Array.isArray(expectedValue)
           ? expectedValue
           : [expectedValue];
-        if (!expectedValues.includes(actualValue)) {
+        if (!expectedValues.includes(String(actualValue))) {
           return {
             reason: `Header "${headerName}" value "${actualValue}" not in allowed list`,
             shouldForward: false,

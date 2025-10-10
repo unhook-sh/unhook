@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { AuthCodeLoginButton } from './auth-code-login-button';
 import { CloseWindowCard } from './close-wind-card';
 import { OrgSelectorProvider } from './org-selector';
+import { RequestWebhookAccess } from './request-webhook-access';
 
 export function AuthCodeContent() {
   const searchParams = useSearchParams();
@@ -18,6 +19,7 @@ export function AuthCodeContent() {
 
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasNoAccess, setHasNoAccess] = useState(false);
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
@@ -39,9 +41,13 @@ export function AuthCodeContent() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <OrgSelectorProvider
+          onNoAccess={setHasNoAccess}
           onSelect={setSelectedOrg}
           webhookUrl={webhookUrl || undefined}
         />
+        {hasNoAccess && webhookUrl && (
+          <RequestWebhookAccess webhookUrl={webhookUrl} />
+        )}
         <AuthCodeLoginButton
           disabled={!selectedOrg}
           onSuccess={handleAuthSuccess}

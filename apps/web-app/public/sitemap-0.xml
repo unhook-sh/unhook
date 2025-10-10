@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://unhook.sh/glossary</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/oss-friends</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/mcp</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/vscode</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/privacy-policy</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/jetbrains</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/terms-of-service</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/comparisons</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/api-keys</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/playground</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/settings/organization</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/dashboard</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/webhooks</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/events</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/auth-code/success</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/auth-code</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/settings/billing</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/app/settings</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://unhook.sh/blog</loc><lastmod>2025-08-19T23:18:51.228Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/glossary</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/comparisons</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/jetbrains</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/oss-friends</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/terms-of-service</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/mcp</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/privacy-policy</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/blog</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://unhook.sh/vscode</loc><lastmod>2025-10-10T17:55:01.900Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

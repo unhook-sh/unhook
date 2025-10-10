@@ -718,7 +718,7 @@
     "@types/node": "24.7.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.1",
-    "@types/vscode": "1.104.0",
+    "@types/vscode": "1.96.0",
     "@unhook/db": "workspace:*",
     "@unhook/test-utils": "workspace:*",
     "@vitejs/plugin-react": "5.0.4",

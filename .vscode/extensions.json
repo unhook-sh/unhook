@@ -8,14 +8,9 @@
     // Bun support
     "oven.bun-vscode",
 
-    // Debugging
-    "ms-vscode.js-debug-nightly",
-
     // Markdown
     "yzhang.markdown-all-in-one",
 
-    // Environment variables
-    "mikestead.dotenv",
     "unhook.unhook-vscode"
   ]
 }

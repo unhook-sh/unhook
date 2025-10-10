@@ -21,9 +21,14 @@ import React from 'react';
 interface OrgSelectorProps {
   onSelect?: (orgId: string) => void;
   webhookUrl?: string;
+  onNoAccess?: (hasNoAccess: boolean) => void;
 }
 
-export function OrgSelector({ onSelect, webhookUrl }: OrgSelectorProps) {
+export function OrgSelector({
+  onSelect,
+  webhookUrl,
+  onNoAccess,
+}: OrgSelectorProps) {
   const { organization: activeOrg } = useOrganization();
   const { setActive, userMemberships } = useOrganizationList({
     userMemberships: true,
@@ -39,6 +44,15 @@ export function OrgSelector({ onSelect, webhookUrl }: OrgSelectorProps) {
       { webhookUrl: webhookUrl || '' },
       { enabled: !!webhookUrl },
     );
+
+  // Notify parent if user has no access to any orgs
+  React.useEffect(() => {
+    if (webhookUrl && userMemberships?.data && orgsWithAccess) {
+      onNoAccess?.(
+        userMemberships.data.length > 0 && orgsWithAccess.length === 0,
+      );
+    }
+  }, [webhookUrl, userMemberships?.data, orgsWithAccess, onNoAccess]);
 
   // Update value when activeOrg changes
   React.useEffect(() => {
@@ -211,10 +225,15 @@ export function OrgSelector({ onSelect, webhookUrl }: OrgSelectorProps) {
 export function OrgSelectorProvider({
   onSelect,
   webhookUrl,
+  onNoAccess,
 }: OrgSelectorProps) {
   return (
     <React.Suspense fallback={<div>Loading organizations...</div>}>
-      <OrgSelector onSelect={onSelect} webhookUrl={webhookUrl} />
+      <OrgSelector
+        onNoAccess={onNoAccess}
+        onSelect={onSelect}
+        webhookUrl={webhookUrl}
+      />
     </React.Suspense>
   );
 }

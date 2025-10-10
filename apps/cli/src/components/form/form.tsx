@@ -142,7 +142,7 @@ export function FormProvider<T extends ZodSchema>({
       if (error instanceof z.ZodError) {
         // Map Zod errors to input IDs
         const newErrors: Record<string, string> = {};
-        for (const err of error.errors) {
+        for (const err of error.issues) {
           const path = err.path[0];
           if (typeof path === 'string') {
             newErrors[path] = err.message;
@@ -169,7 +169,7 @@ export function FormProvider<T extends ZodSchema>({
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const message = error.errors[0]?.message;
+        const message = error.issues[0]?.message;
         if (message) {
           setError(id, message);
         }
@@ -205,7 +205,7 @@ export function FormProvider<T extends ZodSchema>({
     ) {
       const validation = validate();
       if (validation.success) {
-        onSubmit(getAllValues());
+        onSubmit(getAllValues() as z.infer<T>);
       }
     }
     // Only run when completedInputs, errors, or inputs change
@@ -223,7 +223,7 @@ export function FormProvider<T extends ZodSchema>({
         isInputAvailable,
         isInputComplete,
         markInputComplete,
-        onSubmit,
+        onSubmit: onSubmit as FormContextType<ZodSchema>['onSubmit'],
         registerInput,
         setActiveInput,
         setError,

@@ -58,17 +58,17 @@ export const apiKeyUsageTypeEnum = pgEnum('apiKeyUsageType', [
   'webhook-event-request',
 ]);
 
-export const UserRoleType = z.enum(userRoleEnum.enumValues).Enum;
-export const WebhookStatusType = z.enum(webhookStatusEnum.enumValues).Enum;
+export const UserRoleType = z.enum(userRoleEnum.enumValues).enum;
+export const WebhookStatusType = z.enum(webhookStatusEnum.enumValues).enum;
 export const LocalConnectionStatusType = z.enum(
   localConnectionStatusEnum.enumValues,
-).Enum;
-export const EventStatusType = z.enum(eventStatusEnum.enumValues).Enum;
-export const RequestStatusType = z.enum(requestStatusEnum.enumValues).Enum;
+).enum;
+export const EventStatusType = z.enum(eventStatusEnum.enumValues).enum;
+export const RequestStatusType = z.enum(requestStatusEnum.enumValues).enum;
 export const StripeSubscriptionStatusType = z.enum(
   stripeSubscriptionStatusEnum.enumValues,
-).Enum;
-export const ApiKeyUsageTypeType = z.enum(apiKeyUsageTypeEnum.enumValues).Enum;
+).enum;
+export const ApiKeyUsageTypeType = z.enum(apiKeyUsageTypeEnum.enumValues).enum;
 
 export const Users = pgTable('user', {
   avatarUrl: text('avatarUrl'),
@@ -357,7 +357,7 @@ export const RequestPayloadSchema = z.object({
   body: z.string().optional(),
   clientIp: z.string(),
   contentType: z.string(),
-  headers: z.record(z.string()),
+  headers: z.record(z.string(), z.string()),
   method: z.string(),
   size: z.number(),
   sourceUrl: z.string(),
@@ -367,7 +367,7 @@ export type RequestPayload = z.infer<typeof RequestPayloadSchema>;
 
 export const ResponsePayloadSchema = z.object({
   body: z.string().optional(),
-  headers: z.record(z.string()),
+  headers: z.record(z.string(), z.string()),
   status: z.number(),
 });
 
@@ -732,7 +732,7 @@ export const webhookAccessRequestStatusEnum = pgEnum(
 
 export const WebhookAccessRequestStatusType = z.enum(
   webhookAccessRequestStatusEnum.enumValues,
-).Enum;
+).enum;
 
 export const WebhookAccessRequests = pgTable(
   'webhookAccessRequests',
@@ -1060,7 +1060,7 @@ export const destinationTypeEnum = pgEnum('destinationType', [
   'email',
 ]);
 
-export const DestinationTypeType = z.enum(destinationTypeEnum.enumValues).Enum;
+export const DestinationTypeType = z.enum(destinationTypeEnum.enumValues).enum;
 
 // Forwarding Destinations Table
 export const ForwardingDestinations = pgTable('forwardingDestinations', {

@@ -405,7 +405,6 @@ const EditablePreview = React.forwardRef<HTMLDivElement, EditablePreviewProps>(
     if (context.editing || context.readOnly) return null;
 
     return (
-      // biome-ignore lint/a11y/useSemanticElements: biome
       <PreviewPrimitive
         aria-disabled={context.disabled || context.readOnly}
         data-disabled={context.disabled ? '' : undefined}

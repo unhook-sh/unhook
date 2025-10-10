@@ -203,9 +203,15 @@ pre.shiki code {
 
 /* Specific override for payload tab Shiki container */
 .bg-muted .shiki {
-  background-color: var(--vscode-textBlockQuote-background, var(--muted)) !important;
+  background-color: var(
+    --vscode-textBlockQuote-background,
+    var(--muted)
+  ) !important;
 }
 
 .bg-muted .shiki pre {
-  background-color: var(--vscode-textBlockQuote-background, var(--muted)) !important;
+  background-color: var(
+    --vscode-textBlockQuote-background,
+    var(--muted)
+  ) !important;
 }

@@ -1,0 +1,42 @@
+{
+  "name": "@unhook/cctree",
+  "version": "0.1.0",
+  "description": "CLI tool to display Claude token usage with environmental impact metrics",
+  "author": "Unhook Team (https://github.com/unhook-sh)",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "cctree": "./bin/cli.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf .turbo node_modules dist bin/cli.js",
+    "start": "bun bin/cli.js",
+    "test": "bun test",
+    "typecheck": "bun run tsc --noEmit"
+  },
+  "dependencies": {
+    "@unhook/logger": "workspace:*",
+    "@unhook/tsconfig": "workspace:*",
+    "chalk": "5.4.1",
+    "cli-spinners": "3.2.0",
+    "date-fns": "4.1.0",
+    "execa": "10.2.2",
+    "figures": "6.1.0",
+    "ink": "6.0.0",
+    "meow": "13.2.0",
+    "react": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.2.17",
+    "@types/react": "19.1.8",
+    "ink-testing-library": "4.0.0",
+    "tsup": "8.5.0",
+    "typescript": "5.8.3"
+  },
+  "files": ["bin/cli.js", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

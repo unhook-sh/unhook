@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`43268bf`](https://github.com/unhook-sh/unhook/commit/43268bf0f0a811ef91344153ba83f30251ff0c67)]:
+  - @unhook/client@0.6.2
+
 ## 1.0.1
 
 ### Patch Changes

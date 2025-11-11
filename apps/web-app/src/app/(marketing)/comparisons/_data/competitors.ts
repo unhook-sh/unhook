@@ -96,34 +96,36 @@ export const competitors: Competitor[] = [
   {
     category: 'API Mocking',
     comparison: '/vs-beeceptor',
-    description: 'API mocking and webhook testing platform',
+    description: 'Dedicated webhook testing and stateful API mocking platform',
     logo: '🐝',
     marketShare: 'Medium',
     name: 'Beeceptor',
-    pricing: 'From $25/month',
+    pricing: 'Per-endpoint billing (unlimited team members)',
     strengths: [
-      'API mocking',
-      'Multiple protocols',
-      'Good features',
-      'Custom responses',
-      'Request inspection',
+      'Webhook testing focus',
+      'Stateful mocking & CRUD workflows',
+      'Local tunneling via CLI',
+      'Chaos and latency simulation',
+      'Custom domains on Team plan',
+      'Built-in CORS controls',
+      'Dedicated chat and email support',
     ],
     unhookAdvantages: [
       'One shared URL for entire team',
       'Config file in your repo',
-      'Webhook-focused design',
-      'Better pricing',
       'VS Code integration',
-      'Local development routing',
-      'Team collaboration',
+      'MCP server automations',
+      'AI-powered debugging',
+      'Team collaboration workflows',
+      'Request replay history',
     ],
     weaknesses: [
-      'Expensive',
-      'General-purpose tool',
-      'No webhook focus',
-      'No editor integration',
+      'No config-as-code support',
+      'No VS Code integration',
+      'No MCP server support',
+      'No request replay',
     ],
-    website: '',
+    website: 'https://beeceptor.com',
   },
   {
     category: 'Basic Tunneling',
@@ -292,7 +294,7 @@ export const competitors: Competitor[] = [
 
 export const comparisonMatrix: ComparisonRow[] = [
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'Shared Webhook URLs',
     hookdeck: false,
@@ -331,7 +333,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: true,
     feature: 'Custom Domains Included',
     hookdeck: true,
@@ -344,7 +346,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: true,
+    beeceptor: false,
     cloudflare: false,
     feature: 'Event Replay',
     hookdeck: true,
@@ -396,7 +398,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'Team Collaboration',
     hookdeck: false,
@@ -409,7 +411,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'Local Development Routing',
     hookdeck: false,
@@ -448,7 +450,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'AI-Powered Debugging',
     hookdeck: false,
@@ -461,7 +463,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'Unlimited Team Members',
     hookdeck: false,
@@ -474,7 +476,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'Private Webhook URLs',
     hookdeck: true,
@@ -500,7 +502,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: false,
     feature: 'External Integrations',
     hookdeck: true,
@@ -513,7 +515,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: true,
     feature: 'SSO & SAML',
     hookdeck: true,
@@ -526,7 +528,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: true,
     feature: 'Audit Logs',
     hookdeck: true,
@@ -539,7 +541,7 @@ export const comparisonMatrix: ComparisonRow[] = [
     webhookSite: false,
   },
   {
-    beeceptor: false,
+    beeceptor: true,
     cloudflare: true,
     feature: '99.9% Uptime SLA',
     hookdeck: true,

@@ -46,12 +46,7 @@ export const createWebAppHandler = () => {
     },
     // Server capabilities
     {
-      capabilities: {
-        auth: {
-          required: true,
-          type: 'bearer',
-        },
-      },
+      capabilities: {},
     },
     // Route configuration
     {

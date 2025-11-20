@@ -2,14 +2,14 @@
   "dependencies": {
     "@unhook/db": "workspace:*",
     "@unhook/logger": "workspace:*",
-    "drizzle-orm": "0.44.6",
-    "isolated-vm": "6.0.1",
+    "drizzle-orm": "0.44.7",
+    "isolated-vm": "6.0.2",
     "zod": "4.1.12"
   },
   "devDependencies": {
-    "@types/node": "24.7.1",
+    "@types/node": "24.10.1",
     "@unhook/tsconfig": "workspace:*",
-    "tsup": "8.5.0",
+    "tsup": "8.5.1",
     "typescript": "5.9.3"
   },
   "exports": {

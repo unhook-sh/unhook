@@ -2,12 +2,12 @@
   "dependencies": {
     "bun": "1.2.23",
     "debug": "4.4.3",
-    "node-inspect-extracted": "3.2.1"
+    "node-inspect-extracted": "3.2.2"
   },
   "devDependencies": {
     "@types/bun": "1.2.23",
     "@types/debug": "4.1.12",
-    "@types/vscode": "1.96.0",
+    "@types/vscode": "1.106.1",
     "typescript": "5.9.3"
   },
   "exports": {

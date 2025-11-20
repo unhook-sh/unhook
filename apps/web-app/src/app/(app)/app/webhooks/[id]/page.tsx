@@ -9,7 +9,6 @@ interface WebhookDetailPageProps {
 export default async function WebhookDetailPage({
   params,
 }: WebhookDetailPageProps) {
-  'use cache';
   const id = (await params).id;
   return <WebhookDetailView id={id} />;
 }

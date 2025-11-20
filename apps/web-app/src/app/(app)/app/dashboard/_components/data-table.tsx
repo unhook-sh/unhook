@@ -697,6 +697,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                       <ChartTooltipContent
                         accessibilityLayer
                         active
+                        activeIndex="0"
                         coordinate={{ x: 0, y: 0 }}
                         indicator="dot"
                         payload={[

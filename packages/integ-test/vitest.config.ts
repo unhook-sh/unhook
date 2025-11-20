@@ -24,12 +24,8 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     hookTimeout: 600000, // 10 minutes for setup/teardown
+    maxConcurrency: 1, // Run tests sequentially for database consistency
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true, // Run tests sequentially in CI for database consistency
-      },
-    },
     reporters: process.env.CI ? ['verbose', 'github-actions'] : ['verbose'],
     sequence: {
       concurrent: false, // Run tests sequentially for database consistency

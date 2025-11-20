@@ -51,6 +51,7 @@ describe('handleUserUpdated', () => {
         last_name: 'Name',
         last_sign_in_at: 0,
         legal_accepted_at: 0,
+        locale: 'en-US',
         locked: false,
         lockout_expires_in_seconds: 0,
         object: 'user',

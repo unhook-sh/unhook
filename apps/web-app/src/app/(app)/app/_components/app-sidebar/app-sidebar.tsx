@@ -12,6 +12,7 @@ import {
   IconKey,
   IconReport,
   IconSettings,
+  IconWebhook,
 } from '@tabler/icons-react';
 import { MetricLink } from '@unhook/analytics';
 import {
@@ -107,11 +108,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Dashboard',
         url: '/app/dashboard',
       },
-      // {
-      //   icon: IconWebhook,
-      //   title: 'Webhooks',
-      //   url: '/app/webhooks',
-      // },
+      {
+        icon: IconWebhook,
+        title: 'Webhooks',
+        url: '/app/webhooks',
+      },
       {
         icon: IconDatabase,
         title: 'Events',

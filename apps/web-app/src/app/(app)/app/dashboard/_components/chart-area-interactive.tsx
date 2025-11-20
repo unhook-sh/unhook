@@ -38,7 +38,7 @@ const chartConfig = {
     label: 'Failed',
   },
   pending: {
-    color: 'var(--warning)',
+    color: 'var(--chart-4)',
     label: 'Pending',
   },
   processing: {

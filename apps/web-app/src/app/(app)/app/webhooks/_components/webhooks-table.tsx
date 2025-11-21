@@ -1,6 +1,5 @@
 'use client';
 
-import { useOrganization } from '@clerk/nextjs';
 import { IconPencil } from '@tabler/icons-react';
 import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
@@ -57,7 +56,7 @@ function SkeletonRow() {
 export function WebhooksTable() {
   const webhooks = api.webhooks.all.useQuery();
   const apiUtils = api.useUtils();
-  const { organization } = useOrganization();
+  const org = api.org.current.useQuery();
   const router = useRouter();
   const updateWebhook = api.webhooks.update.useMutation({
     onSuccess: () => {
@@ -127,7 +126,7 @@ export function WebhooksTable() {
       env.NEXT_PUBLIC_WEBHOOK_BASE_URL ||
       env.NEXT_PUBLIC_API_URL ||
       'https://unhook.sh';
-    const orgName = organization?.slug || 'org';
+    const orgName = org.data?.name || 'org';
     return `${baseUrl}/${orgName}/${webhookName}`;
   };
 

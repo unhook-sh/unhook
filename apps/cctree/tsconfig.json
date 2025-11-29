@@ -1,0 +1,21 @@
+{
+  "extends": "@unhook/tsconfig/base.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "types": ["bun"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

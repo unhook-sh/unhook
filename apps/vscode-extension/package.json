@@ -549,64 +549,6 @@
         "when": "unhook.auth.signedIn"
       }
     ],
-    "languages": [
-      {
-        "aliases": [
-          "Unhook YAML",
-          "unhook-yaml"
-        ],
-        "configuration": "./language-configuration.json",
-        "extensions": [],
-        "filenames": [
-          "unhook.yaml",
-          "unhook.yml",
-          "unhook.config.yaml",
-          "unhook.config.yml"
-        ],
-        "id": "unhook-yaml"
-      },
-      {
-        "aliases": [
-          "Unhook JSON",
-          "unhook-json"
-        ],
-        "configuration": "./language-configuration-json.json",
-        "extensions": [],
-        "filenames": [
-          "unhook.json",
-          "unhook.config.json"
-        ],
-        "id": "unhook-json"
-      },
-      {
-        "aliases": [
-          "Unhook TypeScript",
-          "unhook-typescript"
-        ],
-        "configuration": "./language-configuration-ts.json",
-        "extensions": [],
-        "filenames": [
-          "unhook.ts",
-          "unhook.config.ts"
-        ],
-        "id": "unhook-typescript"
-      },
-      {
-        "aliases": [
-          "Unhook JavaScript",
-          "unhook-javascript"
-        ],
-        "configuration": "./language-configuration-js.json",
-        "extensions": [],
-        "filenames": [
-          "unhook.js",
-          "unhook.cjs",
-          "unhook.config.js",
-          "unhook.config.cjs"
-        ],
-        "id": "unhook-javascript"
-      }
-    ],
     "menus": {
       "view/item/context": [
         {

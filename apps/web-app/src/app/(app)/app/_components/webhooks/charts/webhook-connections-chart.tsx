@@ -1,6 +1,10 @@
 'use client';
 
-import { ChartContainer } from '@unhook/ui/chart';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@unhook/ui/chart';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Area,
@@ -190,7 +194,7 @@ export function WebhookConnectionsChart({
               tickFormatter={(value) => `${value}`}
               tickLine={false}
             />
-            {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Area
               activeDot={{ r: 6, strokeWidth: 0 }}
               dataKey="connections"

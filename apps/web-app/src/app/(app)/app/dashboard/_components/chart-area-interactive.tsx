@@ -9,7 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@unhook/ui/card';
-import { type ChartConfig, ChartContainer } from '@unhook/ui/chart';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@unhook/ui/chart';
 import { useIsMobile } from '@unhook/ui/hooks/use-mobile';
 import {
   Select,
@@ -280,6 +285,19 @@ export function ChartAreaInteractive() {
               tickMargin={8}
             />
             <YAxis axisLine={false} tickLine={false} tickMargin={8} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  indicator="dot"
+                  labelFormatter={(value) => {
+                    return new Date(value).toLocaleDateString('en-US', {
+                      day: 'numeric',
+                      month: 'short',
+                    });
+                  }}
+                />
+              }
+            />
             <Area
               dataKey="completed"
               fill="url(#fillCompleted)"

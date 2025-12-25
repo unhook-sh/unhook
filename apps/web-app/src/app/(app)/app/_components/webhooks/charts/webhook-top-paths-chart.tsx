@@ -1,6 +1,10 @@
 'use client';
 
-import { ChartContainer } from '@unhook/ui/chart';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@unhook/ui/chart';
 import { useState } from 'react';
 import {
   Bar,
@@ -91,7 +95,7 @@ export function WebhookTopPathsChart() {
               tickLine={false}
               yAxisId="right"
             />
-            {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Bar
               dataKey="requests"
               onMouseEnter={handleMouseEnter}

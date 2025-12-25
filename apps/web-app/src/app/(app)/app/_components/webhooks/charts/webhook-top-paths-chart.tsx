@@ -95,7 +95,7 @@ export function WebhookTopPathsChart() {
               tickLine={false}
               yAxisId="right"
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartTooltip content={ChartTooltipContent} />
             <Bar
               dataKey="requests"
               onMouseEnter={handleMouseEnter}

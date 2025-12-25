@@ -194,7 +194,7 @@ export function WebhookConnectionsChart({
               tickFormatter={(value) => `${value}`}
               tickLine={false}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartTooltip content={ChartTooltipContent} />
             <Area
               activeDot={{ r: 6, strokeWidth: 0 }}
               dataKey="connections"

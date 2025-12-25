@@ -97,7 +97,7 @@ export function WebhookRequestsDistributionChart({
               tickFormatter={(value) => `${value}`}
               tickLine={false}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartTooltip content={ChartTooltipContent} />
             <Bar
               dataKey="requests"
               onMouseEnter={handleMouseEnter}

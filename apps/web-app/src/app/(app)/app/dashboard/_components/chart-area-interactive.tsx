@@ -286,8 +286,9 @@ export function ChartAreaInteractive() {
             />
             <YAxis axisLine={false} tickLine={false} tickMargin={8} />
             <ChartTooltip
-              content={
+              content={(props) => (
                 <ChartTooltipContent
+                  {...props}
                   indicator="dot"
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString('en-US', {
@@ -296,7 +297,7 @@ export function ChartAreaInteractive() {
                     });
                   }}
                 />
-              }
+              )}
             />
             <Area
               dataKey="completed"

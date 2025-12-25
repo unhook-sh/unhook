@@ -170,7 +170,7 @@ export function WebhookLatencyChart({
                 tickFormatter={(value) => `${value}ms`}
                 tickLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip content={ChartTooltipContent} />
               <Line
                 activeDot={{ r: 4, strokeWidth: 0 }}
                 dataKey="avgLatency"
@@ -235,7 +235,7 @@ export function WebhookLatencyChart({
                 tickFormatter={(value) => `${value}ms`}
                 tickLine={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip content={ChartTooltipContent} />
               <Area
                 activeDot={{ r: 6, strokeWidth: 0 }}
                 dataKey="avgLatency"

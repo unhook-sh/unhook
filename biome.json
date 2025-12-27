@@ -10,6 +10,14 @@
       }
     }
   },
+  "css": {
+    "formatter": {
+      "quoteStyle": "single"
+    },
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "files": {
     "ignoreUnknown": false,
     "includes": [
@@ -28,7 +36,10 @@
       "!**/build",
       "!**/.git",
       "!**/coverage",
-      "!**/.nyc_output"
+      "!**/.nyc_output",
+      "!**/packages/ai",
+      "!**/.grit",
+      "!**/apps/chrome-extension/scripts/detect-obfuscation"
     ]
   },
   "formatter": {

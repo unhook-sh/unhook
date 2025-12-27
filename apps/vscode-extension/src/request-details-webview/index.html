@@ -15,23 +15,23 @@
 
 		#initial-loader {
 			display: flex;
-			min-height: 100vh;
 			align-items: center;
 			justify-content: center;
-			background: var(--vscode-editor-background, #0b0b0b);
-			color: var(--vscode-editor-foreground, #cccccc);
+			min-height: 100vh;
 			font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+			color: var(--vscode-editor-foreground, #cccccc);
+			background: var(--vscode-editor-background, #0b0b0b);
 		}
 
 		#initial-loader .spinner {
 			width: 18px;
 			height: 18px;
+			margin-right: 8px;
 			border: 2px solid currentColor;
 			border-top-color: transparent;
 			border-radius: 9999px;
-			animation: unhook-spin 0.9s linear infinite;
-			margin-right: 8px;
 			opacity: 0.9;
+			animation: unhook-spin 0.9s linear infinite;
 		}
 
 		#initial-loader .text {

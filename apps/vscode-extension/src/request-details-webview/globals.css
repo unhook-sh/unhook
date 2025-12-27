@@ -1,6 +1,6 @@
 /* Import the UI package's global styles */
 /* biome-ignore-all lint/complexity/noImportantStyles: w/e */
-@import "../../../../packages/ui/src/styles/globals.css";
+@import '../../../../packages/ui/src/styles/globals.css';
 
 /* VSCode-specific overrides with fallbacks */
 :root {
@@ -47,13 +47,13 @@
     --vscode-font-family,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     Roboto,
     Oxygen,
     Ubuntu,
     Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
+    'Open Sans',
+    'Helvetica Neue',
     sans-serif
   );
   font-size: var(--vscode-font-size, 13px);
@@ -61,8 +61,8 @@
 }
 
 /* VSCode dark theme detection - Apply dark theme CSS variables */
-body[data-vscode-theme-kind="vscode-dark"],
-body[data-vscode-theme-kind="vscode-high-contrast"] {
+body[data-vscode-theme-kind='vscode-dark'],
+body[data-vscode-theme-kind='vscode-high-contrast'] {
   --background: var(--vscode-editor-background, oklch(21.03% 0.006 285.89));
   --foreground: var(--vscode-editor-foreground, oklch(0.985 0 0));
   --card: var(--vscode-editor-background, oklch(0.145 0 0));
@@ -131,8 +131,8 @@ pre,
 code {
   font-family: var(
     --vscode-editor-font-family,
-    "Consolas",
-    "Courier New",
+    'Consolas',
+    'Courier New',
     monospace
   );
   /* font-size: var(--vscode-editor-font-size, 12px); */
@@ -193,11 +193,11 @@ pre.shiki code {
 }
 
 /* Override Shiki's inline background styles */
-.shiki[style*="background-color"] {
+.shiki[style*='background-color'] {
   background-color: transparent !important;
 }
 
-.shiki pre[style*="background-color"] {
+.shiki pre[style*='background-color'] {
   background-color: transparent !important;
 }
 

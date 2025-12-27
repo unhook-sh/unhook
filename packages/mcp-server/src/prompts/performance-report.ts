@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { trackPromptUsage } from '../analytics';
 
 export const performanceReportSchema = {
@@ -10,11 +10,13 @@ export function registerPerformanceReportPrompt(server: McpServer) {
   server.registerPrompt(
     'performance_report',
     {
-      argsSchema: performanceReportSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      argsSchema: performanceReportSchema as any,
       description: 'Generate a performance report for webhooks',
       title: 'Performance Report',
     },
-    ({ webhookId }, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    ({ webhookId }: any, extra: any) => {
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 

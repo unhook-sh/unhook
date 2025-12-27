@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@paralleldrive/cuid2": "3.0.4",
-    "ulid": "3.0.1",
+    "ulid": "3.0.2",
     "unique-names-generator": "4.7.1"
   },
   "devDependencies": {

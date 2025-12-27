@@ -7,6 +7,7 @@ import {
 import { FileIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useMemo, useState } from 'react';
+import type { ShikiTransformer } from 'shiki';
 import { cn } from '../lib/utils';
 
 interface CodeComparisonProps {
@@ -54,23 +55,22 @@ export function CodeComparison({
           '@shikijs/transformers'
         );
 
+        // Cast transformers to avoid version mismatch between @shikijs/transformers and shiki
+        const transformers = [
+          transformerNotationHighlight({ matchAlgorithm: 'v3' }),
+          transformerNotationDiff({ matchAlgorithm: 'v3' }),
+          transformerNotationFocus({ matchAlgorithm: 'v3' }),
+        ] as ShikiTransformer[];
+
         const before = await codeToHtml(beforeCode, {
           lang: language,
           theme: selectedTheme,
-          transformers: [
-            transformerNotationHighlight({ matchAlgorithm: 'v3' }),
-            transformerNotationDiff({ matchAlgorithm: 'v3' }),
-            transformerNotationFocus({ matchAlgorithm: 'v3' }),
-          ],
+          transformers,
         });
         const after = await codeToHtml(afterCode, {
           lang: language,
           theme: selectedTheme,
-          transformers: [
-            transformerNotationHighlight({ matchAlgorithm: 'v3' }),
-            transformerNotationDiff({ matchAlgorithm: 'v3' }),
-            transformerNotationFocus({ matchAlgorithm: 'v3' }),
-          ],
+          transformers,
         });
         setHighlightedBefore(before);
         setHighlightedAfter(after);

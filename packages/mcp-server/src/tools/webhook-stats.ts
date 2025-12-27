@@ -6,7 +6,7 @@ import type {
   RequestType,
   WebhookType,
 } from '@unhook/db/schema';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { trackError, trackToolUsage } from '../analytics';
 // import type { Extra } from '../auth';
 
@@ -21,10 +21,12 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
     'get_webhook_stats',
     {
       description: 'Get statistics for a webhook',
-      inputSchema: webhookStatsSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      inputSchema: webhookStatsSchema as any,
       title: 'Get Webhook Stats',
     },
-    async ({ webhookUrl }, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    async ({ webhookUrl }: any, extra: any) => {
       const startTime = Date.now();
 
       const userId = extra.authInfo?.extra?.userId as string;
@@ -47,7 +49,10 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
 
           return {
             content: [
-              { text: `Webhook ${webhookUrl} not found`, type: 'text' },
+              {
+                text: `Webhook ${webhookUrl} not found`,
+                type: 'text' as const,
+              },
             ],
           };
         }
@@ -75,7 +80,7 @@ export function registerWebhookStatsTool(server: McpServer, context: Context) {
         );
 
         return {
-          content: [{ text: stats, type: 'text' }],
+          content: [{ text: stats, type: 'text' as const }],
         };
       } catch (error) {
         // Track error

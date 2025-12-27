@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
 import type { EventType } from '@unhook/db/schema';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { trackError, trackToolUsage } from '../analytics';
 
 export const searchEventsSchema = {
@@ -18,10 +18,12 @@ export function registerSearchEventsTool(server: McpServer, context: Context) {
     'search_events',
     {
       description: 'Search webhook events by various criteria',
-      inputSchema: searchEventsSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      inputSchema: searchEventsSchema as any,
       title: 'Search Events',
     },
-    async (args, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    async (args: any, extra: any) => {
       const startTime = Date.now();
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
@@ -62,7 +64,7 @@ export function registerSearchEventsTool(server: McpServer, context: Context) {
         );
 
         return {
-          content: [{ text: summary, type: 'text' }],
+          content: [{ text: summary, type: 'text' as const }],
         };
       } catch (error) {
         // Track error

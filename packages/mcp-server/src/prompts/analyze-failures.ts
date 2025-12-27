@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { trackPromptUsage } from '../analytics';
 
 export const analyzeFailuresSchema = {
@@ -10,11 +10,13 @@ export function registerAnalyzeFailuresPrompt(server: McpServer) {
   server.registerPrompt(
     'analyze_failures',
     {
-      argsSchema: analyzeFailuresSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      argsSchema: analyzeFailuresSchema as any,
       description: 'Analyze webhook failures and suggest fixes',
       title: 'Analyze Failures',
     },
-    ({ webhookId }, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    ({ webhookId }: any, extra: any) => {
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 

@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
 import { createId } from '@unhook/id';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { trackError, trackToolUsage } from '../analytics';
 
 // Provider templates for common webhook events
@@ -339,10 +339,12 @@ export function registerCreateTestEventTool(
     {
       description:
         'Create a test webhook event for testing purposes. Supports templates for common providers like Stripe, GitHub, and Clerk.',
-      inputSchema: createTestEventSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      inputSchema: createTestEventSchema as any,
       title: 'Create Test Event',
     },
-    async (args, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    async (args: any, extra: any) => {
       const startTime = Date.now();
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
@@ -353,7 +355,10 @@ export function registerCreateTestEventTool(
         if (!webhook) {
           return {
             content: [
-              { text: `Webhook ${args.webhookUrl} not found`, type: 'text' },
+              {
+                text: `Webhook ${args.webhookUrl} not found`,
+                type: 'text' as const,
+              },
             ],
           };
         }
@@ -374,7 +379,7 @@ export function registerCreateTestEventTool(
             content: [
               {
                 text: `Event type "${args.eventType}" not found for provider "${args.provider}". Available event types for ${args.provider}: ${availableEvents.join(', ')}`,
-                type: 'text',
+                type: 'text' as const,
               },
             ],
           };
@@ -460,7 +465,7 @@ Webhook: ${webhook.name} (${webhook.id})
 Source: ${event.source}
 
 The event has been created and will be processed by the webhook system.`,
-              type: 'text',
+              type: 'text' as const,
             },
           ],
         };

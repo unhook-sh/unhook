@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@clerk/backend": "2.23.0",
+    "@clerk/backend": "2.29.0",
     "@unhook/db": "workspace:*",
     "@unhook/id": "workspace:*",
-    "drizzle-orm": "0.44.7"
+    "drizzle-orm": "0.45.1"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",

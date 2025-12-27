@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 import { trackPromptUsage } from '../analytics';
 
@@ -12,11 +12,13 @@ export function registerDebugWebhookPrompt(server: McpServer) {
   server.registerPrompt(
     'debug_webhook_issue',
     {
-      argsSchema: debugWebhookSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      argsSchema: debugWebhookSchema as any,
       description: 'Debug a webhook issue step by step',
       title: 'Debug Webhook Issue',
     },
-    ({ webhookId, timeframe = 'last 24 hours' }, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    ({ webhookId, timeframe = 'last 24 hours' }: any, extra: any) => {
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
 

@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "@million/lint": "1.0.14",
-    "@next/bundle-analyzer": "16.0.3",
-    "@posthog/nextjs-config": "1.4.1",
-    "next": "16.0.3"
+    "@next/bundle-analyzer": "16.1.1",
+    "@posthog/nextjs-config": "1.7.4",
+    "next": "16.1.1"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",

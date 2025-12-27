@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '@unhook/api';
 import { createCaller } from '@unhook/api';
 import type { RequestTypeWithEventType } from '@unhook/db/schema';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { trackError, trackToolUsage } from '../analytics';
 
 export const analyzeRequestSchema = {
@@ -19,10 +19,12 @@ export function registerAnalyzeRequestTool(
     'analyze_request',
     {
       description: 'Analyze a specific webhook request in detail',
-      inputSchema: analyzeRequestSchema,
+      // biome-ignore lint/suspicious/noExplicitAny: MCP SDK requires any for schema type
+      inputSchema: analyzeRequestSchema as any,
       title: 'Analyze Request',
     },
-    async ({ requestId }, extra) => {
+    // biome-ignore lint/suspicious/noExplicitAny: MCP SDK callback signature
+    async ({ requestId }: any, extra: any) => {
       const startTime = Date.now();
       const userId = extra.authInfo?.extra?.userId as string;
       const organizationId = extra.authInfo?.extra?.organizationId as string;
@@ -45,7 +47,9 @@ export function registerAnalyzeRequestTool(
           );
 
           return {
-            content: [{ text: `Request ${requestId} not found`, type: 'text' }],
+            content: [
+              { text: `Request ${requestId} not found`, type: 'text' as const },
+            ],
           };
         }
 
@@ -68,7 +72,7 @@ export function registerAnalyzeRequestTool(
         );
 
         return {
-          content: [{ text: analysis, type: 'text' }],
+          content: [{ text: analysis, type: 'text' as const }],
         };
       } catch (error) {
         // Track error

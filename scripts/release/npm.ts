@@ -11,7 +11,11 @@ export async function publishToNpm(
   }
 
   console.log(`📤 Publishing ${pkg.name} to npm...`);
+
+  // Uses npm OIDC (Trusted Publishers) in CI - no NPM_TOKEN needed
+  // @see https://docs.npmjs.com/trusted-publishers
   await $`cd ${pkg.path} && npm publish --access public --provenance`;
+
   console.log(`✅ Published ${pkg.name}`);
 }
 

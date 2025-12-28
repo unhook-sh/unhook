@@ -11,7 +11,20 @@ runs:
         key: ${{ runner.os }}-turbo-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-turbo-
-    - uses: oven-sh/setup-bun@v2
 
-    - shell: bash
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+
+    - name: Setup Node.js for npm OIDC
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Update npm for OIDC support
+      shell: bash
+      run: npm install -g npm@latest
+
+    - name: Install dependencies
+      shell: bash
       run: bun install

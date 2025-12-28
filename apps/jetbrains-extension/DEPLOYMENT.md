@@ -24,7 +24,7 @@ To enable automated publishing, you need to configure the following secrets in y
   2. Export the certificate chain in PEM format
   3. Remove line breaks and store as a single-line string
 
-#### `JETBRAINS_PRIVATE_KEY` (Optional but recommended)  
+#### `JETBRAINS_PRIVATE_KEY` (Optional but recommended)
 - **Purpose**: Private key for plugin signing
 - **How to get it**:
   1. Export your private key in PEM format

@@ -30,7 +30,12 @@ export async function getCommitsSinceTag(
   }
 }
 
-export async function commitAndTag(
+/**
+ * Commit version changes BEFORE publishing.
+ * This ensures that if publish fails, the version bump is already committed
+ * and the next run will bump to a new version.
+ */
+export async function commitVersionChanges(
   releases: ReleaseResult[],
   dryRun: boolean,
 ): Promise<void> {
@@ -47,6 +52,22 @@ export async function commitAndTag(
   }
 
   await $`git commit -m ${commitMessage}`;
+  console.log(`✅ Committed: ${commitMessage}`);
+}
+
+/**
+ * Create git tags and push AFTER publishing.
+ * Tags are only created after successful publish to ensure
+ * the tag points to a version that exists on npm/marketplace.
+ */
+export async function createTagsAndPush(
+  releases: ReleaseResult[],
+  dryRun: boolean,
+): Promise<void> {
+  if (dryRun) {
+    console.log('🏃 [DRY RUN] Would create tags and push');
+    return;
+  }
 
   for (const release of releases) {
     const tagName = `${PACKAGES[release.pkg]?.tagPrefix}${release.version}`;

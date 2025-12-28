@@ -28,8 +28,9 @@ import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import { generateChangelog, updateChangelogFile } from './changelog';
 import {
-  commitAndTag,
+  commitVersionChanges,
   createGitHubRelease,
+  createTagsAndPush,
   getCommitsSinceTag,
   getLatestTag,
 } from './git';
@@ -299,6 +300,23 @@ async function main() {
     }
   }
 
+  // Commit version changes BEFORE publishing
+  // This ensures that if publish fails, the version bump is still committed
+  // and the next run will bump to a new version instead of re-trying the same one
+  const commitSpinner = p.spinner();
+  commitSpinner.start('Committing version changes...');
+  try {
+    await commitVersionChanges(releases, config.dryRun);
+    commitSpinner.stop(
+      config.dryRun
+        ? '🏃 [DRY RUN] Would commit version changes'
+        : '📝 Version changes committed',
+    );
+  } catch (error) {
+    commitSpinner.stop('Failed to commit version changes');
+    throw error;
+  }
+
   // Install dependencies
   const installSpinner = p.spinner();
   installSpinner.start('Installing dependencies...');
@@ -374,18 +392,18 @@ async function main() {
     }
   }
 
-  // Git commit, tag, and push
+  // Create git tags and push
   const gitSpinner = p.spinner();
-  gitSpinner.start('Committing changes...');
+  gitSpinner.start('Creating tags and pushing...');
   try {
-    await commitAndTag(releases, config.dryRun);
+    await createTagsAndPush(releases, config.dryRun);
     gitSpinner.stop(
       config.dryRun
-        ? '🏃 [DRY RUN] Would commit and push'
-        : '📤 Changes pushed to git',
+        ? '🏃 [DRY RUN] Would create tags and push'
+        : '📤 Tags created and pushed',
     );
   } catch (error) {
-    gitSpinner.stop('Failed to commit changes');
+    gitSpinner.stop('Failed to create tags');
     throw error;
   }
 

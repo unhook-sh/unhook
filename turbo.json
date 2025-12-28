@@ -15,10 +15,6 @@
     "VERCEL_TOKEN"
   ],
   "tasks": {
-    "@unhook/cli#build": {
-      "dependsOn": ["@unhook/client#build"],
-      "env": ["NEXT_PUBLIC_*", "CLERK_*", "SUPABASE_*", "POSTHOG_*"]
-    },
     "@unhook/stripe#build": {
       "cache": false,
       "env": ["STRIPE_*"]

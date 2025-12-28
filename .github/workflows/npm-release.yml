@@ -20,6 +20,7 @@ on:
           - all
           - cli
           - client
+          - vscode
       include_commits:
         description: 'Include detailed commit list in changelog'
         required: false

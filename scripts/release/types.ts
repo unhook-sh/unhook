@@ -6,7 +6,7 @@ export interface PackageJson {
 
 export interface ReleaseConfig {
   bumpType: 'patch' | 'minor' | 'major';
-  packages: 'all' | 'cli' | 'client';
+  packages: 'all' | 'cli' | 'client' | 'vscode';
   dryRun: boolean;
   interactive: boolean;
   includeCommitList: boolean;
@@ -19,6 +19,8 @@ export interface PackageInfo {
   changelogPath: string;
   tagPrefix: string;
   changelogEnvVar: string;
+  /** If true, skip npm publishing (e.g., VSCode extension publishes via separate workflow) */
+  skipNpmPublish?: boolean;
 }
 
 export interface ReleaseResult {
@@ -45,5 +47,14 @@ export const PACKAGES: Record<string, PackageInfo> = {
     packageJsonPath: 'packages/client/package.json',
     path: 'packages/client',
     tagPrefix: 'client-v',
+  },
+  vscode: {
+    changelogEnvVar: 'VSCODE_CHANGELOG',
+    changelogPath: 'apps/vscode-extension/CHANGELOG.md',
+    name: 'unhook-vscode',
+    packageJsonPath: 'apps/vscode-extension/package.json',
+    path: 'apps/vscode-extension',
+    skipNpmPublish: true, // VSCode extension publishes via separate workflow to VS Marketplace
+    tagPrefix: 'vscode-v',
   },
 };

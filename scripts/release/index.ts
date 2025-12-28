@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Release script for @unhook/cli and @unhook/client
+ * Release script for @unhook/cli, @unhook/client, and unhook-vscode
  *
  * Interactive mode (default):
  *   bun scripts/release
@@ -8,6 +8,7 @@
  * Non-interactive mode (for CI):
  *   bun scripts/release --bump patch --packages all --ci
  *   bun scripts/release --bump minor --packages cli --dry-run
+ *   bun scripts/release --bump patch --packages vscode --ci
  *   bun scripts/release --bump patch --packages all --include-commits
  *
  * Environment variables:
@@ -15,7 +16,10 @@
  *   DRY_RUN - If set to "true", skips npm publish and git push
  *   CLI_CHANGELOG - Pre-generated changelog for CLI (from GitHub Action)
  *   CLIENT_CHANGELOG - Pre-generated changelog for client (from GitHub Action)
+ *   VSCODE_CHANGELOG - Pre-generated changelog for VSCode extension (from GitHub Action)
  *   CI - If set, defaults to non-interactive mode
+ *
+ * Note: VSCode extension publishes via separate workflow to VS Marketplace/Open VSX
  */
 
 import { writeFileSync } from 'node:fs';
@@ -44,12 +48,17 @@ async function runInteractive(): Promise<ReleaseConfig> {
     message: 'Which packages do you want to release?',
     options: [
       {
-        hint: '@unhook/cli + @unhook/client',
+        hint: '@unhook/cli + @unhook/client + vscode',
         label: 'All packages',
         value: 'all',
       },
       { hint: '@unhook/cli', label: 'CLI only', value: 'cli' },
       { hint: '@unhook/client', label: 'Client only', value: 'client' },
+      {
+        hint: 'unhook-vscode',
+        label: 'VSCode Extension only',
+        value: 'vscode',
+      },
     ],
   });
 
@@ -60,7 +69,7 @@ async function runInteractive(): Promise<ReleaseConfig> {
 
   // Show current versions
   const packagesToRelease =
-    packages === 'all' ? ['cli', 'client'] : [packages as string];
+    packages === 'all' ? ['cli', 'client', 'vscode'] : [packages as string];
   for (const pkgKey of packagesToRelease) {
     const pkg = PACKAGES[pkgKey];
     if (pkg) {
@@ -135,7 +144,7 @@ async function runInteractive(): Promise<ReleaseConfig> {
     dryRun: dryRun as boolean,
     includeCommitList: includeCommitList as boolean,
     interactive: true,
-    packages: packages as 'all' | 'cli' | 'client',
+    packages: packages as 'all' | 'cli' | 'client' | 'vscode',
   };
 }
 
@@ -183,7 +192,7 @@ function parseCliArgs(): ReleaseConfig {
     dryRun: values['dry-run'] || process.env.DRY_RUN === 'true',
     includeCommitList: values['include-commits'] as boolean,
     interactive: isInteractive,
-    packages: values.packages as 'all' | 'cli' | 'client',
+    packages: values.packages as 'all' | 'cli' | 'client' | 'vscode',
   };
 }
 
@@ -250,8 +259,8 @@ async function main() {
       process.exit(1);
     }
 
-    if (!['all', 'cli', 'client'].includes(config.packages)) {
-      console.error('Invalid packages. Use: all, cli, or client');
+    if (!['all', 'cli', 'client', 'vscode'].includes(config.packages)) {
+      console.error('Invalid packages. Use: all, cli, client, or vscode');
       process.exit(1);
     }
 
@@ -263,7 +272,7 @@ async function main() {
   }
 
   const packagesToRelease =
-    config.packages === 'all' ? ['cli', 'client'] : [config.packages];
+    config.packages === 'all' ? ['cli', 'client', 'vscode'] : [config.packages];
   const releases: ReleaseResult[] = [];
 
   // Release each package
@@ -314,25 +323,38 @@ async function main() {
     throw error;
   }
 
-  // Publish to npm
-  const publishSpinner = p.spinner();
-  publishSpinner.start('Publishing to npm...');
-  try {
-    for (const release of releases) {
-      const pkg = PACKAGES[release.pkg];
-      if (pkg) {
-        publishSpinner.message(`Publishing ${pkg.name}...`);
-        await publishToNpm(pkg, config.dryRun);
+  // Publish to npm (skip packages with skipNpmPublish)
+  const npmReleases = releases.filter((r) => !PACKAGES[r.pkg]?.skipNpmPublish);
+
+  if (npmReleases.length > 0) {
+    const publishSpinner = p.spinner();
+    publishSpinner.start('Publishing to npm...');
+    try {
+      for (const release of npmReleases) {
+        const pkg = PACKAGES[release.pkg];
+        if (pkg) {
+          publishSpinner.message(`Publishing ${pkg.name}...`);
+          await publishToNpm(pkg, config.dryRun);
+        }
       }
+      publishSpinner.stop(
+        config.dryRun
+          ? '🏃 [DRY RUN] Would publish to npm'
+          : '📤 Published to npm',
+      );
+    } catch (error) {
+      publishSpinner.stop('Failed to publish to npm');
+      throw error;
     }
-    publishSpinner.stop(
-      config.dryRun
-        ? '🏃 [DRY RUN] Would publish to npm'
-        : '📤 Published to npm',
-    );
-  } catch (error) {
-    publishSpinner.stop('Failed to publish to npm');
-    throw error;
+  }
+
+  // Note: VSCode extension publishes via separate workflow triggered by version bump
+  const skippedReleases = releases.filter(
+    (r) => PACKAGES[r.pkg]?.skipNpmPublish,
+  );
+  if (skippedReleases.length > 0) {
+    const names = skippedReleases.map((r) => PACKAGES[r.pkg]?.name).join(', ');
+    p.log.info(`ℹ️  ${names} will publish via separate workflow`);
   }
 
   // Git commit, tag, and push

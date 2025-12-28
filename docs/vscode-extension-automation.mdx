@@ -16,7 +16,7 @@ The automation consists of two main components:
 The workflow is defined in `.github/workflows/vscode-extension-release.yml`:
 
 **Triggers:**
-- Automatically after the "Changeset NPM Release" workflow completes
+- Automatically after the "NPM Release" workflow completes
 - Manual dispatch for testing/emergency releases
 
 **Conditions:**
@@ -89,8 +89,8 @@ The automation expects:
 
 ### Automatic Process
 
-1. **Version Bump PR**: Changesets workflow creates PR with version bumps
-2. **PR Merge**: When PR is merged to `main`, Changeset NPM Release workflow runs
+1. **NPM Release**: Maintainer triggers NPM Release workflow (manually or via GitHub Actions)
+2. **Version Bump**: Release script bumps versions and generates AI-powered changelog
 3. **VSCode Release**: If VSCode extension version changed, the VSCode Extension Release workflow automatically triggers
 4. **Dual Marketplace Publication**: Extension is built, packaged, and published to both Visual Studio Marketplace and Open VSX Registry
 5. **GitHub Release**: Release created with VSIX file attachment
@@ -164,5 +164,5 @@ The workflow only triggers when the VSCode extension version specifically change
 
 - VSIX files are automatically attached to GitHub releases for manual distribution
 - The automation follows the same patterns as the existing CLI release workflow for consistency
-- Version management is handled by the Changesets workflow - no manual version bumping required
+- Version management is handled by the NPM Release workflow with AI-powered changelog generation
 - Dual marketplace publishing ensures maximum compatibility across VS Code distributions

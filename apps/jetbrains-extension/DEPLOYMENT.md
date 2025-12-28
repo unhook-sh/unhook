@@ -38,32 +38,17 @@ To enable automated publishing, you need to configure the following secrets in y
 
 The GitHub Actions workflow (`jetbrains-extension-release.yml`) is triggered by:
 
-1. **Version Bumps**: Automatically triggered when the changeset workflow bumps the JetBrains extension version
+1. **NPM Release**: Automatically triggered when the NPM Release workflow completes and bumps the JetBrains extension version
 2. **Manual Trigger**: Can be manually triggered from the GitHub Actions tab
 
 ## Release Process
 
 ### Automatic Release (Recommended)
 
-1. **Create a Changeset**:
-   ```bash
-   bunx changeset
-   # Select the jetbrains-extension package
-   # Choose the appropriate version bump (patch, minor, major)
-   # Write a description of the changes
-   ```
-
-2. **Commit and Push**:
-   ```bash
-   git add .
-   git commit -m "feat: add new feature to jetbrains extension"
-   git push
-   ```
-
-3. **Merge Changeset PR**:
-   - The changeset bot will create a PR with version bumps
-   - Review and merge the PR
-   - This will trigger the release workflow
+The JetBrains extension is released automatically when:
+1. A maintainer triggers the NPM Release workflow
+2. The release includes changes to the JetBrains extension
+3. The NPM Release workflow completes successfully
 
 ### Manual Release
 

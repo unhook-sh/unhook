@@ -72,7 +72,7 @@ unhook/
 - `bun test` - Run tests across all packages
 - `bun lint` - Lint all packages
 - `bun clean` - Clean all build outputs
-- `bun changeset` - Create a changeset for version management
+- `bun run release` - Release packages (interactive)
 
 ### Working with Turborepo
 
@@ -168,13 +168,22 @@ Please follow these steps to have your contribution considered:
 
 ## Version Management
 
-We use [Changesets](https://github.com/changesets/changesets) for version management:
+We use a custom release script with AI-powered changelog generation:
 
-1. Make your changes
-2. Run `bun changeset` to create a changeset
-3. Follow the prompts to describe your changes
-4. Commit the generated changeset file
-5. Submit your PR
+### For Contributors
+- Just submit your PR with a clear description
+- Maintainers will handle versioning and releases
+
+### For Maintainers
+```bash
+# Interactive release (local)
+bun run release
+
+# Dry run (test without publishing)
+bun run release:dry-run
+```
+
+Or trigger via GitHub Actions: **Actions → NPM Release → Run workflow**
 
 ## Git Hooks
 

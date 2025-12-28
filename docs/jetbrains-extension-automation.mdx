@@ -16,7 +16,7 @@ The automation consists of two main components:
 The workflow is defined in `.github/workflows/jetbrains-extension-release.yml`:
 
 **Triggers:**
-- Automatically after the "Changeset NPM Release" workflow completes
+- Automatically after the "NPM Release" workflow completes
 - Manual dispatch for testing/emergency releases
 
 **Conditions:**
@@ -101,8 +101,8 @@ The automation expects:
 
 ### Automatic Process
 
-1. **Version Bump PR**: Changesets workflow creates PR with version bumps
-2. **PR Merge**: When PR is merged to `main`, Changeset NPM Release workflow runs
+1. **NPM Release**: Maintainer triggers NPM Release workflow (manually or via GitHub Actions)
+2. **Version Bump**: Release script bumps versions and generates AI-powered changelog
 3. **JetBrains Release**: If JetBrains extension version changed, the JetBrains Extension Release workflow automatically triggers
 4. **Build & Verification**: Plugin is built and verified for compatibility
 5. **Optional Signing**: If certificates are configured, plugin is signed for enhanced trust
@@ -215,8 +215,8 @@ The workflow only triggers when the JetBrains extension version specifically cha
 
 ### Version Management
 - ZIP files are automatically attached to GitHub releases for manual distribution
-- Version management is handled by the Changesets workflow - no manual version bumping required
-- Semantic versioning is enforced through changeset configuration
+- Version management is handled by the NPM Release workflow with AI-powered changelog generation
+- Semantic versioning is enforced through the release script
 
 ### Quality Assurance
 - Plugin verification runs before publishing to catch compatibility issues

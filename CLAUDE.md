@@ -70,14 +70,14 @@ bun db:studio
 # Build all packages
 bun build
 
-# Create a changeset for version bumping
-bunx changeset
+# Release packages (interactive mode)
+bun run release
 
-# Update package versions
-bun bump-versions
+# Release packages (dry-run)
+bun run release:dry-run
 
-# Publish to npm
-bun publish
+# Release packages (CI mode)
+bun run release:ci
 ```
 
 ## Architecture Overview

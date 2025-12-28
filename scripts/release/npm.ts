@@ -20,29 +20,18 @@ export async function publishToNpm(
 }
 
 export async function buildPackages(packagePaths: string[]): Promise<void> {
-  // Build client first if included, since CLI depends on it
-  const clientPath = 'packages/client';
-  const hasClient = packagePaths.includes(clientPath);
-  const hasCli = packagePaths.includes('apps/cli');
+  // Sort paths to ensure client builds before cli (cli depends on client)
+  const sortedPaths = [...packagePaths].sort((a, b) => {
+    // Client should be first
+    if (a.includes('client')) return -1;
+    if (b.includes('client')) return 1;
+    return 0;
+  });
 
-  if (hasClient && hasCli) {
-    // Build client first to ensure its exports are available for CLI
-    console.log('Building @unhook/client first (CLI dependency)...');
-    await $`bunx turbo run build --filter=./${clientPath}...`;
-
-    // Then build remaining packages
-    const remainingPaths = packagePaths.filter((p) => p !== clientPath);
-    if (remainingPaths.length > 0) {
-      const filterArgs = remainingPaths
-        .map((p) => `--filter=./${p}...`)
-        .join(' ');
-      await $`bunx turbo run build ${filterArgs.split(' ')}`;
-    }
-  } else {
-    // No dependency issue, build normally
-    const filterArgs = packagePaths.map((p) => `--filter=./${p}...`).join(' ');
-    await $`bunx turbo run build ${filterArgs.split(' ')}`;
-  }
+  // Build all packages with --concurrency=1 to ensure sequential builds
+  // This ensures client is fully built before CLI tries to import from it
+  const filterArgs = sortedPaths.map((p) => `--filter=./${p}...`).join(' ');
+  await $`bunx turbo run build ${filterArgs.split(' ')} --force --concurrency=1`;
 }
 
 export async function installDependencies(): Promise<void> {

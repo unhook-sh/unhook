@@ -1,18 +1,19 @@
-name: VSCode Extension Release
+name: VSCode Extension Release (Manual)
+
+# This workflow is for manual re-publishing only.
+# VSCode extension is normally published as part of the NPM Release workflow.
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["NPM Release"]
-    types:
-      - completed
-    branches:
-      - main
+    inputs:
+      version:
+        description: 'Version to publish (leave empty to use package.json version)'
+        required: false
+        type: string
 
 permissions:
   contents: write
   packages: write
-  actions: read
 
 env:
   FORCE_COLOR: 3
@@ -22,68 +23,37 @@ env:
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
   NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
-  POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
   STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
   NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
   NEXT_PUBLIC_APP_ENV: production
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   NODE_ENV: production
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
   OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
 jobs:
-  check-version:
-    runs-on: ubuntu-latest
-    outputs:
-      is_version_bump: ${{ steps.check.outputs.is_version_bump }}
-      vscode_version_changed: ${{ steps.check-vscode.outputs.version_changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - id: check
-        run: |
-          if [[ "${{ github.event.workflow_run.head_commit.message }}" =~ ^chore:\ release\ @unhook/.*$ ]]; then
-            echo "is_version_bump=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_version_bump=false" >> $GITHUB_OUTPUT
-          fi
-
-      - id: check-vscode
-        name: Check if VSCode extension version changed
-        run: |
-          # Check if the VSCode extension version was bumped in the last commit
-          if git diff HEAD~1 HEAD -- apps/vscode-extension/package.json | grep -q '"version"'; then
-            echo "version_changed=true" >> $GITHUB_OUTPUT
-            echo "VSCode extension version was changed"
-          else
-            echo "version_changed=false" >> $GITHUB_OUTPUT
-            echo "VSCode extension version was not changed"
-          fi
-
   release:
     name: Release VSCode Extension
-    needs: check-version
     runs-on: ubuntu-latest
-    if: needs.check-version.outputs.is_version_bump == 'true' && needs.check-version.outputs.vscode_version_changed == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
-          # Need full history for Changesets
           fetch-depth: 0
 
       - name: Setup Environment
         uses: ./tooling/github/setup
 
-      - name: Get version from package.json
+      - name: Get version
         id: version
         run: |
-          VERSION=$(node -p "require('./apps/vscode-extension/package.json').version")
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION=$(node -p "require('./apps/vscode-extension/package.json').version")
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION"
 
       - name: Release VSCode Extension
         uses: ./tooling/github/vscode-extension/github-release

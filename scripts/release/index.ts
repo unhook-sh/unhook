@@ -17,9 +17,9 @@
  *   CLI_CHANGELOG - Pre-generated changelog for CLI (from GitHub Action)
  *   CLIENT_CHANGELOG - Pre-generated changelog for client (from GitHub Action)
  *   VSCODE_CHANGELOG - Pre-generated changelog for VSCode extension (from GitHub Action)
+ *   VSCE_PAT - Personal Access Token for VS Marketplace (required for VSCode)
+ *   OVSX_PAT - Personal Access Token for Open VSX Registry (required for VSCode)
  *   CI - If set, defaults to non-interactive mode
- *
- * Note: VSCode extension publishes via separate workflow to VS Marketplace/Open VSX
  */
 
 import { writeFileSync } from 'node:fs';
@@ -40,6 +40,7 @@ import {
   getCurrentVersion,
   updatePackageVersion,
 } from './version';
+import { publishVscodeExtension } from './vscode';
 
 async function runInteractive(): Promise<ReleaseConfig> {
   p.intro(pc.bgCyan(pc.black(' 🚀 Unhook Release ')));
@@ -323,7 +324,7 @@ async function main() {
     throw error;
   }
 
-  // Publish to npm (skip packages with skipNpmPublish)
+  // Publish npm packages
   const npmReleases = releases.filter((r) => !PACKAGES[r.pkg]?.skipNpmPublish);
 
   if (npmReleases.length > 0) {
@@ -348,13 +349,29 @@ async function main() {
     }
   }
 
-  // Note: VSCode extension publishes via separate workflow triggered by version bump
-  const skippedReleases = releases.filter(
-    (r) => PACKAGES[r.pkg]?.skipNpmPublish,
-  );
-  if (skippedReleases.length > 0) {
-    const names = skippedReleases.map((r) => PACKAGES[r.pkg]?.name).join(', ');
-    p.log.info(`ℹ️  ${names} will publish via separate workflow`);
+  // Publish VSCode extension to VS Marketplace and Open VSX
+  const vscodeReleases = releases.filter((r) => r.pkg === 'vscode');
+
+  if (vscodeReleases.length > 0) {
+    const vscodeSpinner = p.spinner();
+    vscodeSpinner.start('Publishing VSCode extension...');
+    try {
+      for (const release of vscodeReleases) {
+        const pkg = PACKAGES[release.pkg];
+        if (pkg) {
+          vscodeSpinner.message(`Publishing ${pkg.name} to VS Marketplace...`);
+          await publishVscodeExtension(pkg, release.version, config.dryRun);
+        }
+      }
+      vscodeSpinner.stop(
+        config.dryRun
+          ? '🏃 [DRY RUN] Would publish to VS Marketplace & Open VSX'
+          : '📤 Published to VS Marketplace & Open VSX',
+      );
+    } catch (error) {
+      vscodeSpinner.stop('Failed to publish VSCode extension');
+      throw error;
+    }
   }
 
   // Git commit, tag, and push

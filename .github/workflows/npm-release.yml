@@ -80,6 +80,9 @@ jobs:
           ANTHROPIC_AUTH_TOKEN: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: '' # Must be explicitly empty
           ANTHROPIC_MODEL: anthropic/claude-3.5-haiku
+          # VSCode extension publishing
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
           # Build environment
           NODE_ENV: production
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

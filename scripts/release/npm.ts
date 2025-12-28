@@ -20,18 +20,10 @@ export async function publishToNpm(
 }
 
 export async function buildPackages(packagePaths: string[]): Promise<void> {
-  // Sort paths to ensure client builds before cli (cli depends on client)
-  const sortedPaths = [...packagePaths].sort((a, b) => {
-    // Client should be first
-    if (a.includes('client')) return -1;
-    if (b.includes('client')) return 1;
-    return 0;
-  });
-
-  // Build all packages with --concurrency=1 to ensure sequential builds
-  // This ensures client is fully built before CLI tries to import from it
-  const filterArgs = sortedPaths.map((p) => `--filter=./${p}...`).join(' ');
-  await $`bunx turbo run build ${filterArgs.split(' ')} --force --concurrency=1`;
+  // Let turbo handle the build order via dependsOn: ["^build"]
+  // Use --no-cache to ensure fresh builds in release (avoids stale artifacts)
+  const filterArgs = packagePaths.map((p) => `--filter=./${p}...`).join(' ');
+  await $`bunx turbo run build ${filterArgs.split(' ')} --no-cache`;
 }
 
 export async function installDependencies(): Promise<void> {

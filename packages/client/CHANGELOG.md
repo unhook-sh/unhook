@@ -1,5 +1,19 @@
 # @unhook/client
 
+## 0.6.5
+
+### Patch Changes
+
+**Updated**
+- Updated Supabase JS library to latest version (2.89.0)
+- Updated Zod to latest version (4.2.1)
+- Updated Drizzle ORM to latest version (0.45.1)
+- Upgraded dependencies for improved compatibility and performance
+
+**Improved**
+- Enhanced package dependencies to ensure better stability and security
+- Minor performance optimizations through dependency updates
+
 ## 0.6.4
 
 ### Patch Changes

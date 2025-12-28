@@ -1,5 +1,16 @@
 # @unhook/cli
 
+## 0.14.5
+
+### Patch Changes
+
+**Changed**
+- Updated dependencies for Clerk, React, Posthog, Zod, and other core libraries to their latest versions
+- Upgraded core package versions to improve compatibility and security
+
+**Improved**
+- Enhanced library versions should provide better performance, security, and potential new features across the CLI's dependencies
+
 ## 0.14.4
 
 ### Patch Changes

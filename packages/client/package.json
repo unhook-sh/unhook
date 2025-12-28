@@ -6,11 +6,6 @@
   "dependencies": {
     "@supabase/supabase-js": "2.89.0",
     "@t3-oss/env-core": "0.13.10",
-    "@unhook/db": "workspace:*",
-    "@unhook/id": "workspace:*",
-    "@unhook/logger": "workspace:*",
-    "@unhook/npm": "workspace:*",
-    "@unhook/utils": "workspace:*",
     "@vercel/kv": "3.0.0",
     "debug": "4.4.3",
     "drizzle-orm": "0.45.1",
@@ -21,7 +16,6 @@
   },
   "devDependencies": {
     "@types/debug": "4.1.12",
-    "@unhook/tsconfig": "workspace:*",
     "typescript": "5.9.3"
   },
   "exports": {
@@ -76,5 +70,5 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "type": "module",
-  "version": "0.6.4"
+  "version": "0.6.5"
 }

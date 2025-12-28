@@ -3,7 +3,7 @@ name: VSCode Extension Release
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["Changeset NPM Release"]
+    workflows: ["NPM Release"]
     types:
       - completed
     branches:
@@ -47,7 +47,7 @@ jobs:
 
       - id: check
         run: |
-          if [[ "${{ github.event.workflow_run.head_commit.message }}" =~ ^chore:\ version\ packages.*$ ]]; then
+          if [[ "${{ github.event.workflow_run.head_commit.message }}" =~ ^chore:\ release\ @unhook/.*$ ]]; then
             echo "is_version_bump=true" >> $GITHUB_OUTPUT
           else
             echo "is_version_bump=false" >> $GITHUB_OUTPUT

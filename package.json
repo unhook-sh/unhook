@@ -6,8 +6,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
-    "@changesets/changelog-github": "0.5.2",
-    "@changesets/cli": "2.29.8",
+    "@clack/prompts": "^0.11.0",
     "@commitlint/cli": "20.2.0",
     "@testing-library/react": "16.3.1",
     "@turbo/gen": "2.7.2",
@@ -17,6 +16,7 @@
     "checkly": "6.9.7",
     "knip": "5.77.4",
     "lefthook": "2.0.13",
+    "picocolors": "^1.1.1",
     "turbo": "2.7.2",
     "typescript": "5.9.3",
     "vitest": "4.0.16"
@@ -32,7 +32,6 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "bump-versions": "changeset version && bun install",
     "clean": "git clean -xdf node_modules .turbo",
     "clean:ws": "turbo run clean",
     "cleanup:all": "bun run scripts/cleanup-all-resources.ts",
@@ -58,7 +57,9 @@
     "knip": "knip --include files,dependencies",
     "lint:ws": "bunx sherif@latest -r multiple-dependency-versions",
     "postinstall": "bun lint:ws",
-    "publish": "turbo run build --filter=./apps/cli... --filter=./packages/client... --filter=./apps/vscode-extension... && changeset publish",
+    "release": "bun scripts/release/index.ts",
+    "release:ci": "bun scripts/release/index.ts --ci",
+    "release:dry-run": "bun scripts/release/index.ts --dry-run",
     "test": "bun test",
     "test:integ": "turbo run test --filter=@unhook/integ-test",
     "test:integ:ci": "turbo run test:ci --filter=@unhook/integ-test",
@@ -66,7 +67,6 @@
     "typecheck": "turbo run typecheck",
     "typecheck:ci": "turbo run build --filter @unhook/stripe && turbo run typecheck",
     "ui-add": "turbo run ui-add",
-    "version": "changeset version && bun biome check --write",
     "with-env": "infisical run --"
   },
   "trustedDependencies": [

@@ -67,9 +67,8 @@ export async function publishToNpm(
 
 export async function buildPackages(packagePaths: string[]): Promise<void> {
   // Let turbo handle the build order via dependsOn: ["^build"]
-  // Use --no-cache to ensure fresh builds in release (avoids stale artifacts)
   const filterArgs = packagePaths.map((p) => `--filter=./${p}...`).join(' ');
-  await $`bunx turbo run build ${filterArgs.split(' ')} --no-cache`;
+  await $`bunx turbo run build ${filterArgs.split(' ')}`;
 }
 
 export async function installDependencies(): Promise<void> {

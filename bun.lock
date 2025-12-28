@@ -24,7 +24,7 @@
     },
     "apps/cli": {
       "name": "@unhook/cli",
-      "version": "0.14.5",
+      "version": "0.14.7",
       "bin": {
         "unhook": "./bin/cli.js",
       },
@@ -96,7 +96,7 @@
     },
     "apps/vscode-extension": {
       "name": "unhook-vscode",
-      "version": "0.3.4",
+      "version": "0.3.6",
       "dependencies": {
         "@unhook/client": "workspace:*",
         "@unhook/zustand": "workspace:*",
@@ -285,7 +285,7 @@
     },
     "packages/client": {
       "name": "@unhook/client",
-      "version": "0.6.5",
+      "version": "0.6.7",
       "dependencies": {
         "@supabase/supabase-js": "2.89.0",
         "@t3-oss/env-core": "0.13.10",

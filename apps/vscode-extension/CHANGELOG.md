@@ -1,4 +1,21 @@
-# Change Log
+# unhook-vscode
+
+## 0.3.7
+
+### Patch Changes
+
+**Fixed**
+- Improved syntax highlighting support for YAML, JSON, JavaScript, and TypeScript configuration files
+- Resolved build errors and updated dependencies to improve extension stability
+
+**Improved**
+- Updated React, Tailwind, and other core dependencies to their latest versions
+- Enhanced VSCode theme compatibility in webview styles
+- Refined font and color handling in the request details webview for better cross-theme integration
+
+**Changed**
+- Simplified language configuration by removing separate configuration files for different languages
+- Updated package metadata and development tooling
 
 ## 0.3.4
 

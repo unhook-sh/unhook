@@ -1,5 +1,12 @@
 # @unhook/cli
 
+## 0.14.8
+
+### Patch Changes
+
+**Fixed**
+- Restored workspace dependency for `@unhook/client`, ensuring the latest development version of the package is used during local development and builds
+
 ## 0.14.5
 
 ### Patch Changes

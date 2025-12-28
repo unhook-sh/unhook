@@ -1,5 +1,13 @@
 # @unhook/client
 
+## 0.6.8
+
+### Patch Changes
+
+I'll help you create a changelog for the @unhook/client package. However, based on the provided git diff, this appears to be a simple version bump with no substantive code changes. 
+
+Release maintenance
+
 ## 0.6.5
 
 ### Patch Changes

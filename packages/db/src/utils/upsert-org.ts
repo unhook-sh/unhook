@@ -11,7 +11,7 @@ import {
   PLAN_TYPES,
   upsertStripeCustomer,
 } from '@unhook/stripe';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type Stripe from 'stripe';
 import { db } from '../client';
 import {
@@ -221,19 +221,31 @@ async function ensureOrgMembership({
   userId: string;
   tx: Transaction;
 }) {
-  await tx
+  const existingMembership = await tx.query.OrgMembers.findFirst({
+    where: and(eq(OrgMembers.orgId, orgId), eq(OrgMembers.userId, userId)),
+  });
+
+  if (existingMembership) {
+    // Membership already exists, no need to insert/update
+    return existingMembership;
+  }
+
+  const [membership] = await tx
     .insert(OrgMembers)
     .values({
       orgId,
       role: 'admin',
       userId,
     })
-    .onConflictDoUpdate({
-      set: {
-        updatedAt: new Date(),
-      },
-      target: [OrgMembers.orgId, OrgMembers.userId],
-    });
+    .returning();
+
+  if (!membership) {
+    throw new Error(
+      `Failed to create org membership for orgId: ${orgId}, userId: ${userId}`,
+    );
+  }
+
+  return membership;
 }
 
 async function ensureDefaultApiKey({
@@ -393,6 +405,66 @@ async function autoSubscribeToFreePlan({
     // Don't throw error - org creation should still succeed
     return null;
   }
+}
+
+/**
+ * Lightweight function to ensure org exists in database for auth code exchange.
+ * This is much faster than upsertOrg because it doesn't ensure API keys, webhooks, or Stripe customers.
+ * Use this when you just need to ensure the org exists for authentication purposes.
+ *
+ * NOTE: User should already be ensured before calling this (use ensureUserFromClerk).
+ */
+export async function ensureOrgForAuth({
+  clerkOrgId,
+  name,
+  userId,
+}: {
+  clerkOrgId: string;
+  name: string;
+  userId: string;
+}): Promise<void> {
+  await db.transaction(async (tx) => {
+    // Check if org already exists
+    const existingOrg = await tx.query.Orgs.findFirst({
+      where: eq(Orgs.clerkOrgId, clerkOrgId),
+    });
+
+    let orgId: string;
+    if (existingOrg) {
+      orgId = existingOrg.id;
+    } else {
+      // Org doesn't exist, create it (but don't create Stripe customer, API keys, etc.)
+      // This will be handled by upsertOrg when the org is actually used
+      const [org] = await tx
+        .insert(Orgs)
+        .values({
+          clerkOrgId,
+          createdByUserId: userId,
+          id: clerkOrgId,
+          name,
+        })
+        .onConflictDoUpdate({
+          set: {
+            name,
+            updatedAt: new Date(),
+          },
+          target: [Orgs.clerkOrgId],
+        })
+        .returning();
+
+      if (!org) {
+        throw new Error(`Failed to create org for clerkOrgId: ${clerkOrgId}`);
+      }
+      orgId = org.id;
+    }
+
+    // Ensure membership exists (lightweight check before insert)
+    await ensureOrgMembership({
+      orgId,
+      tx,
+      userId,
+    });
+  });
 }
 
 // Helper function to ensure user exists in database

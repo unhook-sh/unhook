@@ -205,6 +205,10 @@ export const OrgMembers = pgTable(
   (table) => [
     // Add unique constraint for userId and orgId combination using the simpler syntax
     unique().on(table.userId, table.orgId),
+    // Add indexes on foreign key columns to speed up INSERTs and queries
+    // These indexes are critical for foreign key constraint validation performance
+    index('orgMembers_org_id_idx').on(table.orgId),
+    index('orgMembers_user_id_idx').on(table.userId),
   ],
 );
 

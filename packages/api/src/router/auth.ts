@@ -1,6 +1,6 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { TRPCError } from '@trpc/server';
-import { upsertOrg } from '@unhook/db';
+import { ensureOrgForAuth, ensureUserFromClerk } from '@unhook/db';
 import { db } from '@unhook/db/client';
 import { AuthCodes } from '@unhook/db/schema';
 import { and, eq, gte, isNull } from 'drizzle-orm';
@@ -86,10 +86,14 @@ export const authRouter = {
           });
         }
 
-        // Use the upsertOrg utility function (now handles user creation automatically)
-        await upsertOrg({
+        // Ensure user exists first (lightweight)
+        await ensureUserFromClerk(authCode.userId);
+
+        // Lightweight function to ensure org exists (without heavy API key/webhook logic)
+        // This is much faster since we don't need API keys/webhooks just for auth
+        await ensureOrgForAuth({
+          clerkOrgId: authCode.orgId,
           name: organization.name,
-          orgId: authCode.orgId,
           userId: authCode.userId,
         });
 
@@ -234,10 +238,13 @@ export const authRouter = {
           });
         }
 
-        // Use the upsertOrg utility function (now handles user creation automatically)
-        await upsertOrg({
+        // Ensure user exists first (lightweight)
+        await ensureUserFromClerk(ctx.auth.userId);
+
+        // Lightweight function to ensure org exists (without heavy API key/webhook logic)
+        await ensureOrgForAuth({
+          clerkOrgId: session.lastActiveOrganizationId,
           name: organization.name,
-          orgId: session.lastActiveOrganizationId,
           userId: ctx.auth.userId,
         });
 

@@ -63,6 +63,13 @@
       "tag": "0008_add_events_timestamp_field",
       "version": "7",
       "when": 1754604285294
+    },
+    {
+      "breakpoints": true,
+      "idx": 9,
+      "tag": "0009_lying_gauntlet",
+      "version": "7",
+      "when": 1767334870983
     }
   ],
   "version": "7"

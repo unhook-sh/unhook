@@ -56,16 +56,14 @@ jobs:
         run: |
           bun scripts/release/index.ts --packages ${{ inputs.packages }} --ci
         env:
-          # OpenRouter integration for Claude Code CLI
+          # OpenRouter integration for Claude Code CLI and version bump analysis
           # @see https://openrouter.ai/docs/guides/guides/claude-code-integration
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_BASE_URL: https://openrouter.ai/api
           ANTHROPIC_AUTH_TOKEN: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: '' # Must be explicitly empty
           ANTHROPIC_MODEL: anthropic/claude-3.5-haiku
-          # AI SDK for version bump analysis
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'openai' }}
+          # AI SDK for version bump analysis (uses OpenRouter)
           AI_MODEL: ${{ vars.AI_MODEL || '' }}
           # VSCode extension publishing
           VSCE_PAT: ${{ secrets.VSCE_PAT }}

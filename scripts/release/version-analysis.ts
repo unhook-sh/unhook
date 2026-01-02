@@ -1,9 +1,9 @@
 /**
  * AI SDK v6 implementation for version bump analysis
  * Uses structured output with zod schemas to determine semantic version bumps
+ * Configured to use OpenRouter via baseURL
  */
 
-import { createAnthropic } from '@ai-sdk/anthropic';
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
@@ -23,36 +23,21 @@ export interface VersionBumpAnalysis {
 }
 
 /**
- * Get the AI model provider based on environment variables
+ * Get the OpenAI model via OpenRouter
  */
 function getModel() {
-  const provider = process.env.AI_PROVIDER || 'openai';
-  const model =
-    process.env.AI_MODEL ||
-    (provider === 'anthropic' ? 'claude-3-5-sonnet-20241022' : 'gpt-4o');
+  const model = process.env.AI_MODEL || 'openai/gpt-4o-mini';
+  const apiKey = process.env.OPENROUTER_API_KEY;
 
-  if (provider === 'anthropic') {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error(
-        'ANTHROPIC_API_KEY is required when AI_PROVIDER is set to "anthropic"',
-      );
-    }
-    const anthropic = createAnthropic({
-      apiKey,
-    });
-    return anthropic(model);
-  }
-
-  // Default to OpenAI
-  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error(
-      'OPENAI_API_KEY is required. Set AI_PROVIDER=anthropic and ANTHROPIC_API_KEY if using Anthropic.',
+      'OPENROUTER_API_KEY is required for version bump analysis.',
     );
   }
+
   const openai = createOpenAI({
     apiKey,
+    baseURL: 'https://openrouter.ai/api/v1',
   });
   return openai(model);
 }
@@ -68,16 +53,17 @@ export async function analyzeVersionBump(
   changelog: string,
   packageName: string,
 ): Promise<VersionBumpAnalysis> {
-  const apiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
     // Fallback to patch if no API key is available
     console.warn(
-      '⚠️  No AI API key found (OPENAI_API_KEY or ANTHROPIC_API_KEY). Defaulting to patch version bump.',
+      '⚠️  No OPENROUTER_API_KEY found. Defaulting to patch version bump.',
     );
     return {
       bumpType: 'patch',
-      reasoning: 'No AI API key available. Defaulted to patch version bump.',
+      reasoning:
+        'No OPENROUTER_API_KEY available. Defaulted to patch version bump.',
     };
   }
 

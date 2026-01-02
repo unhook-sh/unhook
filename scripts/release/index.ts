@@ -12,11 +12,8 @@
  *   bun scripts/release --packages all --bump patch (manual override)
  *
  * Environment variables:
- *   OPENROUTER_API_KEY - Optional, for AI-generated changelogs
- *   OPENAI_API_KEY - Required for AI version bump analysis (or ANTHROPIC_API_KEY)
- *   ANTHROPIC_API_KEY - Alternative to OPENAI_API_KEY for version bump analysis
- *   AI_PROVIDER - Optional, "openai" (default) or "anthropic"
- *   AI_MODEL - Optional, model name (default: "gpt-4o" for OpenAI, "claude-3-5-sonnet-20241022" for Anthropic)
+ *   OPENROUTER_API_KEY - Required for AI-generated changelogs and version bump analysis
+ *   AI_MODEL - Optional, model name (default: "openai/gpt-4o-mini" for OpenRouter)
  *   DRY_RUN - If set to "true", skips npm publish and git push
  *   CLI_CHANGELOG - Pre-generated changelog for CLI (from GitHub Action)
  *   CLIENT_CHANGELOG - Pre-generated changelog for client (from GitHub Action)

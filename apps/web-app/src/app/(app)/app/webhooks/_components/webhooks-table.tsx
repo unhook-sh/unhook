@@ -3,7 +3,6 @@
 import { IconPencil } from '@tabler/icons-react';
 import { MetricButton } from '@unhook/analytics/components';
 import { api } from '@unhook/api/react';
-import { Badge } from '@unhook/ui/badge';
 import { CopyButton } from '@unhook/ui/custom/copy-button';
 import { TimezoneDisplay } from '@unhook/ui/custom/timezone-display';
 import * as Editable from '@unhook/ui/diceui/editable-input';
@@ -19,11 +18,13 @@ import {
   TableRow,
 } from '@unhook/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@unhook/ui/tooltip';
+import { ExternalLink, FileCode } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import posthog from 'posthog-js';
 import { useState } from 'react';
 import { env } from '~/env.client';
 import { DeleteWebhookDialog } from './delete-webhook-dialog';
+import { WebhookConfigDialog } from './webhook-config-dialog';
 
 function SkeletonRow() {
   return (
@@ -36,12 +37,6 @@ function SkeletonRow() {
           <Skeleton className="h-8 w-[350px]" />
           <Skeleton className="size-8 rounded" />
         </div>
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-8 w-[80px]" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-8 w-[150px]" />
       </TableCell>
       <TableCell>
         <Skeleton className="h-8 w-[150px]" />
@@ -76,6 +71,11 @@ export function WebhooksTable() {
   const [webhookToDelete, setWebhookToDelete] = useState<{
     id: string;
     name: string;
+  } | null>(null);
+  const [webhookConfigOpen, setWebhookConfigOpen] = useState<{
+    id: string;
+    name: string;
+    url: string;
   } | null>(null);
 
   const handleUpdateWebhookName = ({
@@ -114,8 +114,8 @@ export function WebhooksTable() {
     setWebhookToDelete(null);
   };
 
-  const handleRowClick = (webhookId: string) => {
-    posthog.capture('webhooks_table_row_clicked', {
+  const handleNavigateToWebhook = (webhookId: string) => {
+    posthog.capture('webhooks_table_navigate_clicked', {
       webhook_id: webhookId,
     });
     router.push(`/app/webhooks/${webhookId}`);
@@ -138,8 +138,6 @@ export function WebhooksTable() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Webhook URL</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
               <TableHead>Last Request</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -153,62 +151,52 @@ export function WebhooksTable() {
             ) : webhooks.data?.length === 0 ? (
               // Show empty state
               <TableRow>
-                <TableCell className="h-24 text-center" colSpan={6}>
+                <TableCell className="h-24 text-center" colSpan={4}>
                   No webhooks found. Create your first webhook to get started.
                 </TableCell>
               </TableRow>
             ) : (
               // Show actual data when loaded
               webhooks.data?.map((webhook) => (
-                <TableRow
-                  className="cursor-pointer hover:bg-muted/50"
-                  key={webhook.id}
-                  onClick={(e) => {
-                    // Don't navigate if clicking on interactive elements
-                    const target = e.target as HTMLElement;
-                    if (
-                      target.closest('button') ||
-                      target.closest('input') ||
-                      target.closest('[role="button"]')
-                    ) {
-                      return;
-                    }
-                    handleRowClick(webhook.id);
-                  }}
-                >
+                <TableRow key={webhook.id}>
                   <TableCell className="font-medium truncate max-w-40">
-                    <Editable.Root
-                      className="flex flex-row items-center gap-1.5"
-                      defaultValue={webhook.name}
-                      onSubmit={(value) =>
-                        handleUpdateWebhookName({
-                          apiKeyId: webhook.apiKeyId,
-                          newName: value,
-                          oldName: webhook.name,
-                          webhookId: webhook.id,
-                        })
-                      }
-                    >
-                      <Editable.Area className="flex-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Editable.Preview className="w-full rounded-md px-1.5 py-1" />
-                          </TooltipTrigger>
-                          <TooltipContent>{webhook.name}</TooltipContent>
-                        </Tooltip>
-                        <Editable.Input className="px-1.5 py-1" />
-                      </Editable.Area>
-                      <Editable.Trigger asChild>
-                        <MetricButton
-                          className="size-7"
-                          metric="webhooks_table_edit_name_clicked"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <IconPencil />
-                        </MetricButton>
-                      </Editable.Trigger>
-                    </Editable.Root>
+                    <div className="flex items-center gap-2">
+                      {webhook.status === 'active' && (
+                        <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                      )}
+                      <Editable.Root
+                        className="flex flex-row items-center gap-1.5 flex-1"
+                        defaultValue={webhook.name}
+                        onSubmit={(value) =>
+                          handleUpdateWebhookName({
+                            apiKeyId: webhook.apiKeyId,
+                            newName: value,
+                            oldName: webhook.name,
+                            webhookId: webhook.id,
+                          })
+                        }
+                      >
+                        <Editable.Area className="flex-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Editable.Preview className="w-full rounded-md px-1.5 py-1" />
+                            </TooltipTrigger>
+                            <TooltipContent>{webhook.name}</TooltipContent>
+                          </Tooltip>
+                          <Editable.Input className="px-1.5 py-1" />
+                        </Editable.Area>
+                        <Editable.Trigger asChild>
+                          <MetricButton
+                            className="size-7"
+                            metric="webhooks_table_edit_name_clicked"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <IconPencil />
+                          </MetricButton>
+                        </Editable.Trigger>
+                      </Editable.Root>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -226,27 +214,6 @@ export function WebhooksTable() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      className={
-                        webhook.status === 'active'
-                          ? 'bg-green-500/20 text-green-500 hover:bg-green-500/20 hover:text-green-500'
-                          : ''
-                      }
-                      variant={
-                        webhook.status === 'active' ? 'default' : 'secondary'
-                      }
-                    >
-                      {webhook.status === 'active' ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {webhook.createdAt ? (
-                      <TimezoneDisplay date={webhook.createdAt} />
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell>
                     {webhook.lastRequestAt ? (
                       <TimezoneDisplay date={webhook.lastRequestAt} />
                     ) : (
@@ -254,35 +221,62 @@ export function WebhooksTable() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <MetricButton
-                      className="h-8 w-8 p-0"
-                      metric="webhooks_table_delete_clicked"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setWebhookToDelete({
-                          id: webhook.id,
-                          name: webhook.name,
-                        });
-                      }}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <div className="flex items-center gap-2">
+                      <MetricButton
+                        className="h-8 w-8 p-0"
+                        metric="webhooks_table_navigate_clicked"
+                        onClick={() => handleNavigateToWebhook(webhook.id)}
+                        size="sm"
+                        variant="ghost"
                       >
-                        <title>Delete webhook</title>
-                        <path
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </MetricButton>
+                        <ExternalLink className="h-4 w-4" />
+                        <span className="sr-only">View webhook</span>
+                      </MetricButton>
+                      <MetricButton
+                        className="h-8 w-8 p-0"
+                        metric="webhooks_table_config_clicked"
+                        onClick={() => {
+                          setWebhookConfigOpen({
+                            id: webhook.id,
+                            name: webhook.name,
+                            url: getWebhookUrl(webhook.name),
+                          });
+                        }}
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <FileCode className="h-4 w-4" />
+                        <span className="sr-only">View config</span>
+                      </MetricButton>
+                      <MetricButton
+                        className="h-8 w-8 p-0"
+                        metric="webhooks_table_delete_clicked"
+                        onClick={() => {
+                          setWebhookToDelete({
+                            id: webhook.id,
+                            name: webhook.name,
+                          });
+                        }}
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <title>Delete webhook</title>
+                          <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </MetricButton>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -305,6 +299,14 @@ export function WebhooksTable() {
             : null
         }
       />
+      {webhookConfigOpen && (
+        <WebhookConfigDialog
+          onOpenChange={(open) => !open && setWebhookConfigOpen(null)}
+          open={!!webhookConfigOpen}
+          webhookName={webhookConfigOpen.name}
+          webhookUrl={webhookConfigOpen.url}
+        />
+      )}
     </>
   );
 }

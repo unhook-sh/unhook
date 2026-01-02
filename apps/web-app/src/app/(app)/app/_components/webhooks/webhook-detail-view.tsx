@@ -62,7 +62,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
     useWebhook(id);
 
   const handleBack = () => {
-    router.push('/app/webhooks');
+    router.push('/app/dashboard');
   };
 
   const handleCopyUrl = (url: string) => {
@@ -72,7 +72,7 @@ export function WebhookDetailView({ id }: WebhookDetailViewProps) {
   const handleDelete = async () => {
     await deleteWebhook();
     setShowDeleteDialog(false);
-    router.push('/app/webhooks');
+    router.push('/app/dashboard');
   };
 
   if (isLoading) {

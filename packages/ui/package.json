@@ -53,7 +53,7 @@
     "react-expanding-textarea": "2.3.6",
     "react-hook-form": "7.69.0",
     "react-markdown": "10.1.0",
-    "react-resizable-panels": "4.0.15",
+    "react-resizable-panels": "4.2.0",
     "react-scan": "0.4.3",
     "react-spring": "10.0.3",
     "react-twc": "1.5.1",
@@ -72,7 +72,7 @@
     "@unhook/tsconfig": "workspace:*",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3",
-    "zod": "4.2.1"
+    "zod": "4.3.4"
   },
   "exports": {
     "./*": "./src/components/*.tsx",

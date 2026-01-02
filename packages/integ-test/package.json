@@ -8,11 +8,11 @@
     "@unhook/utils": "workspace:*",
     "drizzle-orm": "0.45.1",
     "postgres": "3.4.7",
-    "zod": "4.2.1"
+    "zod": "4.3.4"
   },
   "devDependencies": {
     "@faker-js/faker": "10.1.0",
-    "@testcontainers/postgresql": "11.10.0",
+    "@testcontainers/postgresql": "11.11.0",
     "@types/express": "5.0.6",
     "@types/node": "25.0.3",
     "@types/ws": "8.18.1",
@@ -23,7 +23,7 @@
     "execa": "9.6.1",
     "express": "5.2.1",
     "node-fetch": "3.3.2",
-    "testcontainers": "11.10.0",
+    "testcontainers": "11.11.0",
     "tsup": "8.5.1",
     "tsx": "4.21.0",
     "typescript": "5.9.3",

@@ -26,7 +26,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@unhook/ui/toggle-group';
 import { format, subDays } from 'date-fns';
 import * as React from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 export const description = 'An interactive area chart showing webhook events';
 
@@ -221,7 +221,7 @@ export function ChartAreaInteractive() {
           className="aspect-auto h-[250px] w-full"
           config={chartConfig}
         >
-          <AreaChart data={chartData}>
+          <AreaChart baseValue={0} data={chartData}>
             <defs>
               <linearGradient id="fillCompleted" x1="0" x2="0" y1="0" y2="1">
                 <stop
@@ -281,12 +281,6 @@ export function ChartAreaInteractive() {
                 const date = new Date(value);
                 return format(date, 'MMM dd');
               }}
-              tickLine={false}
-              tickMargin={8}
-            />
-            <YAxis
-              axisLine={false}
-              domain={[0, 'dataMax']}
               tickLine={false}
               tickMargin={8}
             />

@@ -165,6 +165,7 @@ export function WebhookLatencyChart({
               />
               <YAxis
                 axisLine={false}
+                domain={[0, 'dataMax']}
                 fontSize={12}
                 stroke="hsl(var(--muted-foreground))"
                 tickFormatter={(value) => `${value}ms`}
@@ -230,6 +231,7 @@ export function WebhookLatencyChart({
               />
               <YAxis
                 axisLine={false}
+                domain={[0, 'dataMax']}
                 fontSize={12}
                 stroke="hsl(var(--muted-foreground))"
                 tickFormatter={(value) => `${value}ms`}

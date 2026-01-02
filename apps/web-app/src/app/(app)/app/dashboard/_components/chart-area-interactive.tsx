@@ -284,7 +284,12 @@ export function ChartAreaInteractive() {
               tickLine={false}
               tickMargin={8}
             />
-            <YAxis axisLine={false} tickLine={false} tickMargin={8} />
+            <YAxis
+              axisLine={false}
+              domain={[0, 'dataMax']}
+              tickLine={false}
+              tickMargin={8}
+            />
             <ChartTooltip
               content={(props) => (
                 <ChartTooltipContent

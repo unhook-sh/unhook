@@ -189,6 +189,7 @@ export function WebhookConnectionsChart({
             />
             <YAxis
               axisLine={false}
+              domain={[0, 'dataMax']}
               fontSize={12}
               stroke="hsl(var(--muted-foreground))"
               tickFormatter={(value) => `${value}`}

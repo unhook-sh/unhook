@@ -401,27 +401,43 @@ export function registerWebhookCommands(
 
 // Helper function to provide troubleshooting guidance
 async function showTroubleshootingGuide(error: Error): Promise<void> {
+  const configManager = ConfigManager.getInstance();
+  const isDevelopment = configManager.isDevelopment();
+
   const message = `Webhook creation failed: ${error.message}
 
 Troubleshooting steps:
-1. Check if you have API keys: Run "Unhook: Check API Key Status"
-2. Create an API key if needed: Run "Unhook: Create New API Key"
-3. Ensure you're signed in to Unhook
-4. Check the Developer Console for detailed error logs
+${isDevelopment ? '1. Check if you have API keys: Run "Unhook: Check API Key Status"\n' : ''}${isDevelopment ? '2. ' : '1. '}Create an API key if needed: Run "Unhook: Create New API Key"
+${isDevelopment ? '3. ' : '2. '}Ensure you're signed in to Unhook
+${isDevelopment ? '4. ' : '3. '}Check the Developer Console for detailed error logs
 
-Would you like to check your API key status now?`;
+${isDevelopment ? 'Would you like to check your API key status now?' : 'Would you like to create an API key now?'}`;
+
+  const options = isDevelopment
+    ? [
+        'Check API Key Status',
+        'Create API Key',
+        'Open Developer Console',
+        'Dismiss',
+      ]
+    : ['Create API Key', 'Open Developer Console', 'Dismiss'];
 
   const result = await vscode.window.showInformationMessage(
     message,
-    'Check API Key Status',
-    'Create API Key',
-    'Open Developer Console',
-    'Dismiss',
+    ...options,
   );
 
   switch (result) {
     case 'Check API Key Status':
-      await vscode.commands.executeCommand('unhook.checkApiKeyStatus');
+      // Only available in development mode
+      if (isDevelopment) {
+        try {
+          await vscode.commands.executeCommand('unhook.checkApiKeyStatus');
+        } catch {
+          // Command might not be registered, fall back to create API key
+          await vscode.commands.executeCommand('unhook.createApiKey');
+        }
+      }
       break;
     case 'Create API Key':
       await vscode.commands.executeCommand('unhook.createApiKey');

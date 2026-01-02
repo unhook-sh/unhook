@@ -14,6 +14,9 @@ export function registerConfigCommands(
   analyticsService?: AnalyticsService,
   firstTimeUserService?: FirstTimeUserService,
 ) {
+  const configManager = ConfigManager.getInstance();
+  const isDevelopment = configManager.isDevelopment();
+
   const createConfigCommand = vscode.commands.registerCommand(
     'unhook.createConfig',
     async () => {
@@ -678,44 +681,49 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
     },
   );
 
-  const checkFirstTimeStatusCommand = vscode.commands.registerCommand(
-    'unhook.checkFirstTimeStatus',
-    async () => {
-      if (firstTimeUserService) {
-        const isFirstTime = await firstTimeUserService.isFirstTimeUser();
-        const hasConfig = await firstTimeUserService.hasConfigurationFile();
-        const shouldShow =
-          await firstTimeUserService.shouldShowWorkspaceConfigPrompts();
+  // Debug/Test/Status check commands - only register in development mode
+  const checkFirstTimeStatusCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.checkFirstTimeStatus',
+        async () => {
+          if (firstTimeUserService) {
+            const isFirstTime = await firstTimeUserService.isFirstTimeUser();
+            const hasConfig = await firstTimeUserService.hasConfigurationFile();
+            const shouldShow =
+              await firstTimeUserService.shouldShowWorkspaceConfigPrompts();
 
-        const message = `Workspace config status:
+            const message = `Workspace config status:
 • Is first-time user: ${isFirstTime}
 • Has configuration file: ${hasConfig}
 • Should show workspace config prompts: ${shouldShow}`;
 
-        vscode.window.showInformationMessage(message);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check status.',
-        );
-      }
-    },
-  );
+            vscode.window.showInformationMessage(message);
+          } else {
+            vscode.window.showErrorMessage(
+              'FirstTimeUserService not initialized. Cannot check status.',
+            );
+          }
+        },
+      )
+    : null;
 
-  const resetFirstTimeStateCommand = vscode.commands.registerCommand(
-    'unhook.resetFirstTimeState',
-    async () => {
-      if (firstTimeUserService) {
-        await firstTimeUserService.resetFirstTimeUserState();
-        vscode.window.showInformationMessage(
-          'First-time user state reset successfully.',
-        );
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot reset state.',
-        );
-      }
-    },
-  );
+  const resetFirstTimeStateCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.resetFirstTimeState',
+        async () => {
+          if (firstTimeUserService) {
+            await firstTimeUserService.resetFirstTimeUserState();
+            vscode.window.showInformationMessage(
+              'First-time user state reset successfully.',
+            );
+          } else {
+            vscode.window.showErrorMessage(
+              'FirstTimeUserService not initialized. Cannot reset state.',
+            );
+          }
+        },
+      )
+    : null;
 
   const markAsExistingUserCommand = vscode.commands.registerCommand(
     'unhook.markAsExistingUser',
@@ -783,173 +791,175 @@ Your API key is included in the .cursor-mcp.json configuration URL. Keep this fi
     },
   );
 
-  const checkWorkspaceStatusCommand = vscode.commands.registerCommand(
-    'unhook.checkWorkspaceStatus',
-    async () => {
-      if (firstTimeUserService) {
-        try {
-          log('Manual workspace status check triggered');
-          await firstTimeUserService.forceCheckWorkspaceStatus();
-        } catch (error) {
-          log('Error during manual workspace status check', error);
-          vscode.window.showErrorMessage('Failed to check workspace status');
+  const checkWorkspaceStatusCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.checkWorkspaceStatus',
+        async () => {
+          if (firstTimeUserService) {
+            try {
+              log('Manual workspace status check triggered');
+              await firstTimeUserService.forceCheckWorkspaceStatus();
+            } catch (error) {
+              log('Error during manual workspace status check', error);
+              vscode.window.showErrorMessage(
+                'Failed to check workspace status',
+              );
+            }
+          } else {
+            vscode.window.showErrorMessage(
+              'FirstTimeUserService not initialized. Cannot check workspace status.',
+            );
+          }
+        },
+      )
+    : null;
+
+  const shouldShowPromptsCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.shouldShowPrompts', async () => {
+        if (firstTimeUserService) {
+          const shouldShow =
+            await firstTimeUserService.shouldShowWorkspaceConfigPrompts();
+          const message = shouldShow
+            ? 'Workspace config prompts should be shown.'
+            : 'Workspace config prompts should NOT be shown.';
+
+          vscode.window.showInformationMessage(message);
+        } else {
+          vscode.window.showErrorMessage(
+            'FirstTimeUserService not initialized. Cannot check prompt status.',
+          );
         }
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check workspace status.',
-        );
-      }
-    },
-  );
+      })
+    : null;
 
-  const shouldShowPromptsCommand = vscode.commands.registerCommand(
-    'unhook.shouldShowPrompts',
-    async () => {
-      if (firstTimeUserService) {
-        const shouldShow =
-          await firstTimeUserService.shouldShowWorkspaceConfigPrompts();
-        const message = shouldShow
-          ? 'Workspace config prompts should be shown.'
-          : 'Workspace config prompts should NOT be shown.';
+  const checkAnalyticsConsentCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.checkAnalyticsConsent',
+        async () => {
+          if (firstTimeUserService) {
+            const hasAsked =
+              await firstTimeUserService.hasAskedForAnalyticsConsent();
+            const message = hasAsked
+              ? 'Analytics consent has been asked for.'
+              : 'Analytics consent has NOT been asked for.';
 
-        vscode.window.showInformationMessage(message);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check prompt status.',
-        );
-      }
-    },
-  );
+            vscode.window.showInformationMessage(message);
+          } else {
+            vscode.window.showErrorMessage(
+              'FirstTimeUserService not initialized. Cannot check analytics consent.',
+            );
+          }
+        },
+      )
+    : null;
 
-  const checkAnalyticsConsentCommand = vscode.commands.registerCommand(
-    'unhook.checkAnalyticsConsent',
-    async () => {
-      if (firstTimeUserService) {
-        const hasAsked =
-          await firstTimeUserService.hasAskedForAnalyticsConsent();
-        const message = hasAsked
-          ? 'Analytics consent has been asked for.'
-          : 'Analytics consent has NOT been asked for.';
+  const checkWebhooksCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.checkWebhooks', async () => {
+        if (firstTimeUserService) {
+          const hasWebhooks = await firstTimeUserService.hasWebhooks();
+          const message = hasWebhooks
+            ? 'User has webhooks available.'
+            : 'User has no webhooks available.';
 
-        vscode.window.showInformationMessage(message);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check analytics consent.',
-        );
-      }
-    },
-  );
+          vscode.window.showInformationMessage(message);
+        } else {
+          vscode.window.showErrorMessage(
+            'FirstTimeUserService not initialized. Cannot check webhooks.',
+          );
+        }
+      })
+    : null;
 
-  const checkWebhooksCommand = vscode.commands.registerCommand(
-    'unhook.checkWebhooks',
-    async () => {
-      if (firstTimeUserService) {
-        const hasWebhooks = await firstTimeUserService.hasWebhooks();
-        const message = hasWebhooks
-          ? 'User has webhooks available.'
-          : 'User has no webhooks available.';
+  const checkOverallStatusCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.checkOverallStatus', async () => {
+        if (firstTimeUserService) {
+          const isFirstTime = await firstTimeUserService.isFirstTimeUser();
+          const hasConfig = await firstTimeUserService.hasConfigurationFile();
+          const hasWebhooks = await firstTimeUserService.hasWebhooks();
+          const shouldShow =
+            await firstTimeUserService.shouldShowWorkspaceConfigPrompts();
+          const doNotShowAgain =
+            await firstTimeUserService.getDoNotShowWorkspaceConfigPromptsStatus();
 
-        vscode.window.showInformationMessage(message);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check webhooks.',
-        );
-      }
-    },
-  );
-
-  const checkOverallStatusCommand = vscode.commands.registerCommand(
-    'unhook.checkOverallStatus',
-    async () => {
-      if (firstTimeUserService) {
-        const isFirstTime = await firstTimeUserService.isFirstTimeUser();
-        const hasConfig = await firstTimeUserService.hasConfigurationFile();
-        const hasWebhooks = await firstTimeUserService.hasWebhooks();
-        const shouldShow =
-          await firstTimeUserService.shouldShowWorkspaceConfigPrompts();
-        const doNotShowAgain =
-          await firstTimeUserService.getDoNotShowWorkspaceConfigPromptsStatus();
-
-        const message = `Overall status:
+          const message = `Overall status:
   • Is first-time user: ${isFirstTime}
   • Has configuration file: ${hasConfig}
   • Has webhooks: ${hasWebhooks}
   • Should show workspace config prompts: ${shouldShow}
   • Do not show again (workspace config): ${doNotShowAgain}`;
 
-        vscode.window.showInformationMessage(message);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check overall status.',
-        );
-      }
-    },
-  );
-
-  const checkApiKeyStatusCommand = vscode.commands.registerCommand(
-    'unhook.checkApiKeyStatus',
-    async () => {
-      if (!authStore?.isSignedIn) {
-        vscode.window.showErrorMessage(
-          'Please sign in to Unhook before checking API key status.',
-        );
-        return;
-      }
-
-      try {
-        // Get the default base URL for error messages
-        const configManager = ConfigManager.getInstance();
-        const defaultBaseUrl = configManager.getApiUrl();
-
-        // Check if we can access API keys
-        const apiKeys = await authStore.api.apiKeys.all.query();
-
-        if (!apiKeys || apiKeys.length === 0) {
-          vscode.window.showInformationMessage(
-            'No API keys found. You need to create an API key to create webhooks.',
+          vscode.window.showInformationMessage(message);
+        } else {
+          vscode.window.showErrorMessage(
+            'FirstTimeUserService not initialized. Cannot check overall status.',
           );
+        }
+      })
+    : null;
 
-          const createApiKey = await vscode.window.showInformationMessage(
-            'Would you like to create an API key now?',
-            'Yes, Create API Key',
-            "No, I'll create one manually",
+  const checkApiKeyStatusCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.checkApiKeyStatus', async () => {
+        if (!authStore?.isSignedIn) {
+          vscode.window.showErrorMessage(
+            'Please sign in to Unhook before checking API key status.',
           );
+          return;
+        }
 
-          if (createApiKey === 'Yes, Create API Key') {
-            try {
-              const newApiKey = await authStore.api.apiKeys.create.mutate({
-                isActive: true,
-                name: 'VS Code Extension - Auto Generated',
-              });
+        try {
+          // Get the default base URL for error messages
+          const configManager = ConfigManager.getInstance();
+          const defaultBaseUrl = configManager.getApiUrl();
 
-              if (newApiKey) {
-                vscode.window.showInformationMessage(
-                  `API key created successfully! ID: ${newApiKey.id}`,
-                );
-              } else {
+          // Check if we can access API keys
+          const apiKeys = await authStore.api.apiKeys.all.query();
+
+          if (!apiKeys || apiKeys.length === 0) {
+            vscode.window.showInformationMessage(
+              'No API keys found. You need to create an API key to create webhooks.',
+            );
+
+            const createApiKey = await vscode.window.showInformationMessage(
+              'Would you like to create an API key now?',
+              'Yes, Create API Key',
+              "No, I'll create one manually",
+            );
+
+            if (createApiKey === 'Yes, Create API Key') {
+              try {
+                const newApiKey = await authStore.api.apiKeys.create.mutate({
+                  isActive: true,
+                  name: 'VS Code Extension - Auto Generated',
+                });
+
+                if (newApiKey) {
+                  vscode.window.showInformationMessage(
+                    `API key created successfully! ID: ${newApiKey.id}`,
+                  );
+                } else {
+                  vscode.window.showErrorMessage(
+                    `Failed to create API key. Please create one manually at ${defaultBaseUrl}/app/api-keys`,
+                  );
+                }
+              } catch (error) {
                 vscode.window.showErrorMessage(
-                  `Failed to create API key. Please create one manually at ${defaultBaseUrl}/app/api-keys`,
+                  `Failed to create API key: ${error instanceof Error ? error.message : 'Unknown error'}. Please create one manually at ${defaultBaseUrl}/app/api-keys`,
                 );
               }
-            } catch (error) {
-              vscode.window.showErrorMessage(
-                `Failed to create API key: ${error instanceof Error ? error.message : 'Unknown error'}. Please create one manually at ${defaultBaseUrl}/app/api-keys`,
-              );
             }
-          }
-        } else {
-          const message = `Found ${apiKeys.length} API key(s):
+          } else {
+            const message = `Found ${apiKeys.length} API key(s):
 ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key.id}) - ${key.isActive ? 'Active' : 'Inactive'}`).join('\n')}`;
 
-          vscode.window.showInformationMessage(message);
+            vscode.window.showInformationMessage(message);
+          }
+        } catch (error) {
+          vscode.window.showErrorMessage(
+            `Failed to check API key status: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
         }
-      } catch (error) {
-        vscode.window.showErrorMessage(
-          `Failed to check API key status: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-      }
-    },
-  );
+      })
+    : null;
 
   const createApiKeyCommand = vscode.commands.registerCommand(
     'unhook.createApiKey',
@@ -1017,321 +1027,342 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
     },
   );
 
-  const testWebhookCreationCommand = vscode.commands.registerCommand(
-    'unhook.testWebhookCreation',
-    async () => {
-      if (!authStore?.isSignedIn) {
-        vscode.window.showErrorMessage(
-          'Please sign in to Unhook before testing webhook creation.',
-        );
-        return;
-      }
-
-      try {
-        // Show progress indicator
-        await vscode.window.withProgress(
-          {
-            cancellable: false,
-            location: vscode.ProgressLocation.Notification,
-            title: 'Testing webhook creation process...',
-          },
-          async () => {
-            let step = 1;
-
-            // Step 1: Check authentication
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Checking authentication...`,
+  const testWebhookCreationCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.testWebhookCreation',
+        async () => {
+          if (!authStore?.isSignedIn) {
+            vscode.window.showErrorMessage(
+              'Please sign in to Unhook before testing webhook creation.',
             );
-            const authTest = await authStore.api.auth.verifySessionToken.query({
-              sessionId: authStore.sessionId || '',
-              sessionTemplate: 'cli',
-            });
-            console.log('Auth test result:', authTest);
+            return;
+          }
 
-            // Step 2: Fetch API keys
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Fetching API keys...`,
-            );
-            const apiKeys = await authStore.api.apiKeys.all.query();
-            console.log('API keys result:', apiKeys);
-
-            if (!apiKeys || apiKeys.length === 0) {
-              throw new Error('No API keys found');
-            }
-
-            const apiKey = apiKeys[0];
-            if (!apiKey) {
-              throw new Error('Failed to get first API key');
-            }
-
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Using API key ${apiKey.id}...`,
-            );
-
-            // Step 3: Verify API key exists
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Verifying API key...`,
-            );
-            const apiKeyVerification = await authStore.api.apiKeys.byId.query({
-              id: apiKey.id,
-            });
-            console.log('API key verification result:', apiKeyVerification);
-
-            if (!apiKeyVerification) {
-              throw new Error(
-                `API key ${apiKey.id} not found during verification`,
-              );
-            }
-
-            // Step 4: Test webhook creation payload
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Testing webhook creation...`,
-            );
-            const testPayload = {
-              apiKeyId: apiKey.id,
-              config: {
-                headers: {},
-                requests: {},
-                storage: {
-                  maxRequestBodySize: 1024 * 1024,
-                  maxResponseBodySize: 1024 * 1024,
-                  storeHeaders: true,
-                  storeRequestBody: true,
-                  storeResponseBody: true,
-                },
+          try {
+            // Show progress indicator
+            await vscode.window.withProgress(
+              {
+                cancellable: false,
+                location: vscode.ProgressLocation.Notification,
+                title: 'Testing webhook creation process...',
               },
-              id: 'test-webhook-vscode-extension',
-              name: 'Test Webhook - VS Code Extension',
-              status: 'active' as const,
-            };
+              async () => {
+                let step = 1;
 
-            console.log(
-              'Test webhook creation payload:',
-              JSON.stringify(testPayload, null, 2),
-            );
-
-            const webhook =
-              await authStore.api.webhooks.create.mutate(testPayload);
-            console.log('Webhook creation result:', webhook);
-
-            if (webhook) {
-              vscode.window.showInformationMessage(
-                `✅ Webhook creation test successful! Created webhook: ${webhook.id}`,
-              );
-
-              // Clean up the test webhook
-              try {
-                await authStore.api.webhooks.delete.mutate({ id: webhook.id });
+                // Step 1: Check authentication
                 vscode.window.showInformationMessage(
-                  'Test webhook cleaned up successfully.',
+                  `Step ${step++}: Checking authentication...`,
                 );
-              } catch (cleanupError) {
-                console.warn('Failed to cleanup test webhook:', cleanupError);
-              }
-            } else {
-              throw new Error('Webhook creation returned null/undefined');
-            }
-          },
-        );
-      } catch (error) {
-        console.error('Webhook creation test failed:', error);
-        vscode.window.showErrorMessage(
-          `Webhook creation test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-      }
-    },
-  );
+                const authTest =
+                  await authStore.api.auth.verifySessionToken.query({
+                    sessionId: authStore.sessionId || '',
+                    sessionTemplate: 'cli',
+                  });
+                console.log('Auth test result:', authTest);
 
-  const debugApiKeyIssueCommand = vscode.commands.registerCommand(
-    'unhook.debugApiKeyIssue',
-    async () => {
-      if (!authStore?.isSignedIn) {
-        vscode.window.showErrorMessage(
-          'Please sign in to Unhook before debugging API key issues.',
-        );
-        return;
-      }
+                // Step 2: Fetch API keys
+                vscode.window.showInformationMessage(
+                  `Step ${step++}: Fetching API keys...`,
+                );
+                const apiKeys = await authStore.api.apiKeys.all.query();
+                console.log('API keys result:', apiKeys);
 
-      try {
-        // Show progress indicator
-        await vscode.window.withProgress(
-          {
-            cancellable: false,
-            location: vscode.ProgressLocation.Notification,
-            title: 'Debugging API key issue...',
-          },
-          async () => {
-            console.log('=== API Key Debug Session ===');
-            console.log('Auth store state:', {
-              authToken: authStore.authToken,
-              isSignedIn: authStore.isSignedIn,
-              sessionId: authStore.sessionId,
-            });
+                if (!apiKeys || apiKeys.length === 0) {
+                  throw new Error('No API keys found');
+                }
 
-            let step = 1;
+                const apiKey = apiKeys[0];
+                if (!apiKey) {
+                  throw new Error('Failed to get first API key');
+                }
 
-            // Step 1: Check authentication
-            console.log('Step 1: Checking authentication...');
-            const authTest = await authStore.api.auth.verifySessionToken.query({
-              sessionId: authStore.sessionId || '',
-              sessionTemplate: 'cli',
-            });
-            console.log('Auth test result:', authTest);
+                vscode.window.showInformationMessage(
+                  `Step ${step++}: Using API key ${apiKey.id}...`,
+                );
 
-            // Step 2: Fetch API keys
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Fetching API keys...`,
+                // Step 3: Verify API key exists
+                vscode.window.showInformationMessage(
+                  `Step ${step++}: Verifying API key...`,
+                );
+                const apiKeyVerification =
+                  await authStore.api.apiKeys.byId.query({
+                    id: apiKey.id,
+                  });
+                console.log('API key verification result:', apiKeyVerification);
+
+                if (!apiKeyVerification) {
+                  throw new Error(
+                    `API key ${apiKey.id} not found during verification`,
+                  );
+                }
+
+                // Step 4: Test webhook creation payload
+                vscode.window.showInformationMessage(
+                  `Step ${step++}: Testing webhook creation...`,
+                );
+                const testPayload = {
+                  apiKeyId: apiKey.id,
+                  config: {
+                    headers: {},
+                    requests: {},
+                    storage: {
+                      maxRequestBodySize: 1024 * 1024,
+                      maxResponseBodySize: 1024 * 1024,
+                      storeHeaders: true,
+                      storeRequestBody: true,
+                      storeResponseBody: true,
+                    },
+                  },
+                  id: 'test-webhook-vscode-extension',
+                  name: 'Test Webhook - VS Code Extension',
+                  status: 'active' as const,
+                };
+
+                console.log(
+                  'Test webhook creation payload:',
+                  JSON.stringify(testPayload, null, 2),
+                );
+
+                const webhook =
+                  await authStore.api.webhooks.create.mutate(testPayload);
+                console.log('Webhook creation result:', webhook);
+
+                if (webhook) {
+                  vscode.window.showInformationMessage(
+                    `✅ Webhook creation test successful! Created webhook: ${webhook.id}`,
+                  );
+
+                  // Clean up the test webhook
+                  try {
+                    await authStore.api.webhooks.delete.mutate({
+                      id: webhook.id,
+                    });
+                    vscode.window.showInformationMessage(
+                      'Test webhook cleaned up successfully.',
+                    );
+                  } catch (cleanupError) {
+                    console.warn(
+                      'Failed to cleanup test webhook:',
+                      cleanupError,
+                    );
+                  }
+                } else {
+                  throw new Error('Webhook creation returned null/undefined');
+                }
+              },
             );
-            const apiKeys = await authStore.api.apiKeys.all.query();
-            console.log('API keys result:', apiKeys);
-            console.log('API keys count:', apiKeys?.length);
-            console.log('First API key:', apiKeys?.[0]);
-
-            if (!apiKeys || apiKeys.length === 0) {
-              throw new Error('No API keys found');
-            }
-
-            const apiKey = apiKeys[0];
-            if (!apiKey) {
-              throw new Error('Failed to get first API key');
-            }
-
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Using API key ${apiKey.id}...`,
+          } catch (error) {
+            console.error('Webhook creation test failed:', error);
+            vscode.window.showErrorMessage(
+              `Webhook creation test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
             );
+          }
+        },
+      )
+    : null;
 
-            // Step 3: Verify API key exists
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Verifying API key...`,
-            );
-            const apiKeyVerification = await authStore.api.apiKeys.byId.query({
-              id: apiKey.id,
-            });
-            console.log('API key verification result:', apiKeyVerification);
+  const debugApiKeyIssueCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.debugApiKeyIssue', async () => {
+        if (!authStore?.isSignedIn) {
+          vscode.window.showErrorMessage(
+            'Please sign in to Unhook before debugging API key issues.',
+          );
+          return;
+        }
 
-            if (!apiKeyVerification) {
-              throw new Error(
-                `API key ${apiKey.id} not found during verification`,
-              );
-            }
+        try {
+          // Show progress indicator
+          await vscode.window.withProgress(
+            {
+              cancellable: false,
+              location: vscode.ProgressLocation.Notification,
+              title: 'Debugging API key issue...',
+            },
+            async () => {
+              console.log('=== API Key Debug Session ===');
+              console.log('Auth store state:', {
+                authToken: authStore.authToken,
+                isSignedIn: authStore.isSignedIn,
+                sessionId: authStore.sessionId,
+              });
 
-            // Step 4: Test webhook creation with minimal payload
-            vscode.window.showInformationMessage(
-              `Step ${step++}: Testing webhook creation...`,
-            );
-            const minimalPayload = {
-              apiKeyId: apiKey.id,
-              id: 'debug-test-webhook',
-              name: 'Debug Test Webhook',
-            };
+              let step = 1;
 
-            console.log(
-              'Minimal webhook creation payload:',
-              JSON.stringify(minimalPayload, null, 2),
-            );
+              // Step 1: Check authentication
+              console.log('Step 1: Checking authentication...');
+              const authTest =
+                await authStore.api.auth.verifySessionToken.query({
+                  sessionId: authStore.sessionId || '',
+                  sessionTemplate: 'cli',
+                });
+              console.log('Auth test result:', authTest);
 
-            const webhook =
-              await authStore.api.webhooks.create.mutate(minimalPayload);
-            console.log('Webhook creation result:', webhook);
-
-            if (webhook) {
+              // Step 2: Fetch API keys
               vscode.window.showInformationMessage(
-                `✅ Debug test successful! Created webhook: ${webhook.id}`,
+                `Step ${step++}: Fetching API keys...`,
+              );
+              const apiKeys = await authStore.api.apiKeys.all.query();
+              console.log('API keys result:', apiKeys);
+              console.log('API keys count:', apiKeys?.length);
+              console.log('First API key:', apiKeys?.[0]);
+
+              if (!apiKeys || apiKeys.length === 0) {
+                throw new Error('No API keys found');
+              }
+
+              const apiKey = apiKeys[0];
+              if (!apiKey) {
+                throw new Error('Failed to get first API key');
+              }
+
+              vscode.window.showInformationMessage(
+                `Step ${step++}: Using API key ${apiKey.id}...`,
               );
 
-              // Clean up the test webhook
-              try {
-                await authStore.api.webhooks.delete.mutate({ id: webhook.id });
-                console.log('Test webhook cleaned up successfully.');
-              } catch (cleanupError) {
-                console.warn('Failed to cleanup test webhook:', cleanupError);
+              // Step 3: Verify API key exists
+              vscode.window.showInformationMessage(
+                `Step ${step++}: Verifying API key...`,
+              );
+              const apiKeyVerification = await authStore.api.apiKeys.byId.query(
+                {
+                  id: apiKey.id,
+                },
+              );
+              console.log('API key verification result:', apiKeyVerification);
+
+              if (!apiKeyVerification) {
+                throw new Error(
+                  `API key ${apiKey.id} not found during verification`,
+                );
               }
-            } else {
-              throw new Error('Webhook creation returned null/undefined');
+
+              // Step 4: Test webhook creation with minimal payload
+              vscode.window.showInformationMessage(
+                `Step ${step++}: Testing webhook creation...`,
+              );
+              const minimalPayload = {
+                apiKeyId: apiKey.id,
+                id: 'debug-test-webhook',
+                name: 'Debug Test Webhook',
+              };
+
+              console.log(
+                'Minimal webhook creation payload:',
+                JSON.stringify(minimalPayload, null, 2),
+              );
+
+              const webhook =
+                await authStore.api.webhooks.create.mutate(minimalPayload);
+              console.log('Webhook creation result:', webhook);
+
+              if (webhook) {
+                vscode.window.showInformationMessage(
+                  `✅ Debug test successful! Created webhook: ${webhook.id}`,
+                );
+
+                // Clean up the test webhook
+                try {
+                  await authStore.api.webhooks.delete.mutate({
+                    id: webhook.id,
+                  });
+                  console.log('Test webhook cleaned up successfully.');
+                } catch (cleanupError) {
+                  console.warn('Failed to cleanup test webhook:', cleanupError);
+                }
+              } else {
+                throw new Error('Webhook creation returned null/undefined');
+              }
+
+              console.log('=== Debug Session Complete ===');
+            },
+          );
+        } catch (error) {
+          console.error('API key debug failed:', error);
+          vscode.window.showErrorMessage(
+            `API key debug failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      })
+    : null;
+
+  const testWebhookSelectionCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.testWebhookSelection',
+        async () => {
+          if (!authStore?.isSignedIn) {
+            vscode.window.showErrorMessage(
+              'Please sign in to Unhook before testing webhook selection.',
+            );
+            return;
+          }
+
+          try {
+            // Fetch available webhooks
+            const webhooks = await authStore.api.webhooks.all.query();
+            console.log('Available webhooks:', webhooks);
+
+            if (!webhooks || webhooks.length === 0) {
+              vscode.window.showInformationMessage(
+                'No webhooks found. You can create one using "Unhook: Create New Webhook".',
+              );
+              return;
             }
 
-            console.log('=== Debug Session Complete ===');
-          },
-        );
-      } catch (error) {
-        console.error('API key debug failed:', error);
-        vscode.window.showErrorMessage(
-          `API key debug failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-      }
-    },
-  );
+            // Create webhook selection options with "Create New Webhook" option
+            const webhookOptions = [
+              ...webhooks.map((webhook) => ({
+                description: `ID: ${webhook.id} • Created: ${webhook.createdAt ? new Date(webhook.createdAt).toLocaleDateString() : 'Unknown'}`,
+                isExisting: true,
+                label: webhook.name || 'Unnamed Webhook',
+                webhookId: webhook.id,
+                webhookName: webhook.name,
+              })),
+              {
+                description: 'Create a new webhook for this workspace',
+                isExisting: false,
+                label: '➕ Create New Webhook',
+                webhookId: 'create_new',
+                webhookName: 'create_new',
+              },
+            ];
 
-  const testWebhookSelectionCommand = vscode.commands.registerCommand(
-    'unhook.testWebhookSelection',
-    async () => {
-      if (!authStore?.isSignedIn) {
-        vscode.window.showErrorMessage(
-          'Please sign in to Unhook before testing webhook selection.',
-        );
-        return;
-      }
+            const webhookPick = await vscode.window.showQuickPick(
+              webhookOptions,
+              {
+                placeHolder:
+                  'Select a webhook to configure or create a new one',
+                title: 'Test Webhook Selection Interface',
+              },
+            );
 
-      try {
-        // Fetch available webhooks
-        const webhooks = await authStore.api.webhooks.all.query();
-        console.log('Available webhooks:', webhooks);
+            if (!webhookPick) {
+              vscode.window.showInformationMessage(
+                'Webhook selection cancelled.',
+              );
+              return;
+            }
 
-        if (!webhooks || webhooks.length === 0) {
-          vscode.window.showInformationMessage(
-            'No webhooks found. You can create one using "Unhook: Create New Webhook".',
-          );
-          return;
-        }
+            if (webhookPick.isExisting) {
+              vscode.window.showInformationMessage(
+                `Selected existing webhook: ${webhookPick.label} (${webhookPick.webhookId})`,
+              );
+            } else {
+              vscode.window.showInformationMessage(
+                'Selected to create new webhook. Opening webhook creation...',
+              );
 
-        // Create webhook selection options with "Create New Webhook" option
-        const webhookOptions = [
-          ...webhooks.map((webhook) => ({
-            description: `ID: ${webhook.id} • Created: ${webhook.createdAt ? new Date(webhook.createdAt).toLocaleDateString() : 'Unknown'}`,
-            isExisting: true,
-            label: webhook.name || 'Unnamed Webhook',
-            webhookId: webhook.id,
-            webhookName: webhook.name,
-          })),
-          {
-            description: 'Create a new webhook for this workspace',
-            isExisting: false,
-            label: '➕ Create New Webhook',
-            webhookId: 'create_new',
-            webhookName: 'create_new',
-          },
-        ];
-
-        const webhookPick = await vscode.window.showQuickPick(webhookOptions, {
-          placeHolder: 'Select a webhook to configure or create a new one',
-          title: 'Test Webhook Selection Interface',
-        });
-
-        if (!webhookPick) {
-          vscode.window.showInformationMessage('Webhook selection cancelled.');
-          return;
-        }
-
-        if (webhookPick.isExisting) {
-          vscode.window.showInformationMessage(
-            `Selected existing webhook: ${webhookPick.label} (${webhookPick.webhookId})`,
-          );
-        } else {
-          vscode.window.showInformationMessage(
-            'Selected to create new webhook. Opening webhook creation...',
-          );
-
-          // Execute the create webhook command
-          await vscode.commands.executeCommand('unhook.createWebhook');
-        }
-      } catch (error) {
-        console.error('Webhook selection test failed:', error);
-        vscode.window.showErrorMessage(
-          `Webhook selection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-      }
-    },
-  );
+              // Execute the create webhook command
+              await vscode.commands.executeCommand('unhook.createWebhook');
+            }
+          } catch (error) {
+            console.error('Webhook selection test failed:', error);
+            vscode.window.showErrorMessage(
+              `Webhook selection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            );
+          }
+        },
+      )
+    : null;
 
   const doNotShowAgainCommand = vscode.commands.registerCommand(
     'unhook.doNotShowWorkspaceConfigPrompts',
@@ -1365,40 +1396,41 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
     },
   );
 
-  const checkDoNotShowAgainStatusCommand = vscode.commands.registerCommand(
-    'unhook.checkDoNotShowAgainStatus',
-    async () => {
-      if (firstTimeUserService) {
-        const doNotShowAgain =
-          await firstTimeUserService.getDoNotShowWorkspaceConfigPromptsStatus();
-        const message = doNotShowAgain
-          ? 'Workspace config prompts are currently disabled (user chose "do not show again").'
-          : 'Workspace config prompts are enabled and will show when needed.';
+  const checkDoNotShowAgainStatusCommand = isDevelopment
+    ? vscode.commands.registerCommand(
+        'unhook.checkDoNotShowAgainStatus',
+        async () => {
+          if (firstTimeUserService) {
+            const doNotShowAgain =
+              await firstTimeUserService.getDoNotShowWorkspaceConfigPromptsStatus();
+            const message = doNotShowAgain
+              ? 'Workspace config prompts are currently disabled (user chose "do not show again").'
+              : 'Workspace config prompts are enabled and will show when needed.';
 
-        vscode.window.showInformationMessage(message);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check preference status.',
-        );
-      }
-    },
-  );
+            vscode.window.showInformationMessage(message);
+          } else {
+            vscode.window.showErrorMessage(
+              'FirstTimeUserService not initialized. Cannot check preference status.',
+            );
+          }
+        },
+      )
+    : null;
 
-  const resetPromptFlagsCommand = vscode.commands.registerCommand(
-    'unhook.resetPromptFlags',
-    async () => {
-      if (firstTimeUserService) {
-        await firstTimeUserService.resetPromptFlags();
-        vscode.window.showInformationMessage(
-          'Prompt flags reset. This may help with duplicate prompt issues.',
-        );
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot reset prompt flags.',
-        );
-      }
-    },
-  );
+  const resetPromptFlagsCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.resetPromptFlags', async () => {
+        if (firstTimeUserService) {
+          await firstTimeUserService.resetPromptFlags();
+          vscode.window.showInformationMessage(
+            'Prompt flags reset. This may help with duplicate prompt issues.',
+          );
+        } else {
+          vscode.window.showErrorMessage(
+            'FirstTimeUserService not initialized. Cannot reset prompt flags.',
+          );
+        }
+      })
+    : null;
 
   const triggerFirstTimePromptsIfNeededCommand =
     vscode.commands.registerCommand(
@@ -1449,100 +1481,118 @@ ${apiKeys.map((key, index) => `• ${index + 1}. ${key.name || 'Unnamed'} (${key
     },
   );
 
-  const checkPromptStateCommand = vscode.commands.registerCommand(
-    'unhook.checkPromptState',
-    async () => {
-      if (firstTimeUserService) {
-        const promptState = firstTimeUserService.getPromptState();
-        const message = `Prompt state:
+  const checkPromptStateCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.checkPromptState', async () => {
+        if (firstTimeUserService) {
+          const promptState = firstTimeUserService.getPromptState();
+          const message = `Prompt state:
   • Is showing prompts: ${promptState.isShowingPrompts}
   • Has timeout: ${promptState.hasTimeout}`;
 
-        vscode.window.showInformationMessage(message);
-        console.log('Prompt state:', promptState);
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot check prompt state.',
-        );
-      }
-    },
-  );
-
-  const removeDoNotShowKeyCommand = vscode.commands.registerCommand(
-    'unhook.removeDoNotShowKey',
-    async () => {
-      if (firstTimeUserService) {
-        try {
-          await firstTimeUserService.removeDoNotShowKey();
-          vscode.window.showInformationMessage(
-            'Attempted to remove doNotShowWorkspaceConfigPrompts key. Check the Output panel for details.',
-          );
-        } catch (error) {
+          vscode.window.showInformationMessage(message);
+          console.log('Prompt state:', promptState);
+        } else {
           vscode.window.showErrorMessage(
-            `Failed to remove doNotShowWorkspaceConfigPrompts key: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'FirstTimeUserService not initialized. Cannot check prompt state.',
           );
         }
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot remove key.',
-        );
-      }
-    },
-  );
+      })
+    : null;
 
-  const forceClearAllFlagsCommand = vscode.commands.registerCommand(
-    'unhook.forceClearAllFlags',
-    async () => {
-      if (firstTimeUserService) {
-        try {
-          await firstTimeUserService.forceClearAllFlags();
-          vscode.window.showInformationMessage(
-            'All flags have been force cleared. Please reload the window for changes to take effect.',
-          );
-        } catch (error) {
+  const removeDoNotShowKeyCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.removeDoNotShowKey', async () => {
+        if (firstTimeUserService) {
+          try {
+            await firstTimeUserService.removeDoNotShowKey();
+            vscode.window.showInformationMessage(
+              'Attempted to remove doNotShowWorkspaceConfigPrompts key. Check the Output panel for details.',
+            );
+          } catch (error) {
+            vscode.window.showErrorMessage(
+              `Failed to remove doNotShowWorkspaceConfigPrompts key: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            );
+          }
+        } else {
           vscode.window.showErrorMessage(
-            `Failed to force clear flags: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'FirstTimeUserService not initialized. Cannot remove key.',
           );
         }
-      } else {
-        vscode.window.showErrorMessage(
-          'FirstTimeUserService not initialized. Cannot force clear flags.',
-        );
-      }
-    },
-  );
+      })
+    : null;
 
-  context.subscriptions.push(
+  const forceClearAllFlagsCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.forceClearAllFlags', async () => {
+        if (firstTimeUserService) {
+          try {
+            await firstTimeUserService.forceClearAllFlags();
+            vscode.window.showInformationMessage(
+              'All flags have been force cleared. Please reload the window for changes to take effect.',
+            );
+          } catch (error) {
+            vscode.window.showErrorMessage(
+              `Failed to force clear flags: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            );
+          }
+        } else {
+          vscode.window.showErrorMessage(
+            'FirstTimeUserService not initialized. Cannot force clear flags.',
+          );
+        }
+      })
+    : null;
+
+  // Register debugGlobalState command (development only)
+  const debugGlobalStateCommand = isDevelopment
+    ? vscode.commands.registerCommand('unhook.debugGlobalState', async () => {
+        if (firstTimeUserService) {
+          await firstTimeUserService.debugGlobalState();
+          vscode.window.showInformationMessage(
+            'Global state debug information logged to Output panel.',
+          );
+        } else {
+          vscode.window.showErrorMessage(
+            'FirstTimeUserService not initialized. Cannot debug global state.',
+          );
+        }
+      })
+    : null;
+
+  // Build subscriptions array, filtering out null (development-only) commands
+  const subscriptions = [
     createConfigCommand,
     createCursorMcpServerCommand,
     configureServerUrlsCommand,
     configureApiKeyCommand,
     triggerFirstTimePromptsCommand,
-    checkFirstTimeStatusCommand,
-    resetFirstTimeStateCommand,
     markAsExistingUserCommand,
     checkConfigFileCommand,
     autoMarkAsExistingUserCommand,
     checkAndShowFirstTimePromptsCommand,
+    triggerFirstTimePromptsIfNeededCommand,
+    askAnalyticsConsentCommand,
+    askUnhookYmlCreationCommand,
+    createApiKeyCommand,
+    doNotShowAgainCommand,
+    resetDoNotShowAgainCommand,
+    // Development-only commands (may be null in production)
+    checkFirstTimeStatusCommand,
+    resetFirstTimeStateCommand,
     checkWorkspaceStatusCommand,
     shouldShowPromptsCommand,
     checkAnalyticsConsentCommand,
     checkWebhooksCommand,
     checkOverallStatusCommand,
-    triggerFirstTimePromptsIfNeededCommand,
-    askAnalyticsConsentCommand,
-    askUnhookYmlCreationCommand,
     checkApiKeyStatusCommand,
-    createApiKeyCommand,
     testWebhookCreationCommand,
     debugApiKeyIssueCommand,
     testWebhookSelectionCommand,
-    doNotShowAgainCommand,
-    resetDoNotShowAgainCommand,
     checkDoNotShowAgainStatusCommand,
     resetPromptFlagsCommand,
     checkPromptStateCommand,
     removeDoNotShowKeyCommand,
     forceClearAllFlagsCommand,
-  );
+    debugGlobalStateCommand,
+  ].filter((cmd) => cmd !== null);
+
+  context.subscriptions.push(...subscriptions);
 }

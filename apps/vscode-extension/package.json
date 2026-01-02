@@ -190,12 +190,6 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.testFirstTimeUser",
-        "icon": "$(refresh)",
-        "title": "Test First-Time User (Development)"
-      },
-      {
-        "category": "Unhook",
         "command": "unhook.resetSignInNotification",
         "icon": "$(bell)",
         "title": "Reset Sign-In Notification Preference"
@@ -244,18 +238,6 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.checkFirstTimeStatus",
-        "icon": "$(question)",
-        "title": "Check Workspace Config Status"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.resetFirstTimeState",
-        "icon": "$(debug-restart)",
-        "title": "Reset First-Time User State"
-      },
-      {
-        "category": "Unhook",
         "command": "unhook.markAsExistingUser",
         "icon": "$(check)",
         "title": "Mark As Existing User"
@@ -280,24 +262,6 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.checkWorkspaceStatus",
-        "icon": "$(workspace-trusted)",
-        "title": "Check Workspace Status"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.shouldShowPrompts",
-        "icon": "$(inspect)",
-        "title": "Should Show First-Time Prompts?"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.checkAnalyticsConsent",
-        "icon": "$(graph)",
-        "title": "Check Analytics Consent"
-      },
-      {
-        "category": "Unhook",
         "command": "unhook.askAnalyticsConsent",
         "icon": "$(megaphone)",
         "title": "Ask For Analytics Consent"
@@ -310,45 +274,9 @@
       },
       {
         "category": "Unhook",
-        "command": "unhook.checkWebhooks",
-        "icon": "$(link-external)",
-        "title": "Check User Webhooks"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.checkOverallStatus",
-        "icon": "$(pulse)",
-        "title": "Check Overall First-Time Status"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.checkApiKeyStatus",
-        "icon": "$(key)",
-        "title": "Check API Key Status"
-      },
-      {
-        "category": "Unhook",
         "command": "unhook.createApiKey",
         "icon": "$(add)",
         "title": "Create New API Key"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.testWebhookCreation",
-        "icon": "$(debug)",
-        "title": "Test Webhook Creation Process"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.debugApiKeyIssue",
-        "icon": "$(search)",
-        "title": "Debug API Key Issue"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.testWebhookSelection",
-        "icon": "$(list-selection)",
-        "title": "Test Webhook Selection Interface"
       },
       {
         "category": "Unhook",
@@ -361,36 +289,6 @@
         "command": "unhook.resetDoNotShowWorkspaceConfigPrompts",
         "icon": "$(eye)",
         "title": "Enable Workspace Config Prompts"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.checkDoNotShowAgainStatus",
-        "icon": "$(info)",
-        "title": "Check Workspace Config Prompts Status"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.resetPromptFlags",
-        "icon": "$(refresh)",
-        "title": "Reset Prompt Flags (Debug)"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.forceClearAllFlags",
-        "icon": "$(clear-all)",
-        "title": "Force Clear All Flags (Debug)"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.debugGlobalState",
-        "icon": "$(search)",
-        "title": "Debug Global State (Debug)"
-      },
-      {
-        "category": "Unhook",
-        "command": "unhook.removeDoNotShowKey",
-        "icon": "$(trash)",
-        "title": "Remove Do Not Show Key (Debug)"
       }
     ],
     "configuration": {

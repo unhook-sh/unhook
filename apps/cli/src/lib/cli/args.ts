@@ -1,3 +1,4 @@
+import isCI from 'is-ci';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import type { AppRoutePath } from '~/app/routes';
@@ -23,6 +24,19 @@ export async function parseArgs(): Promise<CliState> {
       default: false,
       description: 'Enable verbose debug logging for troubleshooting.',
       type: 'boolean',
+    })
+    .option('non-interactive', {
+      alias: 'y',
+      default: false,
+      description:
+        'Enable non-interactive mode. Disables browser prompts, interactive forms, and user input. Automatically enabled in CI environments.',
+      type: 'boolean',
+    })
+    .option('api-key', {
+      alias: 'k',
+      description:
+        'API key or token for authentication in non-interactive mode. Can also be set via UNHOOK_API_KEY environment variable.',
+      type: 'string',
     })
     .command(
       'init',
@@ -100,11 +114,20 @@ export async function parseArgs(): Promise<CliState> {
   const parsedConfig = argv as any;
   parsedConfig.version = version;
 
+  // Auto-detect CI environment or use explicit flag
+  const nonInteractive =
+    parsedConfig.nonInteractive || process.env.CI === 'true' || isCI;
+
+  // Support UNHOOK_API_KEY environment variable as alternative to --api-key flag
+  const apiKey = parsedConfig.apiKey || process.env.UNHOOK_API_KEY;
+
   return {
+    apiKey: apiKey as string | undefined,
     code: parsedConfig.code,
     command,
     configPath: parsedConfig.configPath as string,
     destination: parsedConfig.destination as string,
+    nonInteractive,
     path: parsedConfig.path as string,
     source: parsedConfig.source as string,
     verbose: parsedConfig.verbose,

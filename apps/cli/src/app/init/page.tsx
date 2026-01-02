@@ -1,7 +1,7 @@
 import type { WebhookConfig } from '@unhook/client';
 import { debug } from '@unhook/logger';
 import { Box, Text, useInput } from 'ink';
-import { type FC, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { z } from 'zod';
 import { Ascii } from '~/components/ascii';
 import {
@@ -34,12 +34,14 @@ type InitFormValues = z.infer<typeof initFormSchema>;
 export const InitPage: FC<RouteProps> = () => {
   const dimensions = useDimensions();
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const source = useCliStore.use.source?.();
   const destination = useCliStore.use.destination?.();
   const navigate = useRouterStore.use.navigate();
   const writeConfig = useConfigStore.use.writeConfig();
   const setConfig = useConfigStore.use.setConfig();
   const webhookUrl = useCliStore.use.webhookUrl?.();
+  const nonInteractive = useCliStore.use.nonInteractive?.() ?? false;
   const [configPath, setConfigPath] = useState<string | undefined>(undefined);
   const [webhookName] = useState('Default');
   const [selectedWebhookId, setSelectedWebhookId] = useState<
@@ -61,6 +63,119 @@ export const InitPage: FC<RouteProps> = () => {
       }
     });
   });
+
+  // Handle non-interactive mode
+  useEffect(() => {
+    async function handleNonInteractive() {
+      if (!nonInteractive) {
+        return;
+      }
+
+      // In non-interactive mode, use defaults where possible
+      // Destination is required, others can have defaults
+      const finalDestination = destination || 'http://localhost:3000';
+      const finalSource = source || '*';
+      const finalWebhookName = 'Default';
+
+      try {
+        // Validate destination URL
+        try {
+          new URL(finalDestination);
+        } catch {
+          setError(
+            `Invalid destination URL: ${finalDestination}. Please provide a valid URL using --destination flag.`,
+          );
+          return;
+        }
+
+        // Fetch webhooks to see if we need to create one
+        const webhooksList = await fetchWebhooks();
+        let usedWebhookId = webhookUrl;
+
+        // Extract webhook ID from webhookUrl if it's a full URL
+        if (usedWebhookId?.includes('/')) {
+          const parts = usedWebhookId.split('/');
+          usedWebhookId = parts.at(-1);
+        }
+
+        // If no webhook specified and no webhooks exist, create one
+        if (!usedWebhookId && webhooksList.length === 0) {
+          const created = await useWebhookStore
+            .getState()
+            .createWebhook(finalWebhookName);
+          usedWebhookId = created?.id;
+        } else if (!usedWebhookId && webhooksList.length > 0) {
+          // Use first webhook if none specified
+          usedWebhookId = webhooksList[0]?.id;
+        }
+
+        if (!usedWebhookId) {
+          setError('Failed to determine webhook ID');
+          return;
+        }
+
+        // Get the actual organization name from the user's account
+        const { orgId } = useAuthStore.getState();
+        const { api } = useApiStore.getState();
+
+        let orgName = 'my-org'; // fallback
+        if (orgId) {
+          try {
+            const org = await api.org.current.query();
+            if (org?.name) {
+              orgName = org.name;
+            }
+          } catch (error) {
+            log('Failed to get organization name, using fallback:', error);
+          }
+        }
+
+        const finalWebhookUrl = `https://unhook.sh/${orgName}/${usedWebhookId}`;
+
+        const config = {
+          delivery: [{ destination: 'default', source: finalSource }],
+          destination: [{ name: 'default', url: finalDestination }],
+          webhookUrl: finalWebhookUrl,
+        } satisfies WebhookConfig;
+
+        // PostHog event capture for config creation
+        capture({
+          event: 'init_config_created',
+          properties: {
+            destination: finalDestination,
+            nonInteractive: true,
+            source: finalSource,
+            webhookId: usedWebhookId,
+            webhookUrl: finalWebhookUrl,
+          },
+        });
+
+        const { path } = await writeConfig(config);
+        setConfigPath(path);
+        setConfig(config);
+        setSubmitted(true);
+
+        // In non-interactive mode, exit after a short delay
+        setTimeout(() => {
+          navigate('/', { resetHistory: true });
+        }, 1000);
+      } catch (error) {
+        log('Error in non-interactive init:', error);
+        setError(`Failed to create config: ${(error as Error).message}`);
+      }
+    }
+
+    void handleNonInteractive();
+  }, [
+    nonInteractive,
+    destination,
+    source,
+    webhookUrl,
+    fetchWebhooks,
+    writeConfig,
+    setConfig,
+    navigate,
+  ]);
 
   // Add useInput hook to handle Enter key press after submission
   useInput((_input, key) => {
@@ -146,6 +261,42 @@ export const InitPage: FC<RouteProps> = () => {
     setConfig(config);
     setSubmitted(true);
   };
+
+  // In non-interactive mode, show progress or result
+  if (nonInteractive) {
+    return (
+      <Box flexDirection="column">
+        <Box marginBottom={1}>
+          <Ascii
+            color="gray"
+            font="ANSI Shadow"
+            text="Unhook"
+            width={dimensions.width}
+          />
+        </Box>
+        {error && (
+          <Box flexDirection="column" marginBottom={1}>
+            <Text color="red">{error}</Text>
+          </Box>
+        )}
+        {isLoading && <Text>Loading webhooks...</Text>}
+        {submitted && configPath && (
+          <Box flexDirection="column" marginBottom={1}>
+            <Text>Success!</Text>
+            <Text>
+              Your webhook config has been saved at{' '}
+              <Text color="blue">{configPath}</Text>
+            </Text>
+            <Text>
+              You can now use the{' '}
+              <Text color="blue">npx @unhook/cli listen</Text> command to
+              deliver webhooks to {destination || 'http://localhost:3000'}.
+            </Text>
+          </Box>
+        )}
+      </Box>
+    );
+  }
 
   return (
     <Box flexDirection="column">

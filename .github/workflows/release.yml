@@ -1,16 +1,8 @@
-name: NPM Release
+name: Release
 
 on:
   workflow_dispatch:
     inputs:
-      version_bump:
-        description: 'Version bump type'
-        required: true
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
       packages:
         description: 'Packages to release'
         required: true
@@ -21,11 +13,6 @@ on:
           - cli
           - client
           - vscode
-      include_commits:
-        description: 'Include detailed commit list in changelog'
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -42,7 +29,7 @@ env:
 
 jobs:
   release:
-    name: NPM Release
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -67,11 +54,7 @@ jobs:
 
       - name: Run Release Script
         run: |
-          INCLUDE_COMMITS_FLAG=""
-          if [ "${{ inputs.include_commits }}" = "true" ]; then
-            INCLUDE_COMMITS_FLAG="--include-commits"
-          fi
-          bun scripts/release/index.ts --bump ${{ inputs.version_bump }} --packages ${{ inputs.packages }} --ci $INCLUDE_COMMITS_FLAG
+          bun scripts/release/index.ts --packages ${{ inputs.packages }} --ci
         env:
           # OpenRouter integration for Claude Code CLI
           # @see https://openrouter.ai/docs/guides/guides/claude-code-integration
@@ -80,6 +63,10 @@ jobs:
           ANTHROPIC_AUTH_TOKEN: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: '' # Must be explicitly empty
           ANTHROPIC_MODEL: anthropic/claude-3.5-haiku
+          # AI SDK for version bump analysis
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'openai' }}
+          AI_MODEL: ${{ vars.AI_MODEL || '' }}
           # VSCode extension publishing
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
           OVSX_PAT: ${{ secrets.OVSX_PAT }}

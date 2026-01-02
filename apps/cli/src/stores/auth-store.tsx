@@ -45,6 +45,11 @@ interface AuthActions {
     orgId: string;
     sessionId: string;
   }>;
+  authenticateWithApiKey: (apiKey: string) => Promise<{
+    authToken: string;
+    user: RouterOutputs['auth']['verifySessionToken']['user'];
+    orgId: string;
+  }>;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -69,6 +74,85 @@ const defaultInitState: AuthState = {
 // Create and export the store instance
 const store = createStore<AuthStore>()((set, get) => ({
   ...defaultInitState,
+
+  authenticateWithApiKey: async (apiKey: string) => {
+    set({ isValidatingSession: true });
+    const state = get();
+
+    log('Authenticating with API key');
+
+    try {
+      // Create API client with the provided API key/token
+      const apiClient = createClient({
+        authToken: apiKey,
+        sessionCookie: apiKey,
+        sourceHeader: 'cli',
+      });
+
+      useApiStore.setState({
+        api: apiClient,
+      });
+
+      // Validate the API key by attempting to get org info
+      // This will fail if the token is invalid
+      const org = await apiClient.org.current.query();
+
+      if (!org) {
+        throw new Error('Failed to get organization information');
+      }
+
+      // Get user info
+      const user = await apiClient.user.current.query();
+
+      if (!user) {
+        throw new Error('Failed to get user information');
+      }
+
+      // Store the token for future use
+      await state.secureStorage.setItem('token', apiKey);
+
+      // Map database user to the expected format
+      const authUser: RouterOutputs['auth']['verifySessionToken']['user'] = {
+        email: user.email,
+        fullName:
+          user.firstName || user.lastName
+            ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+            : null,
+        id: user.id,
+      };
+
+      set({
+        authToken: apiKey,
+        isSignedIn: true,
+        isValidatingSession: false,
+        orgId: org.id,
+        user: authUser,
+      });
+
+      log('API key authentication completed successfully');
+      capture({
+        distinctId: user.id,
+        event: 'user_authenticated',
+        properties: {
+          authMethod: 'api_key',
+          email: user.email,
+          orgId: org.id,
+          userId: user.id,
+        },
+      });
+
+      return {
+        authToken: apiKey,
+        orgId: org.id,
+        user: authUser,
+      };
+    } catch (error) {
+      log('Error authenticating with API key: %O', error);
+      set({ isValidatingSession: false });
+      handleAuthError(error);
+      throw error;
+    }
+  },
 
   exchangeAuthCode: async (code: string) => {
     set({ isValidatingSession: true });

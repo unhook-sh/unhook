@@ -94,6 +94,7 @@
     "packages": [
       "packages/*",
       "apps/*",
+      "scripts",
       "tooling/*",
       "docs"
     ]

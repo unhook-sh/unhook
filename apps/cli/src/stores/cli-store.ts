@@ -13,6 +13,8 @@ export type CliState = {
   source?: string;
   destination?: string;
   configPath?: string;
+  nonInteractive?: boolean;
+  apiKey?: string;
 };
 
 interface CliActions {
@@ -26,10 +28,12 @@ interface CliActions {
 type CliStore = CliState & CliActions;
 
 const defaultCliState: Partial<CliState> = {
+  apiKey: undefined,
   code: undefined,
   command: undefined,
   configPath: undefined,
   destination: undefined,
+  nonInteractive: false,
   source: undefined,
   verbose: false,
   version: '',

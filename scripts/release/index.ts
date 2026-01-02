@@ -1,18 +1,22 @@
 #!/usr/bin/env bun
 /**
- * Release script for @unhook/cli, @unhook/client, and unhook-vscode
+ * Release script for @unhook/cli, @unhook/client, unhook-vscode
  *
  * Interactive mode (default):
  *   bun scripts/release
  *
  * Non-interactive mode (for CI):
- *   bun scripts/release --bump patch --packages all --ci
- *   bun scripts/release --bump minor --packages cli --dry-run
- *   bun scripts/release --bump patch --packages vscode --ci
- *   bun scripts/release --bump patch --packages all --include-commits
+ *   bun scripts/release --packages all --ci
+ *   bun scripts/release --packages cli --dry-run
+ *   bun scripts/release --packages vscode --ci
+ *   bun scripts/release --packages all --bump patch (manual override)
  *
  * Environment variables:
  *   OPENROUTER_API_KEY - Optional, for AI-generated changelogs
+ *   OPENAI_API_KEY - Required for AI version bump analysis (or ANTHROPIC_API_KEY)
+ *   ANTHROPIC_API_KEY - Alternative to OPENAI_API_KEY for version bump analysis
+ *   AI_PROVIDER - Optional, "openai" (default) or "anthropic"
+ *   AI_MODEL - Optional, model name (default: "gpt-4o" for OpenAI, "claude-3-5-sonnet-20241022" for Anthropic)
  *   DRY_RUN - If set to "true", skips npm publish and git push
  *   CLI_CHANGELOG - Pre-generated changelog for CLI (from GitHub Action)
  *   CLIENT_CHANGELOG - Pre-generated changelog for client (from GitHub Action)
@@ -41,6 +45,7 @@ import {
   getCurrentVersion,
   updatePackageVersion,
 } from './version';
+import { analyzeVersionBump } from './version-analysis';
 import { publishVscodeExtension } from './vscode';
 
 async function runInteractive(): Promise<ReleaseConfig> {
@@ -80,44 +85,10 @@ async function runInteractive(): Promise<ReleaseConfig> {
     }
   }
 
-  const bumpType = await p.select({
-    message: 'What type of version bump?',
-    options: [
-      { hint: '0.0.x - Bug fixes', label: 'Patch', value: 'patch' },
-      { hint: '0.x.0 - New features', label: 'Minor', value: 'minor' },
-      { hint: 'x.0.0 - Breaking changes', label: 'Major', value: 'major' },
-    ],
-  });
-
-  if (p.isCancel(bumpType)) {
-    p.cancel('Release cancelled');
-    process.exit(0);
-  }
-
-  // Show what the new versions will be
-  const versionInfo: string[] = [];
-  for (const pkgKey of packagesToRelease) {
-    const pkg = PACKAGES[pkgKey];
-    if (pkg) {
-      const currentVersion = getCurrentVersion(pkg);
-      const newVersion = bumpVersion(
-        currentVersion,
-        bumpType as 'patch' | 'minor' | 'major',
-      );
-      versionInfo.push(`${pkg.name}: v${currentVersion} → v${newVersion}`);
-    }
-  }
-  p.note(versionInfo.join('\n'), 'Version changes');
-
-  const includeCommitList = await p.confirm({
-    initialValue: false,
-    message: 'Include detailed commit list in changelog?',
-  });
-
-  if (p.isCancel(includeCommitList)) {
-    p.cancel('Release cancelled');
-    process.exit(0);
-  }
+  p.note(
+    'Version bumps will be automatically determined by AI analysis of changelogs.',
+    'Version bump',
+  );
 
   const dryRun = await p.confirm({
     initialValue: false,
@@ -142,9 +113,7 @@ async function runInteractive(): Promise<ReleaseConfig> {
   }
 
   return {
-    bumpType: bumpType as 'patch' | 'minor' | 'major',
     dryRun: dryRun as boolean,
-    includeCommitList: includeCommitList as boolean,
     interactive: true,
     packages: packages as 'all' | 'cli' | 'client' | 'vscode',
   };
@@ -156,7 +125,7 @@ function parseCliArgs(): ReleaseConfig {
     args: process.argv.slice(2),
     options: {
       bump: {
-        default: 'patch',
+        default: undefined,
         short: 'b',
         type: 'string',
       },
@@ -165,10 +134,6 @@ function parseCliArgs(): ReleaseConfig {
         type: 'boolean',
       },
       'dry-run': {
-        default: false,
-        type: 'boolean',
-      },
-      'include-commits': {
         default: false,
         type: 'boolean',
       },
@@ -190,9 +155,11 @@ function parseCliArgs(): ReleaseConfig {
     process.env.CI || values.ci ? false : (values.interactive as boolean);
 
   return {
-    bumpType: values.bump as 'patch' | 'minor' | 'major',
-    dryRun: values['dry-run'] || process.env.DRY_RUN === 'true',
-    includeCommitList: values['include-commits'] as boolean,
+    bumpType:
+      values.bump && ['patch', 'minor', 'major'].includes(values.bump as string)
+        ? (values.bump as 'patch' | 'minor' | 'major')
+        : undefined,
+    dryRun: (values['dry-run'] as boolean) || process.env.DRY_RUN === 'true',
     interactive: isInteractive,
     packages: values.packages as 'all' | 'cli' | 'client' | 'vscode',
   };
@@ -206,9 +173,8 @@ async function releasePackage(
   const pkg = PACKAGES[pkgKey];
   if (!pkg) throw new Error(`Unknown package: ${pkgKey}`);
 
-  // Get current and new version
+  // Get current version
   const currentVersion = getCurrentVersion(pkg);
-  const newVersion = bumpVersion(currentVersion, config.bumpType);
 
   spinner.message(`${pkg.name}: Checking git history...`);
 
@@ -223,20 +189,41 @@ async function releasePackage(
   // Check for pre-generated changelog from GitHub Action
   const preGeneratedChangelog = process.env[pkg.changelogEnvVar];
 
-  // Generate changelog
+  // Generate changelog first (always include commit list)
   const changes = await generateChangelog(
     commits,
     pkg.name,
     latestTag,
     pkg.path, // Path filter for git commands
-    { includeCommitList: config.includeCommitList },
+    { includeCommitList: true },
     preGeneratedChangelog,
   );
+
+  // Determine version bump type
+  let bumpType: 'patch' | 'minor' | 'major';
+  if (config.bumpType) {
+    // Use provided bump type (for backward compatibility or manual override)
+    bumpType = config.bumpType;
+    spinner.message(`${pkg.name}: Using provided bump type: ${bumpType}`);
+  } else {
+    // Use AI to analyze changelog and determine bump type
+    spinner.message(
+      `${pkg.name}: Analyzing changelog to determine version bump...`,
+    );
+    const analysis = await analyzeVersionBump(changes, pkg.name);
+    bumpType = analysis.bumpType;
+    spinner.message(
+      `${pkg.name}: AI determined ${bumpType} bump - ${analysis.reasoning}`,
+    );
+  }
+
+  // Calculate new version
+  const newVersion = bumpVersion(currentVersion, bumpType);
 
   spinner.message(`${pkg.name}: Updating files...`);
 
   // Update changelog file
-  updateChangelogFile(pkg, newVersion, changes, config.bumpType);
+  updateChangelogFile(pkg, newVersion, changes, bumpType);
 
   // Update package.json version
   updatePackageVersion(pkg, newVersion);
@@ -256,21 +243,17 @@ async function main() {
     config = cliArgs;
 
     // Validate in non-interactive mode
-    if (!['patch', 'minor', 'major'].includes(config.bumpType)) {
-      console.error('Invalid bump type. Use: patch, minor, or major');
-      process.exit(1);
-    }
-
     if (!['all', 'cli', 'client', 'vscode'].includes(config.packages)) {
-      console.error('Invalid packages. Use: all, cli, client, or vscode');
+      console.error('Invalid packages. Use: all, cli, client, vscode');
       process.exit(1);
     }
 
     console.log('🚀 Starting release process');
-    console.log(`   Bump type: ${config.bumpType}`);
+    console.log(
+      `   Bump type: ${config.bumpType || 'AI-determined (from changelog)'}`,
+    );
     console.log(`   Packages: ${config.packages}`);
     console.log(`   Dry run: ${config.dryRun}`);
-    console.log(`   Include commits: ${config.includeCommitList}`);
   }
 
   const packagesToRelease =

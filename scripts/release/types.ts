@@ -5,11 +5,10 @@ export interface PackageJson {
 }
 
 export interface ReleaseConfig {
-  bumpType: 'patch' | 'minor' | 'major';
+  bumpType?: 'patch' | 'minor' | 'major'; // Optional, determined by AI if not provided
   packages: 'all' | 'cli' | 'client' | 'vscode';
   dryRun: boolean;
   interactive: boolean;
-  includeCommitList: boolean;
 }
 
 export interface PackageInfo {

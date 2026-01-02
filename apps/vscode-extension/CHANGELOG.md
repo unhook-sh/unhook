@@ -1,5 +1,35 @@
 # unhook-vscode
 
+## 0.3.8
+
+### Patch Changes
+
+Now I'll analyze the code changes and create the changelog:
+
+**Added**
+- Add support for creating Unhook configuration files directly from VS Code extension
+- Introduce Cursor MCP server configuration with advanced webhook debugging tools
+- Implement API key management commands for easier webhook setup
+
+**Changed**
+- Significantly refactored configuration and webhook selection workflows to improve user experience
+- Enhanced first-time user onboarding with more intelligent prompts and configuration checks
+- Updated webhook creation and selection interfaces to provide more contextual information
+
+**Improved**
+- Added more detailed error handling and user feedback for configuration and API key operations
+- Implemented better analytics tracking for configuration and webhook-related actions
+- Improved development debugging commands for easier troubleshooting of extension features
+
+**Fixed**
+- Resolved issues with webhook configuration and selection processes
+- Fixed potential edge cases in first-time user experience and configuration management
+
+### Commits
+
+- [`c9d12ff`](https://github.com/unhook-sh/unhook/commit/c9d12ffd863bb7b8bc72a47f3066a885d7395a5f) - refactor: update VS Code extension commands and webhooks table component (Chris Watts)
+- [`bc53b3c`](https://github.com/unhook-sh/unhook/commit/bc53b3c77db09ebb674b887e0b4e6b96a2167382) - chore: update webhook components and chart improvements (Chris Watts)
+
 ## 0.3.7
 
 ### Patch Changes

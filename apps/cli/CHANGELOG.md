@@ -1,5 +1,32 @@
 # @unhook/cli
 
+## 0.14.9
+
+### Patch Changes
+
+**Added**
+- Support for non-interactive CLI mode with flags `--non-interactive` and `--api-key`
+- Ability to authenticate using API keys in CLI, including support for `UNHOOK_API_KEY` environment variable
+- Auto-detection of non-interactive mode in CI environments
+
+**Changed**
+- Updated login and initialization flows to handle both interactive and non-interactive authentication scenarios
+- Improved CLI authentication process to support multiple methods (OAuth, API key, auth code)
+
+**Improved**
+- Enhanced error handling during CLI authentication
+- Better support for automated and scripted workflows by enabling non-interactive configuration
+- More flexible authentication mechanisms for different usage scenarios
+
+**Fixed**
+- Potential authentication edge cases in non-interactive environments
+- Improved error messaging for authentication failures
+
+### Commits
+
+- [`b3dacc9`](https://github.com/unhook-sh/unhook/commit/b3dacc99e5a843df30fbb7697c9e37655a4c4ab8) - chore: update CLI auth flow, release scripts, and documentation (Chris Watts)
+- [`bc53b3c`](https://github.com/unhook-sh/unhook/commit/bc53b3c77db09ebb674b887e0b4e6b96a2167382) - chore: update webhook components and chart improvements (Chris Watts)
+
 ## 0.14.8
 
 ### Patch Changes

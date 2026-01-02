@@ -1,5 +1,16 @@
 # @unhook/client
 
+## 0.6.9
+
+### Patch Changes
+
+**Changed**
+- Updated Zod dependency from version 4.2.1 to 4.3.4, which may include bug fixes, performance improvements, or new type validation features
+
+### Commits
+
+- [`bc53b3c`](https://github.com/unhook-sh/unhook/commit/bc53b3c77db09ebb674b887e0b4e6b96a2167382) - chore: update webhook components and chart improvements (Chris Watts)
+
 ## 0.6.8
 
 ### Patch Changes

@@ -221,7 +221,7 @@ async function getGitHubRepos(): Promise<GitHubRepo[]> {
       );
     }
 
-    return await response.json();
+    return (await response.json()) as GitHubRepo[];
   }
 }
 

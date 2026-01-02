@@ -5,7 +5,10 @@ export function bumpVersion(
   current: string,
   type: 'patch' | 'minor' | 'major',
 ): string {
-  const [major, minor, patch] = current.split('.').map(Number);
+  const parts = current.split('.').map(Number);
+  const major = parts[0] ?? 0;
+  const minor = parts[1] ?? 0;
+  const patch = parts[2] ?? 0;
 
   switch (type) {
     case 'major':

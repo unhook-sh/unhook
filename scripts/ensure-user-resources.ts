@@ -26,7 +26,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { createEnv } from '@t3-oss/env-core';
 import { db } from '@unhook/db/client';
 import { ApiKeys, OrgMembers, Orgs, Users, Webhooks } from '@unhook/db/schema';
-import { upsertCustomerByOrg } from '@unhook/stripe';
+import { upsertStripeCustomer } from '@unhook/stripe';
 import { eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
@@ -231,7 +231,7 @@ class UserResourceService {
     }
 
     try {
-      const customer = await upsertCustomerByOrg({
+      const customer = await upsertStripeCustomer({
         additionalMetadata: {
           orgName: name,
           userId,
@@ -591,7 +591,7 @@ class UserResourceService {
     }
 
     // Fall back to email-based name
-    const emailName = user.userEmail.split('@')[0];
+    const emailName = user.userEmail.split('@')[0] ?? 'User';
     const capitalizedName =
       emailName.charAt(0).toUpperCase() + emailName.slice(1);
     return `${capitalizedName}'s Team`;

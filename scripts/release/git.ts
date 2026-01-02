@@ -43,7 +43,7 @@ export async function commitVersionChanges(
 
   const commitMessage =
     releases.length === 1
-      ? `chore: release ${PACKAGES[releases[0]?.pkg]?.name}@${releases[0]?.version}`
+      ? `chore: release ${PACKAGES[releases[0]!.pkg]?.name}@${releases[0]!.version}`
       : `chore: release ${releases.map((r) => `${PACKAGES[r.pkg]?.name}@${r.version}`).join(' ')}`;
 
   if (dryRun) {

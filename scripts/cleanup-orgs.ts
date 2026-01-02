@@ -201,7 +201,7 @@ class OrgCleanupService {
     }
 
     // Keep the oldest org (first in sorted array)
-    const orgToKeep = sortedOrgs[0];
+    const orgToKeep = sortedOrgs[0]!;
     const orgsToDelete = sortedOrgs.slice(1);
 
     console.log(

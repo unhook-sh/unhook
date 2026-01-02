@@ -321,7 +321,7 @@ class WebhookCleanupService {
       }
 
       // Keep the oldest webhook (first in sorted array)
-      const webhookToKeep = sortedWebhooks[0];
+      const webhookToKeep = sortedWebhooks[0]!;
       const webhooksToDelete = sortedWebhooks.slice(1);
 
       console.log(

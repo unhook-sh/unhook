@@ -1,21 +1,13 @@
 # Webhook Configuration Example
 # Save this file as one of:
-# - .webhookrc
-# - .webhookrc.json
-# - .webhookrc.yaml
-# - .webhookrc.yml
-# - .webhookrc.js
-# - .webhookrc.cjs
-# - webhook.config.js
-# - webhook.config.cjs
-# - webhook.config.json
-# - webhook.config.yaml
-# - webhook.config.yml
+# - unhook.config.yml
+# - unhook.config.yaml
+# - unhook.config.json
+# - unhook.config.js
+# - unhook.config.ts
 #
 # Environment Variables:
 # All settings can also be configured using environment variables:
-# - WEBHOOK_PORT=3000
-# - WEBHOOK_API_KEY=your-api-key-here
 # - WEBHOOK_CLIENT_ID=my-app
 # - WEBHOOK_DEBUG=true|false|1|0|yes|no
 #
@@ -24,10 +16,6 @@
 # 2. Environment variables
 # 3. Configuration file
 # 4. Default values
-
-# Port of the local service to deliver traffic to
-# Can also be set via WEBHOOK_PORT environment variable
-port: 3000
 
 # Full webhook URL for authentication with the webhook server
 # Can also be set via:
@@ -44,3 +32,20 @@ clientId: "my-app"
 # Can also be set via WEBHOOK_DEBUG environment variable
 # Default: false
 debug: false
+
+# Delivery rules: each rule maps a source to a local destination URL
+delivery:
+  - source: "stripe"
+    destination: "http://localhost:3000/api/webhooks/stripe"
+    # Optional: custom field name for extracting the event type from the payload
+    # eventTypeField: "type"
+
+  # Example with a custom event type field
+  # - source: "hubspot"
+  #   destination: "http://localhost:3000/api/webhooks/hubspot"
+  #   eventTypeField: "subscriptionType"
+
+  # Example with nested field using dot notation
+  # - source: "custom-provider"
+  #   destination: "http://localhost:3000/api/webhooks/custom"
+  #   eventTypeField: "data.resourceType"

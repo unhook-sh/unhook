@@ -189,28 +189,10 @@ export class ConfigProvider
       );
     }
 
-    // Add destination section
-    if (this.config?.destination && this.config.destination.length > 0) {
-      sections.push(
-        new ConfigSectionItem(
-          'destination',
-          this.config.destination,
-          this.context,
-        ),
-      );
-    }
-
     // Add delivery section
     if (this.config?.delivery && this.config.delivery.length > 0) {
       sections.push(
         new ConfigSectionItem('delivery', this.config.delivery, this.context),
-      );
-    }
-
-    // Add source section
-    if (this.config?.source && this.config.source.length > 0) {
-      sections.push(
-        new ConfigSectionItem('source', this.config.source, this.context),
       );
     }
 
@@ -701,37 +683,14 @@ export class ConfigProvider
       this.validationErrors.push('Missing or empty webhookUrl');
     }
 
-    // Validate destination
-    if (!this.config.destination || this.config.destination.length === 0) {
-      this.validationErrors.push('No destinations configured');
-    } else {
-      this.config.destination.forEach((dest, index) => {
-        if (!dest.name || dest.name.trim() === '') {
-          this.validationErrors.push(`Destination ${index + 1}: Missing name`);
-        }
-        if (!dest.url) {
-          this.validationErrors.push(`Destination ${index + 1}: Missing URL`);
-        }
-      });
-    }
-
     // Validate delivery rules
     if (!this.config.delivery || this.config.delivery.length === 0) {
       this.validationErrors.push('No delivery rules configured');
     } else {
       this.config.delivery.forEach((rule, index) => {
-        if (!rule.destination || rule.destination.trim() === '') {
+        if (!rule.destination) {
           this.validationErrors.push(
-            `Delivery rule ${index + 1}: Missing destination`,
-          );
-        }
-        // Check if destination exists
-        if (
-          this.config?.destination &&
-          !this.config.destination.find((d) => d.name === rule.destination)
-        ) {
-          this.validationErrors.push(
-            `Delivery rule ${index + 1}: Destination "${rule.destination}" not found`,
+            `Delivery rule ${index + 1}: Missing destination URL`,
           );
         }
       });

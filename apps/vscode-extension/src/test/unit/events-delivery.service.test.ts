@@ -73,14 +73,8 @@ const mockEvent: EventTypeWithRequest = {
 const mockConfig: WebhookConfig = {
   delivery: [
     {
-      destination: 'local',
+      destination: 'http://localhost:3000',
       source: '*',
-    },
-  ],
-  destination: [
-    {
-      name: 'local',
-      url: 'http://localhost:3000',
     },
   ],
   webhookUrl: 'https://unhook.sh/test-org/test-webhook',
@@ -110,7 +104,6 @@ describe('EventsDeliveryService', () => {
         expect.objectContaining({
           api: mockAuthStore.api,
           delivery: mockConfig.delivery,
-          destination: mockConfig.destination,
           event: mockEvent,
         }),
       );
@@ -138,7 +131,6 @@ describe('EventsDeliveryService', () => {
         expect.objectContaining({
           api: mockAuthStore.api,
           delivery: mockConfig.delivery,
-          destination: mockConfig.destination,
           event: mockEvent,
         }),
       );
@@ -157,23 +149,22 @@ describe('EventsDeliveryService', () => {
       ).not.toHaveBeenCalled();
     });
 
-    test('should handle events with no destinations', async () => {
+    test('should handle events with no delivery rules', async () => {
       const service = new EventsDeliveryService(
         mockAuthStore as unknown as AuthStore,
         mockAnalyticsService as unknown as AnalyticsService,
       );
-      const configWithNoDestinations = { ...mockConfig, destination: [] };
+      const configWithNoDelivery = { ...mockConfig, delivery: [] };
 
       await service.handleRealtimeEventDelivery(
         mockEvent,
-        configWithNoDestinations,
+        configWithNoDelivery,
       );
 
       expect(mockCreateRequestsForEventToAllDestinations).toHaveBeenCalledWith(
         expect.objectContaining({
           api: mockAuthStore.api,
-          delivery: configWithNoDestinations.delivery,
-          destination: configWithNoDestinations.destination,
+          delivery: configWithNoDelivery.delivery,
           event: mockEvent,
         }),
       );

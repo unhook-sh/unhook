@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.36.5",
+    "@clerk/nextjs": "6.36.8",
     "@supabase/ssr": "0.8.0",
-    "@supabase/supabase-js": "2.89.0",
+    "@supabase/supabase-js": "2.91.0",
     "@t3-oss/env-core": "0.13.10",
     "@unhook/id": "workspace:*",
     "@unhook/logger": "workspace:*",
@@ -14,24 +14,24 @@
     "drizzle-seed": "0.3.1",
     "drizzle-zod": "0.8.3",
     "lodash-es": "4.17.22",
-    "next": "16.1.1",
-    "pg": "8.16.3",
+    "next": "16.1.4",
+    "pg": "8.17.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "zod": "4.3.4",
-    "zustand": "5.0.9"
+    "zod": "4.3.5",
+    "zustand": "5.0.10"
   },
   "devDependencies": {
     "@t3-oss/env-core": "0.13.10",
     "@t3-oss/env-nextjs": "0.13.10",
     "@types/lodash-es": "4.17.12",
     "@types/pg": "8.16.0",
-    "@types/react": "19.2.7",
+    "@types/react": "19.2.9",
     "@types/react-dom": "19.2.3",
     "@unhook/tsconfig": "workspace:*",
     "chokidar": "5.0.0",
     "drizzle-kit": "0.31.8",
-    "supabase": "2.70.5",
+    "supabase": "2.72.8",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "zx": "8.8.5"

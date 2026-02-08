@@ -133,8 +133,7 @@ export const InitPage: FC<RouteProps> = () => {
         const finalWebhookUrl = `https://unhook.sh/${orgName}/${usedWebhookId}`;
 
         const config = {
-          delivery: [{ destination: 'default', source: finalSource }],
-          destination: [{ name: 'default', url: finalDestination }],
+          delivery: [{ destination: finalDestination, source: finalSource }],
           webhookUrl: finalWebhookUrl,
         } satisfies WebhookConfig;
 
@@ -251,8 +250,9 @@ export const InitPage: FC<RouteProps> = () => {
     const webhookUrl = `https://unhook.sh/${orgName}/${usedWebhookId}`;
 
     const config = {
-      delivery: [{ destination: 'default', source: values.source ?? '*' }],
-      destination: [{ name: 'default', url: values.destination }],
+      delivery: [
+        { destination: values.destination, source: values.source ?? '*' },
+      ],
       webhookUrl: webhookUrl,
     } satisfies WebhookConfig;
 

@@ -1,66 +1,8 @@
 import type { ApiClient } from '@unhook/api/client';
 import type { EventType, RequestType } from '@unhook/db/schema';
 // Shared delivery logic for resolving destinations and creating requests for all environments
-import type {
-  RemotePatternSchema,
-  WebhookDelivery,
-  WebhookDestination,
-} from '../config';
-
-/**
- * Converts a string, URL, or RemotePatternSchema to a URL string
- */
-export function getUrlString(url: string | URL | RemotePatternSchema): string {
-  if (typeof url === 'string') return url;
-  if (typeof URL !== 'undefined' && url instanceof URL) return url.toString();
-  if (
-    typeof url === 'object' &&
-    url !== null &&
-    'hostname' in url &&
-    typeof (url as RemotePatternSchema).hostname === 'string'
-  ) {
-    const {
-      protocol = 'http',
-      hostname,
-      port,
-      pathname = '',
-      search = '',
-    } = url as RemotePatternSchema;
-    return `${protocol}://${hostname}${port ? `:${port}` : ''}${pathname}${search}`;
-  }
-  return '';
-}
-
-/**
- * Resolves the destination for a given source using delivery rules and destination definitions
- */
-export function resolveDestination({
-  source,
-  delivery,
-  destination,
-}: {
-  source: string;
-  delivery: WebhookDelivery[];
-  destination: WebhookDestination[];
-}): { url: string; destination: string } | null {
-  const matchingDeliver = delivery.find(
-    (rule) => rule.source === '*' || rule.source === source,
-  );
-  if (!matchingDeliver) {
-    return null;
-  }
-  const destinationDef = (destination ?? []).find(
-    (t) => t.name === matchingDeliver.destination,
-  );
-  if (!destinationDef || !destinationDef.url) {
-    return null;
-  }
-  const destinationUrl = getUrlString(destinationDef.url);
-  return {
-    destination: destinationDef.name,
-    url: destinationUrl,
-  };
-}
+import type { WebhookDelivery } from '../config';
+import { getDeliveryName, getDeliveryUrl } from '../config';
 
 export type DeliveryRequestFn = (
   url: string,
@@ -77,6 +19,32 @@ export type DeliveryCaptureFn = (event: {
 }) => void;
 
 /**
+ * Resolves the matching delivery rule for a given source.
+ */
+export function resolveDestination({
+  source,
+  delivery,
+}: {
+  source: string;
+  delivery: WebhookDelivery[];
+}): { url: string; destination: string } | null {
+  const matchingRule = delivery.find(
+    (rule) => rule.source === '*' || rule.source === source,
+  );
+  if (!matchingRule) {
+    return null;
+  }
+  const url = getDeliveryUrl(matchingRule.destination);
+  if (!url) {
+    return null;
+  }
+  return {
+    destination: getDeliveryName(matchingRule),
+    url,
+  };
+}
+
+/**
  * Creates requests for all destinations for a given event.
  *
  * @param params - All required data and dependencies
@@ -84,7 +52,6 @@ export type DeliveryCaptureFn = (event: {
 export async function createRequestsForEventToAllDestinations({
   event,
   delivery,
-  destination,
   api,
   connectionId,
   isEventRetry = false,
@@ -95,24 +62,25 @@ export async function createRequestsForEventToAllDestinations({
 }: {
   event: EventType;
   delivery: WebhookDelivery[];
-  destination: WebhookDestination[];
   api: ApiClient;
   connectionId?: string | null;
   isEventRetry?: boolean;
-  pingEnabledFn?: (destination: WebhookDestination) => boolean;
+  pingEnabledFn?: (delivery: WebhookDelivery) => boolean;
   capture?: DeliveryCaptureFn;
   onRequestCreated?: (request: RequestType) => Promise<void> | void;
   preventDuplicates?: boolean;
 }) {
   const originRequest = event.originRequest;
   for (const deliveryRule of delivery) {
-    const dest = destination.find((t) => t.name === deliveryRule.destination);
-    if (!dest) continue;
+    const destName = getDeliveryName(deliveryRule);
+    const urlString = getDeliveryUrl(deliveryRule.destination);
+    if (!urlString) continue;
+
     if (deliveryRule.source !== '*' && event.source !== deliveryRule.source) {
       capture?.({
         event: 'webhook_event_skipped',
         properties: {
-          destination: dest.name,
+          destination: destName,
           eventId: event.id,
           source: event.source,
           webhookId: event.webhookId,
@@ -120,14 +88,13 @@ export async function createRequestsForEventToAllDestinations({
       });
       continue;
     }
-    const urlString = getUrlString(dest.url);
 
     // Check if a request already exists for this event and destination to prevent duplicates
     if (preventDuplicates) {
       try {
         const existingRequest =
           await api.requests.byEventIdAndDestination.query({
-            destinationName: dest.name,
+            destinationName: destName,
             destinationUrl: urlString,
             eventId: event.id,
           });
@@ -137,7 +104,7 @@ export async function createRequestsForEventToAllDestinations({
           capture?.({
             event: 'webhook_request_duplicate_skipped',
             properties: {
-              destination: dest.name,
+              destination: destName,
               eventId: event.id,
               existingRequestId: existingRequest.id,
               source: event.source,
@@ -145,9 +112,6 @@ export async function createRequestsForEventToAllDestinations({
             },
           });
 
-          // if (onRequestCreated) {
-          //   await onRequestCreated(existingRequest);
-          // }
           continue;
         }
       } catch (error) {
@@ -160,11 +124,13 @@ export async function createRequestsForEventToAllDestinations({
       event: isEventRetry ? 'webhook_request_replay' : 'webhook_event_deliver',
       properties: {
         connectionId: connectionId ?? undefined,
-        destination: dest.name,
+        destination: destName,
         eventId: event.id,
         isEventRetry,
         method: originRequest.method,
-        pingEnabled: pingEnabledFn ? pingEnabledFn(dest) : !!dest.ping,
+        pingEnabled: pingEnabledFn
+          ? pingEnabledFn(deliveryRule)
+          : !!deliveryRule.ping,
         source: event.source,
         url: urlString,
         webhookId: event.webhookId,
@@ -174,10 +140,10 @@ export async function createRequestsForEventToAllDestinations({
       apiKeyId: event.apiKeyId,
       connectionId: connectionId ?? undefined,
       destination: {
-        name: dest.name,
+        name: destName,
         url: urlString,
       },
-      destinationName: dest.name,
+      destinationName: destName,
       destinationUrl: urlString,
       eventId: event.id,
       responseTimeMs: 0,
@@ -209,7 +175,6 @@ export async function createRequestsForEventToAllDestinations({
 export async function handlePendingRequest({
   request,
   delivery,
-  destination,
   api,
   capture,
   onRetryRequest,
@@ -219,7 +184,6 @@ export async function handlePendingRequest({
   request: RequestType;
   event: EventType;
   delivery: WebhookDelivery[];
-  destination: WebhookDestination[];
   api: ApiClient;
   capture?: DeliveryCaptureFn;
   onRetryRequest?: (request: RequestType) => Promise<void> | void;
@@ -227,7 +191,6 @@ export async function handlePendingRequest({
 }) {
   const dest = resolveDestination({
     delivery,
-    destination,
     source: request.source,
   });
   if (!dest) return;

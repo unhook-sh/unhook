@@ -6,8 +6,8 @@ import { HeroSection } from '~/app/(marketing)/_components/sections/hero-section
 import { Navbar } from '~/app/(marketing)/_components/sections/navbar';
 // import { SharedWebhooksSection } from '~/app/(marketing)/_components/sections/shared-webhooks-section';
 // import { AIMCPSection } from './_components/sections/ai-mcp-section';
-import { FeatureSection } from './_components/sections/feature-section';
-import { PricingSection } from './_components/sections/pricing-section/pricing-section';
+// import { FeatureSection } from './_components/sections/feature-section';
+// import { PricingSection } from './_components/sections/pricing-section/pricing-section';
 // import { QuoteSection } from './_components/sections/quote-section';
 // import { VSCodeFeaturesSection } from './_components/sections/vscode-features-section';
 
@@ -20,14 +20,14 @@ export default function Home() {
       <main className="flex flex-col items-center justify-center divide-y divide-border min-h-screen w-full">
         <HeroSection />
         {/* <CompanyShowcase /> */}
-        <FeatureSection />
+        {/* <FeatureSection /> */}
         {/* <SharedWebhooksSection /> */}
         {/* <VSCodeFeaturesSection /> */}
         {/* <AIMCPSection /> */}
         <BentoSection />
         {/* <QuoteSection /> */}
         {/* <GrowthSection /> */}
-        <PricingSection />
+        {/* <PricingSection /> */}
         {/* <TestimonialSection /> */}
         <FAQSection />
         <CTASection />

@@ -16,7 +16,6 @@ const log = debug('unhook:cli:config-store');
 const defaultConfigState: WebhookConfig = {
   debug: false,
   delivery: [],
-  destination: [],
   telemetry: true,
   webhookUrl: '',
 };
@@ -128,22 +127,18 @@ const store = createStore<ConfigStore>()((set, get) => ({
  * For more information, visit: https://docs.unhook.sh/configuration
  *
  * @property {string} webhookUrl - Full webhook URL (e.g., https://unhook.sh/my-org/my-webhook)
- * @property {Array<{name: string, url: string|URL|RemotePattern, ping?: boolean|string|URL|RemotePattern}>} destination - Array of destination endpoints
- * @property {Array<{source?: string, destination: string}>} delivery - Array of delivery rules
-
- * @typedef {Object} RemotePattern
- * @property {'http'|'https'} [protocol] - URL protocol
- * @property {string} hostname - URL hostname
- * @property {string} [port] - URL port
- * @property {string} [pathname] - URL pathname
- * @property {string} [search] - URL search params
+ * @property {Array} delivery - Array of delivery rules
+ *   @property {string} delivery[].destination - URL to forward webhooks to
+ *   @property {string} [delivery[].source] - Source filter (default: "*" = all)
+ *   @property {string} [delivery[].name] - Optional label for this rule
+ *   @property {string} [delivery[].eventTypeField] - Custom field name for event type (e.g., "resourceType")
+ *   @property {boolean} [delivery[].ping] - Enable ping checks (default: true)
  */
 
 import { defineWebhookConfig } from '@unhook/cli';
 
 const config = defineWebhookConfig({
   webhookUrl: '${config.webhookUrl}',
-  destination: ${JSON.stringify(config.destination, null, 2)},
   delivery: ${JSON.stringify(config.delivery, null, 2)},
 } as const);
 
@@ -153,7 +148,6 @@ export default config;
       // Use YAML format if not TypeScript
       const yamlConfig = {
         delivery: config.delivery,
-        destination: config.destination,
         webhookUrl: config.webhookUrl,
       };
       content = `# Unhook Webhook Configuration
@@ -161,20 +155,12 @@ export default config;
 #
 # Schema:
 #   webhookUrl: string                   # Full webhook URL (e.g., https://unhook.sh/my-org/my-webhook)
-#   destination:                         # Array of destination endpoints
-#     - name: string                     # Name of the endpoint
-#       url: string|URL|RemotePattern    # URL to forward webhooks to
-#       ping?: boolean|string|URL        # Optional ping configuration
-#   delivery:                             # Array of delivery rules
-#     - source?: string                  # Optional source filter (default: *)
-#       destination: string              # Name of the destination from 'destination' array
-#
-# RemotePattern:
-#   protocol?: "http"|"https"            # URL protocol
-#   hostname: string                     # URL hostname
-#   port?: string                        # URL port
-#   pathname?: string                    # URL pathname
-#   search?: string                      # URL search params
+#   delivery:                            # Array of delivery rules
+#     - destination: string              # URL to forward webhooks to
+#       source?: string                  # Optional source filter (default: "*" = all)
+#       name?: string                    # Optional label for this rule
+#       eventTypeField?: string          # Custom field name for event type (e.g., "resourceType")
+#       ping?: boolean                   # Enable ping checks (default: true)
 
 ${yaml.dump(yamlConfig, {
   indent: 2,

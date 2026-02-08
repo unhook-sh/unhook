@@ -1,4 +1,5 @@
 import type { WebhookConfig } from '@unhook/client/config';
+import { getDeliveryName, getDeliveryUrl } from '@unhook/client/config';
 import { createRequestsForEventToAllDestinations } from '@unhook/client/utils/delivery';
 import type { EventTypeWithRequest, RequestType } from '@unhook/db/schema';
 import { debug } from '@unhook/logger';
@@ -81,7 +82,6 @@ export class EventsDeliveryService {
       await createRequestsForEventToAllDestinations({
         api: authStore.api,
         delivery: config.delivery,
-        destination: config.destination,
         event,
         isEventRetry: false,
         onRequestCreated: async (request) => {
@@ -102,7 +102,7 @@ export class EventsDeliveryService {
 
           log(`Delivered request ${request.id} for realtime event ${event.id}`);
         },
-        pingEnabledFn: (destination) => !!destination.ping,
+        pingEnabledFn: (rule) => !!rule.ping,
         preventDuplicates: true, // Enable duplicate prevention for realtime events
       });
 
@@ -112,7 +112,7 @@ export class EventsDeliveryService {
         'webhook_delivered',
         {
           auto_delivery: true,
-          destination_count: config.destination?.length ?? 0,
+          destination_count: config.delivery?.length ?? 0,
           event_id: event.id,
           realtime: true,
         },
@@ -177,7 +177,6 @@ export class EventsDeliveryService {
         await createRequestsForEventToAllDestinations({
           api: authStore.api,
           delivery: config.delivery,
-          destination: config.destination,
           event,
           isEventRetry: false,
           onRequestCreated: async (request) => {
@@ -200,7 +199,7 @@ export class EventsDeliveryService {
 
             log(`Delivered request ${request.id} for event ${event.id}`);
           },
-          pingEnabledFn: (destination) => !!destination.ping,
+          pingEnabledFn: (rule) => !!rule.ping,
           preventDuplicates: true, // Enable duplicate prevention for batch delivery
         });
 
@@ -218,7 +217,7 @@ export class EventsDeliveryService {
           'webhook_delivered',
           {
             auto_delivery: true,
-            destination_count: config.destination?.length ?? 0,
+            destination_count: config.delivery?.length ?? 0,
             event_id: event.id,
           },
         );
@@ -286,11 +285,14 @@ export class EventsDeliveryService {
     config: WebhookConfig,
     api: AuthStore['api'],
   ): Promise<void> {
-    const destination = config.destination.find(
-      (d) => d.name === request.destinationName,
+    // Find the matching delivery rule by name or destination URL
+    const deliveryRule = config.delivery.find(
+      (d) =>
+        getDeliveryName(d) === request.destinationName ||
+        getDeliveryUrl(d.destination) === request.destinationUrl,
     );
-    if (!destination) {
-      log('Destination not found for request', {
+    if (!deliveryRule) {
+      log('Delivery rule not found for request', {
         destinationName: request.destinationName,
         requestId: request.id,
       });
@@ -328,10 +330,7 @@ export class EventsDeliveryService {
       const { host: _host, ...headers } = originRequest.headers;
 
       // Make the HTTP request
-      const destinationUrl =
-        typeof destination.url === 'string'
-          ? destination.url
-          : `${destination.url.protocol}://${destination.url.hostname}${destination.url.port ? `:${destination.url.port}` : ''}${destination.url.pathname || ''}${destination.url.search || ''}`;
+      const destinationUrl = getDeliveryUrl(deliveryRule.destination);
 
       const response = await fetch(destinationUrl, {
         body: requestBody,

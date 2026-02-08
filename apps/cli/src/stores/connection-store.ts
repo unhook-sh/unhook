@@ -1,4 +1,5 @@
 import net from 'node:net';
+import { getDeliveryName, getDeliveryUrl } from '@unhook/client/config';
 import { debug } from '@unhook/logger';
 import { createSelectors } from '@unhook/zustand';
 import { createStore } from 'zustand';
@@ -66,11 +67,11 @@ const createConnectionStore = () => {
     connect: async () => {
       if (isDestroyedRef) return;
 
-      const { delivery, destination } = useConfigStore.getState();
+      const { delivery } = useConfigStore.getState();
       const { user, orgId } = useAuthStore.getState();
 
       // If no delivery rules have ping enabled, treat as disabled
-      const pingEnabled = destination.some((rule) => rule.ping !== false);
+      const pingEnabled = delivery.some((rule) => rule.ping !== false);
 
       capture({
         event: 'connection_attempt',
@@ -145,26 +146,23 @@ const createConnectionStore = () => {
       }
 
       // Check each delivery rule that has ping enabled
-      for (const rule of destination) {
+      for (const rule of delivery) {
         if (rule.ping === false) continue;
 
-        // Generate a stable ID for the rule based on from/to
-        const ruleId = `${String(rule.name)}`;
+        // Generate a stable ID for the rule
+        const ruleId = getDeliveryName(rule);
 
         // Ensure we have a valid URL string for the target
-        const targetUrl =
-          typeof rule.url === 'string'
-            ? rule.url
-            : rule.url instanceof URL
-              ? rule.url.toString()
-              : `${rule.url.protocol || 'http'}://${rule.url.hostname}${rule.url.port ? `:${rule.url.port}` : ''}${rule.url.pathname || ''}`;
+        const targetUrl = getDeliveryUrl(rule.destination);
 
         // Ensure we have a valid URL string for ping
         const pingUrl =
           typeof rule.ping === 'string' || rule.ping instanceof URL
             ? rule.ping.toString()
             : typeof rule.ping === 'object' && rule.ping !== null
-              ? `${rule.ping.protocol || 'http'}://${rule.ping.hostname}${rule.ping.port ? `:${rule.ping.port}` : ''}${rule.ping.pathname || ''}`
+              ? getDeliveryUrl(
+                  rule.ping as Parameters<typeof getDeliveryUrl>[0],
+                )
               : targetUrl;
 
         // Extract port from URL if it's a localhost URL

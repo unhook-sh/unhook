@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "@unhook/analytics": "workspace:*",
-    "next": "16.1.1",
-    "stripe": "20.1.0"
+    "next": "16.1.4",
+    "stripe": "20.2.0"
   },
   "devDependencies": {
     "@unhook/tsconfig": "workspace:*",

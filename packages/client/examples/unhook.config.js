@@ -28,19 +28,21 @@ const config = {
   // Can also be set via WEBHOOK_DEBUG environment variable
   // Default: false
   debug: false,
+
+  // Delivery rules: each rule maps a source to a local destination URL
   delivery: [
     {
-      destination: 'clerk',
+      // Destination: the local URL to forward webhooks to
+      destination: 'http://localhost:3000/api/webhooks/clerk',
+      // Source filter: which webhook source to match ("*" = all sources)
       source: 'clerk',
+      // Optional: custom field name in the webhook body that contains the event type
+      // Useful when the provider uses a non-standard field like "resourceType" or "subscriptionType"
+      // Supports dot notation for nested fields (e.g., "data.type")
+      // eventTypeField: 'type',
     },
   ],
 
-  destination: [
-    {
-      name: 'clerk',
-      url: 'http://localhost:3000/api/webhooks/clerk',
-    },
-  ],
   // Full webhook URL for authentication with the webhook server
   // Format: https://unhook.sh/{orgName}/{webhookName}
   // Can also be set via:

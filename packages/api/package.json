@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@clerk/nextjs": "6.36.5",
+    "@clerk/nextjs": "6.36.8",
     "@t3-oss/env-core": "0.13.10",
     "@t3-oss/env-nextjs": "0.13.10",
-    "@tanstack/react-query": "5.90.16",
+    "@tanstack/react-query": "5.90.19",
     "@trpc/client": "11.8.1",
     "@trpc/react-query": "11.8.1",
     "@trpc/server": "11.8.1",
@@ -15,15 +15,15 @@
     "@unhook/utils": "workspace:*",
     "@vercel/kv": "3.0.0",
     "drizzle-orm": "0.45.1",
-    "next": "16.1.1",
+    "next": "16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "superjson": "2.2.6",
-    "zod": "4.3.4",
+    "zod": "4.3.5",
     "zod-to-json-schema": "3.25.1"
   },
   "devDependencies": {
-    "@types/react": "19.2.7",
+    "@types/react": "19.2.9",
     "@types/react-dom": "19.2.3",
     "@unhook/tsconfig": "workspace:*",
     "typescript": "5.9.3"

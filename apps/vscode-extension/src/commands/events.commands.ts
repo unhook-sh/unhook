@@ -1,3 +1,4 @@
+import { getDeliveryName, getDeliveryUrl } from '@unhook/client/config';
 import { extractBody } from '@unhook/client/utils/extract-body';
 import { extractEventName } from '@unhook/client/utils/extract-event-name';
 import type { EventTypeWithRequest } from '@unhook/db/schema';
@@ -145,18 +146,20 @@ export function registerEventCommands(
             status: 'processing',
           });
 
-          // For replay with polling, create new request records for all destinations
+          // For replay with polling, create new request records for all delivery rules
           // and process them immediately to simulate a new webhook event
-          for (const destination of config.destination) {
+          for (const deliveryRule of config.delivery) {
+            const destName = getDeliveryName(deliveryRule);
+            const destUrl = getDeliveryUrl(deliveryRule.destination);
             // Create a new request record for replay with a unique timestamp
             const newRequest = await authStore.api.requests.create.mutate({
               apiKeyId: event.apiKeyId ?? undefined,
               destination: {
-                name: destination.name,
-                url: String(destination.url),
+                name: destName,
+                url: destUrl,
               },
-              destinationName: destination.name,
-              destinationUrl: String(destination.url),
+              destinationName: destName,
+              destinationUrl: destUrl,
               eventId: event.id,
               responseTimeMs: 0,
               source: event.source || 'unknown',

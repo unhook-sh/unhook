@@ -1,4 +1,5 @@
 import { debug } from '@unhook/logger';
+import { get } from 'lodash-es';
 import { transformWithJavaScript } from '../transformers/javascript-transformer';
 import type { FilterResult, ForwardingContext } from '../types';
 
@@ -124,10 +125,18 @@ export async function evaluateFilters(
   }
 }
 
-function extractEventName(context: ForwardingContext): string {
+function extractEventName(
+  context: ForwardingContext,
+  eventTypeField?: string,
+): string {
   try {
     if (context.request.body) {
       const body = JSON.parse(context.request.body);
+
+      // Check custom field first if provided
+      if (eventTypeField && get(body, eventTypeField) !== undefined) {
+        return String(body[eventTypeField]);
+      }
 
       // Common event name fields in webhooks
       const eventName =

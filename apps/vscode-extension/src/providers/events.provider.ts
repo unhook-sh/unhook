@@ -376,7 +376,6 @@ export class EventsProvider
           log('Config retrieved, calling handleNewEventsDelivery', {
             configWebhookUrl: config.webhookUrl,
             hasDelivery: !!config.delivery,
-            hasDestination: !!config.destination,
           });
           this.deliveryService.handleNewEventsDelivery(
             events,

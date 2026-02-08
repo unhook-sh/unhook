@@ -4,15 +4,15 @@
     "url": "https://github.com/unhook-sh/unhook/issues"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.89.0",
+    "@supabase/supabase-js": "2.91.0",
     "@t3-oss/env-core": "0.13.10",
     "@vercel/kv": "3.0.0",
     "debug": "4.4.3",
     "drizzle-orm": "0.45.1",
     "find-up": "8.0.0",
-    "undici": "7.16.0",
+    "undici": "7.18.2",
     "yaml": "2.8.2",
-    "zod": "4.3.4"
+    "zod": "4.3.5"
   },
   "devDependencies": {
     "@types/debug": "4.1.12",

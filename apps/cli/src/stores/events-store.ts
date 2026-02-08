@@ -69,7 +69,7 @@ const store = createStore<EventStore>()((set, get) => ({
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
     const { api } = useApiStore.getState();
-    const { delivery, destination } = useConfigStore.getState();
+    const { delivery } = useConfigStore.getState();
     if (!user?.id || !orgId) {
       throw new Error('User or org not authenticated');
     }
@@ -94,7 +94,6 @@ const store = createStore<EventStore>()((set, get) => ({
       capture,
       connectionId,
       delivery,
-      destination,
       event: normalizedEvent,
       isEventRetry: false,
       onRequestCreated: async (request) => {
@@ -149,13 +148,12 @@ const store = createStore<EventStore>()((set, get) => ({
     request: RequestType;
     event: EventType;
   }) => {
-    const { delivery, destination } = useConfigStore.getState();
+    const { delivery } = useConfigStore.getState();
     const { api } = useApiStore.getState();
     await handlePendingRequest({
       api,
       capture,
       delivery,
-      destination,
       event,
       request,
       requestFn: async (url, options) => {
@@ -182,7 +180,7 @@ const store = createStore<EventStore>()((set, get) => ({
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
     const { api } = useApiStore.getState();
-    const { delivery, destination } = useConfigStore.getState();
+    const { delivery } = useConfigStore.getState();
     if (!user?.id || !orgId) {
       throw new Error('User or org not authenticated');
     }
@@ -205,13 +203,12 @@ const store = createStore<EventStore>()((set, get) => ({
       capture,
       connectionId,
       delivery,
-      destination,
       event: normalizedEvent,
       isEventRetry: true,
       onRequestCreated: async (request) => {
         await store.getState().handlePendingRequest({ event, request });
       },
-      pingEnabledFn: (destination) => !!destination.ping,
+      pingEnabledFn: (rule) => !!rule.ping,
       preventDuplicates: true, // Enable duplicate prevention for retry scenarios
     });
   },
@@ -225,7 +222,7 @@ const store = createStore<EventStore>()((set, get) => ({
     log(`Replaying request: ${request.id}`);
     const { user, orgId } = useAuthStore.getState();
     const { connectionId } = useConnectionStore.getState();
-    const { destination } = useConfigStore.getState();
+    const { delivery } = useConfigStore.getState();
 
     capture({
       event: 'webhook_request_replay',
@@ -235,7 +232,7 @@ const store = createStore<EventStore>()((set, get) => ({
         method: event.originRequest.method,
         orgId,
         originalEventId: request.eventId,
-        pingEnabled: !!destination.find((t) => t.ping),
+        pingEnabled: delivery.some((rule) => rule.ping !== false),
         source: request.source,
         userId: user?.id,
         webhookId: request.webhookId,

@@ -3,7 +3,6 @@ import { withPostHogConfig } from '@posthog/nextjs-config';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // dynamicIO: true,
   eslint: { ignoreDuringBuilds: true },
   experimental: {
     // Forward browser logs to the terminal for easier debugging
@@ -51,6 +50,7 @@ const nextConfig = {
   // removeConsole: true,
   // },
   reactStrictMode: true,
+  // dynamicIO: true,
   typescript: { ignoreBuildErrors: true },
 };
 

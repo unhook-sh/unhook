@@ -257,32 +257,28 @@ export const siteConfig = {
         content:
           'Real-time monitoring through our web dashboard for webhook inspection and debugging.',
         id: 1,
-        image:
-          'https://images.unsplash.com/photo-1720378042271-60aff1e1c538?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMHx8fGVufDB8fHx8fA%3D%3D',
+        image: '/screenshots/vscode-marketplace.png',
         title: 'VS Code Extension',
       },
       {
         content:
           'Create shareable webhook URLs that route to your local environment. Perfect for team collaboration.',
         id: 2,
-        image:
-          'https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        image: '/screenshots/architecture.png',
         title: 'JetBrains Plugin (coming soon)',
       },
       {
         content:
           'Share webhook URLs across your team while maintaining individual developer environments.',
         id: 3,
-        image:
-          'https://images.unsplash.com/photo-1666882990322-e7f3b8df4f75?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D',
+        image: '/screenshots/mcp-docs.png',
         title: 'MCP Server',
       },
       {
         content:
           'Create shareable webhook URLs that route to your local environment. Perfect for team collaboration.',
         id: 4,
-        image:
-          'https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        image: '/screenshots/cli-light.png',
         title: 'Unhook CLI',
       },
 

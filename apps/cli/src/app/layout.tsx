@@ -33,15 +33,17 @@ import { useRouterStore } from '~/stores/router-store';
 
 const log = debug('unhook:cli:layout');
 
-function ErrorFallback({ error }: { error: Error }) {
+function ErrorFallback({ error }: { error: unknown }) {
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
   log('An error occurred:', error);
-  captureException(error);
+
+  const err = error instanceof Error ? error : new Error(String(error));
+  captureException(err);
 
   return (
     <Box>
       <Text color="red">Error</Text>
-      <Text color="red">{error.message}</Text>
+      <Text color="red">{err.message}</Text>
     </Box>
   );
 }

@@ -1,5 +1,28 @@
 # @unhook/cli
 
+## 0.15.0
+
+### Minor Changes
+
+**Changed**
+- Simplified webhook configuration schema, removing separate destination array and consolidating delivery rules
+- Updated config format to have a more straightforward delivery configuration with destination URL and optional source filtering
+- Improved error handling in error boundary to accept unknown error types for more robust error capturing
+
+**Improved**
+- Enhanced type safety and configuration flexibility for webhook delivery rules
+- Updated dependencies to latest versions, including React, Clerk, and other core libraries
+- Refined connection and event handling logic to work with the new configuration schema
+
+**Fixed**
+- Corrected ErrorFallback type to properly handle and log unknown error types
+- Resolved potential issues with config parsing and URL handling in connection and event stores
+
+### Commits
+
+- [`feeb493`](https://github.com/unhook-sh/unhook/commit/feeb4939b0af18bfa8b93d2a0ec06dd1eca54ce4) - fix: correct ErrorFallback type to accept unknown error (Chris Watts)
+- [`e6168ed`](https://github.com/unhook-sh/unhook/commit/e6168edb1a911c5e54062f4816766ed9789c678a) - feat: simplify config schema with backwards-compatible migration (Chris Watts)
+
 ## 0.14.9
 
 ### Patch Changes

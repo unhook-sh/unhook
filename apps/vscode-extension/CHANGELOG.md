@@ -1,5 +1,26 @@
 # unhook-vscode
 
+## 0.4.0
+
+### Minor Changes
+
+**Changed**
+- Simplified webhook configuration by removing separate destination and source sections, now using a more streamlined delivery configuration
+- Updated delivery rules to use direct destination URLs instead of separate destination name/URL mappings
+- Improved config validation to focus on essential delivery rule requirements
+
+**Improved**
+- Enhanced event delivery logic to work with simplified configuration structure
+- Made delivery rule matching more flexible by supporting both name and URL matching
+- Reduced configuration complexity for webhook setups
+
+**Updated**
+- Bumped several development and runtime dependencies to their latest versions
+
+### Commits
+
+- [`e6168ed`](https://github.com/unhook-sh/unhook/commit/e6168edb1a911c5e54062f4816766ed9789c678a) - feat: simplify config schema with backwards-compatible migration (Chris Watts)
+
 ## 0.3.8
 
 ### Patch Changes

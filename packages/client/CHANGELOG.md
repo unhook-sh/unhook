@@ -1,5 +1,31 @@
 # @unhook/client
 
+## 0.7.0
+
+### Minor Changes
+
+**Added**
+- Support for custom event type extraction with new `eventTypeField` configuration option
+- Backwards-compatible config migration for legacy configuration formats
+
+**Changed**
+- Simplified webhook configuration schema with a flatter, more intuitive delivery rules structure
+- Improved config loading to automatically detect and migrate legacy configuration formats
+- Updated example configuration files to demonstrate new config options
+
+**Improved**
+- More robust event name extraction from webhook payloads
+- Enhanced configuration validation and error reporting
+- Streamlined delivery rule matching and destination resolution
+
+**Fixed**
+- Potential issues with inconsistent configuration parsing across different file types
+- Handling of destination URLs and event routing in webhook delivery
+
+### Commits
+
+- [`e6168ed`](https://github.com/unhook-sh/unhook/commit/e6168edb1a911c5e54062f4816766ed9789c678a) - feat: simplify config schema with backwards-compatible migration (Chris Watts)
+
 ## 0.6.9
 
 ### Patch Changes
